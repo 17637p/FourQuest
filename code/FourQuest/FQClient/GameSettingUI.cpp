@@ -254,7 +254,7 @@ void fq::client::GameSettingUI::setSelectBoxPosition(float dt)
 	game_module::Transform* selectTransform = mButtons[mSelectButtonID]->GetComponent<game_module::Transform>();
 	DirectX::SimpleMath::Vector3 selectPosition = selectTransform->GetWorldPosition();
 
-	DirectX::SimpleMath::Vector3 curPosition = mSelectBackground->GetComponent<game_module::Transform>()->GetLocalPosition();
+	DirectX::SimpleMath::Vector3 curPosition = mSelectBackground->GetComponent<game_module::Transform>()->GetWorldPosition();
 
 	float dist = selectPosition.y - curPosition.y;
 	if (std::abs(dist) < mUIAnimSpeed * dt)
@@ -270,8 +270,7 @@ void fq::client::GameSettingUI::setSelectBoxPosition(float dt)
 		curPosition.y -= mUIAnimSpeed * dt;
 	}
 
-	curPosition.x = 900;
-	mSelectBackground->GetComponent<game_module::Transform>()->SetLocalPosition(curPosition);
+	mSelectBackground->GetComponent<game_module::Transform>()->SetWorldPosition(curPosition);
 }
 
 void fq::client::GameSettingUI::processInput(float dt)
@@ -399,6 +398,8 @@ void fq::client::GameSettingUI::saveSettingData()
 	SettingVariable::IsVibe = mIsOn[0];
 	SettingVariable::IsUsedAimAssist = mIsOn[1];
 	SettingVariable::IsAllowOtherPlayerAttack = mIsOn[2];
+
+	mSaveISOns = mIsOn;
 }
 
 std::string fq::client::GameSettingUI::wstringToString(std::wstring wStr)

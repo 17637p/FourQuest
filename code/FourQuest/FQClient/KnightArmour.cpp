@@ -175,6 +175,8 @@ void fq::client::KnightArmour::OnUpdate(float dt)
 {
 	checkSkillCoolTime(dt);
 	checkInput();
+
+	
 }
 
 void fq::client::KnightArmour::checkInput()

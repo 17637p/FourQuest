@@ -260,10 +260,20 @@ void fq::client::SoulSelectUI::processInput()
 					auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSoulPrefab);
 					newSoul = *(instance.begin());
 
-					float xPos = -3.75f + (2.5f * i);
-					newSoul->GetComponent<game_module::Transform>()->SetLocalPosition({ xPos, 0.5f, 0 });
+					float xPos = -3.4f + (2.26f * i);
+					newSoul->GetComponent<game_module::Transform>()->SetLocalPosition({ xPos, 0.5f, 0.5f });
 					newSoul->GetComponent<game_module::CharacterController>()->SetControllerID(i);
+					newSoul->GetComponent<game_module::CharacterController>()->SetOnRotation(false);
 					mSouls.push_back(newSoul);
+
+					// MagicSymbol 추가
+					std::shared_ptr<game_module::GameObject> newMagicSymbol;
+					instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mMagicSymbolPrefab);
+					newMagicSymbol = *(instance.begin());
+
+					xPos = -3.75f + (2.5f * i);
+					newMagicSymbol->GetTransform()->SetLocalPosition({ xPos, 0, -0.8 });
+					mMagicSymbols.push_back(newMagicSymbol);
 
 					switch (mSelectSouls[i])
 					{
@@ -284,6 +294,7 @@ void fq::client::SoulSelectUI::processInput()
 					}
 
 					GetScene()->AddGameObject(newSoul);
+					GetScene()->AddGameObject(newMagicSymbol);
 				}
 				// 아니면 영혼 선택
 				else
@@ -327,6 +338,10 @@ void fq::client::SoulSelectUI::processInput()
 				GetScene()->DestroyGameObject(soul->get());
 
 				mSouls.erase(mSouls.begin() + (selectSoulIndex - 1));
+
+				// magicSymbol 삭제
+				GetScene()->DestroyGameObject(mMagicSymbols[selectSoulIndex - 1].get());
+				mMagicSymbols.erase(mMagicSymbols.begin() + (selectSoulIndex - 1));
 			}
 		}
 
@@ -400,9 +415,6 @@ void fq::client::SoulSelectUI::setReadyUI(int index, bool isSpawned)
 	auto cancelButton = readyUI[1]->GetComponent<game_module::ImageUI>();
 	cancelButton->SetIsRender(0, isSpawned);
 	cancelButton->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isSpawned);
-
-	auto magicSymbol = readyUI[2]->GetComponent<game_module::ImageUI>();
-	magicSymbol->SetIsRender(0, isSpawned);
 }
 
 void fq::client::SoulSelectUI::SaveSoulType()
@@ -509,12 +521,12 @@ void fq::client::SoulSelectUI::MoveSoulDown(float dt)
 		{
 			game_module::Transform* soulT = mSouls[i]->GetTransform();
 			DirectX::SimpleMath::Vector3 soulV = soulT->GetLocalPosition();
-			float soulY = soulV.y;
-			if (soulY > -0.5f)
+			float soulZ = soulV.z;
+			if (soulZ > -0.5f)
 			{
-				soulY -= dt * mSoulMoveSpeed;
+				soulZ -= dt * mSoulMoveSpeed;
 			}
-			soulT->SetLocalPosition({ soulV.x, soulY, soulV.z });
+			soulT->SetLocalPosition({ soulV.x, soulV.y, soulZ });
 		}
 	}
 }
