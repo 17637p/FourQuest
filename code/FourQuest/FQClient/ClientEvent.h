@@ -114,4 +114,20 @@ namespace fq::client::event
 	struct OffPopupPause
 	{
 	};
+
+	/// <summary>
+	/// Reset 팝업 창 Off 이벤트
+	/// </summary>
+	struct OffPopupReset
+	{
+		bool isReset;
+	};
+
+	/// <summary>
+	/// Save 팝업 창 Off 이벤트
+	/// </summary>
+	struct OffPopupSave
+	{
+		bool isSave;
+	};
 }

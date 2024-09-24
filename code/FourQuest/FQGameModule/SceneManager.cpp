@@ -35,6 +35,7 @@ void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
 	, PrefabManager* prefabMgr
 	, ScreenManager* screenMgr
 	, TimeManager* timeMgr
+	, SoundManager* soundMgr
 	, bool isInvokeStartScene)
 {
 	mCurrentScene = std::make_unique<Scene>();
@@ -42,7 +43,7 @@ void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
 	mPrefabManager = prefabMgr;
 	mTimeManager = timeMgr;
 
-	mCurrentScene->Initialize(startSceneName, eventMgr, inputMgr, prefabMgr, screenMgr, timeMgr);
+	mCurrentScene->Initialize(startSceneName, eventMgr, inputMgr, prefabMgr, screenMgr, timeMgr, soundMgr);
 
 	mRequestExitGameHadler =
 		mEventManager->RegisterHandle<fq::event::RequestExitGame>(this, &SceneManager::RequestExitGame);

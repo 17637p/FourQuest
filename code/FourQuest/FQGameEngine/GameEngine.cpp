@@ -78,6 +78,7 @@ void fq::game_engine::GameEngine::Initialize()
 		, mGameProcess->mPrefabManager.get()
 		, mGameProcess->mScreenManager.get()
 		, mGameProcess->mTimeManager.get()
+		, mGameProcess->mSoundManager.get()
 		, true);
 
 	mGameProcess->mSoundManager->Initialize();
