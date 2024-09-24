@@ -21,6 +21,7 @@ namespace fq::game_module
 		Goddess = 13,
 		Box = 14,
 		AimAssist = 15,
-		End =16,
+		PlayerMonsterIgnore = 16,
+		End =17,
 	};
 }

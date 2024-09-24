@@ -79,6 +79,7 @@ namespace fq::graphics
 		for (std::shared_ptr<Pass> pass : mPasses)
 		{
 			pass->Render();
+			ShaderProgram::Unbind(mDevice);
 		}
 	}
 

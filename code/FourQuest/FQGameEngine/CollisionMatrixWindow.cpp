@@ -46,13 +46,12 @@ void fq::game_engine::CollisionMatrixWindow::beginButton_Reset()
 
 void fq::game_engine::CollisionMatrixWindow::beginCollisionMatrix()
 {
-	for (int i = 0; i < 16; ++i)
+	for (int i = 0; i < 32; ++i)
 	{
 		ImGui::SameLine();
 		std::string row = std::to_string(i);
 		ImGui::Button(row.c_str(), ImVec2(25, 25));
 	}
-
 
 	auto matrix = mPhysicsSystem->GetCollisionMatrix();
 
@@ -67,7 +66,7 @@ void fq::game_engine::CollisionMatrixWindow::beginCollisionMatrix()
 
 		std::string sIndex = std::to_string(index) + "##col" + std::to_string(index);
 		ImGui::Button(sIndex.c_str(), ImVec2(25, 25));
-		for (int j = 0; j < 16; ++j)
+		for (int j = 0; j < 32; ++j)
 		{
 			bool isCheck = matrix.data[index][j];
 
