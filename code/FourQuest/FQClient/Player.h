@@ -25,7 +25,7 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void SummonSoul();
+		void SummonSoul(bool isDestroyArmour);
 
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
 		void SetSoulType(fq::client::ESoulType val) { mSoulType = val; }

@@ -3,7 +3,7 @@
 #include "ClientEvent.h"
 #include "Player.h"
 #include "Soul.h"
-#include "SoulManager.h"
+#include "SoulManagerModule.h"
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/CharacterController.h"
@@ -11,6 +11,7 @@
 
 // temp
 #include "PlayerInfoVariable.h"
+#include "SoulVariable.h"
 
 std::shared_ptr<fq::game_module::Component> fq::client::GameManager::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -36,12 +37,15 @@ fq::client::GameManager::~GameManager()
 
 fq::client::GameManager::GameManager()
 	:mIsStop(false),
-	mIsAutoSpawn(false)
+	mIsAutoSpawn(false),
+	mSoulManagerModule(std::make_shared<SoulManagerModule>())
 	//	:mRegisterPlayerHandler{}
 {}
 
 fq::client::GameManager::GameManager(const GameManager& other)
-	:mRegisterPlayerHandler{}
+	: mRegisterPlayerHandler{}
+	, mUpdatePlayerStateHandler{}
+	, mDestroyArmourHandler{}
 	, mPlayers(other.mPlayers)
 	, mPauseUI(other.mPauseUI)
 	, mIsStop(false)
@@ -51,6 +55,7 @@ fq::client::GameManager::GameManager(const GameManager& other)
 	, mMagic(other.mMagic)
 	, mArcher(other.mArcher)
 	, mWarrior(other.mWarrior)
+	, mSoulManagerModule(std::make_shared<SoulManagerModule>())
 {}
 
 fq::client::GameManager& fq::client::GameManager::operator=(const GameManager& other)
@@ -64,12 +69,15 @@ fq::client::GameManager& fq::client::GameManager::operator=(const GameManager& o
 	mMagic = other.mMagic;
 	mArcher = other.mArcher;
 	mWarrior = other.mWarrior;
+	mSoulManagerModule = std::make_shared<SoulManagerModule>();
 
 	return *this;
 }
 
 void fq::client::GameManager::OnUpdate(float dt)
 {
+	mSoulManagerModule->OnUpdate(dt);
+
 	mPlayers.erase(std::remove_if(mPlayers.begin(), mPlayers.end()
 		, [](const std::shared_ptr<game_module::GameObject> object)
 		{
@@ -98,10 +106,19 @@ void fq::client::GameManager::OnUpdate(float dt)
 	}
 
 	testKey();
+
+	// 모든 영혼이 파괴되었을 때, GameOver 씬으로 이동
+	if (mSoulManagerModule->CheckGameOver())
+	{
+		GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({"GameOver", true});
+	}
 }
 
 void fq::client::GameManager::OnStart()
 {
+	mSoulManagerModule->OnStart(GetScene());
+
+
 	EventProcessOffPopupPause();
 	EventProcessOffPopupSetting();
 
@@ -264,6 +281,23 @@ void fq::client::GameManager::OnAwake()
 		[this](const client::event::RegisterPlayer& event)
 		{
 			mPlayers.push_back(event.player->shared_from_this());
+			mSoulManagerModule->SetPlayerType(event.player->GetComponent<fq::game_module::CharacterController>()->GetControllerID(), event.type);
+		});
+
+	mUpdatePlayerStateHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::UpdatePlayerState>(
+		[this](const client::event::UpdatePlayerState& event)
+		{
+			mSoulManagerModule->SetPlayerType(event.playerID, event.type);
+		});
+
+	mDestroyArmourHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::SummonSoul>(
+		[this](const client::event::SummonSoul& event)
+		{
+			mSoulManagerModule->SummonSoul(event.id, event.soulType, event.worldTransform, event.soulPrefab, event.isDestroyArmour);
+			mSoulManagerModule->SetPlayerType(event.id, EPlayerType::ArmourDestroyed);
+
+			if (event.isDestroyArmour)
+				mSoulManagerModule->AddPlayerArmourDeathCount(event.id);
 		});
 }
 
@@ -271,6 +305,8 @@ void fq::client::GameManager::OnAwake()
 void fq::client::GameManager::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mRegisterPlayerHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mUpdatePlayerStateHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mDestroyArmourHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mOffPopupSettingHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mOffPopupPauseHandler);
 }
@@ -448,21 +484,31 @@ void fq::client::GameManager::SavePlayerState()
 		}
 	}
 
-	for (auto& soulmanager : GetGameObject()->GetScene()->GetComponentView<SoulManager>())
+	// 임시 ( 테스트 )
+	// 갑옷이 깨져 있는 상태 ( n초 간 Scene에 Player, Soul이 없기 때문에 이 값을 알고 있는 SoulManager에서 해당 타입의 값이 있으면 다음 씬에도 적용 )
+	if (SoulVariable::Player1Type == EPlayerType::ArmourDestroyed)
 	{
-		for (int i = 0; i < 4; i++)
-		{
-			EPlayerType type = soulmanager.GetComponent<SoulManager>()->GetPlayerType(i);
-
-			if (type == EPlayerType::ArmourDestroyed)
-			{
-				if (i == 0)
-				{
-					PlayerInfoVariable::Player1State = 0;
-					PlayerInfoVariable::Player1SoulType = static_cast<int>(soulmanager.GetComponent<SoulManager>()->GetDestroyArmourSoulType(i));
-				}
-			}
-		}
+		PlayerInfoVariable::Player1State = 0;
+		PlayerInfoVariable::Player1SoulType = static_cast<int>(mSoulManagerModule->GetDestroyArmourSoulType(0));
+		SoulVariable::Player1Type = EPlayerType::Soul;
+	}
+	if (SoulVariable::Player2Type == EPlayerType::ArmourDestroyed)
+	{
+		PlayerInfoVariable::Player2State = 0;
+		PlayerInfoVariable::Player2SoulType = static_cast<int>(mSoulManagerModule->GetDestroyArmourSoulType(1));
+		SoulVariable::Player1Type = EPlayerType::Soul;
+	}
+	if (SoulVariable::Player3Type == EPlayerType::ArmourDestroyed)
+	{
+		PlayerInfoVariable::Player3State = 0;
+		PlayerInfoVariable::Player3SoulType = static_cast<int>(mSoulManagerModule->GetDestroyArmourSoulType(2));
+		SoulVariable::Player1Type = EPlayerType::Soul;
+	}
+	if (SoulVariable::Player4Type == EPlayerType::ArmourDestroyed)
+	{
+		PlayerInfoVariable::Player4State = 0;
+		PlayerInfoVariable::Player4SoulType = static_cast<int>(mSoulManagerModule->GetDestroyArmourSoulType(3));
+		SoulVariable::Player1Type = EPlayerType::Soul;
 	}
 }
 

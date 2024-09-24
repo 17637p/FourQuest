@@ -12,7 +12,6 @@
 #include "ClientEvent.h"
 #include "PlayerSoulVariable.h"
 #include "Player.h"
-#include "SoulManager.h"
 #include "HpBar.h"
 
 #include "SoulVariable.h"
@@ -24,7 +23,6 @@ fq::client::Soul::Soul()
 	, mSelectArmours{}
 	, mbIsDistanceInPlayer(false)
 	, mHP()
-	, mDeathCount()
 {}
 
 fq::client::Soul::~Soul()
@@ -64,9 +62,7 @@ void fq::client::Soul::OnStart()
 		});
 
 	
-	SetSoulManager();	// 소울 매니저 등록
 	SetSoulColor();		// 소울 색깔 지정 
-	SetSoulDeath();		// 소울 죽음 카운트 계산
 	SetSoulHP();		// 소울 HP
 }
 
@@ -209,47 +205,21 @@ void fq::client::Soul::SetSoulColor()
 	}
 }
 
-void fq::client::Soul::SetSoulManager()
-{
-	bool bisSoulManager = false;
-	unsigned int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
-
-	// 씬에 소울 매니저 오브젝트가 있는지 확인
-	for (auto& object : GetScene()->GetObjectView())
-	{
-		if (object.HasComponent<SoulManager>())
-		{
-			bisSoulManager = true;
-			continue;
-		}
-	}
-
-	// 씬에서 소울 오브젝트 컴포넌트를 가진 오브젝트 주소 가져오기
-	if (bisSoulManager)
-	{
-		for (auto& object : GetScene()->GetComponentView<SoulManager>())
-		{
-			mSoulManagerObject = &object;
-			mSoulManagerObject->GetComponent<SoulManager>()->SetPlayerType(id, EPlayerType::Soul);
-		}
-	}
-	else
-	{
-		std::shared_ptr<fq::game_module::GameObject> gameObject = std::make_shared<fq::game_module::GameObject>();
-		gameObject->AddComponent<SoulManager>();
-
-		GetScene()->AddGameObject(gameObject);
-		mSoulManagerObject = gameObject.get();
-		mSoulManagerObject->GetComponent<SoulManager>()->SetPlayerType(id, EPlayerType::Soul);
-	}
-}
-
 void fq::client::Soul::SetSoulHP()
 {
 	// 갑옷 죽음 카운터에 따라 영혼 최대 체력 세팅
 	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
+	int deathCount = 0;
+	if (id == 0)
+		deathCount = SoulVariable::Player1DeathCount;
+	else if (id == 1)
+		deathCount = SoulVariable::Player2DeathCount;
+	else if (id == 2)
+		deathCount = SoulVariable::Player3DeathCount;
+	else if (id == 3)
+		deathCount = SoulVariable::Player4DeathCount;
 
-	int maxHP = SoulVariable::SoulMaxHp - SoulVariable::SoulHpDown * mDeathCount;
+	int maxHP = SoulVariable::SoulMaxHp - SoulVariable::SoulHpDown * deathCount;
 	int minHP = SoulVariable::SoulMinHp;
 
 	mHP = std::max<int>(maxHP, minHP);
@@ -258,22 +228,6 @@ void fq::client::Soul::SetSoulHP()
 		GetComponent<HpBar>()->DecreaseHp(((SoulVariable::SoulMaxHp - mHP) / (float)SoulVariable::SoulMaxHp));
 	else
 		spdlog::error("ERROR : GameObject(this) have not \"HpBar\" Component!");
-}
-
-void fq::client::Soul::SetSoulDeath()
-{
-	// 영혼 매니저에서 저장된 갑옷 죽음 카운트 데이터 가져오기
-	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
-
-	if (mSoulManagerObject != nullptr)
-	{
-		auto soulManager = mSoulManagerObject->GetComponent<SoulManager>();
-		mDeathCount = soulManager->GetPlayerDeathCount(id);
-	}
-	else
-	{
-		spdlog::error("Scene Have not SoulManager!!");
-	}
 }
 
 void fq::client::Soul::updateSoulHP(float dt)
@@ -311,8 +265,10 @@ void fq::client::Soul::updateSoulHP(float dt)
 			}
 		}
 
+		// 이벤트로 영혼 파괴 되었음을 업데이트
 		int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
-		mSoulManagerObject->GetComponent<SoulManager>()->SetbIsPlayerSoulDeath(id, EPlayerType::SoulDestoryed);
+		GetScene()->GetEventManager()->FireEvent<fq::client::event::UpdatePlayerState>(
+			{ id, EPlayerType::SoulDestoryed });
 
 		// 콜라이더와 리지드 바디 삭제
 		GetGameObject()->RemoveComponent<fq::game_module::RigidBody>();

@@ -10,7 +10,6 @@
 #include "PlayerDefine.h"
 #include "Player.h"
 #include "Soul.h"
-#include "SoulManager.h"
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
 #include "PlayerMovementSoundState.h"
@@ -443,11 +442,6 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
-		.base<game_module::Component>();
-
-	entt::meta<SoulManager>()
-		.type("SoulManager"_hs)
-		.prop(reflect::prop::Name, "SoulManager")
 		.base<game_module::Component>();
 
 	entt::meta<AimAssist>()
@@ -1539,6 +1533,24 @@ void fq::client::RegisterMetaData()
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
+	//                             Player Type								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<EPlayerType>()
+		.prop(fq::reflect::prop::Name, "PlayerType")
+		.conv<std::underlying_type_t<EPlayerType>>()
+		.data<EPlayerType::None>("None"_hs)
+		.prop(fq::reflect::prop::Name, "None")
+		.data<EPlayerType::LivingArmour>("LivingArmour"_hs)
+		.prop(fq::reflect::prop::Name, "LivingArmour")
+		.data<EPlayerType::ArmourDestroyed>("ArmourDestroyed"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourDestroyed")
+		.data<EPlayerType::Soul>("Soul"_hs)
+		.prop(fq::reflect::prop::Name, "Soul")
+		.data<EPlayerType::SoulDestoryed>("SoulDestoryed"_hs)
+		.prop(fq::reflect::prop::Name, "SoulDestoryed");
+
+	//////////////////////////////////////////////////////////////////////////
 	//                            Game Variable								//
 	//////////////////////////////////////////////////////////////////////////
 
@@ -1777,6 +1789,23 @@ void fq::client::RegisterMetaData()
 		.data<&SoulVariable::DamageUpRatio>("DamageUp"_hs)
 		.prop(fq::reflect::prop::Name, "DamageUp")
 		.prop(reflect::prop::Comment, u8"플레이어 공격력 증가량")
+
+		.data<&SoulVariable::Player1Type>("Player1Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player1Type")
+		.data<&SoulVariable::Player1DeathCount>("Player1DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player1DeathCount")
+		.data<&SoulVariable::Player2Type>("Player2Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Type")
+		.data<&SoulVariable::Player2DeathCount>("Player2DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player2DeathCount")
+		.data<&SoulVariable::Player3Type>("Player3Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Type")
+		.data<&SoulVariable::Player3DeathCount>("Player3DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player3DeathCount")
+		.data<&SoulVariable::Player4Type>("Player4Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Type")
+		.data<&SoulVariable::Player4DeathCount>("Player4DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player4DeathCount")
 		.base<IGameVariable>();
 
 

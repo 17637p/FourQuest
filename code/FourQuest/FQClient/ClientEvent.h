@@ -18,6 +18,27 @@ namespace fq::client::event
 	};
 
 	/// <summary>
+	/// 플레이어의 상태를 업데이트 해주는 이벤트
+	/// </summary>
+	struct UpdatePlayerState
+	{
+		int playerID;
+		EPlayerType type;
+	};
+
+	/// <summary>
+	/// 플레이어의 갑옷이 깨졌을 경우에 영혼 생성
+	/// </summary>
+	struct SummonSoul
+	{
+		int id;
+		ESoulType soulType;
+		DirectX::SimpleMath::Matrix worldTransform;
+		game_module::PrefabResource soulPrefab;
+		bool isDestroyArmour;
+	};
+
+	/// <summary>
 	/// 몬스터를 죽였을 때 발생하는 이벤트 
 	/// </summary>
 	struct KillMonster

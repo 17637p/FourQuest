@@ -11,71 +11,46 @@
 namespace fq::client
 {
 	SoulManagerModule::SoulManagerModule()
+		: mScene(nullptr)
+		, mSoulSummonQueue{}
 	{
-		mPlayerType.resize(4, EPlayerType::NONE);
-		mPlayerArmourDeathCount.resize(4, 0);
 	}
 	SoulManagerModule::~SoulManagerModule()
 	{
+		mSoulSummonQueue.clear();
 	}
 
-	void SoulManagerModule::Set(fq::game_module::Scene* scene)
+	void SoulManagerModule::OnStart(fq::game_module::Scene* scene)
 	{
+		SoulVariable::Player1DeathCount = 0;
+		SoulVariable::Player2DeathCount = 0;
+		SoulVariable::Player3DeathCount = 0;
+		SoulVariable::Player4DeathCount = 0;
+
 		mScene = scene;
-	}
-
-	void SoulManagerModule::OnStart()
-	{
-		// 씬을 순환하여 씬에 있는 오브젝트를 조종하는 플레이어 컨트롤러가 있는 지 확인 한 후에 배열에 데이터 저장
-		for (auto& object : mScene->GetComponentView<fq::game_module::CharacterController>())
-		{
-			unsigned int id = object.GetComponent<fq::game_module::CharacterController>()->GetControllerID();
-
-			if (id >= 4)
-			{
-				spdlog::error("ERROR : ID is greater than 4!");
-				return;
-			}
-			
-			mPlayerArmourDeathCount[id] = 0;
-
-			if (object.HasComponent<Player>())
-				mPlayerType[id] = EPlayerType::LivingArmour;
-			else if (object.HasComponent<Soul>())
-				mPlayerType[id] = EPlayerType::Soul;
-		}
 	}
 
 	void SoulManagerModule::OnUpdate(float dt)
 	{
 		checkSummonSoul(dt);
-		checkGameOver();
 	}
 
-	void SoulManagerModule::checkGameOver()
+	bool SoulManagerModule::CheckGameOver()
 	{
 		// 게임 오버인지 체크
-		bool isGameOver = true;
-		for (auto& isDead : mPlayerType)
+		if ((SoulVariable::Player1Type == EPlayerType::SoulDestoryed || SoulVariable::Player1Type == EPlayerType::None)
+			&& (SoulVariable::Player2Type == EPlayerType::SoulDestoryed || SoulVariable::Player2Type == EPlayerType::None)
+			&& (SoulVariable::Player3Type == EPlayerType::SoulDestoryed || SoulVariable::Player3Type == EPlayerType::None)
+			&& (SoulVariable::Player4Type == EPlayerType::SoulDestoryed || SoulVariable::Player4Type == EPlayerType::None))
 		{
-			if (isDead != EPlayerType::SoulDestoryed)
-				isGameOver = false;
+			return true;
 		}
 
-		if (isGameOver)
-		{
-		}
+		return false;
 	}
 
 	void SoulManagerModule::checkSummonSoul(float dt)
 	{
-		// 만약 해당 영혼이 소환이 되었으면 삭제
-		mSoulSummonQueue.erase(std::remove_if(mSoulSummonQueue.begin(), mSoulSummonQueue.end()
-			, [](const SoulData& data)
-			{
-				return data.durationTime >= SoulVariable::OutTime;
-			}), mSoulSummonQueue.end());
-
 		// 영혼이 소환 시간이 되었으면 씬에 영혼 생성
 		for (auto& data : mSoulSummonQueue)
 		{
@@ -99,9 +74,16 @@ namespace fq::client
 				mScene->AddGameObject(soul);
 			}
 		}
+
+		// 만약 해당 영혼이 소환이 되었으면 삭제
+		mSoulSummonQueue.erase(std::remove_if(mSoulSummonQueue.begin(), mSoulSummonQueue.end()
+			, [](const SoulData& data)
+			{
+				return data.durationTime >= SoulVariable::OutTime;
+			}), mSoulSummonQueue.end());
 	}
 
-	void SoulManagerModule::SummonSoul(unsigned int id, ESoulType soulType, DirectX::SimpleMath::Matrix worldTransform, game_module::PrefabResource soulPrefab)
+	void SoulManagerModule::SummonSoul(unsigned int id, ESoulType soulType, DirectX::SimpleMath::Matrix worldTransform, game_module::PrefabResource soulPrefab, bool isDestroy)
 	{
 		SoulData data;
 
@@ -109,6 +91,9 @@ namespace fq::client
 		data.soulType = soulType;
 		data.worldTransform = worldTransform;
 		data.soulPrefab = soulPrefab;
+
+		if (!isDestroy)
+			data.durationTime = SoulVariable::OutTime;
 
 		mSoulSummonQueue.push_back(data);
 	}
@@ -124,32 +109,6 @@ namespace fq::client
 		return ESoulType::End;
 	}
 
-	int SoulManagerModule::GetPlayerDeathCount(unsigned int id)
-	{
-		if (id >= 4)
-		{
-			spdlog::error("ERROR : ID is greater than 4!");
-			return -1;
-		}
-		else
-		{
-			return mPlayerArmourDeathCount[id];
-		}
-	}
-
-	EPlayerType SoulManagerModule::GetPlayerType(unsigned int id)
-	{
-		if (id >= 4)
-		{
-			spdlog::error("ERROR : ID is greater than 4!");
-			return EPlayerType::NONE;
-		}
-		else
-		{
-			return mPlayerType[id];
-		}
-	}
-
 	void SoulManagerModule::AddPlayerArmourDeathCount(unsigned int id)
 	{
 		if (id >= 4)
@@ -159,7 +118,22 @@ namespace fq::client
 		}
 		else
 		{
-			mPlayerArmourDeathCount[id]++;
+			if (id == 0)
+			{
+				SoulVariable::Player1DeathCount++;
+			}
+			else if (id == 1)
+			{
+				SoulVariable::Player2DeathCount++;
+			}
+			else if (id == 2)
+			{
+				SoulVariable::Player3DeathCount++;
+			}
+			else if (id == 3)
+			{
+				SoulVariable::Player4DeathCount++;
+			}
 		}
 	}
 
@@ -172,7 +146,22 @@ namespace fq::client
 		}
 		else
 		{
-			mPlayerType[id] = playerType;
+			if (id == 0)
+			{
+				SoulVariable::Player1Type = playerType;
+			}
+			else if (id == 1)
+			{
+				SoulVariable::Player2Type = playerType;
+			}
+			else if (id == 2)
+			{
+				SoulVariable::Player3Type = playerType;
+			}
+			else if (id == 3)
+			{
+				SoulVariable::Player4Type = playerType;
+			}
 		}
 	}
 }

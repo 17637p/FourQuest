@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IGameVariable.h"
+#include "PlayerDefine.h"
 
 namespace fq::client
 {
@@ -27,7 +28,19 @@ namespace fq::client
 		//////////////////////////////////////////////////////////////////////////
 		//								플레이어 강화								//
 		//////////////////////////////////////////////////////////////////////////
-		static inline float SpeedUpRatio = 1.2f;				// 플레이어 이동속도 증가량
-		static inline float DamageUpRatio = 1.2f;			// 플레이어 공격력 증가량
+		static inline float SpeedUpRatio = 1.2f;		// 플레이어 이동속도 증가량
+		static inline float DamageUpRatio = 1.2f;		// 플레이어 공격력 증가량
+
+		//////////////////////////////////////////////////////////////////////////
+		//								플레이어 죽음								//
+		//////////////////////////////////////////////////////////////////////////
+		static inline int Player1DeathCount = 0;		// 플레이어 죽음 횟수
+		static inline int Player2DeathCount = 0;		// 플레이어 죽음 횟수
+		static inline int Player3DeathCount = 0;		// 플레이어 죽음 횟수
+		static inline int Player4DeathCount = 0;		// 플레이어 죽음 횟수
+		static inline EPlayerType Player1Type = EPlayerType::None;		// 플레이어 현재 상태
+		static inline EPlayerType Player2Type = EPlayerType::None;		// 플레이어 현재 상태
+		static inline EPlayerType Player3Type = EPlayerType::None;		// 플레이어 현재 상태
+		static inline EPlayerType Player4Type = EPlayerType::None;		// 플레이어 현재 상태
 	};
 }

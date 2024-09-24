@@ -20,7 +20,6 @@
 #include "SoulVariable.h"
 #include "PlayerVariable.h"
 #include "DebuffPoisonZone.h"
-#include "SoulManager.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -126,7 +125,7 @@ void fq::client::Player::processInput()
 
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
 	{
-		SummonSoul();
+		SummonSoul(false);
 	}
 }
 
@@ -185,12 +184,7 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 			// 플레이어 사망처리 
 			if (mHp <= 0.f)
 			{
-				SummonSoul();
-				
-				for (auto& object : GetScene()->GetComponentView<SoulManager>())
-				{
-					object.GetComponent<SoulManager>()->AddPlayerArmourDeathCount(GetPlayerID());
-				}
+				SummonSoul(true);
 			}
 		}
 	}
@@ -203,18 +197,14 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 	}
 }
 
-void fq::client::Player::SummonSoul()
+void fq::client::Player::SummonSoul(bool isDestroyArmour)
 {
 	// 위치 설정
 	auto worldMat = GetComponent<game_module::Transform>()->GetWorldMatrix();
 	worldMat._42 += 1.f;
 
-	// 씬에서 영혼 매니저를 찾아서 등록
-	for (auto& soulManager : GetScene()->GetComponentView<SoulManager>())
-	{
-		soulManager.GetComponent<SoulManager>()->SummonSoul(GetPlayerID(), mSoulType, worldMat, mSoulPrefab);
-		soulManager.GetComponent<SoulManager>()->SetPlayerType(GetPlayerID(), EPlayerType::ArmourDestroyed);
-	}
+	GetScene()->GetEventManager()->FireEvent<client::event::SummonSoul>(
+		{ (int)GetPlayerID(), mSoulType, worldMat, mSoulPrefab, isDestroyArmour });
 
 	GetScene()->DestroyGameObject(GetGameObject());
 }
@@ -263,7 +253,7 @@ void fq::client::Player::processDebuff(float dt)
 			// 플레이어 사망처리 
 			if (mHp <= 0.f)
 			{
-				SummonSoul();
+				SummonSoul(true);
 			}
 		}
 

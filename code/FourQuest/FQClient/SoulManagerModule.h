@@ -19,28 +19,29 @@ namespace fq::client
 		SoulManagerModule();
 		~SoulManagerModule();
 
-		int GetPlayerDeathCount(unsigned int id);
-		EPlayerType GetPlayerType(unsigned int id);
 		void AddPlayerArmourDeathCount(unsigned int id);
 		void SetPlayerType(unsigned int id, const EPlayerType& playerType);
 
 		ESoulType GetDestroyArmourSoulType(unsigned int id);
 
-		void SummonSoul(unsigned int id, ESoulType soulType, DirectX::SimpleMath::Matrix worldTransform, game_module::PrefabResource soulPrefab);
+		/// <summary>
+		/// 갑옷 파괴 및 갑옷 해체 시에 상태에 따라 영혼 생성
+		/// </summary>
+		void SummonSoul(unsigned int id, ESoulType soulType, DirectX::SimpleMath::Matrix worldTransform, game_module::PrefabResource soulPrefab, bool isDestroy);
 
-		void Set(fq::game_module::Scene* scene);
-		void OnStart();
+		/// <summary>
+		/// 플레이어 상태 체크해서 현재 게임 오버 상태인지 체크
+		/// </summary>
+		bool CheckGameOver();
+
+		void OnStart(fq::game_module::Scene* scene);
 		void OnUpdate(float dt);
 
 	private:
-		void checkGameOver();
 		void checkSummonSoul(float dt);
 
 	private:
 		fq::game_module::Scene* mScene;
-
-		std::vector<int> mPlayerArmourDeathCount;
-		std::vector<EPlayerType> mPlayerType;
 		std::vector<SoulData> mSoulSummonQueue;
 
 		friend void RegisterMetaData();

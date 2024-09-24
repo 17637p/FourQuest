@@ -149,7 +149,7 @@
     <ClInclude Include="ShieldAttackState.h" />
     <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
-    <ClInclude Include="SoulManager.h" />
+    <ClInclude Include="SoulManagerModule.h" />
     <ClInclude Include="SoulSelectUI.h" />
     <ClInclude Include="SoulVariable.h" />
     <ClInclude Include="Spawner.h" />
@@ -263,7 +263,7 @@
     <ClCompile Include="ShieldAttackState.cpp" />
     <ClCompile Include="ShieldBlockState.cpp" />
     <ClCompile Include="Soul.cpp" />
-    <ClCompile Include="SoulManager.cpp" />
+    <ClCompile Include="SoulManagerModule.cpp" />
     <ClCompile Include="SoulSelectUI.cpp" />
     <ClCompile Include="SoulVariable.cpp" />
     <ClCompile Include="Spawner.cpp" />
