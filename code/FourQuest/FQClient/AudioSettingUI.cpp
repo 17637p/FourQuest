@@ -423,7 +423,6 @@ void fq::client::AudioSettingUI::setSelectBoxPosition(float dt)
 		curPosition.y -= mUIAnimSpeed * dt;
 	}
 
-	curPosition.x = 470;
 	mSelectBackground->GetComponent<game_module::Transform>()->SetLocalPosition(curPosition);
 }
 

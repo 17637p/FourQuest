@@ -11,6 +11,7 @@ fq::game_module::Animator::Animator()
 	, mNodeHierarchy{ nullptr }
 	, mbUpdateAnimationCPUData(true)
 	, mbUpdateAnimationGPUData(false)
+	, mbCreateAnimationTexture(false)
 {
 
 }
