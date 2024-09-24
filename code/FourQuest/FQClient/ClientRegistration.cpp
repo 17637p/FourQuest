@@ -688,6 +688,9 @@ void fq::client::RegisterMetaData()
 		.data<&BerserkerRushChargingState::mChargingMinimumTime>("ChargingMinimumTime"_hs)
 		.prop(reflect::prop::Name, "ChargingMinimumTime")
 		.prop(fq::reflect::prop::Comment, u8"Rush 상태 진입을 위한 최소 차징 시간")
+		.data<&BerserkerRushChargingState::mRotationSpeed>("RotationSpeed"_hs)
+		.prop(reflect::prop::Name, "RotationSpeed")
+		.prop(fq::reflect::prop::Comment, u8"회진 속도, 현재방향에서 패드 방향까지 전환에 적용될 시간, 소요시간 : 1 / speed")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

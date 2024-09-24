@@ -91,7 +91,9 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Box>("Box"_hs) // 14
 		.prop(fq::reflect::prop::Name, "Box")
 		.data<ETag::AimAssist>("AimAssist"_hs) // 15
-		.prop(fq::reflect::prop::Name, "AimAssist");
+		.prop(fq::reflect::prop::Name, "AimAssist")
+		.data<ETag::PlayerMonsterIgnore>("PlayerMonsterIgnore"_hs) // 16
+		.prop(fq::reflect::prop::Name, "PlayerMonsterIgnore");;
 
 
 	// GameObject

@@ -203,6 +203,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11ComputeShader> csOrNull = nullptr);
 
 		void Bind(const std::shared_ptr<D3D11Device>& device);
+		static void Unbind(const std::shared_ptr<D3D11Device>& device);
 
 	private:
 		std::shared_ptr<PipelineState> mPipelineState;
