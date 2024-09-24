@@ -5,6 +5,7 @@
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/TextUI.h"
 #include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/SpriteAnimationUI.h"
 #include "../FQClient/LoadingUI.h"
 #include "GameProcess.h"
 #include "ResourceSystem.h"
@@ -32,11 +33,7 @@ void fq::game_engine::LoadingSystem::Finalize()
 	for (auto& object : mLoadingUIObject)
 	{
 		mGameProcess->mUISystem->UnloadImageUI(object.get());
-	}
-
-	for (auto& object : mLoadingUIObject)
-	{
-		mGameProcess->mUISystem->UnloadTextUI(object.get());
+		mGameProcess->mUISystem->UnloadSpriteAnimationUI(object.get());
 	}
 }
 
@@ -51,6 +48,7 @@ void fq::game_engine::LoadingSystem::loadUI()
 		object->SetScene(scene);
 		mGameProcess->mUISystem->LoadImageUI(object.get());
 		mGameProcess->mUISystem->LoadTextUI(object.get());
+		mGameProcess->mUISystem->LoadSpriteAnimationUI(object.get());
 	}
 }
 
@@ -87,7 +85,7 @@ void fq::game_engine::LoadingSystem::updateUI()
 
 	for (auto& object : mLoadingUIObject)
 	{
-		object->OnUpdate(0.f);
+		object->OnUpdate(0.1f);
 	}
 }
 
@@ -125,6 +123,15 @@ void fq::game_engine::LoadingSystem::setRenderUI(bool isRender)
 			info.IsRender = isRender;
 			textUI->SetTextInfo(info);
 		}
+
+		if (object->HasComponent<game_module::SpriteAnimationUI>())
+		{
+			auto sprite = object->GetComponent<game_module::SpriteAnimationUI>();
+
+			auto info = sprite->GetSpriteInfo();
+			info.isRender = isRender;
+			sprite->SetSpriteInfo(info);
+		}
 	}
 
 	if (isRender)
@@ -136,7 +143,7 @@ void fq::game_engine::LoadingSystem::setRenderUI(bool isRender)
 	}
 
 	auto loadingUI = mLoadingUIObject[0]->GetComponent<client::LoadingUI>();
-	auto id = client::helper::RandomGenerator::GetInstance().GetRandomNumber(0, loadingUI->GetGuideSize()-1);
+	auto id = client::helper::RandomGenerator::GetInstance().GetRandomNumber(0, loadingUI->GetGuideSize() - 1);
 	loadingUI->SetGuideID(id);
 }
 

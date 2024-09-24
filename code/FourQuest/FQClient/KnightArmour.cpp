@@ -210,29 +210,6 @@ void fq::client::KnightArmour::checkInput()
 		mGaugeBar->SetVisible(true);
 		mGaugeBar->SetRatio(1.f);
 	}
-
-	// test
-	if (input->IsKeyState(EKey::C, EKeyState::Tap))
-	{
-		GetScene()->GetScreenManager()->SetScreenSize(900, 600);
-	}
-
-	// test
-	if (input->IsKeyState(EKey::V, EKeyState::Tap))
-	{
-		GetScene()->GetScreenManager()->SetScreenSize(1920, 1080);
-	}
-
-	if (input->IsKeyState(EKey::B, EKeyState::Tap))
-	{
-		GetScene()->GetScreenManager()->SetFullScreen(true);
-	}
-
-	if (input->IsKeyState(EKey::N, EKeyState::Tap))
-	{
-		GetScene()->GetScreenManager()->SetFullScreen(false);
-	}
-
 }
 
 
