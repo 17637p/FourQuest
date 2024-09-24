@@ -89,6 +89,11 @@ namespace fq::client
 		/// 현재 피버타임인지 반환합니다
 		/// </summary>
 		bool IsFeverTime()const;
+		
+		/// <summary>
+		/// 하체 애니메이션을 상태를 현재 입력 방향에 따라서 설정합니다. 
+		/// </summary>
+		void SetLowerBodyAnimation();
 
 	private:
 		void processInput();

@@ -611,3 +611,48 @@ void fq::client::Player::OnTriggerStay(const game_module::Collision& collision)
 			{ (int)GetPlayerID(), collision.other->GetName() });
 	}
 }
+
+void fq::client::Player::SetLowerBodyAnimation()
+{
+	auto input = GetScene()->GetInputManager();
+	auto id = mController->GetControllerID();
+
+	// 이동 방향
+	auto x = input->GetStickInfomation(id, EPadStick::leftX);
+	auto y = input->GetStickInfomation(id, EPadStick::leftY);
+	DirectX::SimpleMath::Vector3 moveDir{ x, 0.f, y };
+	LowerDirection direction = {};
+
+	if (x == 0.f && y == 0.f)
+	{
+		direction = LowerDirection::Stop;
+	}
+	else
+	{
+		moveDir.Normalize();
+
+		// 시선 방향
+		auto look = mTransform->GetLookAtVector();
+		look.y = 0.f;
+		look.Normalize();
+
+		// 내적으로 각도 판단
+		float angle = std::acos(look.Dot(moveDir));
+
+		// 외적으로 방향 판단 
+		bool isClock = look.Cross(moveDir).y > 0.f;
+
+		constexpr float Angle135 = DirectX::XM_PIDIV2 + DirectX::XM_PIDIV4;
+
+		if (angle <= DirectX::XM_PIDIV4)
+			direction = LowerDirection::Foward;
+		else if (angle <= Angle135 && isClock)
+			direction = LowerDirection::Right;
+		else if (angle <= Angle135 && !isClock)
+			direction = LowerDirection::Left;
+		else
+			direction = LowerDirection::Back;
+
+	}
+	mAnimator->SetParameterInt("LowerDir", static_cast<int>(direction));
+}

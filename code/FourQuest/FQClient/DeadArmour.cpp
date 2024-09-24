@@ -73,7 +73,6 @@ void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collis
 	if (collision.other->HasComponent<Soul>())
 	{
 		mPlayerCount++;
-		spdlog::debug("{} count {}", collision.other->GetName(), mPlayerCount);
 	}
 
 	if (mPlayerCount > 0 && mbIsSummonAble)
@@ -92,8 +91,6 @@ void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collisi
 		{
 			--mPlayerCount;
 		}
-
-		spdlog::debug("{} count {}", collision.other->GetName(), mPlayerCount);
 	}
 
 	if (mPlayerCount == 0 && mbIsSummonAble)

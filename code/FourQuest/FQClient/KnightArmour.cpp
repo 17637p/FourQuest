@@ -8,19 +8,25 @@
 #include "Attack.h"
 #include "DamageCalculation.h"
 #include "PlayerSoulVariable.h"
+#include "GaugeBar.h"
 
 fq::client::KnightArmour::KnightArmour()
 	:mDashCoolTime(1.f)
 	, mDashElapsedTime(0.f)
 	, mShieldDashPower(0.5f)
 	, mXAttackDashPower(0.1f)
-	, mShieldKnockPower(1.f)
+	, mDashKnockBackPower(1.f)
 	, mSwordKnockBackPower(1.f)
 	, mController(nullptr)
 	, mAnimator(nullptr)
 	, mTransform(nullptr)
 	, mPlayer(nullptr)
+	, mGaugeBar(nullptr)
 	, mAttackOffset(2.f)
+	, mShieldElapsedTime(0.f)
+	, mShieldCoolTime(5.f)
+	, mShieldDuration(3.f)
+	, mShieldSpeedRatio(0.5f)
 {}
 
 fq::client::KnightArmour::~KnightArmour()
@@ -113,7 +119,7 @@ void fq::client::KnightArmour::EmitShieldAttack()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.type = EKnockBackType::TargetPosition;
 	attackInfo.attackDirection = foward;
-	attackInfo.knocBackPower = mShieldKnockPower;
+	attackInfo.knocBackPower = mDashKnockBackPower;
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
 	attackInfo.hitSound = "K_Swing3_Hit";
 	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
@@ -177,7 +183,7 @@ void fq::client::KnightArmour::checkInput()
 
 	auto input = GetScene()->GetInputManager();
 
-	// Dash
+	// Dash Input
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap)
 		&& mDashElapsedTime == 0.f)
 	{
@@ -185,7 +191,7 @@ void fq::client::KnightArmour::checkInput()
 		mDashElapsedTime = mDashCoolTime;
 	}
 
-	// Shield 
+	// Shield Input
 	DirectX::SimpleMath::Vector3 rightInput{};
 	rightInput.x = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
 	rightInput.z = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
@@ -193,31 +199,41 @@ void fq::client::KnightArmour::checkInput()
 	// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
 	constexpr float rotationOffsetSq = 0.5f * 0.5f;
 
-	if (rightInput.LengthSquared() >= rotationOffsetSq)
+	if (rightInput.LengthSquared() >= rotationOffsetSq && mShieldElapsedTime == 0.f)
 	{
-		rightInput.Normalize();
-
-		if (rightInput == Vector3::Backward)
-		{
-			mTransform->SetWorldRotation(Quaternion::LookRotation(rightInput, { 0.f,-1.f,0.f }));
-		}
-		else
-		{
-			mTransform->SetWorldRotation(Quaternion::LookRotation(rightInput, { 0.f,1.f,0.f }));
-		}
-
 		mAnimator->SetParameterBoolean("OnShield", true);
 		mPlayer->SetOnShieldBlock(true);
-
-		// 방패 움직임 판단 
-
+		mShieldElapsedTime = mShieldCoolTime;
+		SetShieldMovementSpeed(true);
+		mGaugeBar->SetVisible(true);
+		mGaugeBar->SetRatio(1.f);
 	}
-	else
+}
+
+
+void fq::client::KnightArmour::CheckBlockState(float dt)
+{
+	auto input = GetScene()->GetInputManager();
+
+	DirectX::SimpleMath::Vector3 rightInput{};
+	rightInput.x = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
+	rightInput.z = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
+
+	// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
+	constexpr float rotationOffsetSq = 0.5f * 0.5f;
+
+	// 방패 해제 조건 
+	if (rightInput.LengthSquared() <= rotationOffsetSq
+		|| mShieldCoolTime - mShieldElapsedTime >= mShieldDuration)
 	{
 		mAnimator->SetParameterBoolean("OnShield", false);
 		mPlayer->SetOnShieldBlock(false);
 	}
+
+	float ratio = 1.f - ((mShieldCoolTime - mShieldElapsedTime) / mShieldDuration);
+	GetComponent<GaugeBar>()->SetRatio(ratio);
 }
+
 
 void fq::client::KnightArmour::OnStart()
 {
@@ -225,11 +241,13 @@ void fq::client::KnightArmour::OnStart()
 	mController = GetComponent<game_module::CharacterController>();
 	mTransform = GetComponent<game_module::Transform>();
 	mPlayer = GetComponent<Player>();
+	mGaugeBar = GetComponent<GaugeBar>();
 }
 
 void fq::client::KnightArmour::checkSkillCoolTime(float dt)
 {
 	mDashElapsedTime = std::max(0.f, mDashElapsedTime - dt);
+	mShieldElapsedTime = std::max(0.f, mShieldElapsedTime - dt);
 }
 
 std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSwordEffect()
@@ -237,8 +255,8 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSword
 	// 공격 이펙트 생성
 	auto name = mAnimator->GetController().GetCurrentStateName();
 
-	game_module::PrefabResource& res = (name == "Swing1") ? mSwordAttackEffect1
-		: mSwordAttackEffect2; 
+	game_module::PrefabResource& res = (name != "Swing1") ? mSwordAttackEffect1
+		: mSwordAttackEffect2;
 
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(res);
 	auto& effectObj = *(instance.begin());
@@ -247,5 +265,29 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSword
 
 	GetScene()->AddGameObject(effectObj);
 
-	return effectObj;  
+	return effectObj;
+}
+
+void fq::client::KnightArmour::SetShieldMovementSpeed(bool isShieldSpeed)
+{
+	auto info = mController->GetMovementInfo();
+
+	if (isShieldSpeed)
+	{
+		info.maxSpeed *= mShieldSpeedRatio;
+		info.acceleration *= mShieldSpeedRatio;
+	}
+	else
+	{
+		info.maxSpeed /= mShieldSpeedRatio;
+		info.acceleration /= mShieldSpeedRatio;
+	}
+
+	mController->SetMovementInfo(info);
+}
+
+void fq::client::KnightArmour::ExitShieldState()
+{
+	SetShieldMovementSpeed(false);
+	mGaugeBar->SetVisible(false);
 }

@@ -13,6 +13,7 @@ namespace fq::game_module
 namespace fq::client
 {
 	class Player;
+	class GaugeBar;
 
 	/// <summary>
 	/// 기사 갑옷
@@ -23,14 +24,27 @@ namespace fq::client
 		KnightArmour();
 		~KnightArmour();
 
-		void EmitSwordAttack();
 		std::shared_ptr<game_module::GameObject> EmitSwordEffect();
 
+		void EmitSwordAttack();
 		void EmitShieldAttack();
 		void EmitShieldDashAttack();
 
+		/// <summary>
+		/// 방어 상태에 대한 처리를합니다.
+		/// </summary>
+		void CheckBlockState(float dt);
+
 		float GetShieldDashPower() const { return mShieldDashPower; }
 		float GetXAttackDashPower() const { return mXAttackDashPower; }
+
+		/// <summary>
+		/// 방어상태 이동속도로 설정합니다
+		/// </summary>
+		void SetShieldMovementSpeed(bool isShieldSpeed);
+
+		void ExitShieldState();
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -45,13 +59,19 @@ namespace fq::client
 		game_module::CharacterController* mController;
 		game_module::Transform* mTransform;
 		client::Player* mPlayer;
+		client::GaugeBar* mGaugeBar;
 
 		float mDashCoolTime;
 		float mDashElapsedTime;
+		float mShieldCoolTime;
+		float mShieldSpeedRatio;
+		float mShieldDuration;
+		float mShieldElapsedTime;
+
 		float mShieldDashPower;
 		float mXAttackDashPower;
 		float mSwordKnockBackPower;
-		float mShieldKnockPower;
+		float mDashKnockBackPower;
 
 		float mAttackOffset;
 

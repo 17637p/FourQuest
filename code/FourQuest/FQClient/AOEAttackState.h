@@ -25,7 +25,6 @@ namespace fq::client
 
 	private:
 		fq::game_module::GameObject* mAttackWarningUI;
-
 		DirectX::SimpleMath::Vector3 mCenterPosition;
 		float mMoveRange;
 

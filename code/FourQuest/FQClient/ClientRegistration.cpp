@@ -21,6 +21,7 @@
 #include "ShieldDashState.h"
 #include "KnightArmour.h"
 #include "SwordAttackState.h"
+#include "ShieldBlockState.h"
 #include "ShieldAttackState.h"
 #include "StaffSoulAttackState.h"
 #include "SwordSoulAttackState.h"
@@ -103,6 +104,7 @@
 
 // UI
 #include "HpBar.h"
+#include "GaugeBar.h"
 #include "PlayerUI.h"
 #include "PlayerUIManager.h"
 #include "BossHP.h"
@@ -356,9 +358,12 @@ void fq::client::RegisterMetaData()
 		.data<&KnightArmour::mSwordKnockBackPower>("SwordKnockBackPower"_hs)
 		.prop(reflect::prop::Name, "SwordKnockBackPower")
 		.prop(reflect::prop::Comment, u8"검 공격 넉백")
-		.data<&KnightArmour::mShieldKnockPower>("ShieldKnockPower"_hs)
+		.data<&KnightArmour::mDashKnockBackPower>("ShieldKnockPower"_hs)
 		.prop(reflect::prop::Name, "ShieldKnockPower")
 		.prop(reflect::prop::Comment, u8"방패 공격 넉백")
+		.data<&KnightArmour::mShieldSpeedRatio>("ShieldSpeedRatio"_hs)
+		.prop(reflect::prop::Name, "ShieldSpeedRatio")
+		.prop(reflect::prop::Comment, u8"쉴드 상태 이동속도 배율")
 		.data<&KnightArmour::mSwordAttack>("SwordAttack"_hs)
 		.prop(reflect::prop::Name, "SwordAttack")
 		.data<&KnightArmour::mSwordAttackEffect1>("SwordAttackEffect1"_hs)
@@ -520,6 +525,11 @@ void fq::client::RegisterMetaData()
 	entt::meta<ShieldDashState>()
 		.type("ShiedlDashState"_hs)
 		.prop(reflect::prop::Name, "ShiedlDashState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<ShieldBlockState>()
+		.type("ShieldBlockState"_hs)
+		.prop(reflect::prop::Name, "ShieldBlockState")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<SwordAttackState>()
@@ -1271,7 +1281,7 @@ void fq::client::RegisterMetaData()
 		.type("HpBar"_hs)
 		.prop(fq::reflect::prop::Name, "HpBar")
 		.prop(fq::reflect::prop::Label, "UI")
-		.data<&HpBar::mIsVisible>("IsVisible"_hs)
+		.data<&HpBar::mbIsVisible>("IsVisible"_hs)
 		.prop(fq::reflect::prop::Name, "IsVisible")
 		.data<&HpBar::mBarSize>("BarSize"_hs)
 		.prop(fq::reflect::prop::Name, "BarSize")
@@ -1289,6 +1299,26 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "InnerOffset")
 		.prop(fq::reflect::prop::Comment, u8"Bar 외부와 내부의 크기 차이")
 		.base<fq::game_module::Component>();
+
+	entt::meta<GaugeBar>()
+		.type("GaugeBar"_hs)
+		.prop(fq::reflect::prop::Name, "GaugeBar")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&GaugeBar::mbIsVisible>("IsVisible"_hs)
+		.prop(fq::reflect::prop::Name, "IsVisible")
+		.data<&GaugeBar::mBarSize>("BarSize"_hs)
+		.prop(fq::reflect::prop::Name, "BarSize")
+		.data<&GaugeBar::mWorldOffset>("WorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldOffset")
+		.prop(fq::reflect::prop::Comment, u8"월드 공간의 Y를 더한후 UI 위치 계산")
+		.data<&GaugeBar::mScreenOffset>("ScreenOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ScreenOffset")
+		.prop(fq::reflect::prop::Comment, u8"Screen 공간의 Y를 더한후 UI 위치 계산")
+		.data<&GaugeBar::mInnerOffset>("InnerOffset"_hs)
+		.prop(fq::reflect::prop::Name, "InnerOffset")
+		.prop(fq::reflect::prop::Comment, u8"Bar 외부와 내부의 크기 차이")
+		.base<fq::game_module::Component>();
+
 
 	entt::meta<PlayerUI>()
 		.type("PlayerUI"_hs)
