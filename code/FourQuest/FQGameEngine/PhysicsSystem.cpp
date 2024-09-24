@@ -659,7 +659,7 @@ void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
 {
 	fq::physics::PhysicsEngineInfo mPhysicsEngineInfomation;
 
-	for (int i = 0; i < 16; ++i)
+	for (int i = 0; i < (int)fq::game_module::ETag::End; ++i)
 	{
 		mPhysicsEngineInfomation.collisionMatrix[i] = static_cast<int>(mCollisionMatrix.data[i].to_ulong());
 	}
