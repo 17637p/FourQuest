@@ -277,22 +277,55 @@ void RenderObjectDemo::Update()
 		if (!skinnedMeshRenderer.Animations.empty())
 		{
 			auto anim0 = std::next(skinnedMeshRenderer.Animations.begin(), index)->second;
+			auto anim0Rhs = std::next(skinnedMeshRenderer.Animations.begin(), index + 1)->second;
 			auto anim1 = std::next(skinnedMeshRenderer.Animations.begin(), nextIndex)->second;
+			auto anim1Rhs = std::next(skinnedMeshRenderer.Animations.begin(), nextIndex + 1)->second;
 
 			unsigned int spineIndex = skinnedMeshRenderer.NodeHierarchyInstance->GetNodeHierarchy()->GetSpineIndex();
 			unsigned int upperEndIndex = skinnedMeshRenderer.NodeHierarchyInstance->GetNodeHierarchy()->GetUpperBodyEndIndex();
 			unsigned int lowerStartIndex = skinnedMeshRenderer.NodeHierarchyInstance->GetNodeHierarchy()->GetLowerBodyStartIndex();
 			unsigned int endIndex = skinnedMeshRenderer.NodeHierarchyInstance->GetNodeHierarchy()->GetEndIndex();
 
-			// 애니메이션 행렬을 로컬 애니메이션을 초기상태로 만들어둡니다.
-			skinnedMeshRenderer.NodeHierarchyInstance->SetBindPoseLocalTransform();
-			// 스파인부터 상체의 끝까지 로컬 애니메이션 행렬을 해당 애니메이션으로 갱신합니다.
-			// 루트에 이동이 들어간 애니메이션의 경우 0번부터 애니메이션 갱신을 수행해야 함
-			skinnedMeshRenderer.NodeHierarchyInstance->UpdateLocalTransformRange(fmod(s_animTime, anim0->GetAnimationClip().Duration), anim0, spineIndex, upperEndIndex);
-			// 하체의 시작부터 끝까지 로컬 애니메이션 행렬을 해당 애니메이션으로 갱신합니다.
-			skinnedMeshRenderer.NodeHierarchyInstance->UpdateLocalTransformRange(fmod(s_animTime, anim1->GetAnimationClip().Duration), anim1, lowerStartIndex, endIndex);
-			// 갱신 해둔 로컬 애니메이션 행렬로 애니메이션에 사용할 toRoot 트랜스폼을 갱신합니다.
-			skinnedMeshRenderer.NodeHierarchyInstance->UpdateByLocalTransform();
+			// 1.애니메이션 행렬을 로컬 애니메이션을 초기상태로 만들어둡니다.
+			{
+				skinnedMeshRenderer.NodeHierarchyInstance->SetBindPoseLocalTransform();
+			}
+
+			// 2.스파인부터 상체의 끝까지 로컬 애니메이션 행렬을 해당 애니메이션으로 갱신합니다.
+			//  - 루트에 이동이 들어간 애니메이션의 경우 0번부터 애니메이션 갱신을 수행해야 함
+			{
+				skinnedMeshRenderer.NodeHierarchyInstance->UpdateLocalTransformRange(fmod(s_animTime, anim0->GetAnimationClip().Duration), anim0, spineIndex, upperEndIndex);
+				/* 블렌딩 버전
+				skinnedMeshRenderer.NodeHierarchyInstance->UpdateLocalTransformRange(
+					fmod(s_animTime, anim0->GetAnimationClip().Duration), // lhs animation time
+					anim0, // lhs animation interface
+					fmod(s_animTime, anim0Rhs->GetAnimationClip().Duration), // rhs animation time
+					anim0Rhs, // rhs animation interface
+					fmod(s_animTime , 1.f), // 가중치
+					spineIndex, // 본 시작 인덱스
+					upperEndIndex); // 본 끝 인덱스
+				 */
+			}
+
+			// 3. 하체의 시작부터 끝까지 로컬 애니메이션 행렬을 해당 애니메이션으로 갱신합니다.
+			{
+				skinnedMeshRenderer.NodeHierarchyInstance->UpdateLocalTransformRange(fmod(s_animTime, anim1->GetAnimationClip().Duration), anim1, lowerStartIndex, endIndex);
+				/* 블렌딩 버전
+				skinnedMeshRenderer.NodeHierarchyInstance->UpdateLocalTransformRange(
+					fmod(s_animTime, anim1->GetAnimationClip().Duration),
+					anim1,
+					fmod(s_animTime, anim1Rhs->GetAnimationClip().Duration),
+					anim1Rhs,
+					0.5f,
+					lowerStartIndex,
+					endIndex);
+				*/
+			}
+
+			// 4. 갱신 해둔 로컬 애니메이션 행렬로 애니메이션에 사용할 toRoot 트랜스폼을 갱신합니다.
+			{
+				skinnedMeshRenderer.NodeHierarchyInstance->UpdateByLocalTransform();
+			}
 		}
 	}
 
