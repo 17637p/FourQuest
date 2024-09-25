@@ -142,6 +142,9 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 						, upperStartIndex
 						, upperEndIndex);
 				}
+				
+				// + 상체 애니메이션을 기준으로 toRoot행렬을 갱신합니다.
+				nodeHierarchyInstance.UpdateByLocalTransform(upperStartIndex, upperEndIndex);
 
 				// 3. 하체 애니메이션 
 				auto& lowerController = animator.GetLowerController();
@@ -179,8 +182,10 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 						, upperStartIndex);
 				}
 
-				// 4. 갱신 해둔 로컬 애니메이션 행렬로 애니메이션에 사용할 toRoot 트랜스폼을 갱신합니다.
-				nodeHierarchyInstance.UpdateByLocalTransform();
+				// + 하체 애니메이션을 기준으로 스파인행렬의 toRoot 행렬을 갱신합니다.
+				nodeHierarchyInstance.UpdateByLocalTransform(upperStartIndex, upperStartIndex);
+				// + 하체 애니메이션을 기준으로 toRoot 행렬을 갱신합니다.
+				nodeHierarchyInstance.UpdateByLocalTransform(lowerStartIndex, lowerEndIndex);
 			}
 		});
 

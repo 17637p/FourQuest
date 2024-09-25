@@ -245,7 +245,9 @@ namespace fq::graphics
 	void NodeHierarchyInstance::SetBindPose()
 	{
 		setBindPoseLocal();
-		calculateRootTransform();
+
+		const std::vector<fq::common::Bone>& bones = mNodeHierarchy->GetBones();
+		calculateRootTransform(0, bones.size() - 1);
 	}
 
 	void NodeHierarchyInstance::SetBindPoseLocalTransform()
@@ -312,7 +314,8 @@ namespace fq::graphics
 
 		}
 
-		calculateRootTransform();
+		const std::vector<fq::common::Bone>& bones = mNodeHierarchy->GetBones();
+		calculateRootTransform(0, bones.size() - 1);
 	}
 	void NodeHierarchyInstance::Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight)
 	{
@@ -365,7 +368,8 @@ namespace fq::graphics
 			mLocalTransforms[lhsBone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
 		}
 
-		calculateRootTransform();
+		const std::vector<fq::common::Bone>& bones = mNodeHierarchy->GetBones();
+		calculateRootTransform(0, bones.size() - 1);
 	}
 
 	void NodeHierarchyInstance::UpdateGPUData(float timePos, const std::shared_ptr<IAnimation>& animation)
@@ -460,7 +464,13 @@ namespace fq::graphics
 
 	void NodeHierarchyInstance::UpdateByLocalTransform()
 	{
-		calculateRootTransform();
+		const std::vector<fq::common::Bone>& bones = mNodeHierarchy->GetBones();
+		calculateRootTransform(0, bones.size() - 1);
+	}
+
+	void NodeHierarchyInstance::UpdateByLocalTransform(unsigned int startIndex, unsigned int endIndex)
+	{
+		calculateRootTransform(startIndex, endIndex);
 	}
 
 	void NodeHierarchyInstance::UpdateByLocalTransform(float timePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight)
@@ -512,7 +522,7 @@ namespace fq::graphics
 			mLocalTransforms[rhsBone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
 		}
 
-		calculateRootTransform();
+		calculateRootTransform(0, bones.size() - 1);
 	}
 
 	void NodeHierarchyInstance::UpdateLocalTransformRange(float timePos, const std::shared_ptr<IAnimation>& animation, unsigned int startIndex, unsigned int endIndex)
@@ -665,18 +675,18 @@ namespace fq::graphics
 		std::fill(mTransposedFinalTransforms.begin(), mTransposedFinalTransforms.end(), DirectX::SimpleMath::Matrix::Identity);
 	}
 
-	void NodeHierarchyInstance::calculateRootTransform()
+	void NodeHierarchyInstance::calculateRootTransform(unsigned int startIndex, unsigned int endIndex)
 	{
 		const std::vector<fq::common::Bone>& bones = mNodeHierarchy->GetBones();
 
 		mRootTransforms[0] = mLocalTransforms[0];
 
-		for (size_t i = 1; i < bones.size(); ++i)
+		for (size_t i = std::max<size_t>(startIndex, 1); i <= endIndex; ++i)
 		{
 			assert(bones[i].Index == i);
 			mRootTransforms[i] = mLocalTransforms[i] * mRootTransforms[bones[i].ParentIndex];
 		}
-		for (size_t i = 0; i < bones.size(); ++i)
+		for (size_t i = startIndex; i <= endIndex; ++i)
 		{
 			assert(bones[i].Index == i);
 			mTransposedFinalTransforms[i] = (bones[i].OffsetMatrix * mRootTransforms[i]).Transpose();
