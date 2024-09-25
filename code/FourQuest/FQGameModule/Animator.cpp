@@ -14,10 +14,8 @@ fq::game_module::Animator::Animator()
 	, mbCreateAnimationTexture(false)
 	, mLowerController{ nullptr }
 	, mLowerControllerPath{}
-	, mbUseLowerController(true)
-{
-
-}
+	, mbUseLowerController(false)
+{}
 
 fq::game_module::Animator::~Animator()
 {
@@ -247,7 +245,6 @@ void fq::game_module::Animator::OnDestroy()
 void fq::game_module::Animator::SetUseLowerController(bool bUseLower)
 {
 	mbUseLowerController = bUseLower;
-
 }
 
 fq::game_module::AnimatorController& fq::game_module::Animator::GetLowerController() const

@@ -524,6 +524,9 @@
     <ClInclude Include="AttackInvalidation.h">
       <Filter>include\03.Attack</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerLowerMovementState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -838,9 +841,6 @@
     <ClCompile Include="PlayerVariable.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerMovementSoundState.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="MonsterManager.cpp">
       <Filter>src\02.Monster</Filter>
     </ClCompile>
@@ -894,6 +894,12 @@
     </ClCompile>
     <ClCompile Include="AttackInvalidation.cpp">
       <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerLowerMovementState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMovementSoundState.cpp">
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

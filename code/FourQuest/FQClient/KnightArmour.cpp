@@ -309,7 +309,6 @@ void fq::client::KnightArmour::EnterShieldState()
 	mGaugeBar->SetVisible(true);
 	mGaugeBar->SetRatio(1.f);
 
-
 	// 쉴드 콜라이더 생성
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mShieldCollider);
 	auto& shieldObj = *(instance.begin());

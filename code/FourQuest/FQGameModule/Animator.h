@@ -54,6 +54,11 @@ namespace fq::game_module
 		/// </summary>
 		std::shared_ptr<AnimatorController> GetSharedController() const { return mController; }
 
+		/// <summary>
+		/// 하부 컨트롤러를 반환합니다 
+		/// </summary>
+		std::shared_ptr<AnimatorController> GetSharedLowerController() const { return mLowerController; }
+
 		bool GetHasController() const { return mController != nullptr; }
 
 		/// <summary>

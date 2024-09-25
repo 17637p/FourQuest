@@ -262,26 +262,26 @@ namespace fq::graphics
 			{
 				switch (materialInfo.RasterizeType)
 				{
-				case ERasterizeMode::TwoSide:
-					mCullOffRasterizer->Bind(mDevice);
-					break;
-				case ERasterizeMode::BackFaceClip:
-					mDefaultRasterizer->Bind(mDevice);
-					break;
-				default:
-					assert(false);
+					case ERasterizeMode::TwoSide:
+						mCullOffRasterizer->Bind(mDevice);
+						break;
+					case ERasterizeMode::BackFaceClip:
+						mDefaultRasterizer->Bind(mDevice);
+						break;
+					default:
+						assert(false);
 				}
 
 				switch (materialInfo.SampleType)
 				{
-				case ESampleMode::Clamp:
-					mAnisotropicClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
-					break;
-				case ESampleMode::Wrap:
-					mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
-					break;
-				default:
-					assert(false);
+					case ESampleMode::Clamp:
+						mAnisotropicClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+						break;
+					case ESampleMode::Wrap:
+						mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+						break;
+					default:
+						assert(false);
 				}
 			};
 		// Draw
@@ -316,114 +316,114 @@ namespace fq::graphics
 
 				switch (meshObjectInfo.ObjectType)
 				{
-				case MeshObjectInfo::EObjectType::Static:
-				{
-					mLightmapStaticMeshShaderProgram->Bind(mDevice);
-					bindingState(materialInfo);
-					mDevice->GetDeviceContext()->IASetInputLayout(mInstancedIL.Get());
-
-					std::vector<std::shared_ptr<D3D11VertexBuffer>> buffers;
-					buffers.push_back(job.StaticMesh->GetSharedVertexBuffer());
-					buffers.push_back(mInstancingVertexBuffer);
-					D3D11VertexBuffer::Bind(mDevice, buffers);
-					job.StaticMesh->GetSharedIndexBuffer()->Bind(mDevice);
-
-					LightMapInfomation lightmapInfo;
-					lightmapInfo.UVScaleOffset = job.StaticMeshObject->GetLightmapUVScaleOffset();
-					lightmapInfo.UVIndex = job.StaticMeshObject->GetLightmapIndex();
-					lightmapInfo.bUseLightmap = mLightManager->GetLightMapTextureArray() != nullptr;
-					lightmapInfo.bUseDirection = mLightManager->GetLightMapDirectionTextureArray() != nullptr;
-					mLightMapInformationCB->Update(mDevice, lightmapInfo);
-
-					// static 타입은 언제나 데칼 적용
-					mLessEqualStencilReplaceState->Bind(mDevice, 0);
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo());
-
-					std::vector<InstancingInfo> infos;
-					infos.reserve(128);
-
-					InstancingInfo instancingInfo;
-					instancingInfo.Transform = job.StaticMeshObject->GetTransform().Transpose();
-					instancingInfo.UVScaleOffset = job.StaticMeshObject->GetLightmapUVScaleOffset();
-					instancingInfo.UVIndex = job.StaticMeshObject->GetLightmapIndex();
-					infos.push_back(instancingInfo);
-
-					size_t count = 1;
-
-					for (size_t j = i + 1; j < staticMeshJobs.size(); ++j)
+					case MeshObjectInfo::EObjectType::Static:
 					{
-						if (INSTANCING_BUFFER_SIZE <= count)
-						{
-							break;
-						}
+						mLightmapStaticMeshShaderProgram->Bind(mDevice);
+						bindingState(materialInfo);
+						mDevice->GetDeviceContext()->IASetInputLayout(mInstancedIL.Get());
 
-						const StaticMeshJob& nextJob = staticMeshJobs[j];
+						std::vector<std::shared_ptr<D3D11VertexBuffer>> buffers;
+						buffers.push_back(job.StaticMesh->GetSharedVertexBuffer());
+						buffers.push_back(mInstancingVertexBuffer);
+						D3D11VertexBuffer::Bind(mDevice, buffers);
+						job.StaticMesh->GetSharedIndexBuffer()->Bind(mDevice);
 
-						if (job.StaticMesh != nextJob.StaticMesh
-							|| job.Material != nextJob.Material
-							|| job.SubsetIndex != nextJob.SubsetIndex)
-						{
-							break;
-						}
+						LightMapInfomation lightmapInfo;
+						lightmapInfo.UVScaleOffset = job.StaticMeshObject->GetLightmapUVScaleOffset();
+						lightmapInfo.UVIndex = job.StaticMeshObject->GetLightmapIndex();
+						lightmapInfo.bUseLightmap = mLightManager->GetLightMapTextureArray() != nullptr;
+						lightmapInfo.bUseDirection = mLightManager->GetLightMapDirectionTextureArray() != nullptr;
+						mLightMapInformationCB->Update(mDevice, lightmapInfo);
 
-						instancingInfo.Transform = nextJob.StaticMeshObject->GetTransform().Transpose();
-						instancingInfo.UVScaleOffset = nextJob.StaticMeshObject->GetLightmapUVScaleOffset();
-						instancingInfo.UVIndex = nextJob.StaticMeshObject->GetLightmapIndex();
+						// static 타입은 언제나 데칼 적용
+						mLessEqualStencilReplaceState->Bind(mDevice, 0);
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo());
+
+						std::vector<InstancingInfo> infos;
+						infos.reserve(128);
+
+						InstancingInfo instancingInfo;
+						instancingInfo.Transform = job.StaticMeshObject->GetTransform().Transpose();
+						instancingInfo.UVScaleOffset = job.StaticMeshObject->GetLightmapUVScaleOffset();
+						instancingInfo.UVIndex = job.StaticMeshObject->GetLightmapIndex();
 						infos.push_back(instancingInfo);
 
-						++count;
+						size_t count = 1;
+
+						for (size_t j = i + 1; j < staticMeshJobs.size(); ++j)
+						{
+							if (INSTANCING_BUFFER_SIZE <= count)
+							{
+								break;
+							}
+
+							const StaticMeshJob& nextJob = staticMeshJobs[j];
+
+							if (job.StaticMesh != nextJob.StaticMesh
+								|| job.Material != nextJob.Material
+								|| job.SubsetIndex != nextJob.SubsetIndex)
+							{
+								break;
+							}
+
+							instancingInfo.Transform = nextJob.StaticMeshObject->GetTransform().Transpose();
+							instancingInfo.UVScaleOffset = nextJob.StaticMeshObject->GetLightmapUVScaleOffset();
+							instancingInfo.UVIndex = nextJob.StaticMeshObject->GetLightmapIndex();
+							infos.push_back(instancingInfo);
+
+							++count;
+						}
+
+						mInstancingVertexBuffer->Update(mDevice, infos);
+						job.StaticMesh->DrawInstanced(mDevice, job.SubsetIndex, count);
+
+						i += count - 1;
+
+						break;
 					}
-
-					mInstancingVertexBuffer->Update(mDevice, infos);
-					job.StaticMesh->DrawInstanced(mDevice, job.SubsetIndex, count);
-
-					i += count - 1;
-
-					break;
-				}
-				case MeshObjectInfo::EObjectType::Dynamic:
-				{
-					if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::VertexColor)
+					case MeshObjectInfo::EObjectType::Dynamic:
 					{
-						mVertexColorStaticMeshShaderProgram->Bind(mDevice);
-					}
-					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default
-						|| job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Static)
-					{
-						mStaticMeshShaderProgram->Bind(mDevice);
-					}
-					
-					bindingState(materialInfo);
-					mLessEqualStencilReplaceState->Bind(mDevice, job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal ? 0 : 1);
+						if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::VertexColor)
+						{
+							mVertexColorStaticMeshShaderProgram->Bind(mDevice);
+						}
+						else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default
+							|| job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Static)
+						{
+							mStaticMeshShaderProgram->Bind(mDevice);
+						}
 
-					if (job.NodeHierarchyInstnace != nullptr)
-					{
-						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
-					}
-					else
-					{
-						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-					}
+						bindingState(materialInfo);
+						mLessEqualStencilReplaceState->Bind(mDevice, job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal ? 0 : 1);
 
-					const auto& uvAnimInstnace = job.StaticMeshObject->GetUVAnimationInstanceOrNull();
+						if (job.NodeHierarchyInstnace != nullptr)
+						{
+							ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
+						}
+						else
+						{
+							ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+						}
 
-					if (uvAnimInstnace != nullptr)
-					{
-						const auto& nodeName = job.StaticMesh->GetMeshData().NodeName;
-						const auto& texTransform = uvAnimInstnace->GetTexTransform(nodeName);
-						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo(), texTransform);
+						const auto& uvAnimInstnace = job.StaticMeshObject->GetUVAnimationInstanceOrNull();
+
+						if (uvAnimInstnace != nullptr)
+						{
+							const auto& nodeName = job.StaticMesh->GetMeshData().NodeName;
+							const auto& texTransform = uvAnimInstnace->GetTexTransform(nodeName);
+							ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo(), texTransform);
+						}
+						else
+						{
+							ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo());
+						}
+
+						job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+
+						break;
 					}
-					else
-					{
-						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo());
-					}
-
-					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
-
-					break;
-				}
-				default:
-					assert(false);
+					default:
+						assert(false);
 				}
 
 			}
@@ -472,7 +472,11 @@ namespace fq::graphics
 					bindingState(materialInfo);
 					mDevice->GetDeviceContext()->IASetInputLayout(mSkinnedInstancedIL.Get());
 					mTweenBufferCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 4);
-					nodeHierarchyCache->GetAnimationKeyframeTexture()->Bind(mDevice, 0, ED3D11ShaderType::VertexShader);
+
+					if (nodeHierarchyCache->GetAnimationKeyframeTexture() != nullptr)
+					{
+						nodeHierarchyCache->GetAnimationKeyframeTexture()->Bind(mDevice, 0, ED3D11ShaderType::VertexShader);
+					}
 
 					std::vector<std::shared_ptr<D3D11VertexBuffer>> buffers;
 					buffers.push_back(skinnedMeshCache->GetSharedVertexBuffer());
