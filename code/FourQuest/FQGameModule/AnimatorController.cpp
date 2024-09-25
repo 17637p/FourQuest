@@ -47,13 +47,19 @@ fq::game_module::AnimatorController::AnimatorController()
 fq::game_module::AnimatorController::~AnimatorController()
 {}
 
-void fq::game_module::AnimatorController::SetParameter(ParameterID id, Parameter parameter)
+bool fq::game_module::AnimatorController::SetParameter(ParameterID id, Parameter parameter)
 {
 	auto iter = mParmeters.find(id);
 
-	assert(iter != mParmeters.end() && "ParameterID 오류");
+	if (iter == mParmeters.end())
+	{
+		return false;
+	}
+
 	assert(iter->second.type() == parameter.type() && "Type이 일치하지 않습니다");
 	iter->second = parameter;
+
+	return true;
 }
 
 void fq::game_module::AnimatorController::AddParameter(ParameterID id, Parameter parameter)
@@ -443,7 +449,7 @@ fq::game_module::AnimatorController::TransitionIterator fq::game_module::Animato
 			}
 			return false;
 		});
-		
+
 
 	// 전환조건 확인
 	for (auto& iter : transitions)
@@ -558,3 +564,4 @@ void fq::game_module::AnimatorController::Update(float dt)
 	else
 		mCurrentState->second.OnStateUpdate(dt);
 }
+

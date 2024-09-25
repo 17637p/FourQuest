@@ -522,7 +522,7 @@
       <Filter>include\05.UI</Filter>
     </ClInclude>
     <ClInclude Include="AttackInvalidation.h">
-      <Filter>include</Filter>
+      <Filter>include\03.Attack</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -893,7 +893,7 @@
       <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="AttackInvalidation.cpp">
-      <Filter>src</Filter>
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
