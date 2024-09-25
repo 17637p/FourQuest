@@ -561,6 +561,7 @@ namespace fq::graphics
 	{
 		Clamp,
 		Wrap,
+		Border,
 	};
 
 	enum ERasterizeMode

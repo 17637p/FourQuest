@@ -48,6 +48,7 @@ namespace fq::graphics
 		mLessEqualStencilReplaceState = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqualStencilWriteReplace);
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mAnisotropicClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
+		mAnisotropicBorderSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicBorder);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 		mDefualtSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
 		mLinearWrap = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearWrap);
@@ -86,6 +87,7 @@ namespace fq::graphics
 		mLessEqualStencilReplaceState = nullptr;
 		mAnisotropicWrapSamplerState = nullptr;
 		mAnisotropicClampSamplerState = nullptr;
+		mAnisotropicBorderSamplerState = nullptr;
 		mShadowSampler = nullptr;
 		mDefualtSampler = nullptr;
 		mLinearWrap = nullptr;
@@ -178,6 +180,9 @@ namespace fq::graphics
 					break;
 				case ESampleMode::Wrap:
 					mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+					break;
+				case ESampleMode::Border:
+					mAnisotropicBorderSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 					break;
 				default:
 					assert(false);

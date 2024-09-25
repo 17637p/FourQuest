@@ -56,8 +56,25 @@ fq::graphics::D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11De
 		samplerDesc.MinLOD = -FLT_MAX;
 		samplerDesc.MaxLOD = FLT_MAX;
 		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
 		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-
+		break;
+	}
+	case ED3D11SamplerState::AnisotropicBorder:
+	{
+		samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.MinLOD = -FLT_MAX;
+		samplerDesc.MaxLOD = FLT_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		samplerDesc.BorderColor[0] = 0.0f;
+		samplerDesc.BorderColor[1] = 0.0f;
+		samplerDesc.BorderColor[2] = 0.0f;
+		samplerDesc.BorderColor[3] = 0.0f;
 		break;
 	}
 	case ED3D11SamplerState::PointClamp:

@@ -175,7 +175,7 @@ void fq::game_engine::MaterialWindow::Render()
 		ImGui::SliderFloat("Alpha Cutoff", &materialInfo.AlphaCutoff, 0.0f, 1.0f);
 
 		// SampleType
-		const char* sampleModes[] = { "Clamp", "Repeat" };
+		const char* sampleModes[] = { "Clamp", "Repeat", "Border" };
 		int currentSampleMode = static_cast<int>(materialInfo.SampleType);
 		if (ImGui::Combo("Sample Mode", &currentSampleMode, sampleModes, IM_ARRAYSIZE(sampleModes)))
 		{

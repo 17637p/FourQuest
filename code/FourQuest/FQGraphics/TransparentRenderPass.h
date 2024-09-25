@@ -42,6 +42,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicClampSamplerState;
+		std::shared_ptr<D3D11SamplerState> mAnisotropicBorderSamplerState;
 		std::shared_ptr<D3D11SamplerState> mShadowSampler;
 		std::shared_ptr<D3D11SamplerState> mDefualtSampler;
 		std::shared_ptr<D3D11SamplerState> mLinearWrap;
