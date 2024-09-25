@@ -530,10 +530,9 @@ void fq::client::AudioSettingUI::eventProcessOffPopupSave()
 				if (event.isSave)
 				{
 					saveSettingData();
-
-					spawnUIObject(mSettingUIPrefab);
-					mHaveToDestroyed = true;
 				}
+				spawnUIObject(mSettingUIPrefab);
+				mHaveToDestroyed = true;
 			}
 		);
 }

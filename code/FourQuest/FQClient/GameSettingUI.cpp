@@ -217,10 +217,9 @@ void fq::client::GameSettingUI::eventProcessOffPopupSave()
 				if (event.isSave)
 				{
 					saveSettingData();
-
-					spawnUIObject(mSettingUIPrefab);
-					mHaveToDestroyed = true;
 				}
+				spawnUIObject(mSettingUIPrefab);
+				mHaveToDestroyed = true;
 			}
 		);
 }

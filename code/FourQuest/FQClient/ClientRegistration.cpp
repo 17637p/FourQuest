@@ -120,6 +120,7 @@
 #include "GameSettingUI.h"
 #include "AudioSettingUI.h"
 #include "VideoSettingUI.h"
+#include "SpeechBubbleUI.h"
 
 #include "CameraMoving.h"
 
@@ -1490,6 +1491,20 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SaveMessagePrefab")
 		.data<&VideoSettingUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<SpeechBubbleUI>()
+		.type("SpeechBubbleUI"_hs)
+		.prop(fq::reflect::prop::Name, "SpeechBubbleUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&SpeechBubbleUI::mName>("Name"_hs)
+		.prop(fq::reflect::prop::Name, "Name")
+		.data<&SpeechBubbleUI::mWorldOffset>("WorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldOffset")
+		.data<&SpeechBubbleUI::mScreenOffset>("ScreenOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ScreenOffset")
+		.data<&SpeechBubbleUI::mPlaytime>("Playtime"_hs)
+		.prop(fq::reflect::prop::Name, "Playtime")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

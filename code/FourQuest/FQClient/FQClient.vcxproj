@@ -162,6 +162,7 @@
     <ClInclude Include="Spawner.h" />
     <ClInclude Include="SpawnerGroup.h" />
     <ClInclude Include="SpawnStruct.h" />
+    <ClInclude Include="SpeechBubbleUI.h" />
     <ClInclude Include="SwordSoulAttackState.h" />
     <ClInclude Include="SoundDefine.h" />
     <ClInclude Include="SpawnerDeadState.h" />
@@ -284,6 +285,7 @@
     <ClCompile Include="Spawner.cpp" />
     <ClCompile Include="SpawnerGroup.cpp" />
     <ClCompile Include="SpawnStruct.cpp" />
+    <ClCompile Include="SpeechBubbleUI.cpp" />
     <ClCompile Include="SwordSoulAttackState.cpp" />
     <ClCompile Include="SpawnerDeadState.cpp" />
     <ClCompile Include="SpawnerOpenState.cpp" />

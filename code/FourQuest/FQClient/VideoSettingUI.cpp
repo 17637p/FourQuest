@@ -473,10 +473,9 @@ void fq::client::VideoSettingUI::eventProcessOffPopupSave()
 				if (event.isSave)
 				{
 					saveSettingData();
-
-					spawnUIObject(mSettingUIPrefab);
-					mHaveToDestroyed = true;
 				}
+				spawnUIObject(mSettingUIPrefab);
+				mHaveToDestroyed = true;
 			}
 		);
 }

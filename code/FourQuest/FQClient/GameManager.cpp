@@ -30,7 +30,6 @@ std::shared_ptr<fq::game_module::Component> fq::client::GameManager::Clone(std::
 
 fq::client::GameManager::~GameManager()
 {
-
 }
 
 fq::client::GameManager::GameManager()
