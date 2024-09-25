@@ -34,6 +34,7 @@ void fq::game_engine::LoadingSystem::Finalize()
 	{
 		mGameProcess->mUISystem->UnloadImageUI(object.get());
 		mGameProcess->mUISystem->UnloadSpriteAnimationUI(object.get());
+		mGameProcess->mUISystem->UnloadTextUI(object.get());
 	}
 }
 

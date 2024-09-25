@@ -17,6 +17,7 @@ fq::client::KnightArmour::KnightArmour()
 	, mXAttackDashPower(0.1f)
 	, mDashKnockBackPower(1.f)
 	, mSwordKnockBackPower(1.f)
+	, mShieldKnockBackPower(5.f)
 	, mController(nullptr)
 	, mAnimator(nullptr)
 	, mTransform(nullptr)
@@ -156,7 +157,7 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.type = EKnockBackType::Fixed;
 	attackInfo.attackDirection = foward;
-	attackInfo.knocBackPower = 20.f;
+	attackInfo.knocBackPower = mDashKnockBackPower;
 	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
 		{
 			if (!isIncrease)
@@ -176,7 +177,7 @@ void fq::client::KnightArmour::OnUpdate(float dt)
 	checkSkillCoolTime(dt);
 	checkInput();
 
-	
+
 }
 
 void fq::client::KnightArmour::checkInput()
@@ -201,31 +202,30 @@ void fq::client::KnightArmour::checkInput()
 	// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
 	constexpr float rotationOffsetSq = 0.5f * 0.5f;
 
+	// 쉴드 상태 진입 
 	if (rightInput.LengthSquared() >= rotationOffsetSq && mShieldElapsedTime == 0.f)
 	{
-		mAnimator->SetParameterBoolean("OnShield", true);
-		mPlayer->SetOnShieldBlock(true);
-		mShieldElapsedTime = mShieldCoolTime;
-		SetShieldMovementSpeed(true);
-		mGaugeBar->SetVisible(true);
-		mGaugeBar->SetRatio(1.f);
+		EnterShieldState();
 	}
 }
 
 
-void fq::client::KnightArmour::CheckBlockState(float dt)
+void fq::client::KnightArmour::UpdateBlockState(float dt)
 {
+	// 방패 밀려나는 방향설정
+	if (mShieldObject)
+	{
+		mShieldObject->GetComponent<Attack>()->SetAttackDirection(mTransform->GetLookAtVector());
+	}
+
 	auto input = GetScene()->GetInputManager();
 
 	DirectX::SimpleMath::Vector3 rightInput{};
 	rightInput.x = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
 	rightInput.z = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
 
-	// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
-	constexpr float rotationOffsetSq = 0.5f * 0.5f;
-
 	// 방패 해제 조건 
-	if (rightInput.LengthSquared() <= rotationOffsetSq
+	if (rightInput.LengthSquared() <= 0.001f
 		|| mShieldCoolTime - mShieldElapsedTime >= mShieldDuration)
 	{
 		mAnimator->SetParameterBoolean("OnShield", false);
@@ -292,4 +292,52 @@ void fq::client::KnightArmour::ExitShieldState()
 {
 	SetShieldMovementSpeed(false);
 	mGaugeBar->SetVisible(false);
+	
+	if (mShieldObject)
+	{
+		GetScene()->DestroyGameObject(mShieldObject.get());
+		mShieldObject = nullptr;
+	}
+}
+
+void fq::client::KnightArmour::EnterShieldState()
+{
+	mAnimator->SetParameterBoolean("OnShield", true);
+	mPlayer->SetOnShieldBlock(true);
+	mShieldElapsedTime = mShieldCoolTime;
+	SetShieldMovementSpeed(true);
+	mGaugeBar->SetVisible(true);
+	mGaugeBar->SetRatio(1.f);
+
+
+	// 쉴드 콜라이더 생성
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mShieldCollider);
+	auto& shieldObj = *(instance.begin());
+
+	// 공격 트랜스폼 설정
+	auto attackComponent = shieldObj->GetComponent<client::Attack>();
+	auto shieldT = shieldObj->GetComponent<game_module::Transform>();
+	auto foward = mTransform->GetLookAtVector();
+	mTransform->AddChild(shieldT);
+	shieldT->SetLocalPosition({ 0.f,1.f,-1.f });
+
+	// 공격 설정
+	AttackInfo attackInfo{};
+	attackInfo.damage = 0.f;
+	attackInfo.attacker = GetGameObject();
+	attackInfo.type = EKnockBackType::Fixed;
+	attackInfo.attackDirection = foward;
+	attackInfo.knocBackPower = mShieldKnockBackPower;
+	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
+		{
+			if (!isIncrease)
+			{
+				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+				isIncrease = true;
+			}
+		};
+	attackComponent->Set(attackInfo);
+
+	GetScene()->AddGameObject(shieldObj);
+	mShieldObject = shieldObj;
 }

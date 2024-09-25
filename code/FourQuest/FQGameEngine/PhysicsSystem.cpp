@@ -681,7 +681,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto offset = colliderInfo.collider->GetOffset();
 
-		if (rigid->GetBodyType() == game_module::RigidBody::EBodyType::Static)
+		if (rigid->GetBodyType() != game_module::RigidBody::EBodyType::Dynamic)
 			continue;
 
 		if (colliderInfo.enttID == mCharactorControllerTypeID)

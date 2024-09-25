@@ -503,6 +503,9 @@
     <ClInclude Include="DebuffPoisonZone.h">
       <Filter>include\03.Attack</Filter>
     </ClInclude>
+    <ClInclude Include="GaugeBar.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
     <ClInclude Include="GameSettingUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
@@ -518,11 +521,11 @@
     <ClInclude Include="SavePopupUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
-    <ClInclude Include="GaugeBar.h">
-      <Filter>include\05.UI</Filter>
-    </ClInclude>
     <ClInclude Include="SpeechBubbleUI.h">
       <Filter>include\05.UI</Filter>
+	</ClInclude>
+    <ClInclude Include="AttackInvalidation.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -871,6 +874,9 @@
     <ClCompile Include="DebuffPoisonZone.cpp">
       <Filter>src\03.Attack</Filter>
     </ClCompile>
+    <ClCompile Include="GaugeBar.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
     <ClCompile Include="GameSettingUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
@@ -880,17 +886,20 @@
     <ClCompile Include="AudioSettingUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerVariable.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
     <ClCompile Include="ResetPopupUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="SavePopupUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
-    <ClCompile Include="GaugeBar.cpp">
-      <Filter>src\05.UI</Filter>
-    </ClCompile>
     <ClCompile Include="SpeechBubbleUI.cpp">
       <Filter>src\05.UI</Filter>
+	</ClCompile>
+    <ClCompile Include="AttackInvalidation.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

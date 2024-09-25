@@ -62,6 +62,8 @@ namespace fq::client
 
 		void SetAttackPosition(const DirectX::SimpleMath::Vector3& attackPosition) { mAttackPosition = attackPosition; }
 
+		void SetAttackDirection(DirectX::SimpleMath::Vector3 direction);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnUpdate(float dt) override;
