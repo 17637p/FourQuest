@@ -117,6 +117,10 @@ namespace fq::game_module
 		/// </summary>
 		void SetPadInputRotation(EPadStickType padStickType = EPadStickType::Left);
 
+		float GetFinalSpeedMultiplier() { return mFinalSpeedMultiplier; }
+		void AddFinalSpeedMultiplier(float value) { mFinalSpeedMultiplier += value; }
+		float GetBaseSpeed() { return mBaseSpeed; }
+
 		void SetDashInput(bool val) { mbHasDashInput = val; }
 
 		std::array<bool, 4> GetMoveRestrction()const { return mbMoveRestriction; }
@@ -125,6 +129,7 @@ namespace fq::game_module
 
 	private:
 		void OnStart() override;
+		void OnUpdate(float dt) override;
 		void OnFixedUpdate(float dt) override;
 
 		entt::meta_handle GetHandle() override { return *this; }
@@ -148,6 +153,9 @@ namespace fq::game_module
 		bool mbOnRotation;
 		bool mbHasInput;
 		bool mbHasDashInput;
+		float mBaseSpeed;
+		float mBaseAcceleration;
+		float mFinalSpeedMultiplier;
 		std::array<bool, 4> mbMoveRestriction; // 캐릭터 이동방향 제한 
 	};
 

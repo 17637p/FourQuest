@@ -8,6 +8,7 @@
 #include "ThreadPool.h"
 #include "Scene.h"
 #include "GameObject.h"
+#include "Component.h"
 #include "PrefabResource.h"
 #include "InstantiatePrefab.h"
 

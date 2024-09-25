@@ -17,7 +17,9 @@ namespace fq::client
 		/// <summary>
 		/// 죽은 갑옷에서 플레이어를 소환합니다
 		/// </summary>
-		void SummonLivingArmour(PlayerInfo info);
+		bool SummonLivingArmour(PlayerInfo info);
+
+		void SetUnequippedPlayerId(int playerID) { mUnequippedPlayerId = playerID; }
 
 		/// <summary>
 		/// 갑옷이 빙의 가능한 상태인지 설정합니다 
@@ -41,6 +43,9 @@ namespace fq::client
 		unsigned short mPlayerCount;
 		bool mbIsVisible;
 		bool mbIsSummonAble;
+
+		int mUnequippedPlayerId;
+		float mPlayerArmourCoolTime;
 
 		friend void RegisterMetaData();
 	};

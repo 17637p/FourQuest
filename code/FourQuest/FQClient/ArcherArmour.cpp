@@ -25,7 +25,6 @@ namespace fq::client
 		, mDashCoolTime()
 		, mDashElapsedTime()
 		, mArrowPower()
-		, mOriginCharacterMaxSpeed()
 	{
 	}
 
@@ -212,8 +211,6 @@ namespace fq::client
 				break;
 			}
 		}
-
-		mOriginCharacterMaxSpeed = mController->GetMovementInfo().maxSpeed;
 	}
 
 	void ArcherArmour::OnUpdate(float dt)
