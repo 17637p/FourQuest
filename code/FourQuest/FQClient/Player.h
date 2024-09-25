@@ -94,7 +94,7 @@ namespace fq::client
 
 
 	private:
-		void processInput();
+		void processInput(float dt);
 		void processCoolTime(float dt);
 		void processFeverTime(float dt);
 		void processDebuff(float dt);
@@ -138,11 +138,18 @@ namespace fq::client
 		float mFeverElapsedTime; // ÇÇ¹öÅ¸ÀÓ °æ°ú ½Ã°£
 		bool mbIsFeverTime; // ÇöÀç ÇÇ¹ö Å¸ÀÓÀÎÁö 
 
+		float mUnequipArmourDurationTime;	// °©¿Ê ¹þ°í ÀÖ´Â ½Ã°£
+		bool mbIsUnequipArmourButton;			// °©¿Ê ¹þ´Â ¹öÆ° Å¬¸¯
+
 		game_module::PrefabResource mSoulPrefab; // ¿µÈ¥È­ ÇÁ¸®ÆÕ 
 		game_module::PrefabResource mSwordSoulAttack;
 		game_module::PrefabResource mAxeSoulAttack; // µµ³¢ ¿µÈ¥ °ø°Ý 
 		game_module::PrefabResource mBowSoulAttack; // È° ¿µÈ¥ °ø°Ý 	
 		game_module::PrefabResource mStaffSoulAttack; // ¸¶¹ý ¿µÈ¥ °ø°Ý
+		game_module::PrefabResource mDeadKnightArmour;	// ±â»ç °©¿Ê
+		game_module::PrefabResource mDeadMagicArmour;	// ¸¶¹ý»ç °©¿Ê
+		game_module::PrefabResource mDeadArcherArmour;	// ±Ã¼ö °©¿Ê
+		game_module::PrefabResource mDeadWarriorArmour; // ±¤Àü»ç °©¿Ê
 		
 		bool mbOnShieldBlock;
 		bool mbIsActiveOnHit; // ¿ö¸®¾î °©¿Ê Â÷Â¡°ú µ¹Áø ½Ã OnHit·Î ÀüÀÌ°¡ ºÒ°¡´ÉÇÏ¿© Ãß°¡

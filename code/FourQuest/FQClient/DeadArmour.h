@@ -17,7 +17,9 @@ namespace fq::client
 		/// <summary>
 		/// 죽은 갑옷에서 플레이어를 소환합니다
 		/// </summary>
-		void SummonLivingArmour(PlayerInfo info);
+		bool SummonLivingArmour(PlayerInfo info);
+
+		void SetUnequippedPlayerId(int playerID) { mUnequippedPlayerId = playerID; }
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -32,6 +34,9 @@ namespace fq::client
 
 		unsigned short mPlayerCount;
 		bool mbIsVisible;
+
+		int mUnequippedPlayerId;
+		float mPlayerArmourCoolTime;
 
 		friend void RegisterMetaData();
 	};

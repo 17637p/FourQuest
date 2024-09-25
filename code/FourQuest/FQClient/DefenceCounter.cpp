@@ -42,7 +42,7 @@ void fq::client::DefenceCounter::OnUpdate(float dt)
 	if (!mIsClear && mIsStart)
 	{
 		mCurCount += dt * mCountSpeed * mCollidingPlayerNum;
-		spdlog::trace("CurCount: {}, RequestCount: {}", mCurCount, mRequestCount);
+		//spdlog::trace("CurCount: {}, RequestCount: {}", mCurCount, mRequestCount);
 
 		if (mCurCount > mRequestCount)
 		{

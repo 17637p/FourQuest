@@ -6,6 +6,7 @@
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/CharacterController.h"
+
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"
@@ -20,6 +21,7 @@
 #include "SoulVariable.h"
 #include "PlayerVariable.h"
 #include "DebuffPoisonZone.h"
+#include "DeadArmour.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -29,7 +31,7 @@ fq::client::Player::Player()
 	, mMaxSoulGauge(100.f)
 	, mSoulGauge(0.f)
 	, mInvincibleTime(1.f)
-	, mInvincibleElapsedTime(0.f)
+	, mInvincibleElapsedTime(1.f)
 	, mAnimator(nullptr)
 	, mFeverTime(10.f)
 	, mSoulType(ESoulType::Sword)
@@ -42,6 +44,8 @@ fq::client::Player::Player()
 	, mbIsActiveOnHit(true)
 	, mbIsFeverTime(false)
 	, mSoulBuffNumber()
+	, mUnequipArmourDurationTime()
+	, mbIsUnequipArmourButton(false)
 {}
 
 fq::client::Player::~Player()
@@ -68,7 +72,7 @@ void fq::client::Player::OnUpdate(float dt)
 {
 	mAnimator->SetParameterBoolean("OnMove", mController->OnMove());
 
-	processInput();
+	processInput(dt);
 	processFeverTime(dt);
 	processCoolTime(dt);
 	processDebuff(dt);
@@ -119,16 +123,60 @@ void fq::client::Player::OnStart()
 	setDecalColor();
 }
 
-void fq::client::Player::processInput()
+void fq::client::Player::processInput(float dt)
 {
 	auto input = GetScene()->GetInputManager();
 
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
 	{
+		mUnequipArmourDurationTime = 0.f;
+		mbIsUnequipArmourButton = true;
+	}
+	else if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold) && mbIsUnequipArmourButton)
+	{
+		mUnequipArmourDurationTime += dt;
+
+		if (mUnequipArmourDurationTime < SoulVariable::ButtonTime)
+			return;
+
+		if ((mHp / mMaxHp) * 100.f >= SoulVariable::HpPercent)
+		{
+			std::vector<std::shared_ptr<fq::game_module::GameObject>> instance;
+
+			if (mArmourType == EArmourType::Knight)
+				instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDeadKnightArmour);
+			if (mArmourType == EArmourType::Magic)
+				instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDeadMagicArmour);
+			if (mArmourType == EArmourType::Archer)
+				instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDeadArcherArmour);
+			if (mArmourType == EArmourType::Warrior)
+				instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDeadWarriorArmour);
+
+			auto& soul = *(instance.begin());
+
+			// ¹þÀº °©¿Ê À§Ä¡ ¼¼ÆÃ
+			auto thisTransform = GetComponent<fq::game_module::Transform>();
+			auto deadArmourTransform = soul->GetComponent<fq::game_module::Transform>();
+
+			deadArmourTransform->SetWorldMatrix(thisTransform->GetWorldMatrix() 
+				* DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.f, 1.372f, 0.f)));
+
+			// ÇØ´ç °©¿Ê¿¡ ¹þÀº ÇÃ·¹ÀÌ¾î ID ÀúÀå
+			soul->GetComponent<DeadArmour>()->SetUnequippedPlayerId(GetPlayerID());
+
+			GetScene()->AddGameObject(soul);
+		}
+
 		SummonSoul(false);
+		mbIsUnequipArmourButton = false;
+
+		spdlog::trace("Unequip Armour");
+	}
+	else if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Away))
+	{
+		mbIsUnequipArmourButton = false;
 	}
 }
-
 
 void fq::client::Player::OnDestroy()
 {
@@ -199,6 +247,9 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 
 void fq::client::Player::SummonSoul(bool isDestroyArmour)
 {
+	if (isDestroyArmour)
+		spdlog::trace("DestroyArmour");
+
 	// À§Ä¡ ¼³Á¤
 	auto worldMat = GetComponent<game_module::Transform>()->GetWorldMatrix();
 	worldMat._42 += 1.f;

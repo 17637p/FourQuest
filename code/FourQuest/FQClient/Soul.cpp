@@ -116,9 +116,8 @@ void fq::client::Soul::selectArmour()
 {
 	auto input = GetScene()->GetInputManager();
 
-	// °©¿Ê°ú »óÈ£ÀÛ¿ëÇÕ´Ï´Ù.
 	if (!mSelectArmours.empty()
-		&& input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
+		&& input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold))
 	{
 		// °¡Àå °¡±î¿î °©¿Ê Äõ¸®
 		auto soulPos = GetComponent<game_module::Transform>()->GetWorldPosition();
@@ -147,8 +146,12 @@ void fq::client::Soul::selectArmour()
 
 		PlayerInfo info{ mController->GetControllerID(), mSoulType };
 
-		closestArmour->SummonLivingArmour(info);
-		DestorySoul();
+		if (closestArmour->SummonLivingArmour(info))
+		{
+			DestorySoul();
+
+			spdlog::trace("DestroySoul");
+		}
 	}
 }
 
