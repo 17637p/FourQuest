@@ -714,6 +714,7 @@ namespace fq::loader
 
 	fq::graphics::MaterialInfo MaterialLoader::Read(const std::filesystem::path& filePath)
 	{
+
 		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
 		std::ifstream readData(correctedPath);
 

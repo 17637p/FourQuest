@@ -45,7 +45,7 @@ void fq::client::DefenceCounter::OnUpdate(float dt)
 			{ GetGameObject()->GetName(), (int)mCurCount });
 
 		mCurCount += dt * mCountSpeed * mCollidingPlayerNum;
-		spdlog::trace("CurCount: {}, RequestCount: {}", mCurCount, mRequestCount);
+		//spdlog::trace("CurCount: {}, RequestCount: {}", mCurCount, mRequestCount);
 
 		if (mCurCount > mRequestCount)
 		{

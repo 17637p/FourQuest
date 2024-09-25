@@ -42,6 +42,7 @@ fq::game_module::CharacterController::CharacterController()
 	, mbCanMoveCharater(true)
 	, mCollisionCount(0)
 	, mbMoveRestriction{}
+	, mFinalSpeedMultiplier(1.f)
 
 {}
 
@@ -116,8 +117,18 @@ void fq::game_module::CharacterController::SetControllerID(ControllerID id)
 void fq::game_module::CharacterController::OnStart()
 {
 	mTransform = GetComponent<Transform>();
+
+	mBaseSpeed = mMovementInfo.maxSpeed;
+	mBaseAcceleration = mMovementInfo.acceleration;
 }
 
+void fq::game_module::CharacterController::OnUpdate(float dt)
+{
+	mMovementInfo.maxSpeed = mBaseSpeed * mFinalSpeedMultiplier;
+	mMovementInfo.acceleration = mBaseAcceleration * mFinalSpeedMultiplier;
+
+	mFinalSpeedMultiplier = 1.f;
+}
 
 void fq::game_module::CharacterController::OnCollisionEnter(const Collision& collision)
 {

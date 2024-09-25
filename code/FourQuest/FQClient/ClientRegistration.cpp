@@ -38,6 +38,7 @@
 #include "BerserkerRushState.h"
 #include "BerserkerRushChargingState.h"
 #include "AttackInvalidation.h"
+#include "PlayerLowerMovementState.h"
 
 // Monster
 #include "Monster.h"
@@ -144,6 +145,7 @@
 #include "SettingVariable.h"
 #include "PlayerInfoVariable.h"
 #include "PlayerVariable.h"
+#include "SoulVariable.h"
 
 // Box
 #include "Box.h"
@@ -298,6 +300,15 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AxeHaed")
 		.data<&Player::mBowHaed>("BowHaed"_hs)
 		.prop(reflect::prop::Name, "BowHaed")
+
+		.data<&Player::mDeadKnightArmour>("DeadKnightArmour"_hs)
+		.prop(reflect::prop::Name, "DeadKnightArmour")
+		.data<&Player::mDeadMagicArmour>("DeadMagicArmour"_hs)
+		.prop(reflect::prop::Name, "DeadMagicArmour")
+		.data<&Player::mDeadArcherArmour>("DeadArcherArmour"_hs)
+		.prop(reflect::prop::Name, "DeadArcherArmour")
+		.data<&Player::mDeadWarriorArmour>("DeadWarriorArmour"_hs)
+		.prop(reflect::prop::Name, "DeadWarriorArmour")
 		.base<game_module::Component>();
 
 	entt::meta<DeadArmour>()
@@ -504,6 +515,16 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "OnRotation")
 		.base<game_module::IStateBehaviour>();
 
+	entt::meta<PlayerLowerMovementState>()
+		.type("PlayerLowerMovementState"_hs)
+		.prop(reflect::prop::Name, "PlayerLowerMovementState")
+		.data<&PlayerLowerMovementState::mbOnEnterToLowerMovement>("OnEnterToLowerMovement"_hs)
+		.prop(reflect::prop::Name, "OnEnterToLowerMovement")
+		.data<&PlayerLowerMovementState::mbOffExitToLowerMovement>("OffExitToLowerMovement"_hs)
+		.prop(reflect::prop::Name, "OffExitToLowerMovement")
+		.base<game_module::IStateBehaviour>();
+
+
 	entt::meta<PlayerMovementSoundState>()
 		.type("PlayerMovementSoundState"_hs)
 		.prop(reflect::prop::Name, "PlayerMovementSoundState")
@@ -583,12 +604,12 @@ void fq::client::RegisterMetaData()
 	entt::meta<BowDashState>()
 		.type("BowDashState"_hs)
 		.prop(reflect::prop::Name, "BowDashState")
-		.data<&BowDashState::mMaxSpeed>("MaxSpeed"_hs)
+		.data<&BowDashState::mMaxSpeedMultiplier>("MaxSpeed"_hs)
 		.prop(reflect::prop::Name, "MaxSpeed")
-		.prop(fq::reflect::prop::Comment, u8"최대로 늘어날 스피드")
-		.data<&BowDashState::mMinSpeed>("MinSpeed"_hs)
+		.prop(fq::reflect::prop::Comment, u8"최대로 늘어날 스피드 배수")
+		.data<&BowDashState::mMinSpeedMultiplier>("MinSpeed"_hs)
 		.prop(reflect::prop::Name, "MinSpeed")
-		.prop(fq::reflect::prop::Comment, u8"최소 스피드")
+		.prop(fq::reflect::prop::Comment, u8"최소 스피드 배수")
 		.data<&BowDashState::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(reflect::prop::Name, "RotationSpeed")
 		.prop(fq::reflect::prop::Comment, u8"회전 스피드")
@@ -1741,6 +1762,24 @@ void fq::client::RegisterMetaData()
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
+	//                             Player Type								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<EPlayerType>()
+		.prop(fq::reflect::prop::Name, "PlayerType")
+		.conv<std::underlying_type_t<EPlayerType>>()
+		.data<EPlayerType::None>("None"_hs)
+		.prop(fq::reflect::prop::Name, "None")
+		.data<EPlayerType::LivingArmour>("LivingArmour"_hs)
+		.prop(fq::reflect::prop::Name, "LivingArmour")
+		.data<EPlayerType::ArmourDestroyed>("ArmourDestroyed"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourDestroyed")
+		.data<EPlayerType::Soul>("Soul"_hs)
+		.prop(fq::reflect::prop::Name, "Soul")
+		.data<EPlayerType::SoulDestoryed>("SoulDestoryed"_hs)
+		.prop(fq::reflect::prop::Name, "SoulDestoryed");
+
+	//////////////////////////////////////////////////////////////////////////
 	//                            Game Variable								//
 	//////////////////////////////////////////////////////////////////////////
 
@@ -1962,6 +2001,65 @@ void fq::client::RegisterMetaData()
 		.data<&PlayerInfoVariable::Player4Monster>("Player4Monster"_hs)
 		.prop(fq::reflect::prop::Name, "Player4Monster")
 		.base<IGameVariable>();
+
+	entt::meta<SoulVariable>()
+		.type("SoulVariable"_hs)
+		.prop(fq::reflect::prop::Name, "SoulVariable")
+		.data<&SoulVariable::ButtonTime>("ButtonTime"_hs)
+		.prop(fq::reflect::prop::Name, "ButtonTime")
+		.prop(reflect::prop::Comment, u8"영혼 이탈 시간")
+		.data<&SoulVariable::OutTime>("OutTime"_hs)
+		.prop(fq::reflect::prop::Name, "OutTime")
+		.prop(reflect::prop::Comment, u8"갑옷 파괴 시, 게임 아웃 시간")
+		.data<&SoulVariable::HpPercent>("HpPercent"_hs)
+		.prop(fq::reflect::prop::Name, "HpPercent")
+		.prop(reflect::prop::Comment, u8"갑옷 입고 있는 상태에서 이탈할 시에 갑옷 생성할 수 있는 최소 HP")
+
+		.data<&SoulVariable::SoulMaxHp>("SoulMaxHp"_hs)
+		.prop(fq::reflect::prop::Name, "SoulMaxHp")
+		.prop(reflect::prop::Comment, u8"소울의 HP 최대치")
+		.data<&SoulVariable::SoulMinHp>("SoulMinHp"_hs)
+		.prop(fq::reflect::prop::Name, "SoulMinHp")
+		.prop(reflect::prop::Comment, u8"사망 시 영혼 최대 체력이 줄어드는데, 일정 사망 횟수 이상에서도 최소 HP값에 도달하면 최대 HP값이 줄어들지 않는 변수")
+		.data<&SoulVariable::SoulHpDown>("SoulHpDown"_hs)
+		.prop(fq::reflect::prop::Name, "SoulHpDown")
+		.prop(reflect::prop::Comment, u8"영혼 파괴 시, 최대 체력 감소량")
+		.data<&SoulVariable::SoulHpDecreas>("SoulHpDecreas"_hs)
+		.prop(fq::reflect::prop::Name, "SoulHpDecreas")
+		.prop(reflect::prop::Comment, u8"초당 HP가 감소하는 양")
+		.data<&SoulVariable::SoulDistance>("SoulDistance"_hs)
+		.prop(fq::reflect::prop::Name, "SoulDistance")
+		.prop(reflect::prop::Comment, u8"영혼 HP 피해 감소 및 영혼의 갑옷 버프 사정거리")
+		.data<&SoulVariable::SoulDecreasPercentage>("SoulDecreasPercentage"_hs)
+		.prop(fq::reflect::prop::Name, "SoulDecreasPercentage")
+		.prop(reflect::prop::Comment, u8"사정거리 안에 갑옷 플레이어가 있을 때, HP 피해 감소량")
+
+		.data<&SoulVariable::SpeedUpRatio>("SpeedUp"_hs)
+		.prop(fq::reflect::prop::Name, "SpeedUp")
+		.prop(reflect::prop::Comment, u8"플레이어 이동속도 증가량")
+		.data<&SoulVariable::DamageUpRatio>("DamageUp"_hs)
+		.prop(fq::reflect::prop::Name, "DamageUp")
+		.prop(reflect::prop::Comment, u8"플레이어 공격력 증가량")
+
+		.data<&SoulVariable::Player1Type>("Player1Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player1Type")
+		.data<&SoulVariable::Player1DeathCount>("Player1DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player1DeathCount")
+		.data<&SoulVariable::Player2Type>("Player2Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Type")
+		.data<&SoulVariable::Player2DeathCount>("Player2DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player2DeathCount")
+		.data<&SoulVariable::Player3Type>("Player3Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Type")
+		.data<&SoulVariable::Player3DeathCount>("Player3DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player3DeathCount")
+		.data<&SoulVariable::Player4Type>("Player4Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Type")
+		.data<&SoulVariable::Player4DeathCount>("Player4DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player4DeathCount")
+		.base<IGameVariable>();
+
+
 	//////////////////////////////////////////////////////////////////////////
 	//								  Box									//
 	//////////////////////////////////////////////////////////////////////////

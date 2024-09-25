@@ -26,6 +26,8 @@ fq::game_engine::AnimatorWindow::AnimatorWindow()
 	, mSelectObjectHandler{}
 	, mSelectNodeID(0)
 	, mbIsFocused(false)
+	, mUpperController(nullptr)
+	, mLowerController(nullptr)
 {}
 
 fq::game_engine::AnimatorWindow::~AnimatorWindow()
@@ -79,6 +81,8 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 			ImGui::EndChild();
 			return;
 		}
+
+		beginRadioBox_SelectController();
 
 		// Add Parametr
 		beginCombo_AddParameter();
@@ -544,6 +548,10 @@ void fq::game_engine::AnimatorWindow::dragDropWindow()
 					mSelectControllerPath = animator->GetControllerPath();
 					mSelectController = controller;
 					mSelectObjectName = dropObject->GetName();
+					mUpperController = mSelectController;
+					mUpperControllerPath = mSelectControllerPath;
+					mLowerController = nullptr;
+					mLowerControllerPath.clear();
 					createContext();
 				}
 			}
@@ -595,6 +603,10 @@ void fq::game_engine::AnimatorWindow::OnStartScene()
 			{
 				mSelectController = animator->GetSharedController();
 				mSelectControllerPath = animator->GetControllerPath();
+				mUpperController = mSelectController;
+				mUpperControllerPath = mSelectControllerPath;
+				mLowerController = animator->GetSharedLowerController();
+				mLowerControllerPath = animator->GetLowerControllerPath();
 			}
 		}
 	}
@@ -624,6 +636,36 @@ void fq::game_engine::AnimatorWindow::SelectObject(fq::editor_event::SelectObjec
 		mSelectController = animator->GetSharedController();
 		mSelectControllerPath = animator->GetControllerPath();
 		createContext();
+
+		mUpperController = mSelectController;
+		mUpperControllerPath = mSelectControllerPath;
+		mLowerController = animator->GetSharedLowerController();
+		mLowerControllerPath = animator->GetLowerControllerPath();	
 	}
+}
+
+void fq::game_engine::AnimatorWindow::beginRadioBox_SelectController()
+{
+	if (mLowerController)
+	{
+		bool isLowerController = mSelectController == mLowerController;
+
+		if (ImGui::RadioButton("Show LowerController", isLowerController))
+		{
+			if (isLowerController)
+			{
+				mSelectController = mUpperController;
+				mSelectControllerPath = mUpperControllerPath;
+			}
+			else
+			{
+				mSelectController = mLowerController;
+				mSelectControllerPath = mLowerControllerPath;
+			}
+			createContext();
+		}
+		ImGui::Separator();
+	}
+
 }
 
