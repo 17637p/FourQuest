@@ -122,7 +122,7 @@ void fq::game_module::CharacterController::OnStart()
 	mBaseAcceleration = mMovementInfo.acceleration;
 }
 
-void fq::game_module::CharacterController::OnUpdate(float dt)
+void fq::game_module::CharacterController::OnLateUpdate(float dt)
 {
 	mMovementInfo.maxSpeed = mBaseSpeed * mFinalSpeedMultiplier;
 	mMovementInfo.acceleration = mBaseAcceleration * mFinalSpeedMultiplier;

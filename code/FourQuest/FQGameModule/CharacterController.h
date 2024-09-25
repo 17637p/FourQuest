@@ -129,7 +129,7 @@ namespace fq::game_module
 
 	private:
 		void OnStart() override;
-		void OnUpdate(float dt) override;
+		void OnLateUpdate(float dt) override;
 		void OnFixedUpdate(float dt) override;
 
 		entt::meta_handle GetHandle() override { return *this; }
