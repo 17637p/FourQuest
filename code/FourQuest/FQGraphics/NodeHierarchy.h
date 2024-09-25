@@ -100,6 +100,7 @@ namespace fq::graphics
 		virtual void UpdateGPUData(float timePos, const std::shared_ptr<IAnimation>& animation) override;
 		virtual void UpdateGPUData(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) override; // 블렌딩 처리는 애니메이션이 cache로 등록된 경우만 사용 가능
 		virtual void UpdateByLocalTransform() override;
+		virtual void UpdateByLocalTransform(unsigned int startIndex, unsigned int endIndex) override;
 		virtual void UpdateByLocalTransform(float timePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) override;
 		virtual void UpdateLocalTransformRange(float timePos, const std::shared_ptr<IAnimation>& animation, unsigned int startIndex, unsigned int endIndex) override;
 		virtual void UpdateLocalTransformRange(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight, unsigned int startIndex, unsigned int endIndex) override;
@@ -119,7 +120,7 @@ namespace fq::graphics
 
 	private:
 		void clear();
-		void calculateRootTransform();
+		void calculateRootTransform(unsigned int startIndex, unsigned int endIndex);
 		void setBindPoseLocal();
 
 	private:

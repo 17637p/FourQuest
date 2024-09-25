@@ -652,7 +652,7 @@ void fq::client::Player::SetLowerBodyAnimation()
 			direction = LowerDirection::Left;
 		else
 			direction = LowerDirection::Back;
-
 	}
+
 	mAnimator->SetParameterInt("LowerDir", static_cast<int>(direction));
 }

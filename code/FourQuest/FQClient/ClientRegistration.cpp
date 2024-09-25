@@ -38,6 +38,7 @@
 #include "BerserkerRushState.h"
 #include "BerserkerRushChargingState.h"
 #include "AttackInvalidation.h"
+#include "PlayerLowerMovementState.h"
 
 // Monster
 #include "Monster.h"
@@ -503,6 +504,16 @@ void fq::client::RegisterMetaData()
 		.data<&PlayerMovementState::mbOnRotation>("OnRotation"_hs)
 		.prop(reflect::prop::Name, "OnRotation")
 		.base<game_module::IStateBehaviour>();
+
+	entt::meta<PlayerLowerMovementState>()
+		.type("PlayerLowerMovementState"_hs)
+		.prop(reflect::prop::Name, "PlayerLowerMovementState")
+		.data<&PlayerLowerMovementState::mbOnEnterToLowerMovement>("OnEnterToLowerMovement"_hs)
+		.prop(reflect::prop::Name, "OnEnterToLowerMovement")
+		.data<&PlayerLowerMovementState::mbOffExitToLowerMovement>("OffExitToLowerMovement"_hs)
+		.prop(reflect::prop::Name, "OffExitToLowerMovement")
+		.base<game_module::IStateBehaviour>();
+
 
 	entt::meta<PlayerMovementSoundState>()
 		.type("PlayerMovementSoundState"_hs)

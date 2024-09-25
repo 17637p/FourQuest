@@ -29,7 +29,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::AttackInvalidation::Clon
 
 void fq::client::AttackInvalidation::OnTriggerEnter(const game_module::Collision& collision)
 {
-	if (collision.other->GetTag() == game_module::ETag::MonsterAttack)
+	if (collision.other->GetTag() == game_module::ETag::MonsterAttack
+		&& collision.other->GetName().find("Plant") != std::string::npos)
 	{
 		GetScene()->DestroyGameObject(collision.other);
 	}

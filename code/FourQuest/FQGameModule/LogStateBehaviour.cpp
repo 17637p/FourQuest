@@ -13,8 +13,6 @@ void fq::game_module::LogStateBehaviour::OnStateEnter(Animator& animator, Animat
 
 void fq::game_module::LogStateBehaviour::OnStateUpdate(Animator& animator, AnimationStateNode& state, float dt)
 {
-	animator.IsInTransition();
-
 }
 
 void fq::game_module::LogStateBehaviour::OnStateExit(Animator& animator, AnimationStateNode& state)

@@ -47,7 +47,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 애니메이터를 연결합니다 
 		/// </summary>
-		void SetAnimator(Animator* animator) { mAnimator = animator; }
+		void SetAnimator(Animator* animator) { mAnimator = animator; }	
 
 		/// <summary>
 		/// 애니메이션 상태를 업데이트합니다 
@@ -62,7 +62,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 파라미터 값을 설정합니다 
 		/// </summary>
-		void SetParameter(ParameterID id, Parameter parameter);
+		bool SetParameter(ParameterID id, Parameter parameter);
 
 		/// <summary>
 		/// 파라미터 값을 반환합니다 
