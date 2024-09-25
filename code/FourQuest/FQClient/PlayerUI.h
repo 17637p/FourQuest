@@ -36,6 +36,8 @@ namespace fq::client
 		// 무기랑 스킬아이콘 어떤 것을 렌더하거나 안할지 
 		void SetWeaponAndSkillIcons(int index, bool isRender);
 
+		void SetPlayerStateUpdate();
+
 	private:
 		int mPlayerID;
 		fq::client::Player* mPlayer;
@@ -52,6 +54,7 @@ namespace fq::client
 		std::vector<game_module::ImageUI*> mSkillIconXs; // 스킬 아이콘
 		std::vector<game_module::ImageUI*> mSkillIconAs; // 스킬 아이콘 
 		std::vector<game_module::ImageUI*> mSkillIconRs; // 스킬 아이콘 
+		game_module::ImageUI* mPlayerState;				 // 플레이어 상태
 
 		game_module::ScreenManager* mScreenManager;
 

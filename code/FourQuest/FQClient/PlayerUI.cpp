@@ -6,6 +6,8 @@
 #include "../FQGameModule/ScreenManager.h"
 
 #include "Player.h"
+#include "SoulVariable.h"
+#include "GameManager.h"
 
 fq::client::PlayerUI::PlayerUI()
 	:mPlayerID(0),
@@ -19,6 +21,7 @@ fq::client::PlayerUI::PlayerUI()
 	mSkillIconXs(),
 	mSkillIconAs(),
 	mSkillIconRs(),
+	mPlayerState(),
 	mScreenManager(nullptr)
 {
 
@@ -82,6 +85,12 @@ void fq::client::PlayerUI::OnStart()
 	mSkillIconRs.push_back(skillRs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[3]->GetComponent<fq::game_module::ImageUI>());
+
+	if (children.size() > 4)
+	{
+		fq::game_module::GameObject* playerState = children[4];
+		mPlayerState = playerState->GetComponent<fq::game_module::ImageUI>();
+	}
 
 	fq::game_module::Scene* scene = GetScene();
 	SetPlayer();
@@ -154,6 +163,9 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 		SetSoulGauge(0);
 		SetHPBar(0);
 	}
+
+	// 플레이어 상태 UI 위치조정
+	SetPlayerStateUpdate();
 }
 
 void fq::client::PlayerUI::SetWeaponAndSkillIcons(int index, bool isRender)
@@ -162,6 +174,121 @@ void fq::client::PlayerUI::SetWeaponAndSkillIcons(int index, bool isRender)
 	mSkillIconXs[index]->SetIsRender(0, isRender);
 	mSkillIconAs[index]->SetIsRender(0, isRender);
 	mSkillIconRs[index]->SetIsRender(0, isRender);
+}
+
+void fq::client::PlayerUI::SetPlayerStateUpdate()
+{
+	if (mPlayerState == nullptr)
+		return;
+
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
+	bool isRetire = false;
+	bool isDestroyArmour = false;
+
+	if (mPlayerID == 0)
+	{
+		if (SoulVariable::Player1Type == EPlayerType::SoulDestoryed)
+			isRetire = true;
+
+		if (SoulVariable::Player1Type == EPlayerType::SoulDestoryed)
+			isDestroyArmour = true;
+	}
+	else if (mPlayerID == 1)
+	{
+		if (SoulVariable::Player2Type == EPlayerType::SoulDestoryed)
+			isRetire = true;
+
+		if (SoulVariable::Player2Type == EPlayerType::SoulDestoryed)
+			isDestroyArmour = true;
+	}
+	else if (mPlayerID == 2)
+	{
+		if (SoulVariable::Player3Type == EPlayerType::SoulDestoryed)
+			isRetire = true;
+
+		if (SoulVariable::Player3Type == EPlayerType::SoulDestoryed)
+			isDestroyArmour = true;
+	}
+	else if (mPlayerID == 3)
+	{
+		if (SoulVariable::Player4Type == EPlayerType::SoulDestoryed)
+			isRetire = true;
+
+		if (SoulVariable::Player4Type == EPlayerType::SoulDestoryed)
+			isDestroyArmour = true;
+	}
+
+	for (int i = 0; i < 6; i++)
+	{
+		float localX = mPlayerState->GetGameObject()->GetComponent<fq::game_module::Transform>()->GetLocalPosition().x;
+		float localY = mPlayerState->GetGameObject()->GetComponent<fq::game_module::Transform>()->GetLocalPosition().y;
+
+		mPlayerState->SetUIPosition(i, myTransform->GetWorldPosition().x + localX, myTransform->GetWorldPosition().y + localY);
+
+		if (isRetire && i != 6)
+		{
+			mPlayerState->SetIsRender(i, false);
+		}
+		else if (isRetire && i == 6)
+		{
+			mPlayerState->SetIsRender(i, true);
+		}
+	}
+
+	if (isDestroyArmour)
+	{
+		for (auto& manager : GetScene()->GetComponentView<GameManager>())
+		{
+			float delayTime = manager.GetComponent<GameManager>()->GetDestoryArmourSoulDelayTime(mPlayerID);
+
+			if (delayTime < 1.f)
+			{
+				mPlayerState->SetIsRender(0, true);
+				mPlayerState->SetIsRender(1, false);
+				mPlayerState->SetIsRender(2, false);
+				mPlayerState->SetIsRender(3, false);
+				mPlayerState->SetIsRender(4, false);
+				mPlayerState->SetIsRender(5, false);
+			}
+			else if (delayTime < 2.f)
+			{
+				mPlayerState->SetIsRender(0, false);
+				mPlayerState->SetIsRender(1, true);
+				mPlayerState->SetIsRender(2, false);
+				mPlayerState->SetIsRender(3, false);
+				mPlayerState->SetIsRender(4, false);
+				mPlayerState->SetIsRender(5, false);
+			}
+			else if (delayTime < 3.f)
+			{
+				mPlayerState->SetIsRender(0, false);
+				mPlayerState->SetIsRender(1, false);
+				mPlayerState->SetIsRender(2, true);
+				mPlayerState->SetIsRender(3, false);
+				mPlayerState->SetIsRender(4, false);
+				mPlayerState->SetIsRender(5, false);
+			}
+			else if (delayTime < 4.f)
+			{
+				mPlayerState->SetIsRender(0, false);
+				mPlayerState->SetIsRender(1, false);
+				mPlayerState->SetIsRender(2, false);
+				mPlayerState->SetIsRender(3, true);
+				mPlayerState->SetIsRender(4, false);
+				mPlayerState->SetIsRender(5, false);
+			}
+			else if (delayTime < 5.f)
+			{
+				mPlayerState->SetIsRender(0, false);
+				mPlayerState->SetIsRender(1, false);
+				mPlayerState->SetIsRender(2, false);
+				mPlayerState->SetIsRender(3, false);
+				mPlayerState->SetIsRender(4, true);
+				mPlayerState->SetIsRender(5, false);
+			}
+		}
+	}
 }
 
 void fq::client::PlayerUI::SetPlayer()

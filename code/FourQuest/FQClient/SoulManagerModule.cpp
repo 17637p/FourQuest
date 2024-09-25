@@ -109,6 +109,17 @@ namespace fq::client
 		return ESoulType::End;
 	}
 
+	float SoulManagerModule::GetDestoryArmourSoulDelayTime(unsigned int id)
+	{
+		for (auto& data : mSoulSummonQueue)
+		{
+			if (data.id == id)
+				return data.durationTime;
+		}
+
+		return -1.f;
+	}
+
 	void SoulManagerModule::AddPlayerArmourDeathCount(unsigned int id)
 	{
 		if (id >= 4)
