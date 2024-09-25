@@ -126,7 +126,7 @@ void fq::client::Soul::selectArmour()
 
 		for (auto& armour : mSelectArmours)
 		{
-			if (armour->GetGameObject()->IsDestroyed())
+			if (!armour->IsSummonAble())
 				continue;
 
 			auto pos = armour->GetComponent<game_module::Transform>()->GetWorldPosition();

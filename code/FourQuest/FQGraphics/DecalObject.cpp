@@ -6,6 +6,20 @@ namespace fq::graphics
 		: mIDecalMaterial(iDecalMaterial)
 		, mDecalInfo(decalInfo)
 		, mTransform(transform)
+		, mbIsDirtyLayer(false)
+		, mLayer(0u)
+		, mPrevLayer(0u)
 	{
+	}
+
+	void DecalObject::SetLayer(unsigned int layer)
+	{
+		if (!mbIsDirtyLayer)
+		{
+			mPrevLayer = mLayer;
+			mbIsDirtyLayer = true;
+		}
+
+		mLayer = std::min<unsigned int>(layer, DecalObject::MAX_LAYER);
 	}
 }

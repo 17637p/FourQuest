@@ -9,6 +9,9 @@ fq::game_module::Animator::Animator()
 	, mNodeHierarchyInstance{ nullptr }
 	, mController{ nullptr }
 	, mNodeHierarchy{ nullptr }
+	, mbUpdateAnimationCPUData(true)
+	, mbUpdateAnimationGPUData(false)
+	, mbCreateAnimationTexture(false)
 {
 
 }
@@ -119,7 +122,7 @@ void fq::game_module::Animator::OnDestroy()
 		auto& stateMap = mController->GetStateMap();
 		auto name = mController->GetCurrentStateName();
 
-		if (auto iter =  stateMap.find(name); iter != stateMap.end())
+		if (auto iter = stateMap.find(name); iter != stateMap.end())
 		{
 			iter->second.OnStateExit();
 		}

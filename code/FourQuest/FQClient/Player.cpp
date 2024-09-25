@@ -1,4 +1,4 @@
-#define NOMINMAX
+#define NOMINMAX 
 #include "Player.h"
 
 #include "../FQGameModule/CharacterController.h"
@@ -46,6 +46,10 @@ fq::client::Player::Player()
 	, mSoulBuffNumber()
 	, mUnequipArmourDurationTime()
 	, mbIsUnequipArmourButton(false)
+	, mSwordHaed{}
+	, mStaffHaed{}
+	, mAxeHaed{}
+	, mBowHaed{}
 {}
 
 fq::client::Player::~Player()
@@ -108,7 +112,7 @@ void fq::client::Player::OnStart()
 		});
 
 	// 영혼 타입 적용
- 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
+	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
 	// 무기 연결
 	linkWeaponeMeshes();
@@ -121,6 +125,9 @@ void fq::client::Player::OnStart()
 
 	// Decal 색상 적용
 	setDecalColor();
+
+	// 머리 설정
+	linkSoulTypeHead();
 }
 
 void fq::client::Player::processInput(float dt)
@@ -419,27 +426,27 @@ void fq::client::Player::equipWeapone(ESoulType equipType, bool isEquip)
 {
 	switch (equipType)
 	{
-	case fq::client::ESoulType::Sword:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
-	}
-	break;
-	case fq::client::ESoulType::Staff:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
-	}
-	break;
-	case fq::client::ESoulType::Axe:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
-	}
-	break;
-	case fq::client::ESoulType::Bow:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
-	}
-	break;
+		case fq::client::ESoulType::Sword:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
+		}
+		break;
+		case fq::client::ESoulType::Staff:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
+		}
+		break;
+		case fq::client::ESoulType::Axe:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
+		}
+		break;
+		case fq::client::ESoulType::Bow:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
+		}
+		break;
 	}
 }
 
@@ -533,18 +540,18 @@ bool fq::client::Player::CanUseSoulAttack() const
 
 	switch (mSoulType)
 	{
-	case fq::client::ESoulType::Sword:
-		cost = PlayerSoulVariable::SoulSwordAttackCost;
-		break;
-	case fq::client::ESoulType::Staff:
-		cost = PlayerSoulVariable::SoulStaffAttackCost;
-		break;
-	case fq::client::ESoulType::Axe:
-		cost = PlayerSoulVariable::SoulAxeAttackCost;
-		break;
-	case fq::client::ESoulType::Bow:
-		cost = PlayerSoulVariable::SoulBowAttackCost;
-		break;
+		case fq::client::ESoulType::Sword:
+			cost = PlayerSoulVariable::SoulSwordAttackCost;
+			break;
+		case fq::client::ESoulType::Staff:
+			cost = PlayerSoulVariable::SoulStaffAttackCost;
+			break;
+		case fq::client::ESoulType::Axe:
+			cost = PlayerSoulVariable::SoulAxeAttackCost;
+			break;
+		case fq::client::ESoulType::Bow:
+			cost = PlayerSoulVariable::SoulBowAttackCost;
+			break;
 	}
 
 	return mSoulGauge >= cost;
@@ -608,7 +615,98 @@ void fq::client::Player::setDecalColor()
 
 }
 
+void fq::client::Player::linkSoulTypeHead()
+{
+	// 머리 소켓 
+	for (const auto& child : mTransform->GetChildren())
+	{
+		auto name = child->GetGameObject()->GetName();
+		if (name.find("HeadSocket") != std::string::npos)
+		{
+			game_module::PrefabResource res{};
+
+			switch (mSoulType)
+			{
+				case fq::client::ESoulType::Sword:
+					res = mSwordHaed;
+					break;
+				case fq::client::ESoulType::Staff:
+					res = mStaffHaed;
+					break;
+				case fq::client::ESoulType::Axe:
+					res = mAxeHaed;
+					break;
+				case fq::client::ESoulType::Bow:
+					res = mBowHaed;
+					break;
+			}
+
+			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(res);
+			auto& head = *(instance.begin());
+
+			child->AddChild(head->GetComponent<game_module::Transform>());
+			GetScene()->AddGameObject(head);
+		}
+	}
+
+}
+
 bool fq::client::Player::IsFeverTime() const
 {
 	return mbIsFeverTime;
+}
+
+void fq::client::Player::OnTriggerStay(const game_module::Collision& collision)
+{
+	// Quest Event 
+	if (mController != nullptr)
+	{
+		GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideStayTrigger>(
+			{ (int)GetPlayerID(), collision.other->GetName() });
+	}
+}
+
+void fq::client::Player::SetLowerBodyAnimation()
+{
+	auto input = GetScene()->GetInputManager();
+	auto id = mController->GetControllerID();
+
+	// 이동 방향
+	auto x = input->GetStickInfomation(id, EPadStick::leftX);
+	auto y = input->GetStickInfomation(id, EPadStick::leftY);
+	DirectX::SimpleMath::Vector3 moveDir{ x, 0.f, y };
+	LowerDirection direction = {};
+
+	if (x == 0.f && y == 0.f)
+	{
+		direction = LowerDirection::Stop;
+	}
+	else
+	{
+		moveDir.Normalize();
+
+		// 시선 방향
+		auto look = mTransform->GetLookAtVector();
+		look.y = 0.f;
+		look.Normalize();
+
+		// 내적으로 각도 판단
+		float angle = std::acos(look.Dot(moveDir));
+
+		// 외적으로 방향 판단 
+		bool isClock = look.Cross(moveDir).y > 0.f;
+
+		constexpr float Angle135 = DirectX::XM_PIDIV2 + DirectX::XM_PIDIV4;
+
+		if (angle <= DirectX::XM_PIDIV4)
+			direction = LowerDirection::Foward;
+		else if (angle <= Angle135 && isClock)
+			direction = LowerDirection::Right;
+		else if (angle <= Angle135 && !isClock)
+			direction = LowerDirection::Left;
+		else
+			direction = LowerDirection::Back;
+
+	}
+	mAnimator->SetParameterInt("LowerDir", static_cast<int>(direction));
 }

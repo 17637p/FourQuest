@@ -126,9 +126,23 @@ namespace fq::game_module
 
 		void ProcessAnimationEvent(class GameObject* gameObject, class EventManager* eventManager);
 
+		/// <summary>
+		/// 애니메이션을 CPU 정보를 갱신할지 여부를 설정합니다. 
+		/// </summary>
+		void SetUpdateAnimationCPUData(bool bUpdateAnimationCPUData) { mbUpdateAnimationCPUData = bUpdateAnimationCPUData; }
+		bool GetUpdateAnimationCPUData() const { return mbUpdateAnimationCPUData; }
+
+		/// <summary>
+		/// 애니메이션을 GPU 정보를 갱신할지 여부를 설정합니다. 
+		/// </summary>
+		void SetUpdateAnimationGPUData(bool bUpdateAnimationGPUData) { mbUpdateAnimationGPUData = bUpdateAnimationGPUData; }
+		bool GetUpdateAnimationGPUData() const { return mbUpdateAnimationGPUData; }
+		
+		void SetCreateAnimationTexture(bool bCreateAnimationTexture) {	mbCreateAnimationTexture = bCreateAnimationTexture;	}
+		bool GetCreateAnimationTexture() const { return mbCreateAnimationTexture; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
-		
 
 	private:
 		ControllerPath mControllerPath;
@@ -140,6 +154,10 @@ namespace fq::game_module
 
 		float mDefaultPlaySpeed;
 		bool mbIsStopAnimation;
-	};
 
+		// 동적 인스턴싱 사용 유무 체크
+		bool mbUpdateAnimationCPUData;
+		bool mbUpdateAnimationGPUData;
+		bool mbCreateAnimationTexture;
+	};
 }

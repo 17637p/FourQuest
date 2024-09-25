@@ -22,6 +22,7 @@ namespace fq::game_module
 		void SetTextInfo(fq::graphics::TextInfo val);
 
 		void SetText(std::string text);
+		void SetIsRender(bool isRender);
 
 		void SetTextPosition(float startX, float startY);
 		void SetTextScale(float scaleX, float scaleY);

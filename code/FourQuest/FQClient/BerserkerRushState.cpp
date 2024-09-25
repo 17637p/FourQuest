@@ -14,7 +14,6 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BerserkerRushState
 void fq::client::BerserkerRushState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	auto controller = animator.GetComponent<game_module::CharacterController>();
-	controller->SetPadInputRotation(fq::game_module::EPadStickType::Right);
 	controller->SetDashInput(true);
 
 	mElapsedTime = 0.f;

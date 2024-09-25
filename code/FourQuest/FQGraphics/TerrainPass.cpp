@@ -49,7 +49,7 @@ namespace fq::graphics
 		mTerrainDS = std::make_shared<D3D11DomainShader>(mDevice, L"TerrainDS.cso");
 		mTerrainHS = std::make_shared<D3D11HullShader>(mDevice, L"TerrainHS.cso");
 		mTerrainLayout = std::make_shared<D3D11InputLayout>(mDevice, mTerrainVS->GetBlob().Get());
-
+		
 		// 스카이 박스랑 동일하게 가져가면 될듯?
 		switch (mPipelineType)
 		{

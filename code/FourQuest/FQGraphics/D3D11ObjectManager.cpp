@@ -15,6 +15,11 @@
 
 namespace fq::graphics
 {
+	D3D11ObjectManager::D3D11ObjectManager()
+		: mDecalLayerRef(DecalObject::MAX_LAYER + 1)
+	{
+	}
+
 	D3D11ObjectManager::~D3D11ObjectManager()
 	{
 		for (auto* element : mStaticMeshObjects) { deleteObject<StaticMeshObject>(element); } mStaticMeshObjects.clear();
@@ -24,6 +29,7 @@ namespace fq::graphics
 		for (auto* element : mDecalObjects) { deleteObject<DecalObject>(element); } mDecalObjects.clear();
 		for (auto* element : mTrailObjects) { deleteObject<TrailObject>(element); } mTrailObjects.clear();
 		for (auto* element : mProbeObjects) { deleteObject<ProbeObject>(element); } mProbeObjects.clear();
+		mDecalLayerRef.clear();
 		ClearDeleteQueue();
 	}
 
@@ -75,6 +81,9 @@ namespace fq::graphics
 		IDecalObject* decalObject = new DecalObject(iDecalMaterial, decalInfo, transform);
 		mDecalObjects.insert(decalObject);
 
+		unsigned int layer = std::min<unsigned int>(DecalObject::MAX_LAYER, decalObject->GetLayer());
+		mDecalLayerRef[layer].insert(decalObject);
+
 		return decalObject;
 	}
 	ITrailObject* D3D11ObjectManager::CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform)
@@ -125,6 +134,7 @@ namespace fq::graphics
 			mParticleObjectDeleteQueue.push(particleObject);
 		}
 	}
+
 	void D3D11ObjectManager::DeleteDecalObject(IDecalObject* decalObject)
 	{
 		auto find = mDecalObjects.find(decalObject);
@@ -133,6 +143,26 @@ namespace fq::graphics
 		{
 			mDecalObjects.erase(find);
 			mDecalObjectDeleteQueue.push(decalObject);
+
+			unsigned int layer = std::min<unsigned int>(DecalObject::MAX_LAYER, decalObject->GetLayer());
+			find = mDecalLayerRef[layer].find(decalObject);
+
+			if (find != mDecalLayerRef[layer].end())
+			{
+				mDecalLayerRef[layer].erase(find);
+			}
+			else
+			{
+				for (size_t i = 0; i < DecalObject::MAX_LAYER; ++i)
+				{
+					if (i == layer)
+					{
+						continue;
+					}
+
+					mDecalLayerRef[layer].erase(find);
+				}
+			}
 		}
 	}
 	void D3D11ObjectManager::DeleteTrailObject(ITrailObject* trailObject)
@@ -150,6 +180,57 @@ namespace fq::graphics
 	{
 		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObject);
 		terrainMeshObject->SetTerrainMaterial(device, material);
+	}
+
+	void D3D11ObjectManager::CheckDecalLayer()
+	{
+		std::vector<DecalObject*> changedLayerDecals;
+		changedLayerDecals.reserve(128);
+
+		for (IDecalObject* idecalObject : mDecalObjects)
+		{
+			DecalObject* decalObject = static_cast<DecalObject*>(idecalObject);
+
+			if (!decalObject->GetIsDirtyLayer())
+			{
+				continue;
+			}
+
+			decalObject->SetIsDirtyLayer(false);
+
+			if (decalObject->GetPrevLayer() != decalObject->GetLayer())
+			{
+				changedLayerDecals.push_back(decalObject);
+			}
+		}
+
+		for (DecalObject* decalObject : changedLayerDecals)
+		{
+			unsigned int prevLayer = decalObject->GetPrevLayer();
+			unsigned int currLayer = decalObject->GetLayer();
+			assert(prevLayer != currLayer);
+
+			auto find = mDecalLayerRef[prevLayer].find(decalObject);
+
+			if (find != mDecalLayerRef[prevLayer].end())
+			{
+				mDecalLayerRef[prevLayer].erase(decalObject);
+			}
+			else
+			{
+				for (size_t i = 0; i < DecalObject::MAX_LAYER; ++i)
+				{
+					if (i == prevLayer)
+					{
+						continue;
+					}
+
+					mDecalLayerRef[prevLayer].erase(*find);
+				}
+			}
+
+			mDecalLayerRef[currLayer].insert(decalObject);
+		}
 	}
 
 	graphics::IProbeObject* D3D11ObjectManager::CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index)

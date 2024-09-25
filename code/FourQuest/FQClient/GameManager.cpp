@@ -32,7 +32,6 @@ std::shared_ptr<fq::game_module::Component> fq::client::GameManager::Clone(std::
 
 fq::client::GameManager::~GameManager()
 {
-
 }
 
 fq::client::GameManager::GameManager()
@@ -361,6 +360,60 @@ void fq::client::GameManager::testKey()
 	{
 		SavePlayerState();
 		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene4", true });	
+	}
+
+	// 캐릭터 설정
+	if (input->IsKeyState(EKey::Num1, EKeyState::Tap))
+	{
+		if (PlayerInfoVariable::Player1State == -1)
+		{
+			PlayerInfoVariable::Player1State = 0;
+			PlayerInfoVariable::Player1SoulType = 0;
+		}
+		else
+		{
+			PlayerInfoVariable::Player1State = -1;
+			PlayerInfoVariable::Player1SoulType = -1;
+		}
+	}
+	if (input->IsKeyState(EKey::Num2, EKeyState::Tap))
+	{
+		if (PlayerInfoVariable::Player2State == -1)
+		{
+			PlayerInfoVariable::Player2State = 0;
+			PlayerInfoVariable::Player2SoulType = 1;
+		}
+		else
+		{
+			PlayerInfoVariable::Player2State = -1;
+			PlayerInfoVariable::Player2SoulType = -1;
+		}
+	}
+	if (input->IsKeyState(EKey::Num3, EKeyState::Tap))
+	{
+		if (PlayerInfoVariable::Player3State == -1)
+		{
+			PlayerInfoVariable::Player3State = 0;
+			PlayerInfoVariable::Player3SoulType = 2;
+		}
+		else
+		{
+			PlayerInfoVariable::Player3State = -1;
+			PlayerInfoVariable::Player3SoulType = -1;
+		}
+	}
+	if (input->IsKeyState(EKey::Num4, EKeyState::Tap))
+	{
+		if (PlayerInfoVariable::Player4State == -1)
+		{
+			PlayerInfoVariable::Player4State = 0;
+			PlayerInfoVariable::Player4SoulType = 3;
+		}
+		else
+		{
+			PlayerInfoVariable::Player4State = -1;
+			PlayerInfoVariable::Player4SoulType = -1;
+		}
 	}
 }
 

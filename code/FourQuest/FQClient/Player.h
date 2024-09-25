@@ -91,6 +91,11 @@ namespace fq::client
 		/// 현재 피버타임인지 반환합니다
 		/// </summary>
 		bool IsFeverTime()const;
+		
+		/// <summary>
+		/// 하체 애니메이션을 상태를 현재 입력 방향에 따라서 설정합니다. 
+		/// </summary>
+		void SetLowerBodyAnimation();
 
 
 	private:
@@ -103,12 +108,14 @@ namespace fq::client
 		void linkWeaponeMeshes();
 		void setFeverBuff(bool isFever);
 		void setDecalColor();
+		void linkSoulTypeHead();
 
 		void OnStart() override;
 		void OnDestroy() override;
 		void OnUpdate(float dt) override;
 		void OnLateUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
+		void OnTriggerStay(const game_module::Collision& collision) override;
 
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -151,6 +158,12 @@ namespace fq::client
 		game_module::PrefabResource mDeadArcherArmour;	// 궁수 갑옷
 		game_module::PrefabResource mDeadWarriorArmour; // 광전사 갑옷
 		
+		// 영혼 머리 
+		game_module::PrefabResource mSwordHaed;
+		game_module::PrefabResource mBowHaed;
+		game_module::PrefabResource mAxeHaed;
+		game_module::PrefabResource mStaffHaed;
+
 		bool mbOnShieldBlock;
 		bool mbIsActiveOnHit; // 워리어 갑옷 차징과 돌진 시 OnHit로 전이가 불가능하여 추가
 

@@ -40,6 +40,10 @@
   <ItemGroup>
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
+    <ClInclude Include="AttackInvalidation.h" />
+    <ClInclude Include="GaugeBar.h" />
+    <ClInclude Include="AudioSettingUI.h" />
+    <ClInclude Include="GameSettingUI.h" />
     <ClInclude Include="PlantAOEAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
@@ -55,9 +59,13 @@
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="BossMonsterComboAttackState.h" />
+    <ClInclude Include="BossMonsterContinousState.h" />
+    <ClInclude Include="BossMonsterEatState.h" />
     <ClInclude Include="BossMonsterGroggyState.h" />
     <ClInclude Include="BossMonsterHomingRushState.h" />
+    <ClInclude Include="BossMonsterPreContinousState.h" />
     <ClInclude Include="BossMonsterPrepareAttackState.h" />
+    <ClInclude Include="BossMonsterRoarState.h" />
     <ClInclude Include="BossMonsterSmashDownState.h" />
     <ClInclude Include="BossMonsterChaseState.h" />
     <ClInclude Include="BossMonsterDeadState.h" />
@@ -136,7 +144,9 @@
     <ClInclude Include="QuestColliderTriggerChecker.h" />
     <ClInclude Include="QuestManager.h" />
     <ClInclude Include="RepauseUI.h" />
+    <ClInclude Include="ResetPopupUI.h" />
     <ClInclude Include="ResultUI.h" />
+    <ClInclude Include="SavePopupUI.h" />
     <ClInclude Include="SettingUI.h" />
     <ClInclude Include="SettingVariable.h" />
     <ClInclude Include="ShieldDashState.h" />
@@ -155,6 +165,7 @@
     <ClInclude Include="Spawner.h" />
     <ClInclude Include="SpawnerGroup.h" />
     <ClInclude Include="SpawnStruct.h" />
+    <ClInclude Include="SpeechBubbleUI.h" />
     <ClInclude Include="SwordSoulAttackState.h" />
     <ClInclude Include="SoundDefine.h" />
     <ClInclude Include="SpawnerDeadState.h" />
@@ -164,10 +175,15 @@
     <ClInclude Include="SwordAttackState.h" />
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="UILayerDefine.h" />
+    <ClInclude Include="VideoSettingUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="AttackInvalidation.cpp" />
+    <ClCompile Include="GaugeBar.cpp" />
+    <ClCompile Include="AudioSettingUI.cpp" />
+    <ClCompile Include="GameSettingUI.cpp" />
     <ClCompile Include="PlantAOEAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
@@ -182,9 +198,13 @@
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="BossMonsterComboAttackState.cpp" />
+    <ClCompile Include="BossMonsterContinousState.cpp" />
+    <ClCompile Include="BossMonsterEatState.cpp" />
     <ClCompile Include="BossMonsterGroggyState.cpp" />
     <ClCompile Include="BossMonsterHomingRushState.cpp" />
+    <ClCompile Include="BossMonsterPreContinousState.cpp" />
     <ClCompile Include="BossMonsterPrepareAttackState.cpp" />
+    <ClCompile Include="BossMonsterRoarState.cpp" />
     <ClCompile Include="BossMonsterSmashDownState.cpp" />
     <ClCompile Include="BossMonsterChaseState.cpp" />
     <ClCompile Include="BossMonsterDeadState.cpp" />
@@ -252,7 +272,9 @@
     <ClCompile Include="QuestColliderTriggerChecker.cpp" />
     <ClCompile Include="QuestManager.cpp" />
     <ClCompile Include="RepauseUI.cpp" />
+    <ClCompile Include="ResetPopupUI.cpp" />
     <ClCompile Include="ResultUI.cpp" />
+    <ClCompile Include="SavePopupUI.cpp" />
     <ClCompile Include="SettingUI.cpp" />
     <ClCompile Include="ShieldDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
@@ -269,6 +291,7 @@
     <ClCompile Include="Spawner.cpp" />
     <ClCompile Include="SpawnerGroup.cpp" />
     <ClCompile Include="SpawnStruct.cpp" />
+    <ClCompile Include="SpeechBubbleUI.cpp" />
     <ClCompile Include="SwordSoulAttackState.cpp" />
     <ClCompile Include="SpawnerDeadState.cpp" />
     <ClCompile Include="SpawnerOpenState.cpp" />
@@ -276,6 +299,7 @@
     <ClCompile Include="StaffSoulAttackState.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
     <ClCompile Include="TitleUI.cpp" />
+    <ClCompile Include="VideoSettingUI.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

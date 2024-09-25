@@ -56,4 +56,16 @@ namespace fq::client
 		End
 	};
 
+	/// <summary>
+	/// 하체 애니메이션 이동방향
+	/// </summary>
+	enum class LowerDirection
+	{
+		Stop = 0,
+		Foward = 1,
+		Right = 2,
+		Back = 3,
+		Left = 4
+	};
+
 }

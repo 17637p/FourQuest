@@ -6,6 +6,9 @@
 
 #include "ScreenManager.h"
 
+#include "Event.h"
+#include "EventManager.h"
+
 namespace fq::game_module
 {
 	TextPrintTrack::TextPrintTrack()
@@ -60,6 +63,9 @@ namespace fq::game_module
 
 		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mNameFontCenterY, 0.f));
 		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mTextFontCenterY, 0.f));
+
+		// 이벤트 재생
+		mScene->GetEventManager()->FireEvent<fq::event::SequenceEnterSpeech>({ mName });
 	}
 
 	void TextPrintTrack::PlayOn()
@@ -101,6 +107,9 @@ namespace fq::game_module
 
 	void TextPrintTrack::PlayExit()
 	{
+		// 이벤트 재생
+		mScene->GetEventManager()->FireEvent<fq::event::SequenceExitSpeech>({ mName });
+
 		if (mNameObject != nullptr)
 		{
 			mScene->DestroyGameObject(mNameObject.get());

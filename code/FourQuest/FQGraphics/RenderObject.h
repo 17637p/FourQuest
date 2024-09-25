@@ -400,5 +400,15 @@ namespace fq::graphics
 	private:
 		TextInfo mTextInfo;
 	};
+
+	class SpriteAnimationObject : public ISpriteAnimationObject
+	{
+	public:
+		virtual void SetSpriteInfo(SpriteInfo spriteInfo) override { mSpriteInfo = spriteInfo; };
+		virtual SpriteInfo GetSpriteInfo() override { return mSpriteInfo; };
+
+	private:
+		SpriteInfo mSpriteInfo;
+	};
 }
 

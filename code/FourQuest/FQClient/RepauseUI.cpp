@@ -5,7 +5,6 @@
 #include "../FQGameModule/ScreenManager.h"
 #include "../FQGameModule/InputManager.h"
 #include "../FQGameModule/EventManager.h"
-#include "../FQGameModule/SceneManager.h"
 
 #include "ClientEvent.h"
 
@@ -39,7 +38,7 @@ void fq::client::RepauseUI::OnUpdate(float dt)
 			GetScene()->DestroyGameObject(GetGameObject());
 		}
 
-		if (input->IsPadKeyState(0, EPadKey::A, EKeyState::Tap))
+		if (input->IsPadKeyState(i, EPadKey::A, EKeyState::Tap))
 		{
 			GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "TitleUI", true });
 		}

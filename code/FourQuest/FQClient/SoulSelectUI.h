@@ -6,6 +6,8 @@ namespace fq::game_module
 {
 	class ScreenManager;
 	class TextUI;
+	class SpriteAnimationUI;
+	class Transform;
 }
 
 namespace fq::client
@@ -30,6 +32,8 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		void SaveSoulType();
+		void SetSelectPoints(int playerID, int selectNum);
+		void MoveSoulDown(float dt);
 
 		// 涝仿 贸府 
 		void processInput();
@@ -43,6 +47,8 @@ namespace fq::client
 		std::vector<game_module::TextUI*> mWeaponNameTexts;
 		std::vector<game_module::TextUI*> mContentTexts;
 
+		std::vector<game_module::SpriteAnimationUI*> mPlayerSoulIcons;
+
 		std::vector<std::string> mSoulNames;
 		std::vector<std::string> mWeapons;
 		std::vector<std::string> mContents;
@@ -52,12 +58,18 @@ namespace fq::client
 		std::vector<bool> mIsSelects;
 
 		game_module::PrefabResource mSoulPrefab;
+		game_module::PrefabResource mMagicSymbolPrefab;
 		std::vector<std::shared_ptr<game_module::GameObject>> mSouls;
+		std::vector<std::shared_ptr<game_module::GameObject>> mMagicSymbols;
 		std::vector<int> mSelectSouls;
+		std::vector<game_module::Transform*> mSelectPoints;
 
 		// 矫累 贸府
 		float mCurTime;
 		float mChangeSceneTime;
+
+		// Soul Move
+		float mSoulMoveSpeed;
 
 	private:
 		friend void RegisterMetaData();

@@ -419,9 +419,6 @@
     <ClInclude Include="IMonster.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="Spawner.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -485,6 +482,21 @@
     <ClInclude Include="PlayerMovementSoundState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
+    <ClInclude Include="BossMonsterEatState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterManager.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterRoarState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterContinousState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterPreContinousState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
     <ClInclude Include="PlantMonsterAOEAttackState.h">
       <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
@@ -499,6 +511,30 @@
     </ClInclude>
     <ClInclude Include="SoulManagerModule.h">
       <Filter>include\06.ETC\GameManagerModule</Filter>
+	</ClInclude>
+    <ClInclude Include="GaugeBar.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoSettingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSettingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ResetPopupUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SavePopupUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SpeechBubbleUI.h">
+      <Filter>include\05.UI</Filter>
+	</ClInclude>
+    <ClInclude Include="AttackInvalidation.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -757,6 +793,12 @@
     <ClCompile Include="ResultUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
+    <ClCompile Include="PlantMonsterHitState.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Spawner.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="MonsterManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -811,6 +853,21 @@
     <ClCompile Include="PlayerMovementSoundState.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="MonsterManager.cpp">
+      <Filter>src\02.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterEatState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterRoarState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterPreContinousState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterContinousState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
     <ClCompile Include="PlantMonsterAOEAttackState.cpp">
       <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
@@ -831,6 +888,33 @@
     </ClCompile>
     <ClCompile Include="SoulManagerModule.cpp">
       <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="GaugeBar.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSettingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoSettingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSettingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerVariable.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="ResetPopupUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SavePopupUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SpeechBubbleUI.cpp">
+      <Filter>src\05.UI</Filter>
+	</ClCompile>
+    <ClCompile Include="AttackInvalidation.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

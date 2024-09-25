@@ -113,6 +113,17 @@ struct ParticleRotationOverLifetime
     int bIsUsed;
 };
 
+struct ParticleSprite
+{
+    uint WidthCount;
+    uint HeightCount;
+    uint MaxFrameCount;
+    float FrameSecond;
+    
+    int bIsLooping;
+    int bIsUsed;
+};
+
 cbuffer cbParticleFrame : register(b0)
 {
     matrix gViewMatrix;
@@ -143,6 +154,8 @@ cbuffer cbParticleObject : register(b1)
     ParticleRotationOverLifetime gParticleRotationOverLifetime;
 
     ParticleMaterial gParticleRender;
+    
+    ParticleSprite gParticleSprite;
 };
 
 #define SHAPE_SPHERE 0
@@ -454,6 +467,10 @@ void processRoationOverLifeTime(float rotateIn, out float rotateOut)
     {
         rotateOut = rotateIn;
     }
+}
+void processSpriteOverLifeTime()
+{
+    
 }
 
 float4 qmul(float4 q1, float4 q2)

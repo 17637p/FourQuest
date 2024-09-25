@@ -27,7 +27,7 @@ namespace fq::client
 		void DecreaseHp(float ratio);
 		void SetHp(float ratio);
 		void SetVisible(bool isVisible);
-		bool IsVisible()const { return mIsVisible; }
+		bool IsVisible()const { return mbIsVisible; }
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -35,7 +35,7 @@ namespace fq::client
 		void setUIInfo();
 
 	private:
-		bool mIsVisible;
+		bool mbIsVisible;
 		float mDecreaseRatio;
 		float mDeceraseTime;
 		float mHpRatio;

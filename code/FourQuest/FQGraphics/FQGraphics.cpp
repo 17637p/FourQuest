@@ -335,6 +335,16 @@ std::shared_ptr<spdlog::logger> FQGraphics::SetUpLogger(std::vector<spdlog::sink
 	return logger;
 }
 
+void fq::graphics::FQGraphics::CreateAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface)
+{
+	std::static_pointer_cast<NodeHierarchy>(nodeHierarchyInterface)->CreateAnimationTexture(mDevice);
+}
+
+void fq::graphics::FQGraphics::ReleaseAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface)
+{
+	std::static_pointer_cast<NodeHierarchy>(nodeHierarchyInterface)->ReleaseAnimationTexture();
+}
+
 
 void FQGraphics::UpdateLight(const unsigned int id, const LightInfo& lightInfo)
 {
@@ -397,6 +407,7 @@ bool FQGraphics::Render()
 	{
 		// 랜더링 오브젝트의 수정된 데이터를 기반으로 리소스 갱신
 		mObjectManager->UpdateModifiedResources(mDevice);
+		mObjectManager->CheckDecalLayer();
 
 		// 컬링 추가해야 됨 
 		std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
@@ -948,6 +959,16 @@ void fq::graphics::FQGraphics::DrawSphereEx(const debug::SphereInfoEx& sphereInf
 void fq::graphics::FQGraphics::DrawRingEx(const debug::RingInfoEx& ringInfoEx)
 {
 	mDebugDrawManager->Submit(ringInfoEx);
+}
+
+void FQGraphics::DeleteSpriteAnimation(fq::graphics::ISpriteAnimationObject* spriteAniamtionObject)
+{
+	mUIManager->DeleteSpriteAniamtion(spriteAniamtionObject);
+}
+
+fq::graphics::ISpriteAnimationObject* FQGraphics::CreateSpriteAnimation(SpriteInfo spriteInfo)
+{
+	return mUIManager->CreateSpriteAniamtion(spriteInfo);
 }
 
 void FQGraphics::SetIsRenderObjects(bool isRenderObjects)

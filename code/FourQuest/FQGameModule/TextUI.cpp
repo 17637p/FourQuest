@@ -70,6 +70,9 @@ void fq::game_module::TextUI::SetTextScale(float scaleX, float scaleY)
 {
 	mTextInfo.ScaleX = scaleX;
 	mTextInfo.ScaleY = scaleY;
+}
 
-	mTextObject->SetTextInformation(mTextInfo);
+void fq::game_module::TextUI::SetIsRender(bool isRender)
+{
+	mTextInfo.IsRender = isRender;
 }

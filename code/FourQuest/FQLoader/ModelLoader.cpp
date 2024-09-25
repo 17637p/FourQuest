@@ -829,6 +829,24 @@ namespace fq::loader
 			materialInfo.DissolveEndColor.w = materialInfoJson.at("DissolveEndColor")[3].get<float>();
 		}
 
+		find = materialInfoJson.find("DissolveStartEmissive");
+		if (find != materialInfoJson.end())
+		{
+			materialInfo.DissolveStartEmissive.x = materialInfoJson.at("DissolveStartEmissive")[0].get<float>();
+			materialInfo.DissolveStartEmissive.y = materialInfoJson.at("DissolveStartEmissive")[1].get<float>();
+			materialInfo.DissolveStartEmissive.z = materialInfoJson.at("DissolveStartEmissive")[2].get<float>();
+			materialInfo.DissolveStartEmissive.w = materialInfoJson.at("DissolveStartEmissive")[3].get<float>();
+		}
+
+		find = materialInfoJson.find("DissolveEndEmissive");
+		if (find != materialInfoJson.end())
+		{
+			materialInfo.DissolveEndEmissive.x = materialInfoJson.at("DissolveEndEmissive")[0].get<float>();
+			materialInfo.DissolveEndEmissive.y = materialInfoJson.at("DissolveEndEmissive")[1].get<float>();
+			materialInfo.DissolveEndEmissive.z = materialInfoJson.at("DissolveEndEmissive")[2].get<float>();
+			materialInfo.DissolveEndEmissive.w = materialInfoJson.at("DissolveEndEmissive")[3].get<float>();
+		}
+
 		find = materialInfoJson.find("bIsUsedMetalnessSmoothness");
 		if (find != materialInfoJson.end())
 		{
@@ -843,6 +861,72 @@ namespace fq::loader
 			materialInfo.MetalnessSmoothnessFileName = fq::path::GetAbsolutePath(materialInfo.MetalnessSmoothnessFileName);
 		}
 
+		find = materialInfoJson.find("EmissiveIntensity");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("EmissiveIntensity").get_to(materialInfo.EmissiveIntensity);
+		}
+
+		find = materialInfoJson.find("bUseRimLight");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("bUseRimLight").get_to(materialInfo.bUseRimLight);
+		}
+
+		find = materialInfoJson.find("RimLightColor");
+		if (find != materialInfoJson.end())
+		{
+			materialInfo.RimLightColor.x = materialInfoJson.at("RimLightColor")[0].get<float>();
+			materialInfo.RimLightColor.y = materialInfoJson.at("RimLightColor")[1].get<float>();
+			materialInfo.RimLightColor.z = materialInfoJson.at("RimLightColor")[2].get<float>();
+			materialInfo.RimLightColor.w = materialInfoJson.at("RimLightColor")[3].get<float>();
+		}
+
+		find = materialInfoJson.find("RimPow");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("RimPow").get_to(materialInfo.RimPow);
+		}
+
+		find = materialInfoJson.find("RimIntensity");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("RimIntensity").get_to(materialInfo.RimIntensity);
+		}
+
+		find = materialInfoJson.find("bUseInvRimLight");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("bUseInvRimLight").get_to(materialInfo.bUseInvRimLight);
+		}
+
+		find = materialInfoJson.find("InvRimLightColor");
+		if (find != materialInfoJson.end())
+		{
+			materialInfo.InvRimLightColor.x = materialInfoJson.at("InvRimLightColor")[0].get<float>();
+			materialInfo.InvRimLightColor.y = materialInfoJson.at("InvRimLightColor")[1].get<float>();
+			materialInfo.InvRimLightColor.z = materialInfoJson.at("InvRimLightColor")[2].get<float>();
+			materialInfo.InvRimLightColor.w = materialInfoJson.at("InvRimLightColor")[3].get<float>();
+		}
+
+		find = materialInfoJson.find("InvRimPow");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("InvRimPow").get_to(materialInfo.InvRimPow);
+		}
+
+		find = materialInfoJson.find("InvRimIntensity");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("InvRimIntensity").get_to(materialInfo.InvRimIntensity);
+		}
+
+		find = materialInfoJson.find("bUseMulEmissiveAlpha");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("bUseMulEmissiveAlpha").get_to(materialInfo.bUseMulEmissiveAlpha);
+		}
+
 		return materialInfo;
 	}
 	void MaterialLoader::Write(const std::filesystem::path& filePath, const fq::graphics::MaterialInfo& material)
@@ -854,33 +938,56 @@ namespace fq::loader
 		materialInfoJson =
 		{
 			{"RenderModeType", material.RenderModeType == MaterialInfo::ERenderMode::Opaque ? "Opaque" : "Transparent"},
-			{"BaseColor", {material.BaseColor.x, material.BaseColor.y, material.BaseColor.z, material.BaseColor.w}},
-			{"Metalness", material.Metalness},
-			{"Roughness", material.Roughness},
-			{"EmissiveColor", {material.EmissiveColor.x, material.EmissiveColor.y, material.EmissiveColor.z, material.EmissiveColor.w}},
-			{"BaseColorFileName", fq::path::GetRelativePath(std::string(material.BaseColorFileName.begin(), material.BaseColorFileName.end())).string() },
-			{"MetalnessFileName", fq::path::GetRelativePath(std::string(material.MetalnessFileName.begin(), material.MetalnessFileName.end())).string() },
-			{"RoughnessFileName", fq::path::GetRelativePath(std::string(material.RoughnessFileName.begin(), material.RoughnessFileName.end())).string() },
-			{"NormalFileName", fq::path::GetRelativePath(std::string(material.NormalFileName.begin(), material.NormalFileName.end())).string() },
-			{"EmissiveFileName", fq::path::GetRelativePath(std::string(material.EmissiveFileName.begin(), material.EmissiveFileName.end())).string() },
-			{"MetalnessSmoothnessFileName", fq::path::GetRelativePath(std::string(material.MetalnessSmoothnessFileName.begin(), material.MetalnessSmoothnessFileName.end())).string() },
+			{"SampleType", material.SampleType == ESampleMode::Clamp ? "Clamp" : "Wrap"},
+			{"RasterizeType", material.RasterizeType == ERasterizeMode::BackFaceClip ? "BackFaceClip" : "TwoSide"},
+			
 			{"bUseBaseColor", material.bUseBaseColor},
+			{"BaseColor", {material.BaseColor.x, material.BaseColor.y, material.BaseColor.z, material.BaseColor.w}},
+			{"BaseColorFileName", fq::path::GetRelativePath(std::string(material.BaseColorFileName.begin(), material.BaseColorFileName.end())).string() },
+			
 			{"bUseMetalness", material.bUseMetalness},
+			{"Metalness", material.Metalness},
+			{"MetalnessFileName", fq::path::GetRelativePath(std::string(material.MetalnessFileName.begin(), material.MetalnessFileName.end())).string() },
+			
 			{"bUseRoughness", material.bUseRoughness},
-			{"bUseNormalness", material.bUseNormalness},
+			{"Roughness", material.Roughness},
+			{"RoughnessFileName", fq::path::GetRelativePath(std::string(material.RoughnessFileName.begin(), material.RoughnessFileName.end())).string() },
+			
 			{"bIsUsedEmissive", material.bIsUsedEmissive},
+			{"EmissiveColor", {material.EmissiveColor.x, material.EmissiveColor.y, material.EmissiveColor.z, material.EmissiveColor.w}},
+			{"EmissiveFileName", fq::path::GetRelativePath(std::string(material.EmissiveFileName.begin(), material.EmissiveFileName.end())).string() },
+			{"EmissiveIntensity", material.EmissiveIntensity},
+
+			{"bUseNormalness", material.bUseNormalness},
+			{"NormalFileName", fq::path::GetRelativePath(std::string(material.NormalFileName.begin(), material.NormalFileName.end())).string() },
+			
 			{"bIsUsedMetalnessSmoothness", material.bIsUsedMetalnessSmoothness},
+			{"MetalnessSmoothnessFileName", fq::path::GetRelativePath(std::string(material.MetalnessSmoothnessFileName.begin(), material.MetalnessSmoothnessFileName.end())).string() },
+			
 			{"Tiling", {material.Tiling.x, material.Tiling.y}},
 			{"Offset", {material.Offset.x, material.Offset.y}},
 			{"AlphaCutoff", material.AlphaCutoff},
-			{"SampleType", material.SampleType == ESampleMode::Clamp ? "Clamp" : "Wrap"},
-			{"RasterizeType", material.RasterizeType == ERasterizeMode::BackFaceClip ? "BackFaceClip" : "TwoSide"},
+			
 			{"bUseDissolve", material.bUseDissolve },
 			{"NoiseFileName", std::string(material.NoiseFileName.begin(),material.NoiseFileName.end()) },
 			{"OutlineThickness", material.OutlineThickness },
 			{"DissolveCutoff", material.DissolveCutoff },
 			{"DissolveStartColor", {material.DissolveStartColor.x, material.DissolveStartColor.y, material.DissolveStartColor.z, material.DissolveStartColor.w}},
 			{"DissolveEndColor", {material.DissolveEndColor.x, material.DissolveEndColor.y, material.DissolveEndColor.z, material.DissolveEndColor.w}},
+			{"DissolveStartEmissive", {material.DissolveStartEmissive.x, material.DissolveStartEmissive.y, material.DissolveStartEmissive.z, material.DissolveStartEmissive.w}},
+			{"DissolveEndEmissive", {material.DissolveEndEmissive.x, material.DissolveEndEmissive.y, material.DissolveEndEmissive.z, material.DissolveEndEmissive.w}},
+		
+			{"bUseRimLight", material.bUseRimLight },		
+			{"RimLightColor", {material.RimLightColor.x, material.RimLightColor.y, material.RimLightColor.z, material.RimLightColor.w}},
+			{"RimPow", material.RimPow },
+			{"RimIntensity", material.RimIntensity },
+
+			{"bUseInvRimLight", material.bUseInvRimLight },		
+			{"InvRimLightColor", {material.InvRimLightColor.x, material.InvRimLightColor.y, material.InvRimLightColor.z, material.InvRimLightColor.w}},
+			{"InvRimPow", material.InvRimPow },
+			{"InvRimIntensity", material.InvRimIntensity },
+
+			{"bUseMulEmissiveAlpha", material.bUseMulEmissiveAlpha },
 		};
 
 		const std::filesystem::path parentPath = filePath.parent_path();

@@ -47,12 +47,13 @@ namespace fq::graphics
 
 		for (size_t i = 0; i < JOB_COUNT; ++i)
 		{
-			SkinnedMeshJob job;
+			SkinnedMeshJob job{};
 			job.SubsetIndex = i;
 			job.SkinnedMesh = std::static_pointer_cast<SkinnedMesh>(iSkinnedMeshObject->GetSkinnedMesh());
 			job.Material = std::static_pointer_cast<Material>(material[i]);
 			job.SkinnedMeshObject = static_cast<SkinnedMeshObject*>(iSkinnedMeshObject);
 			job.NodeHierarchyInstnace = std::static_pointer_cast<NodeHierarchyInstance>(iSkinnedMeshObject->GetNodeHierarchyInstance());
+			job.NodeHierarchy = job.NodeHierarchyInstnace == nullptr ? nullptr : std::static_pointer_cast<NodeHierarchy>(job.NodeHierarchyInstnace->GetNodeHierarchy());
 			mSkinnedMeshJobs.push_back(job);
 		}
 	}

@@ -68,8 +68,13 @@ void fq::client::KnockBack::OnStart()
 	mTransform = GetComponent<game_module::Transform>();
 }
 
-void fq::client::KnockBack::Set(float power, DirectX::SimpleMath::Vector3 direction)
+void fq::client::KnockBack::AddKnockBack(float power, DirectX::SimpleMath::Vector3 direction)
 {
 	mVelocity += direction * power;
+}
+
+void fq::client::KnockBack::SetKnockBack(float power, DirectX::SimpleMath::Vector3 direction)
+{
+	mVelocity = direction * power;
 }
 

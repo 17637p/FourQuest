@@ -5,6 +5,36 @@
 
 namespace fq::graphics
 {
+	struct KeyframeDesc
+	{
+		int animIndex = 0;
+		unsigned int currFrame = 0;
+		unsigned int nextFrame = 0;
+		float ratio = 0.f;
+	};
+
+	struct TweenDesc
+	{
+		TweenDesc()
+		{
+			curr.animIndex = 0;
+			next.animIndex = -1;
+		}
+
+		void ClearNextAnim()
+		{
+			next.animIndex = -1;
+			next.currFrame = 0;
+			next.nextFrame = 0;
+			tweenRatio = 0;
+		}
+
+		KeyframeDesc curr;
+		KeyframeDesc next;
+		float tweenRatio = 0.f;
+		float unused[3]{};
+	};
+
 	struct ModelTransform
 	{
 		DirectX::SimpleMath::Matrix WorldMat;
@@ -18,6 +48,11 @@ namespace fq::graphics
 		int bUseLightmap;
 		int bUseDirection;
 		float unused[1];
+	};
+
+	struct CBTweenBuffer
+	{
+		TweenDesc TweenFrames[500];
 	};
 
 	struct ViewProjectionMatrix
@@ -175,6 +210,8 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector4 DissolveEndColor;
 		DirectX::SimpleMath::Vector4 DissolveStartEmissive;
 		DirectX::SimpleMath::Vector4 DissolveEndEmissive;
+		DirectX::SimpleMath::Vector4 RimLightColor;
+		DirectX::SimpleMath::Vector4 InvRimLightColor;
 
 		float Metalness;
 		float Roughness;
@@ -192,7 +229,14 @@ namespace fq::graphics
 		float OutlineThickness;
 
 		float DissolveCutoff;
-		float unused[3];
+		int bUseRimLight = false;
+		float RimPow = 2.f;
+		float RimIntensity = 1.f;
+
+		int bUseInvRimLight = false;
+		float InvRimPow = 2.f;
+		float InvRimIntensity = 1.f;
+		int bUseMulEmissiveAlpha = false;
 	};
 
 	struct CBDecalObject
@@ -336,6 +380,18 @@ namespace fq::graphics
 		} RotationOverLifetimeData;
 
 		CBParticleMaterial ParticleMaterialData;
+
+		struct Sprite
+		{
+			unsigned int WidthCount;
+			unsigned int HeightCount;
+			unsigned int FrameCount;
+			float FrameSecond;
+			
+			int bIsLooping;
+			int bIsUsed;
+			float unused[2];
+		} SpriteData;
 	};
 
 	struct LightProbeCB
@@ -371,10 +427,6 @@ namespace fq::graphics
 		static void UpdateModelTransformCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<ModelTransform>>& cbuffer,
 			const DirectX::SimpleMath::Matrix& transform);
-		static void UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
-			std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
-			const std::shared_ptr<Material>& material,
-			const DirectX::SimpleMath::Matrix& texTransform = DirectX::SimpleMath::Matrix::Identity);
 		static void UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer,
 			const std::shared_ptr<TerrainMaterial>& material,
@@ -385,8 +437,10 @@ namespace fq::graphics
 		static void UpdateLightProbeCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<LightProbeCB>>& cbuffer,
 			float* r, float* g, float* b, float intensity);
-		static void UpdateMaterialInstance(const std::shared_ptr<D3D11Device>& device,
-			const std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>>& materialInstanceCB,
-			const MaterialInstanceInfo& materialInstanceInfo);
+		static void UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
+			std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
+			const std::shared_ptr<Material>& material,
+			const MaterialInstanceInfo& materialInstanceInfo,
+			const DirectX::SimpleMath::Matrix& texTransform = DirectX::SimpleMath::Matrix::Identity);
 	};
 }
