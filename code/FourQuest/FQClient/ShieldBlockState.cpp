@@ -25,6 +25,7 @@ void fq::client::ShieldBlockState::OnStateUpdate(game_module::Animator& animator
 
 void fq::client::ShieldBlockState::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
+	animator.GetComponent<KnightArmour>()->EnterShieldState();
 }
 
 void fq::client::ShieldBlockState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)

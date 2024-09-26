@@ -31,6 +31,7 @@ fq::client::KnightArmour::KnightArmour()
 	, mShieldSpeedRatio(0.5f)
 	, mShieldCoolTimeReduction(0.f)
 	, mDashCoolTimeReduction(0.f)
+	, mbOnShield(false)
 {}
 
 fq::client::KnightArmour::~KnightArmour()
@@ -218,7 +219,7 @@ void fq::client::KnightArmour::checkInput()
 	// 쉴드 상태 진입 
 	if (rightInput.LengthSquared() >= rotationOffsetSq && mShieldElapsedTime == 0.f)
 	{
-		EnterShieldState();
+		mAnimator->SetParameterBoolean("OnShield", true);
 	}
 }
 
@@ -313,12 +314,18 @@ void fq::client::KnightArmour::ExitShieldState()
 		mShieldObject = nullptr;
 	}
 
+	mbOnShield = false;
 	mOnShieldElapsedTime = 0.f;
 }
 
 void fq::client::KnightArmour::EnterShieldState()
 {
-	mAnimator->SetParameterBoolean("OnShield", true);
+	if (mbOnShield)
+	{
+		return;
+	}
+
+	mbOnShield = true;
 	mPlayer->SetOnShieldBlock(true);
 	mGaugeBar->SetVisible(true);
 	mGaugeBar->SetRatio(1.f);
