@@ -355,29 +355,9 @@ void fq::client::PlayerUI::SetHPBar(float ratio)
 
 void fq::client::PlayerUI::setSkillCoolTime()
 {
-	// Test¿ë º¯¼ö
-	//float aCool = mPlayer->GetACool();
-	static float aCool = 0.5f;
-	//float rCool = mPlayer->GetRCool();
-	static float rCool = 1.0f;
-	//float xCool = mPlayer->GetXCool();
-	static float xCool = 0.0f;
-
-	aCool -= 0.01f;
-	if (aCool < 0)
-	{
-		aCool = 1;
-	}
-	rCool -= 0.03f;
-	if (rCool < 0)
-	{
-		rCool = 1;
-	}
-	xCool -= 0.05f;
-	if (xCool < 0)
-	{
-		xCool = 1;
-	}
+	float aCool = mPlayer->GetASkillCoolTimeRatio();
+	float rCool = mPlayer->GetRSkillCoolTimeRatio();
+	float xCool = mPlayer->GetXSkillCoolTimeRatio();;
 
 	float coolX = -25;
 	float coolY = -25;
