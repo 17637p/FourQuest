@@ -26,6 +26,7 @@ namespace fq::client
 		void setSpawnButton(int index, bool isSpawned);
 		void setSoulBox(int index, bool isSpawned);
 		void setReadyUI(int index, bool isSpawned);
+		void setSelectLevelPopup(bool isOn);
 
 		std::string wstringToString(std::wstring wStr);
 
@@ -38,6 +39,8 @@ namespace fq::client
 		// 입력 처리 
 		void processInput();
 		void CheckAllReady(float dt);
+
+		void setSelectBoxPosition(float dt);
 
 	private:
 		game_module::ScreenManager* mScreenManager;
@@ -63,6 +66,22 @@ namespace fq::client
 		std::vector<std::shared_ptr<game_module::GameObject>> mMagicSymbols;
 		std::vector<int> mSelectSouls;
 		std::vector<game_module::Transform*> mSelectPoints;
+
+		// LevelSelect 처리
+		game_module::GameObject* mLevelSelectBackground;
+		game_module::GameObject* mSelectBackground;
+		std::vector<game_module::GameObject*> mButtons;
+		// 설명 Text
+		std::vector<std::string> mExplanationTexts;
+		game_module::TextUI* mExplanationTextUI;
+		bool mIsSelectedLevel;
+		bool mIsOnSelectLevel;
+		// Button Animation
+		float mStickDelay;
+		float mCurStickDelay;
+		float mUIAnimSpeed;
+		// 선택한 버튼 위치 이동
+		int mSelectButtonID; // 0: 쉬움, 1: 보통, 2: 어려움
 
 		// 시작 처리
 		float mCurTime;

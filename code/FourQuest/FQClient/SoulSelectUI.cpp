@@ -14,6 +14,7 @@
 
 #include "Soul.h"
 #include "PlayerInfoVariable.h"
+#include "SettingVariable.h"
 
 #include <boost/locale.hpp>
 
@@ -121,11 +122,32 @@ void fq::client::SoulSelectUI::OnStart()
 		setSoulBox(i, false);
 		setReadyUI(i, false);
 	}
+
+	// SelectLevel 처리
+	mButtons.clear();
+	mExplanationTexts.clear();
+
+	mLevelSelectBackground = GetGameObject()->GetChildren()[6];
+
+	auto levelButtons = mLevelSelectBackground->GetChildren()[1]->GetChildren();
+	for (int i = 1; i < 4; i++)
+	{
+		mButtons.push_back(levelButtons[i]);
+	}
+
+	mExplanationTextUI = mLevelSelectBackground->GetChildren()[2]->GetChildren()[0]->GetComponent<game_module::TextUI>();
+	mExplanationTexts.push_back(wstringToString(L"액션게임에 익숙하지 않은 플레이어에게 적합한 난이도입니다."));
+	mExplanationTexts.push_back(wstringToString(L"4Quest를 처음 접한 플레이어에게 추천하는 난이도입니다."));
+	mExplanationTexts.push_back(wstringToString(L"신중하게 플레이해야 하는 도전적인 난이도입니다."));
+	setSelectLevelPopup(false);
+
+	mSelectBackground = mLevelSelectBackground->GetChildren()[1]->GetChildren()[4];
 }
 
 void fq::client::SoulSelectUI::OnUpdate(float dt)
 {
 	setScaleScreen();
+	setSelectBoxPosition(dt);
 
 	// 입력 처리
 	processInput();
@@ -148,7 +170,17 @@ fq::client::SoulSelectUI::SoulSelectUI()
 	mSelectSouls(),
 	mCurTime(0),
 	mChangeSceneTime(3),
-	mSoulMoveSpeed(100)
+	mSoulMoveSpeed(100),
+	mLevelSelectBackground(nullptr),
+	mButtons(),
+	mExplanationTexts(),
+	mExplanationTextUI(nullptr),
+	mIsSelectedLevel(false),
+	mIsOnSelectLevel(false),
+	mStickDelay(0.2f),
+	mCurStickDelay(0),
+	mUIAnimSpeed(1000),
+	mSelectButtonID(0)
 {
 }
 
@@ -222,9 +254,68 @@ void fq::client::SoulSelectUI::processInput()
 	auto input = GetScene()->GetInputManager();
 	for (int i = 0; i < 4; i++)
 	{
+		if (mIsOnSelectLevel)
+		{
+			// Stick Y 값
+			float isLeftStickY = input->GetStickInfomation(i, EPadStick::leftY);
+
+			// 아래로
+			bool isDpadDownTap = input->GetPadKeyState(i, EPadKey::DpadDown) == EKeyState::Tap;
+			// Stick 처리
+			bool isLeftStickDownTap = false;
+			if (isLeftStickY < -0.9f)
+			{
+				if (mCurStickDelay > mStickDelay)
+				{
+					mCurStickDelay = 0;
+					isLeftStickDownTap = true;
+				}
+			}
+
+			if (isDpadDownTap || isLeftStickDownTap)
+			{
+				if (mSelectButtonID < 2)
+				{
+					mSelectButtonID++;
+					mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				}
+			}
+
+			// 위로
+			bool isDpadUpTap = input->GetPadKeyState(i, EPadKey::DpadUp) == EKeyState::Tap;
+			// Stick 처리
+			bool isLeftStickUpTap = false;
+			if (isLeftStickY > 0.9f)
+			{
+				if (mCurStickDelay > mStickDelay)
+				{
+					mCurStickDelay = 0;
+					isLeftStickUpTap = true;
+				}
+			}
+
+			if (isDpadUpTap || isLeftStickUpTap)
+			{
+				if (mSelectButtonID > 0)
+				{
+					mSelectButtonID--;
+					mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				}
+			}
+		}
+
+		// Button A
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap
 			|| input->GetKeyState(EKey::A) == EKeyState::Tap)
 		{
+			if (mIsOnSelectLevel)
+			{
+				SettingVariable::SelectLevel = mSelectButtonID;
+				setSelectLevelPopup(false);
+				mIsSelectedLevel = true;
+
+				continue;
+			}
 			if (!mIsReadys[i])
 			{
 				// 영혼 선택창이라면
@@ -299,9 +390,12 @@ void fq::client::SoulSelectUI::processInput()
 				// 아니면 영혼 선택
 				else
 				{
-					mIsSelects[i] = true;
-					setSpawnButton(i, false);
-					setSoulBox(i, true);
+					if (!mIsOnSelectLevel && !mIsSelectedLevel)
+					{
+						mIsSelects[i] = true;
+						setSpawnButton(i, false);
+						setSoulBox(i, true);
+					}
 				}
 			}
 		}
@@ -309,6 +403,19 @@ void fq::client::SoulSelectUI::processInput()
 		if (input->GetPadKeyState(i, EPadKey::B) == EKeyState::Tap
 			|| input->GetKeyState(EKey::B) == EKeyState::Tap)
 		{
+			if (mIsSelectedLevel)
+			{
+				mIsSelectedLevel = false;
+				continue;
+			}
+			if (mIsOnSelectLevel)
+			{
+				setSelectLevelPopup(false);
+				//mIsReadys[i] = false;
+				//setReadyUI(i, false);
+
+				//continue;
+			}
 			// 영혼 선택창이라면
 			if (mIsSelects[i])
 			{
@@ -462,6 +569,8 @@ void fq::client::SoulSelectUI::SaveSoulType()
 		PlayerInfoVariable::Player4SoulType = -1;
 		PlayerInfoVariable::Player4State = -1;
 	}
+
+	SettingVariable::SelectLevel = mSelectButtonID;
 }
 
 void fq::client::SoulSelectUI::CheckAllReady(float dt)
@@ -471,6 +580,7 @@ void fq::client::SoulSelectUI::CheckAllReady(float dt)
 	game_module::ImageUI* countBackground = countUI->GetComponent<game_module::ImageUI>();
 	game_module::TextUI* questStartText = countUI->GetChildren()[0]->GetComponent<game_module::TextUI>();
 	game_module::TextUI* countText = countUI->GetChildren()[1]->GetComponent<game_module::TextUI>();
+	game_module::TextUI* levelText = countUI->GetChildren()[2]->GetComponent<game_module::TextUI>();
 
 	bool isAllReady = true;
 	for (int i = 0; i < 4; i++)
@@ -482,6 +592,7 @@ void fq::client::SoulSelectUI::CheckAllReady(float dt)
 
 			countBackground->SetIsRender(0, false);
 			countText->SetIsRender(false);
+			levelText->SetIsRender(false);
 			questStartText->SetIsRender(false);
 
 			return;
@@ -489,12 +600,39 @@ void fq::client::SoulSelectUI::CheckAllReady(float dt)
 	}
 
 	// 모두 준비라면
-	if (isAllReady)
+	if (isAllReady && !mIsSelectedLevel)
+	{
+		setSelectLevelPopup(true);
+
+		isAllReady = false;
+		mCurTime = 0;
+
+		countBackground->SetIsRender(0, false);
+		countText->SetIsRender(false);
+		levelText->SetIsRender(false);
+		questStartText->SetIsRender(false);
+	}
+
+	if (mIsSelectedLevel)
 	{
 		SaveSoulType();
 		countBackground->SetIsRender(0, true);
 		countText->SetIsRender(true);
+		levelText->SetIsRender(true);
 		questStartText->SetIsRender(true);
+
+		if (mSelectButtonID == 0)
+		{
+			levelText->SetText(wstringToString(L"쉬움"));
+		}
+		else if (mSelectButtonID == 1)
+		{
+			levelText->SetText(wstringToString(L"보통"));
+		}
+		else if (mSelectButtonID == 2)
+		{
+			levelText->SetText(wstringToString(L"어려움"));
+		}
 
 		int count = mChangeSceneTime - mCurTime + 1;
 		countText->SetText(std::to_string(count));
@@ -529,4 +667,51 @@ void fq::client::SoulSelectUI::MoveSoulDown(float dt)
 			soulT->SetLocalPosition({ soulV.x, soulV.y, soulZ });
 		}
 	}
+}
+
+void fq::client::SoulSelectUI::setSelectLevelPopup(bool isOn)
+{
+	mIsOnSelectLevel = isOn;
+
+	mLevelSelectBackground->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	mLevelSelectBackground->GetChildren()[0]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	mLevelSelectBackground->GetChildren()[1]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+
+	mLevelSelectBackground->GetChildren()[1]->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isOn);
+	mLevelSelectBackground->GetChildren()[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	mLevelSelectBackground->GetChildren()[1]->GetChildren()[1]->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isOn);
+	mLevelSelectBackground->GetChildren()[1]->GetChildren()[2]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	mLevelSelectBackground->GetChildren()[1]->GetChildren()[2]->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isOn);
+	mLevelSelectBackground->GetChildren()[1]->GetChildren()[3]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	mLevelSelectBackground->GetChildren()[1]->GetChildren()[3]->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isOn);
+	mLevelSelectBackground->GetChildren()[1]->GetChildren()[4]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	mLevelSelectBackground->GetChildren()[1]->GetChildren()[4]->GetChildren()[0]->GetComponent<game_module::SpriteAnimationUI>()->SetIsRender(isOn);
+
+	mLevelSelectBackground->GetChildren()[2]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	mLevelSelectBackground->GetChildren()[2]->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isOn);
+}
+
+void fq::client::SoulSelectUI::setSelectBoxPosition(float dt)
+{
+	// 선택UI 위치로 SelectBox 옮기기 
+	game_module::Transform* selectTransform = mButtons[mSelectButtonID]->GetComponent<game_module::Transform>();
+	DirectX::SimpleMath::Vector3 selectPosition = selectTransform->GetLocalPosition();
+
+	DirectX::SimpleMath::Vector3 curPosition = mSelectBackground->GetComponent<game_module::Transform>()->GetLocalPosition();
+
+	float dist = selectPosition.y - curPosition.y;
+	if (std::abs(dist) < mUIAnimSpeed * dt)
+	{
+		curPosition = selectPosition;
+	}
+	else if (dist > 0)
+	{
+		curPosition.y += mUIAnimSpeed * dt;
+	}
+	else
+	{
+		curPosition.y -= mUIAnimSpeed * dt;
+	}
+
+	mSelectBackground->GetComponent<game_module::Transform>()->SetLocalPosition(curPosition);
 }
