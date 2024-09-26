@@ -34,7 +34,8 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		// 무기랑 스킬아이콘 어떤 것을 렌더하거나 안할지 
-		void SetWeaponAndSkillIcons(int index, bool isRender);
+		void setWeaponAndSkillIcons(int index, bool isRender);
+		void setSkillCoolTime();
 
 	private:
 		int mPlayerID;
@@ -42,6 +43,12 @@ namespace fq::client
 
 		float mHPWidth;
 		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 
+
+		// CoolTime 적용
+		float mCoolTimeHeight;
+		game_module::ImageUI* mXCoolTimeImage;
+		game_module::ImageUI* mACoolTimeImage;
+		game_module::ImageUI* mRCoolTimeImage;
 
 		int mSoulGaugeDegree;
 		game_module::ImageUI* mSoulGauge; // Soul Gauge 조정 25 - 255

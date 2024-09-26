@@ -70,25 +70,29 @@ void fq::client::PlayerUI::OnStart()
 	mSkillIconXs.push_back(skillXs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconXs.push_back(skillXs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconXs.push_back(skillXs[3]->GetComponent<fq::game_module::ImageUI>());
+	mXCoolTimeImage = skillXs[4]->GetComponent<fq::game_module::ImageUI>();
 
 	std::vector<fq::game_module::GameObject*> skillAs = children[0]->GetChildren()[1]->GetChildren();
 	mSkillIconAs.push_back(skillAs[0]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconAs.push_back(skillAs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconAs.push_back(skillAs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconAs.push_back(skillAs[3]->GetComponent<fq::game_module::ImageUI>());
+	mACoolTimeImage = skillAs[4]->GetComponent<fq::game_module::ImageUI>();
 
 	std::vector<fq::game_module::GameObject*> skillRs = children[0]->GetChildren()[2]->GetChildren();
 	mSkillIconRs.push_back(skillRs[0]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[3]->GetComponent<fq::game_module::ImageUI>());
+	mRCoolTimeImage = skillRs[4]->GetComponent<fq::game_module::ImageUI>();
+	mCoolTimeHeight = mRCoolTimeImage->GetUIInfomation(0).Height;
 
 	fq::game_module::Scene* scene = GetScene();
 	SetPlayer();
 
 	for (int i = 0; i < 4; i++)
 	{
-		SetWeaponAndSkillIcons(i, false);
+		setWeaponAndSkillIcons(i, false);
 	}
 
 	mScreenManager = GetScene()->GetScreenManager();
@@ -100,7 +104,7 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 
 	for (int i = 0; i < 4; i++)
 	{
-		SetWeaponAndSkillIcons(i, false);
+		setWeaponAndSkillIcons(i, false);
 	}
 
 	// Scale 자동 조정 
@@ -145,8 +149,9 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 				default:
 					break;
 			}
-			SetWeaponAndSkillIcons(armourTypeIndex, true);
+			setWeaponAndSkillIcons(armourTypeIndex, true);
 			SetSoulGauge(mPlayer->GetSoultGaugeRatio());
+			setSkillCoolTime();
 	}
 	}
 	else
@@ -156,7 +161,7 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 	}
 }
 
-void fq::client::PlayerUI::SetWeaponAndSkillIcons(int index, bool isRender)
+void fq::client::PlayerUI::setWeaponAndSkillIcons(int index, bool isRender)
 {
 	mWeaponIcons[index]->SetIsRender(0, isRender);
 	mSkillIconXs[index]->SetIsRender(0, isRender);
@@ -206,5 +211,48 @@ void fq::client::PlayerUI::SetHPBar(float ratio)
 	mHPBarGauge->SetUIInfomations(uiInfos);
 }
 
-// HP 줄어들면 반응하기
-// 갑옷에 따라 무기 아이콘, 스킬 아이콘 변화 
+void fq::client::PlayerUI::setSkillCoolTime()
+{
+	// Test용 변수
+	//float aCool = mPlayer->GetACool();
+	static float aCool = 0.5f;
+	//float rCool = mPlayer->GetRCool();
+	static float rCool = 1.0f;
+	//float xCool = mPlayer->GetXCool();
+	static float xCool = 0.0f;
+
+	aCool -= 0.01f;
+	if (aCool < 0)
+	{
+		aCool = 1;
+	}
+	rCool -= 0.03f;
+	if (rCool < 0)
+	{
+		rCool = 1;
+	}
+	xCool -= 0.05f;
+	if (xCool < 0)
+	{
+		xCool = 1;
+	}
+
+	float coolX = -25;
+	float coolY = -25;
+
+	auto uiInfo = mACoolTimeImage->GetUIInfomation(0);
+	uiInfo.Height = mCoolTimeHeight * aCool;
+	mACoolTimeImage->SetUIInfomation(0, uiInfo);
+	mACoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0});
+
+	uiInfo = mRCoolTimeImage->GetUIInfomation(0);
+	uiInfo.Height = mCoolTimeHeight * rCool;
+	mRCoolTimeImage->SetUIInfomation(0, uiInfo);
+	mRCoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
+
+	uiInfo = mXCoolTimeImage->GetUIInfomation(0);
+	uiInfo.Height = mCoolTimeHeight * xCool;
+	mXCoolTimeImage->SetUIInfomation(0, uiInfo);
+	mXCoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
+}
+
