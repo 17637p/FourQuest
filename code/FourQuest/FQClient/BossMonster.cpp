@@ -14,6 +14,7 @@
 #include "ClientHelper.h"
 #include "MonsterDefine.h"
 #include "DeadArmour.h"
+#include "LevelHepler.h"
 
 fq::client::BossMonster::BossMonster()
 	:mMaxHp(0.f)
@@ -77,6 +78,9 @@ void fq::client::BossMonster::OnStart()
 	mAnimator = GetComponent<game_module::Animator>();
 	mKnockBack = GetComponent<KnockBack>();
 
+	// 난이도에 따른 공격력 Hp 설정
+	mAttackPower = mAttackPower * LevelHepler::GetDamageRatio();
+	mHp = mHp * LevelHepler::GetHpRatio();
 	mMaxHp = mHp;
 
 	auto agent = GetComponent<game_module::NavigationAgent>();
