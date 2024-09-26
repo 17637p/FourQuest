@@ -3,6 +3,7 @@
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/PrefabResource.h"
 #include "PlayerDefine.h"
+#include "BGaugeUI.h"
 
 namespace fq::client
 {
@@ -28,6 +29,11 @@ namespace fq::client
 
 		bool IsSummonAble()const;
 
+		/// <summary>
+		/// 플레이어가 갑옷을 입을 수 있는 지 쿨타임을 확인하고 UI를 표시합니다.
+		/// </summary>
+		void CheckArmourCoolTime(unsigned int playerID) const;
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnStart() override;
@@ -39,6 +45,7 @@ namespace fq::client
 		void setUI(bool isVisible);
 	private:
 		game_module::PrefabResource mLivingArmourPrefab;
+		BGaugeUI* mBGaugeUI;
 
 		unsigned short mPlayerCount;
 		bool mbIsVisible;

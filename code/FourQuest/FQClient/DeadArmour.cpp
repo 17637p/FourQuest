@@ -19,6 +19,7 @@ fq::client::DeadArmour::DeadArmour()
 	, mUnequippedPlayerId(-1)
 	, mPlayerArmourCoolTime(0.f)
 	, mbIsSummonAble(true)
+	, mBGaugeUI(nullptr)
 {}
 
 fq::client::DeadArmour::~DeadArmour()
@@ -99,6 +100,9 @@ void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collisi
 		{
 			--mPlayerCount;
 		}
+
+		if (mBGaugeUI)
+			mBGaugeUI->SetVisible(false);
 	}
 
 	if (mPlayerCount == 0 && mbIsSummonAble)
@@ -116,6 +120,14 @@ void fq::client::DeadArmour::OnStart()
 
 	setUI(false);
 	mbIsSummonAble = true;
+
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		auto ui = child->GetComponent<BGaugeUI>();
+
+		if (ui)
+			mBGaugeUI = ui;
+	}
 }
 
 void fq::client::DeadArmour::setUI(bool isVisible)
@@ -196,6 +208,23 @@ void fq::client::DeadArmour::SetSummonAble(bool isSummonAble)
 bool fq::client::DeadArmour::IsSummonAble() const
 {
 	return !GetGameObject()->IsDestroyed() && mbIsSummonAble;
+}
+
+void fq::client::DeadArmour::CheckArmourCoolTime(unsigned int playerID) const
+{
+	if (!mBGaugeUI)
+		return;
+
+	mBGaugeUI->SetVisible(true);
+
+	if (mUnequippedPlayerId == playerID)
+	{
+		mBGaugeUI->SetRatio((mPlayerArmourCoolTime / SoulVariable::ArmourCoolTime) * 360.f);
+	}
+	else
+	{
+		mBGaugeUI->SetRatio(360.f);
+	}
 }
 
 void fq::client::DeadArmour::setOutlineColor(DirectX::SimpleMath::Color color)

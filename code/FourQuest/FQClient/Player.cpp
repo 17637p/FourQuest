@@ -22,6 +22,7 @@
 #include "PlayerVariable.h"
 #include "DebuffPoisonZone.h"
 #include "DeadArmour.h"
+#include "BGaugeUI.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -38,6 +39,7 @@ fq::client::Player::Player()
 	, mArmourType(EArmourType::Knight)
 	, mbOnShieldBlock(false)
 	, mTransform(nullptr)
+	, mBGaugeUI(nullptr)
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
 	, mFeverElapsedTime(0.f)
@@ -99,6 +101,11 @@ void fq::client::Player::OnStart()
 	mTransform = GetComponent<fq::game_module::Transform>();
 	mBaseSpeed = GetComponent<fq::game_module::CharacterController>()->GetMovementInfo().maxSpeed;
 	mBaseAcceleration = GetComponent<fq::game_module::CharacterController>()->GetMovementInfo().acceleration;
+	for (const auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<BGaugeUI>())
+			mBGaugeUI = child->GetComponent<BGaugeUI>();
+	}
 	mBaseAttackPower = mAttackPower;
 
 	// Playerµî·Ï
@@ -143,6 +150,12 @@ void fq::client::Player::processInput(float dt)
 	{
 		mUnequipArmourDurationTime += dt;
 
+		if (mBGaugeUI)
+		{
+			mBGaugeUI->SetVisible(true);
+			mBGaugeUI->SetRatio(mUnequipArmourDurationTime / SoulVariable::ButtonTime * 360.f);
+		}
+
 		if (mUnequipArmourDurationTime < SoulVariable::ButtonTime)
 			return;
 
@@ -182,6 +195,11 @@ void fq::client::Player::processInput(float dt)
 	else if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Away))
 	{
 		mbIsUnequipArmourButton = false;
+
+		if (mBGaugeUI)
+		{
+			mBGaugeUI->SetVisible(false);
+		}
 	}
 }
 
