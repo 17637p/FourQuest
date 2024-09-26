@@ -36,6 +36,8 @@ namespace fq::client
 
 		float targetPosRatio = 1.f; // TargetPositionAndDirectionByAngle용 변수
 		float directionRatio = 1.f; // TargetPositionAndDirectionByAngle용 변수
+
+		std::string HitEffectName;
 	};
 
 	struct ArrowAttackInfo
@@ -52,6 +54,8 @@ namespace fq::client
 		DirectX::SimpleMath::Matrix attackTransform{};
 
 		std::string hitSound; // 피격 소리
+		
+		std::string HitEffectName;
 	};
 
 }

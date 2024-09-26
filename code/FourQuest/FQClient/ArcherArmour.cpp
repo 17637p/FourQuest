@@ -70,6 +70,7 @@ namespace fq::client
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = false;
 		attackInfo.hitSound = "A_WeakAttack_Hit";
+		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
 		attackComponent->Set(attackInfo);
 
 		// 약공격 소리
@@ -115,7 +116,7 @@ namespace fq::client
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = true;
 		attackInfo.hitSound = "A_StrongAttack_Hit";
-		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_StrongAttack", false , 0 });
+		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
 
 		switch (chargeLevel)
 		{

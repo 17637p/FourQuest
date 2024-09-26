@@ -195,6 +195,7 @@ void fq::client::MagicArmour::EmitLaser()
 					isIncrease = true;
 				}
 			};
+		attackInfo.HitEffectName = "M_Laser_Hit";
 		attackComponent->Set(attackInfo);
 
 		// 공격 위치 설정

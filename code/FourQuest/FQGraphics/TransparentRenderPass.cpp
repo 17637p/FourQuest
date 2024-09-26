@@ -200,8 +200,6 @@ namespace fq::graphics
 					job.StaticMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
-					bindingState(materialInfo);
-
 					if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::VertexColor)
 					{
 						mStaticMeshVertexColorShaderProgram->Bind(mDevice);
@@ -210,6 +208,8 @@ namespace fq::graphics
 					{
 						mStaticMeshShaderProgram->Bind(mDevice);
 					}
+
+					bindingState(materialInfo);
 
 					// 반투명 오브젝트에 데칼 적용이 될 필요가 있나?
 					//if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)

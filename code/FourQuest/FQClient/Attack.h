@@ -64,6 +64,8 @@ namespace fq::client
 
 		void SetAttackDirection(DirectX::SimpleMath::Vector3 direction);
 
+		const std::string& GetAttackEffectEvent() const { return mAttackEffectEvent; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnUpdate(float dt) override;
@@ -91,6 +93,8 @@ namespace fq::client
 
 		float mTargetPosRatio; // TargetPositionAndDirectionByAngle용 변수
 		float mDirectionRatio; // TargetPositionAndDirectionByAngle용 변수
+
+		std::string mAttackEffectEvent;
 
 		friend void RegisterMetaData();
 	};

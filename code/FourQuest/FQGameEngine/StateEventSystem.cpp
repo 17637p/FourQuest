@@ -50,7 +50,7 @@ void fq::game_engine::StateEventSystem::OnLoadScene()
 	);
 }
 
-void fq::game_engine::StateEventSystem::OnAnimationStateEvent(const fq::event::AnimationStateEvent& data)
+void fq::game_engine::StateEventSystem::OnAnimationStateEvent(const fq::event::OnCreateStateEvent& data)
 {
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
@@ -178,11 +178,11 @@ void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
 		RegisterHandle<fq::event::OnLoadScene>(this, &StateEventSystem::OnLoadScene);
 
 	mOnProcessStateEvent = eventMgr->
-		RegisterHandle<fq::event::AnimationStateEvent>(this, &StateEventSystem::OnAnimationStateEvent);
+		RegisterHandle<fq::event::OnCreateStateEvent>(this, &StateEventSystem::OnAnimationStateEvent);
 
 	mOnProcessStateExitEvent = eventMgr->
-		RegisterHandle<fq::event::AnimationStateExitEvent>(
-			[this](const fq::event::AnimationStateExitEvent& data)
+		RegisterHandle<fq::event::OnDeleteStateEvent>(
+			[this](const fq::event::OnDeleteStateEvent& data)
 			{
 				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 

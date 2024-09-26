@@ -23,7 +23,7 @@ namespace fq::game_engine
 		~StateEventSystem();
 
 		void OnLoadScene();
-		void OnAnimationStateEvent(const fq::event::AnimationStateEvent& data);
+		void OnAnimationStateEvent(const fq::event::OnCreateStateEvent& data);
 
 		void Initialize(GameProcess* gameProcess);
 		void Update(float dt);

@@ -402,6 +402,7 @@ void fq::client::Player::EmitSwordSoulAttack()
 	attackInfo.attackDirection = foward;
 	attackInfo.knocBackPower = 20.f;
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
+	attackInfo.HitEffectName = "K_Swing_Hit_blood";
 	attackComponent->Set(attackInfo);
 
 
@@ -518,6 +519,7 @@ void fq::client::Player::EmitAxeSoulAttack()
 	AttackInfo attackInfo{};
 	attackInfo.damage = dc::GetAxeSoulDamage(mAttackPower);
 	attackInfo.attacker = GetGameObject();
+	attackInfo.HitEffectName = "W_Hit_blunt";
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);

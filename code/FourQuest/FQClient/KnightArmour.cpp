@@ -83,6 +83,7 @@ void fq::client::KnightArmour::EmitSwordAttack()
 	bool isSwing1 = name == "Swing1";
 
 	attackInfo.hitSound = isSwing1 ? "K_Swing1_Hit" : "K_Swing2_Hit";
+	attackInfo.HitEffectName = "K_Swing_Hit_blood";
 	attackComponent->Set(attackInfo);
 
 	// 공격 트랜스폼 설정
@@ -123,6 +124,7 @@ void fq::client::KnightArmour::EmitShieldAttack()
 	attackInfo.knocBackPower = mDashKnockBackPower;
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
 	attackInfo.hitSound = "K_Swing3_Hit";
+	attackInfo.HitEffectName = "W_Hit_blunt";
 	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
 		{
 			if (!isIncrease)
@@ -166,6 +168,7 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 				isIncrease = true;
 			}
 		};
+	attackInfo.HitEffectName = "W_Hit_blunt";
 	attackComponent->Set(attackInfo);
 
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Bash", false , fq::sound::EChannel::SE });

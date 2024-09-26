@@ -52,7 +52,7 @@ void fq::game_module::AnimationStateNode::ProcessAnimationEvent(class GameObject
 	{
 		if (currentEvent.bIsProcessed && !currentEvent.bIsFired)
 		{
-			eventManager->FireEvent<fq::event::AnimationStateEvent>({ currentEvent.FunctionName, gameObject });
+			eventManager->FireEvent<fq::event::OnCreateStateEvent>({ currentEvent.FunctionName, gameObject });
 			currentEvent.bIsFired = true;
 		}
 	}
@@ -68,7 +68,10 @@ void fq::game_module::AnimationStateNode::OnStateExit()
 	auto eventManager = mController->GetAnimator()->GetScene()->GetEventManager();
 	auto gameObject = mController->GetAnimator()->GetGameObject();
 
-	eventManager->FireEvent<fq::event::AnimationStateExitEvent>({ gameObject });
+	if (!mEvents.empty())
+	{
+		eventManager->FireEvent<fq::event::OnDeleteStateEvent>({ gameObject });
+	}
 }
 
 void fq::game_module::AnimationStateNode::OnStateEnter()

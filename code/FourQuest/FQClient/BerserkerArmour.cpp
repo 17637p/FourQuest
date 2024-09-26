@@ -90,6 +90,7 @@ namespace fq::client
 		attackInfo.hitSound = hitSoundName;
 		attackInfo.targetPosRatio = mTargetPosRatio;
 		attackInfo.directionRatio = mDirectionRatio;
+		attackInfo.HitEffectName = "W_Hit_blunt";
 
 		attackComponent->Set(attackInfo);
 

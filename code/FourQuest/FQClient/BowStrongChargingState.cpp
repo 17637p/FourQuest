@@ -11,6 +11,9 @@ namespace fq::client
 	BowStrongChargingState::BowStrongChargingState()
 		: mChargingElapsedTime()
 		, mRotationSpeed()
+		, mStringAttackIndex(1u)
+		, mForcedChargingWaitingTime(0.f)
+		, mbIsEmitAttack(false)
 	{
 	}
 
@@ -22,8 +25,7 @@ namespace fq::client
 	{
 		mChargingElapsedTime = 0.f;
 		auto archer = animator.GetComponent<ArcherArmour>();
-
-		mChargingEffect = archer->EmitChargingEffect();
+		mbIsEmitAttack = false;
 	}
 
 	void BowStrongChargingState::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
@@ -38,52 +40,31 @@ namespace fq::client
 		auto input = animator.GetGameObject()->GetScene()->GetInputManager();
 
 		// 무조건 0.5초 당기고 차징한 시간에 따라 공격이 달라지도록
-		if (input->IsPadKeyState(controllerID, EPadKey::X, EKeyState::None) && mChargingElapsedTime >= 0.5f)
+		if (input->IsPadKeyState(controllerID, EPadKey::X, EKeyState::None) && mChargingElapsedTime >= mForcedChargingWaitingTime)
 		{
 			animator.SetParameterBoolean("OnCharging", false);
-			animator.SetParameterFloat("ChargingTime", mChargingElapsedTime);
+
+			if (!mbIsEmitAttack)
+			{
+				archer->EmitStrongAttack(mStringAttackIndex);
+				mbIsEmitAttack = true;
+			}
 		}
 		else
 		{
 			animator.SetParameterBoolean("OnCharging", true);
 		}
+
+		if (mChargingWationTime < mChargingElapsedTime)
+		{
+			animator.SetParameterBoolean("OnNextStay", true);
+		}
 	}
 
 	void BowStrongChargingState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 	{
-		auto archer = animator.GetComponent<ArcherArmour>();
-		float changeChargingTime = archer->GetChangeChargingTime();
-
-		if (mChargingEffect != nullptr)
-		{
-			animator.GetScene()->DestroyGameObject(mChargingEffect.get());
-			mChargingEffect = nullptr;
-		}
-
-		// 차징 단계에 따라 발사되는 화살 세기가 달라집니다.
-		if (changeChargingTime * 3 <= mChargingElapsedTime)
-		{
-			archer->EmitStrongAttack(4);
-			archer->EmitStrongAttackEffect();
-		}
-		else if (changeChargingTime * 2 <= mChargingElapsedTime)
-		{
-			archer->EmitStrongAttack(3);
-			archer->EmitStrongAttackEffect();
-		}
-		else if (changeChargingTime * 1 <= mChargingElapsedTime)
-		{
-			archer->EmitStrongAttack(2);
-			archer->EmitStrongAttackEffect();
-		}
-		else
-		{
-			archer->EmitStrongAttack(1);
-			archer->EmitStrongAttackEffect();
-		}
+		animator.SetParameterBoolean("OnNextStay", false);
 	}
-
-
 
 	std::shared_ptr<fq::game_module::IStateBehaviour> BowStrongChargingState::Clone()
 	{

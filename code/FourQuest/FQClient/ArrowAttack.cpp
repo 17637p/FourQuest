@@ -44,7 +44,7 @@ namespace fq::client
 				GetScene()->DestroyGameObject(GetGameObject());
 			}
 		}
-		
+
 		// 강공격 일 경우 일직선으로 날아가도록
 		if (mbIsStrongAttack && mMaxBlockCount > 0)
 		{
@@ -121,12 +121,12 @@ namespace fq::client
 		if (GetGameObject()->HasComponent<Attack>())
 		{
 			auto attack = GetComponent<Attack>();
-			AttackInfo info;
-			info.attacker = mAttacker;
-			info.hitSound = mHitSound;
-			info.attackDirection = mAttackDirection;
-			info.attackPosition = mAttackTransform.Translation();
-			info.mHitCallback = [this, isIncrease = false]() mutable
+			AttackInfo attackInfo;
+			attackInfo.attacker = mAttacker;
+			attackInfo.hitSound = mHitSound;
+			attackInfo.attackDirection = mAttackDirection;
+			attackInfo.attackPosition = mAttackTransform.Translation();
+			attackInfo.mHitCallback = [this, isIncrease = false]() mutable
 				{
 					if (!isIncrease)
 					{
@@ -137,16 +137,18 @@ namespace fq::client
 
 			if (mbIsStrongAttack)
 			{
-				info.remainingAttackCount = mMaxBlockCount;
-				info.damage = mStrongAttackPower;
+				attackInfo.remainingAttackCount = mMaxBlockCount;
+				attackInfo.damage = mStrongAttackPower;
 			}
 			else
 			{
-				info.remainingAttackCount = 1;
-				info.damage = mWeakAttackPower;
+				attackInfo.remainingAttackCount = 1;
+				attackInfo.damage = mWeakAttackPower;
 			}
 
-			attack->Set(info);
+
+			attackInfo.HitEffectName = info.HitEffectName;
+			attack->Set(attackInfo);
 		}
 		else
 		{

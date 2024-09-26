@@ -263,6 +263,15 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
 
+			// 이펙트 방출
+			fq::event::OnCreateStateEvent stateEvent;
+			stateEvent.gameObject = GetGameObject();
+			stateEvent.RegisterKeyName = playerAttack->GetAttackEffectEvent();
+			if (!stateEvent.RegisterKeyName.empty())
+			{
+				GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+			}
+
 			// 사망처리 
 			if (mHp <= 0.f)
 			{
