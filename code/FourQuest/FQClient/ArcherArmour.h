@@ -56,8 +56,10 @@ namespace fq::client
 		AimAssist*							mAimAssist;
 
 		float mDashCoolTime;
+		float mDashCoolTimeReduction;
 		float mDashElapsedTime;
 		float mStrongAttackCoolTime;
+		float mStrongAttackCoolTimeReduction;
 		float mStrongAttackElapsedTime;
 		float mArrowPower;
 		float mRStickNoInputTime;

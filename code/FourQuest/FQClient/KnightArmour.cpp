@@ -5,6 +5,7 @@
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/CharacterController.h"
 #include "Player.h"
+#include "PlayerVariable.h"
 #include "Attack.h"
 #include "DamageCalculation.h"
 #include "PlayerSoulVariable.h"
@@ -28,6 +29,8 @@ fq::client::KnightArmour::KnightArmour()
 	, mShieldCoolTime(5.f)
 	, mShieldDuration(3.f)
 	, mShieldSpeedRatio(0.5f)
+	, mShieldCoolTimeReduction(0.f)
+	, mDashCoolTimeReduction(0.f)
 {}
 
 fq::client::KnightArmour::~KnightArmour()
@@ -96,6 +99,9 @@ void fq::client::KnightArmour::EmitSwordAttack()
 	// Sword 소리
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ isSwing1 ? "K_Swing1" : "K_Swing2", false , fq::sound::EChannel::SE });
 
+	// 공격시 체력 감소 
+	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -135,9 +141,11 @@ void fq::client::KnightArmour::EmitShieldAttack()
 		};
 	attackComponent->Set(attackInfo);
 
+	// 공격시 체력 감소 
+	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
 	// ShieldAttack 소리
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Swing3", false , fq::sound::EChannel::SE });
-
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -171,6 +179,9 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 	attackInfo.HitEffectName = "W_Hit_blunt";
 	attackComponent->Set(attackInfo);
 
+	// 공격시 체력 감소 
+	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Bash", false , fq::sound::EChannel::SE });
 	GetScene()->AddGameObject(attackObj);
 }
@@ -192,7 +203,11 @@ void fq::client::KnightArmour::checkInput()
 		&& mDashElapsedTime == 0.f)
 	{
 		mAnimator->SetParameterTrigger("OnDash");
-		mDashElapsedTime = mDashCoolTime;
+
+		if (mPlayer->IsFeverTime())
+			mDashElapsedTime = mDashCoolTime - mDashCoolTimeReduction;
+		else
+			mDashElapsedTime = mDashCoolTime;
 	}
 
 	// Shield Input
@@ -213,6 +228,8 @@ void fq::client::KnightArmour::checkInput()
 
 void fq::client::KnightArmour::UpdateBlockState(float dt)
 {
+	mOnShieldElapsedTime += dt;
+
 	// 방패 밀려나는 방향설정
 	if (mShieldObject)
 	{
@@ -227,19 +244,22 @@ void fq::client::KnightArmour::UpdateBlockState(float dt)
 
 	// 방패 해제 조건 
 	if (rightInput.LengthSquared() <= 0.001f
-		|| mShieldCoolTime - mShieldElapsedTime >= mShieldDuration)
+		|| mOnShieldElapsedTime >= mShieldDuration)
 	{
 		mAnimator->SetParameterBoolean("OnShield", false);
 		mPlayer->SetOnShieldBlock(false);
 	}
 
-	float ratio = 1.f - ((mShieldCoolTime - mShieldElapsedTime) / mShieldDuration);
+	float ratio = 1.f - (mOnShieldElapsedTime / mShieldDuration);
+
 	GetComponent<GaugeBar>()->SetRatio(ratio);
 
 	// 방패 이동속도 적용
 	mController->AddFinalSpeedMultiplier(mShieldSpeedRatio - 1.f);
-}
 
+	// 공격 체력 감소
+	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack * dt, true, true);
+}
 
 void fq::client::KnightArmour::OnStart()
 {
@@ -254,6 +274,17 @@ void fq::client::KnightArmour::checkSkillCoolTime(float dt)
 {
 	mDashElapsedTime = std::max(0.f, mDashElapsedTime - dt);
 	mShieldElapsedTime = std::max(0.f, mShieldElapsedTime - dt);
+
+	if (mPlayer->IsFeverTime())
+	{
+		mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / (mDashCoolTime - mDashCoolTimeReduction));
+		mPlayer->SetRSkillCoolTimeRatio(mShieldElapsedTime / (mShieldCoolTime - mShieldCoolTimeReduction));
+	}
+	else
+	{
+		mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / mDashCoolTime);
+		mPlayer->SetRSkillCoolTimeRatio(mShieldElapsedTime / mShieldCoolTime);
+	}
 }
 
 std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSwordEffect()
@@ -278,21 +309,29 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSword
 void fq::client::KnightArmour::ExitShieldState()
 {
 	mGaugeBar->SetVisible(false);
-	
+
 	if (mShieldObject)
 	{
 		GetScene()->DestroyGameObject(mShieldObject.get());
 		mShieldObject = nullptr;
 	}
+
+	mOnShieldElapsedTime = 0.f;
 }
 
 void fq::client::KnightArmour::EnterShieldState()
 {
 	mAnimator->SetParameterBoolean("OnShield", true);
 	mPlayer->SetOnShieldBlock(true);
-	mShieldElapsedTime = mShieldCoolTime;
 	mGaugeBar->SetVisible(true);
 	mGaugeBar->SetRatio(1.f);
+
+	if (mPlayer->IsFeverTime())
+		mShieldElapsedTime = mShieldCoolTime - mShieldCoolTimeReduction;
+	else
+		mShieldElapsedTime = mShieldCoolTime;
+
+	mOnShieldElapsedTime = 0.f;
 
 	// 쉴드 콜라이더 생성
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mShieldCollider);

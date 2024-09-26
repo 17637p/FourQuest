@@ -147,6 +147,7 @@
 #include "PlayerInfoVariable.h"
 #include "PlayerVariable.h"
 #include "SoulVariable.h"
+#include "LevelVariable.h"
 
 // Box
 #include "Box.h"
@@ -197,7 +198,6 @@ void fq::client::RegisterMetaData()
 		.data<&MonsterManager::mRes>("mRes"_hs)
 		.prop(fq::reflect::prop::Name, "mRes")
 		.base<game_module::Component>();
-
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             ETC										//
@@ -335,6 +335,14 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "RazerDistance")
 		.data<&MagicArmour::mLaserHiTick>("RazerHiTick"_hs)
 		.prop(reflect::prop::Name, "RazerHiTick")
+		.data<&MagicArmour::mLaserCoolTime>("LaserCoolTime"_hs)
+		.prop(reflect::prop::Name, "LaserCoolTime")
+		.data<&MagicArmour::mLaserCoolTimeReduction>("LaserCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "LaserCoolTimeReduction")
+		.data<&MagicArmour::mAOECoolTime>("AOECoolTime"_hs)
+		.prop(reflect::prop::Name, "AOECoolTime")
+		.data<&MagicArmour::mAOECoolTimeReduction>("AOECoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "AOECoolTimeReduction")
 		.data<&MagicArmour::mMagicBall>("MagicBall"_hs)
 		.prop(reflect::prop::Name, "MagicBall")
 		.data<&MagicArmour::mAOE>("AOE"_hs)
@@ -357,6 +365,9 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&KnightArmour::mDashCoolTime>("DashCoolTime"_hs)
 		.prop(reflect::prop::Name, "DashCoolTime")
+		.data<&KnightArmour::mDashCoolTimeReduction>("DashCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "DashCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버타임 대쉬 쿨타임감소량")
 		.data<&KnightArmour::mAttackOffset>("AttackOffset"_hs)
 		.prop(reflect::prop::Name, "AttackOffset")
 		.data<&KnightArmour::mShieldDashPower>("ShieldDashPushPower"_hs)
@@ -380,6 +391,9 @@ void fq::client::RegisterMetaData()
 		.data<&KnightArmour::mShieldCoolTime>("ShieldCoolTime"_hs)
 		.prop(reflect::prop::Name, "ShieldCoolTime")
 		.prop(reflect::prop::Comment, u8"쉴드 쿨타임")
+		.data<&KnightArmour::mShieldCoolTimeReduction>("ShieldCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "ShieldCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버타임 쉴드 쿨타임감소량")
 		.data<&KnightArmour::mShieldDuration>("ShieldDuration"_hs)
 		.prop(reflect::prop::Name, "ShieldDuration")
 		.prop(reflect::prop::Comment, u8"쉴드 지속시간")
@@ -407,9 +421,15 @@ void fq::client::RegisterMetaData()
 		.data<&ArcherArmour::mDashCoolTime>("DashCoolTime"_hs)
 		.prop(reflect::prop::Name, "DashCoolTime")
 		.prop(reflect::prop::Comment, u8"구르기 쿨타임")
+		.data<&ArcherArmour::mDashCoolTimeReduction>("DashCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "DashCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버시 구르기 쿨타임 감소량")
 		.data<&ArcherArmour::mStrongAttackCoolTime>("StrongAttackCoolTime"_hs)
 		.prop(reflect::prop::Name, "StrongAttackCoolTime")
 		.prop(reflect::prop::Comment, u8"X공격(강공격) 쿨타임")
+		.data<&ArcherArmour::mStrongAttackCoolTimeReduction>("StrongAttackCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "StrongAttackCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버시 X공격(강공격) 쿨타임 감소량")
 		.data<&ArcherArmour::mArrowPower>("ArrowPower"_hs)
 		.prop(reflect::prop::Name, "ArrowPower")
 		.prop(reflect::prop::Comment, u8"공격력")
@@ -464,12 +484,15 @@ void fq::client::RegisterMetaData()
 		.data<&BerserkerArmour::mSwingAroundCoolTime>("mSwingAroundCoolTime"_hs)
 		.prop(reflect::prop::Name, "mSwingAroundCoolTime")
 		.prop(reflect::prop::Comment, u8"휩쓸기(A 버튼) 쿨타임")
+		.data<&BerserkerArmour::mSwingAroundCoolTimeReduction>("SwingAroundCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "SwingAroundCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버시 휩쓸기(A 버튼) 쿨타임 감소량")
 		.data<&BerserkerArmour::mRushCoolTime>("RushCoolTime"_hs)
 		.prop(reflect::prop::Name, "RushCoolTime")
 		.prop(reflect::prop::Comment, u8"돌진(R 스틱) 쿨타임")
-		.data<&BerserkerArmour::mRushCoolTime>("RushCoolTime"_hs)
-		.prop(reflect::prop::Name, "RushCoolTime")
-		.prop(reflect::prop::Comment, u8"돌진(R 스틱) 쿨타임")
+		.data<&BerserkerArmour::mRushCoolTimeReduction>("RushCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "RushCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버시 돌진(R 스틱) 쿨타임 감소량")
 		.data<&BerserkerArmour::mTargetPosRatio>("Pushed Back Ratio"_hs)
 		.prop(reflect::prop::Name, "Pushed Back Ratio")
 		.prop(reflect::prop::Comment, u8"기본 공격 시 뒤로 밀리는 비율")
@@ -1936,6 +1959,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "FeverAttackIncreaseRatio")
 		.data<&PlayerVariable::FeverSpeedIncreaseRatio>("FeverSpeedIncreaseRatio"_hs)
 		.prop(fq::reflect::prop::Name, "FeverSpeedIncreaseRatio")
+		.data<&PlayerVariable::HpReductionOnAttack>("HpReductionOnAttack"_hs)
+		.prop(fq::reflect::prop::Name, "HpReductionOnAttack")
+		.data<&PlayerVariable::HpReductionOnAttackMinHp>("HpReductionOnAttackMinHp"_hs)
+		.prop(fq::reflect::prop::Name, "HpReductionOnAttackMinHp")
 		.base<IGameVariable>();
 
 	entt::meta<PlayerInfoVariable>()
@@ -2081,7 +2108,13 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Player4DeathCount")
 		.base<IGameVariable>();
 
+	entt::meta<LevelVariable>()
+		.type("LevelVariable"_hs)
+		.prop(fq::reflect::prop::Name, "LevelVariable")
 
+
+
+		.base<IGameVariable>();
 	//////////////////////////////////////////////////////////////////////////
 	//								  Box									//
 	//////////////////////////////////////////////////////////////////////////

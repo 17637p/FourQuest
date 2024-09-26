@@ -58,11 +58,14 @@ namespace fq::client
 		std::shared_ptr<game_module::GameObject> mShieldObject;
 
 		float mDashCoolTime;
+		float mDashCoolTimeReduction;
 		float mDashElapsedTime;
 		float mShieldCoolTime;
+		float mShieldCoolTimeReduction;
 		float mShieldSpeedRatio;
 		float mShieldDuration;
 		float mShieldElapsedTime;
+		float mOnShieldElapsedTime;
 
 		float mShieldDashPower;
 		float mXAttackDashPower;

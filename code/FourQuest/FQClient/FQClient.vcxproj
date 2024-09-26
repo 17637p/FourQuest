@@ -126,7 +126,7 @@
     <ClInclude Include="MonsterManager.h" />
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="LinearAttack.h" />
-    <ClInclude Include="MonsterVariable.h" />
+    <ClInclude Include="LevelVariable.h" />
     <ClInclude Include="PauseUI.h" />
     <ClInclude Include="PlantMonster.h" />
     <ClInclude Include="PlantMonsterAOEAttackState.h" />

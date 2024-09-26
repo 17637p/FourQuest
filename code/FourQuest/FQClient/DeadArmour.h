@@ -21,6 +21,9 @@ namespace fq::client
 		bool SummonLivingArmour(PlayerInfo info);
 
 		void SetUnequippedPlayerId(int playerID) { mUnequippedPlayerId = playerID; }
+		int GetUnequippedPlayerId() { return mUnequippedPlayerId; }
+
+		float GetPlayerArmourCoolTime() { return mPlayerArmourCoolTime; }
 
 		/// <summary>
 		/// 갑옷이 빙의 가능한 상태인지 설정합니다 
@@ -45,7 +48,6 @@ namespace fq::client
 		void setUI(bool isVisible);
 	private:
 		game_module::PrefabResource mLivingArmourPrefab;
-		BGaugeUI* mBGaugeUI;
 
 		unsigned short mPlayerCount;
 		bool mbIsVisible;

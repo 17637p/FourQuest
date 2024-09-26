@@ -38,7 +38,7 @@ namespace fq::client
 		int GetPlayerID() const;
 
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
-		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit;  }
+		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit; }
 		int GetSoulBuffNumber() { return mSoulBuffNumber; }
 		void SetSoulBuffNumber(int buffNumber) { mSoulBuffNumber = buffNumber; }
 
@@ -82,7 +82,18 @@ namespace fq::client
 		/// </summary>
 		void AddSoulGauge(float soul);
 
+		/// <summary>
+		/// Hp를 설정합니다 
+		/// </summary>
 		void SetHp(float hp);
+
+		/// <summary>
+		/// 플레이어 Hp를 감소시킵니다
+		/// </summary>
+		/// <param name="hp">hp 감소량</param>
+		/// <param name="bUseMinHp">Hp최소량 설정 사용여부</param>
+		/// <param name="bIgnoreInvisible">무적시간에 무시하는지</param>
+		void DecreaseHp(float hp, bool bUseMinHp = false, bool bIgnoreInvincible = false);
 
 		/// <summary>
 		/// 소울 공격이 가능한 상태인지 확인합니다.
@@ -99,6 +110,26 @@ namespace fq::client
 		/// </summary>
 		void SetLowerBodyAnimation();
 
+		/// <summary>
+		/// A 스킬 쿨타임 비율을 반환합니다
+		/// 스킬을 사용가능한 상태가 0.f
+		/// </summary>
+		float GetASkillCoolTimeRatio()const;
+		void SetASkillCoolTimeRatio(float ratio);
+
+		/// <summary>
+		/// X 스킬 쿨타임 비율을 반환합니다 
+		/// 스킬을 사용가능한 상태가 0.f
+		/// </summary>
+		float GetXSkillCoolTimeRatio()const;
+		void SetXSkillCoolTimeRatio(float ratio);
+
+		/// <summary>
+		/// R 스킬 쿨타임 비율을 반환합니다 
+		/// 스킬을 사용가능한 상태가 0.f
+		/// </summary>
+		float GetRSkillCoolTimeRatio()const;
+		void SetRSkillCoolTimeRatio(float ratio);
 
 	private:
 		void processInput(float dt);
@@ -148,6 +179,10 @@ namespace fq::client
 		float mFeverElapsedTime; // 피버타임 경과 시간
 		bool mbIsFeverTime; // 현재 피버 타임인지 
 
+ 		float mRSkillCoolTimeRatio; // R 버튼 쿨타임  
+		float mASkillCoolTimeRatio; // A 버튼 쿨타임
+		float mXSkillCoolTimeRatio; // X 버튼 쿨타임
+
 		float mUnequipArmourDurationTime;	// 갑옷 벗고 있는 시간
 		bool mbIsUnequipArmourButton;			// 갑옷 벗는 버튼 클릭
 
@@ -160,7 +195,7 @@ namespace fq::client
 		game_module::PrefabResource mDeadMagicArmour;	// 마법사 갑옷
 		game_module::PrefabResource mDeadArcherArmour;	// 궁수 갑옷
 		game_module::PrefabResource mDeadWarriorArmour; // 광전사 갑옷
-		
+
 		// 영혼 머리 
 		game_module::PrefabResource mSwordHaed;
 		game_module::PrefabResource mBowHaed;

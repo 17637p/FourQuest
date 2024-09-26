@@ -377,7 +377,7 @@
     <ClInclude Include="GameVaribleHelper.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterVariable.h">
+    <ClInclude Include="LevelVariable.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
     <ClInclude Include="IGameVariable.h">

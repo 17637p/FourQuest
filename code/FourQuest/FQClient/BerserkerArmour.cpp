@@ -2,6 +2,7 @@
 #include "Attack.h"
 #include "DamageCalculation.h"
 #include "Player.h"
+#include "PlayerVariable.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Animator.h"
@@ -21,44 +22,44 @@ namespace fq::client
 
 		switch (attackType)
 		{
-		case EBerserkerAttackType::Left:
-			hitSoundName = mLeftAttackHitSound;
-			knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
-			direction = -right;
-			damage = dc::GetBluntFirstConsecutiveAttackDamage(mPlayer->GetAttackPower());
-			attackPrefabResource = mBoxAttackPrefab;
-			break;
-		case EBerserkerAttackType::Right:
-			hitSoundName = mRightAttackHitSound;
-			knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
-			direction = right;
-			damage = dc::GetBluntSecondConsecutiveAttackDamage(mPlayer->GetAttackPower());
-			attackPrefabResource = mBoxAttackPrefab;
-			break;
-		case EBerserkerAttackType::StrikeDown:
-			hitSoundName = mStrikeDownAttackHitSound;
-			knockBackType = EKnockBackType::TargetPosition;
-			direction = foward;
-			damage = dc::GetBluntThirdConsecutiveAttackDamage(mPlayer->GetAttackPower());
-			attackPrefabResource = mBoxAttackPrefab;
-			break;
-		case EBerserkerAttackType::SwingAround:
-			hitSoundName = mSwingAroundHitSound;
-			knockBackType = EKnockBackType::TargetPositionAndKnockDown;
-			direction = foward;
-			damage = dc::GetBluntSwingAroundDamage(mPlayer->GetAttackPower());
-			attackPrefabResource = mCircleAttackPrefab;
-			break;
-		case EBerserkerAttackType::Rush:
-			hitSoundName = mAttackRushHitSound;
-			knockBackType = EKnockBackType::TargetPosition;
-			direction = foward;
-			damage = dc::GetBluntRsuhDamage(mPlayer->GetAttackPower());
-			attackPrefabResource = mCircleAttackPrefab;
-			break;
-		default:
-			assert(false);
-			break;
+			case EBerserkerAttackType::Left:
+				hitSoundName = mLeftAttackHitSound;
+				knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
+				direction = -right;
+				damage = dc::GetBluntFirstConsecutiveAttackDamage(mPlayer->GetAttackPower());
+				attackPrefabResource = mBoxAttackPrefab;
+				break;
+			case EBerserkerAttackType::Right:
+				hitSoundName = mRightAttackHitSound;
+				knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
+				direction = right;
+				damage = dc::GetBluntSecondConsecutiveAttackDamage(mPlayer->GetAttackPower());
+				attackPrefabResource = mBoxAttackPrefab;
+				break;
+			case EBerserkerAttackType::StrikeDown:
+				hitSoundName = mStrikeDownAttackHitSound;
+				knockBackType = EKnockBackType::TargetPosition;
+				direction = foward;
+				damage = dc::GetBluntThirdConsecutiveAttackDamage(mPlayer->GetAttackPower());
+				attackPrefabResource = mBoxAttackPrefab;
+				break;
+			case EBerserkerAttackType::SwingAround:
+				hitSoundName = mSwingAroundHitSound;
+				knockBackType = EKnockBackType::TargetPositionAndKnockDown;
+				direction = foward;
+				damage = dc::GetBluntSwingAroundDamage(mPlayer->GetAttackPower());
+				attackPrefabResource = mCircleAttackPrefab;
+				break;
+			case EBerserkerAttackType::Rush:
+				hitSoundName = mAttackRushHitSound;
+				knockBackType = EKnockBackType::TargetPosition;
+				direction = foward;
+				damage = dc::GetBluntRsuhDamage(mPlayer->GetAttackPower());
+				attackPrefabResource = mCircleAttackPrefab;
+				break;
+			default:
+				assert(false);
+				break;
 		}
 
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(attackPrefabResource);
@@ -95,6 +96,9 @@ namespace fq::client
 		attackComponent->Set(attackInfo);
 
 		GetScene()->AddGameObject(attackObj);
+
+		// 공격시 체력 감소 
+		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 
 		return attackObj;
 	}
@@ -134,6 +138,17 @@ namespace fq::client
 	{
 		mSwingAroundElapsedTime = std::max<float>(0.f, mSwingAroundElapsedTime - dt);
 		mRushElapsedTime = std::max<float>(0.f, mRushElapsedTime - dt);
+
+		if (mPlayer->IsFeverTime())
+		{
+			mPlayer->SetASkillCoolTimeRatio(mSwingAroundElapsedTime / (mSwingAroundCoolTime - mSwingAroundCoolTimeReduction));
+			mPlayer->SetRSkillCoolTimeRatio(mRushElapsedTime / (mRushCoolTime - mRushCoolTimeReduction));
+		}
+		else
+		{
+			mPlayer->SetASkillCoolTimeRatio(mSwingAroundElapsedTime / mSwingAroundCoolTime);
+			mPlayer->SetRSkillCoolTimeRatio(mRushElapsedTime / mRushCoolTime);
+		}
 	}
 
 	void BerserkerArmour::checkInput()
@@ -147,7 +162,7 @@ namespace fq::client
 			&& mSwingAroundElapsedTime == 0.f)
 		{
 			mAnimator->SetParameterTrigger("OnSwingAround");
-			mSwingAroundElapsedTime = mSwingAroundCoolTime;
+			mSwingAroundElapsedTime = mPlayer->IsFeverTime() ? mSwingAroundCoolTime - mSwingAroundCoolTimeReduction : mSwingAroundCoolTime;
 		}
 
 		DirectX::SimpleMath::Vector3 rightInput{};
@@ -159,7 +174,7 @@ namespace fq::client
 		if (rightInput.LengthSquared() >= rotationOffsetSq)
 		{
 			mAnimator->SetParameterTrigger("OnRushCharging");
-			mRushElapsedTime = mRushCoolTime;
+			mRushElapsedTime = mPlayer->IsFeverTime() ? mRushCoolTime - mRushCoolTimeReduction : mRushCoolTime;
 		}
 		else
 		{
