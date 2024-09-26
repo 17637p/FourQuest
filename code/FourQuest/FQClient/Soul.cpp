@@ -13,7 +13,6 @@
 #include "PlayerSoulVariable.h"
 #include "Player.h"
 #include "HpBar.h"
-#include "BGaugeUI.h"
 
 #include "SoulVariable.h"
 
@@ -62,6 +61,14 @@ void fq::client::Soul::OnStart()
 			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
 		});
 
+	// GaugeUI 등록
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		auto ui = child->GetComponent<BGaugeUI>();
+
+		if (ui)
+			mBGaugeUI = ui;
+	}
 	
 	SetSoulColor();		// 소울 색깔 지정 
 	SetSoulHP();		// 소울 HP
@@ -142,10 +149,23 @@ void fq::client::Soul::selectArmour()
 		if (closestArmour == nullptr)
 		{
 			return;
+			mBGaugeUI->SetVisible(false);
 		}
 
 		// 갑옷을 입을 수 있는지 쿨타임 체크 ( UI 노출 )
-		closestArmour->CheckArmourCoolTime(mController->GetControllerID());
+		if (mBGaugeUI)
+		{
+			mBGaugeUI->SetVisible(true);
+
+			if (closestArmour->GetUnequippedPlayerId() == mController->GetControllerID())
+			{
+				mBGaugeUI->SetRatio((closestArmour->GetPlayerArmourCoolTime() / SoulVariable::ArmourCoolTime) * 360.f);
+			}
+			else
+			{
+				mBGaugeUI->SetRatio(360.f);
+			}
+		}
 
 		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold))
 		{
@@ -158,6 +178,10 @@ void fq::client::Soul::selectArmour()
 				spdlog::trace("DestroySoul");
 			}
 		}
+	}
+	else
+	{
+		mBGaugeUI->SetVisible(false);
 	}
 }
 

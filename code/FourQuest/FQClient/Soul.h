@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/Component.h"
 #include "PlayerDefine.h"
+#include "BGaugeUI.h"
 
 namespace fq::game_module
 {
@@ -44,6 +45,7 @@ namespace fq::client
 	private:
 		game_module::CharacterController* mController;
 		std::vector<DeadArmour*> mSelectArmours;
+		BGaugeUI* mBGaugeUI;
 		ESoulType mSoulType;
 
 		float mHP;
