@@ -240,6 +240,15 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 				if (radian >= DirectX::XM_PIDIV2)
 				{
 					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , fq::sound::EChannel::SE });
+
+					fq::event::OnCreateStateEvent stateEvent;
+					stateEvent.gameObject = GetGameObject();
+					stateEvent.RegisterKeyName = "K_Shield_Block";
+					if (!stateEvent.RegisterKeyName.empty())
+					{
+						GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+					}
+
 					return;
 				}
 			}

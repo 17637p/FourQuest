@@ -270,6 +270,8 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 			if (!stateEvent.RegisterKeyName.empty())
 			{
 				GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+
+
 			}
 
 			// »ç¸ÁÃ³¸® 

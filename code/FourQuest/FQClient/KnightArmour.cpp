@@ -131,12 +131,25 @@ void fq::client::KnightArmour::EmitShieldAttack()
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
 	attackInfo.hitSound = "K_Swing3_Hit";
 	attackInfo.HitEffectName = "W_Hit_blunt";
-	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
+	attackInfo.mHitCallback = [this, isIncrease = false, isEmitEffect = false]() mutable
 		{
 			if (!isIncrease)
 			{
 				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
 				isIncrease = true;
+			}
+
+			if (!isEmitEffect)
+			{
+				fq::event::OnCreateStateEvent stateEvent;
+				stateEvent.gameObject = GetGameObject();
+				stateEvent.RegisterKeyName = "K_Swing_3_Hit";
+				if (!stateEvent.RegisterKeyName.empty())
+				{
+					GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+				}
+
+				isEmitEffect = true;
 			}
 		};
 	attackComponent->Set(attackInfo);
