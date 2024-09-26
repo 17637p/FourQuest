@@ -41,6 +41,7 @@
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
     <ClInclude Include="AttackInvalidation.h" />
+    <ClInclude Include="BGaugeUI.h" />
     <ClInclude Include="GaugeBar.h" />
     <ClInclude Include="AudioSettingUI.h" />
     <ClInclude Include="GameSettingUI.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
     <ClCompile Include="AttackInvalidation.cpp" />
+    <ClCompile Include="BGaugeUI.cpp" />
     <ClCompile Include="GaugeBar.cpp" />
     <ClCompile Include="AudioSettingUI.cpp" />
     <ClCompile Include="GameSettingUI.cpp" />

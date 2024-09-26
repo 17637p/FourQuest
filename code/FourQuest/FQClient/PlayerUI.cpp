@@ -164,7 +164,7 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 		SetHPBar(0);
 	}
 
-	// 플레이어 상태 UI 위치조정
+	// 플레이어 상태 UI 위치조정 및 렌더러
 	SetPlayerStateUpdate();
 }
 
@@ -181,17 +181,30 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 	if (mPlayerState == nullptr)
 		return;
 
+	if (mPlayerState->GetUIInfomations().size() <= 5)
+		return;
+
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
+	// UI 위치 조정
+	for (int i = 0; i < mPlayerState->GetUIInfomations().size(); i++)
+	{
+		float localX = mPlayerState->GetGameObject()->GetComponent<fq::game_module::Transform>()->GetLocalPosition().x;
+		float localY = mPlayerState->GetGameObject()->GetComponent<fq::game_module::Transform>()->GetLocalPosition().y;
+
+		mPlayerState->SetUIPosition(i, myTransform->GetWorldPosition().x + localX, myTransform->GetWorldPosition().y + localY);
+	}
 
 	bool isRetire = false;
 	bool isDestroyArmour = false;
 
+	// Player의 상태 체크
 	if (mPlayerID == 0)
 	{
 		if (SoulVariable::Player1Type == EPlayerType::SoulDestoryed)
 			isRetire = true;
 
-		if (SoulVariable::Player1Type == EPlayerType::SoulDestoryed)
+		if (SoulVariable::Player1Type == EPlayerType::ArmourDestroyed)
 			isDestroyArmour = true;
 	}
 	else if (mPlayerID == 1)
@@ -199,7 +212,7 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 		if (SoulVariable::Player2Type == EPlayerType::SoulDestoryed)
 			isRetire = true;
 
-		if (SoulVariable::Player2Type == EPlayerType::SoulDestoryed)
+		if (SoulVariable::Player2Type == EPlayerType::ArmourDestroyed)
 			isDestroyArmour = true;
 	}
 	else if (mPlayerID == 2)
@@ -207,7 +220,7 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 		if (SoulVariable::Player3Type == EPlayerType::SoulDestoryed)
 			isRetire = true;
 
-		if (SoulVariable::Player3Type == EPlayerType::SoulDestoryed)
+		if (SoulVariable::Player3Type == EPlayerType::ArmourDestroyed)
 			isDestroyArmour = true;
 	}
 	else if (mPlayerID == 3)
@@ -215,34 +228,18 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 		if (SoulVariable::Player4Type == EPlayerType::SoulDestoryed)
 			isRetire = true;
 
-		if (SoulVariable::Player4Type == EPlayerType::SoulDestoryed)
+		if (SoulVariable::Player4Type == EPlayerType::ArmourDestroyed)
 			isDestroyArmour = true;
 	}
 
-	for (int i = 0; i < 6; i++)
-	{
-		float localX = mPlayerState->GetGameObject()->GetComponent<fq::game_module::Transform>()->GetLocalPosition().x;
-		float localY = mPlayerState->GetGameObject()->GetComponent<fq::game_module::Transform>()->GetLocalPosition().y;
-
-		mPlayerState->SetUIPosition(i, myTransform->GetWorldPosition().x + localX, myTransform->GetWorldPosition().y + localY);
-
-		if (isRetire && i != 6)
-		{
-			mPlayerState->SetIsRender(i, false);
-		}
-		else if (isRetire && i == 6)
-		{
-			mPlayerState->SetIsRender(i, true);
-		}
-	}
-
+	// 갑옷 파괴 UI
 	if (isDestroyArmour)
 	{
 		for (auto& manager : GetScene()->GetComponentView<GameManager>())
 		{
 			float delayTime = manager.GetComponent<GameManager>()->GetDestoryArmourSoulDelayTime(mPlayerID);
 
-			if (delayTime < 1.f)
+			if (SoulVariable::OutTime - delayTime < 1.f)
 			{
 				mPlayerState->SetIsRender(0, true);
 				mPlayerState->SetIsRender(1, false);
@@ -251,7 +248,7 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 				mPlayerState->SetIsRender(4, false);
 				mPlayerState->SetIsRender(5, false);
 			}
-			else if (delayTime < 2.f)
+			else if (SoulVariable::OutTime - delayTime < 2.f)
 			{
 				mPlayerState->SetIsRender(0, false);
 				mPlayerState->SetIsRender(1, true);
@@ -260,7 +257,7 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 				mPlayerState->SetIsRender(4, false);
 				mPlayerState->SetIsRender(5, false);
 			}
-			else if (delayTime < 3.f)
+			else if (SoulVariable::OutTime - delayTime < 3.f)
 			{
 				mPlayerState->SetIsRender(0, false);
 				mPlayerState->SetIsRender(1, false);
@@ -269,7 +266,7 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 				mPlayerState->SetIsRender(4, false);
 				mPlayerState->SetIsRender(5, false);
 			}
-			else if (delayTime < 4.f)
+			else if (SoulVariable::OutTime - delayTime < 4.f)
 			{
 				mPlayerState->SetIsRender(0, false);
 				mPlayerState->SetIsRender(1, false);
@@ -278,7 +275,7 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 				mPlayerState->SetIsRender(4, false);
 				mPlayerState->SetIsRender(5, false);
 			}
-			else if (delayTime < 5.f)
+			else if (SoulVariable::OutTime - delayTime < 5.f)
 			{
 				mPlayerState->SetIsRender(0, false);
 				mPlayerState->SetIsRender(1, false);
@@ -288,6 +285,24 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 				mPlayerState->SetIsRender(5, false);
 			}
 		}
+	}
+	else
+	{
+		mPlayerState->SetIsRender(0, false);
+		mPlayerState->SetIsRender(1, false);
+		mPlayerState->SetIsRender(2, false);
+		mPlayerState->SetIsRender(3, false);
+		mPlayerState->SetIsRender(4, false);
+	}
+
+	// 영혼 파괴 UI
+	if (isRetire)
+	{
+		mPlayerState->SetIsRender(5, true);
+	}
+	else
+	{
+		mPlayerState->SetIsRender(5, false);
 	}
 }
 
