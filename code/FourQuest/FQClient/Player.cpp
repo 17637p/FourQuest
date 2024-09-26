@@ -5,6 +5,8 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Decal.h"
+#include "../FQGameModule/CharacterController.h"
+
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"
@@ -16,8 +18,10 @@
 #include "LinearAttack.h"
 #include "ClientHelper.h"
 #include "PlayerSoulVariable.h"
+#include "SoulVariable.h"
 #include "PlayerVariable.h"
 #include "DebuffPoisonZone.h"
+#include "DeadArmour.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -27,7 +31,7 @@ fq::client::Player::Player()
 	, mMaxSoulGauge(100.f)
 	, mSoulGauge(0.f)
 	, mInvincibleTime(1.f)
-	, mInvincibleElapsedTime(0.f)
+	, mInvincibleElapsedTime(1.f)
 	, mAnimator(nullptr)
 	, mFeverTime(10.f)
 	, mSoulType(ESoulType::Sword)
@@ -39,6 +43,9 @@ fq::client::Player::Player()
 	, mFeverElapsedTime(0.f)
 	, mbIsActiveOnHit(true)
 	, mbIsFeverTime(false)
+	, mSoulBuffNumber()
+	, mUnequipArmourDurationTime()
+	, mbIsUnequipArmourButton(false)
 	, mSwordHaed{}
 	, mStaffHaed{}
 	, mAxeHaed{}
@@ -69,10 +76,18 @@ void fq::client::Player::OnUpdate(float dt)
 {
 	mAnimator->SetParameterBoolean("OnMove", mController->OnMove());
 
-	processInput();
+	processInput(dt);
 	processFeverTime(dt);
 	processCoolTime(dt);
 	processDebuff(dt);
+}
+
+void fq::client::Player::OnLateUpdate(float dt)
+{
+	mAttackPower = mBaseAttackPower;
+
+	processBuff();
+	mSoulBuffNumber = 0;
 }
 
 void fq::client::Player::OnStart()
@@ -82,6 +97,9 @@ void fq::client::Player::OnStart()
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	mController = GetComponent<fq::game_module::CharacterController>();
 	mTransform = GetComponent<fq::game_module::Transform>();
+	mBaseSpeed = GetComponent<fq::game_module::CharacterController>()->GetMovementInfo().maxSpeed;
+	mBaseAcceleration = GetComponent<fq::game_module::CharacterController>()->GetMovementInfo().acceleration;
+	mBaseAttackPower = mAttackPower;
 
 	// Player등록
 	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
@@ -112,16 +130,60 @@ void fq::client::Player::OnStart()
 	linkSoulTypeHead();
 }
 
-void fq::client::Player::processInput()
+void fq::client::Player::processInput(float dt)
 {
 	auto input = GetScene()->GetInputManager();
 
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
 	{
-		SummonSoul();
+		mUnequipArmourDurationTime = 0.f;
+		mbIsUnequipArmourButton = true;
+	}
+	else if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold) && mbIsUnequipArmourButton)
+	{
+		mUnequipArmourDurationTime += dt;
+
+		if (mUnequipArmourDurationTime < SoulVariable::ButtonTime)
+			return;
+
+		if ((mHp / mMaxHp) * 100.f >= SoulVariable::HpPercent)
+		{
+			std::vector<std::shared_ptr<fq::game_module::GameObject>> instance;
+
+			if (mArmourType == EArmourType::Knight)
+				instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDeadKnightArmour);
+			if (mArmourType == EArmourType::Magic)
+				instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDeadMagicArmour);
+			if (mArmourType == EArmourType::Archer)
+				instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDeadArcherArmour);
+			if (mArmourType == EArmourType::Warrior)
+				instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDeadWarriorArmour);
+
+			auto& soul = *(instance.begin());
+
+			// 벗은 갑옷 위치 세팅
+			auto thisTransform = GetComponent<fq::game_module::Transform>();
+			auto deadArmourTransform = soul->GetComponent<fq::game_module::Transform>();
+
+			deadArmourTransform->SetWorldMatrix(thisTransform->GetWorldMatrix() 
+				* DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.f, 1.372f, 0.f)));
+
+			// 해당 갑옷에 벗은 플레이어 ID 저장
+			soul->GetComponent<DeadArmour>()->SetUnequippedPlayerId(GetPlayerID());
+
+			GetScene()->AddGameObject(soul);
+		}
+
+		SummonSoul(false);
+		mbIsUnequipArmourButton = false;
+
+		spdlog::trace("Unequip Armour");
+	}
+	else if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Away))
+	{
+		mbIsUnequipArmourButton = false;
 	}
 }
-
 
 void fq::client::Player::OnDestroy()
 {
@@ -177,7 +239,7 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 			// 플레이어 사망처리 
 			if (mHp <= 0.f)
 			{
-				SummonSoul();
+				SummonSoul(true);
 			}
 		}
 	}
@@ -190,24 +252,18 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 	}
 }
 
-void fq::client::Player::SummonSoul()
+void fq::client::Player::SummonSoul(bool isDestroyArmour)
 {
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSoulPrefab);
-	auto& soul = *(instance.begin());
-
-	// 컨트롤러 연결
-	soul->GetComponent<game_module::CharacterController>()
-		->SetControllerID(mController->GetControllerID());
-
-	// 소울 타입 설정
-	soul->GetComponent<Soul>()->SetSoulType(mSoulType);
+	if (isDestroyArmour)
+		spdlog::trace("DestroyArmour");
 
 	// 위치 설정
 	auto worldMat = GetComponent<game_module::Transform>()->GetWorldMatrix();
 	worldMat._42 += 1.f;
-	soul->GetComponent<game_module::Transform>()->SetWorldMatrix(worldMat);
 
-	GetScene()->AddGameObject(soul);
+	GetScene()->GetEventManager()->FireEvent<client::event::SummonSoul>(
+		{ (int)GetPlayerID(), mSoulType, worldMat, mSoulPrefab, isDestroyArmour });
+
 	GetScene()->DestroyGameObject(GetGameObject());
 }
 
@@ -255,7 +311,7 @@ void fq::client::Player::processDebuff(float dt)
 			// 플레이어 사망처리 
 			if (mHp <= 0.f)
 			{
-				SummonSoul();
+				SummonSoul(true);
 			}
 		}
 
@@ -508,24 +564,22 @@ void fq::client::Player::setFeverBuff(bool isFever)
 	mFeverElapsedTime = 0.f;
 
 	mbIsFeverTime = isFever;
+}
 
-	if (isFever)
+void fq::client::Player::processBuff()
+{
+	// 피버 버프 + 영혼 버프 합산된 최종 버프 계산 함수
+	if (mbIsFeverTime)
 	{
-		mAttackPower *= PlayerVariable::FeverAttackIncreaseRatio;
-		auto movementInfo = mController->GetMovementInfo();
-		movementInfo.maxSpeed *= PlayerVariable::FeverSpeedIncreaseRatio;
-		movementInfo.acceleration *= PlayerVariable::FeverSpeedIncreaseRatio;
-		mController->SetMovementInfo(movementInfo);
-	}
-	else
-	{
-		mAttackPower /= PlayerVariable::FeverAttackIncreaseRatio;
-		auto movementInfo = mController->GetMovementInfo();
-		movementInfo.maxSpeed /= PlayerVariable::FeverSpeedIncreaseRatio;
-		movementInfo.acceleration /= PlayerVariable::FeverSpeedIncreaseRatio;
-		mController->SetMovementInfo(movementInfo);
+		mAttackPower *= mBaseAttackPower * PlayerVariable::FeverAttackIncreaseRatio;
+		mController->AddFinalSpeedMultiplier(PlayerVariable::FeverSpeedIncreaseRatio - 1.f);
 	}
 
+	if (mSoulBuffNumber != 0)
+	{
+		mAttackPower += (mBaseAttackPower * ((SoulVariable::DamageUpRatio - 1.f) * mSoulBuffNumber));
+		mController->AddFinalSpeedMultiplier((SoulVariable::SpeedUpRatio - 1.f) * mSoulBuffNumber);
+	}
 }
 
 void fq::client::Player::setDecalColor()
@@ -652,7 +706,7 @@ void fq::client::Player::SetLowerBodyAnimation()
 			direction = LowerDirection::Left;
 		else
 			direction = LowerDirection::Back;
-
 	}
+
 	mAnimator->SetParameterInt("LowerDir", static_cast<int>(direction));
 }

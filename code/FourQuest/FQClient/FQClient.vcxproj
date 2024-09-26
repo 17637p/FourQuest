@@ -138,6 +138,7 @@
     <ClInclude Include="PlayerMovementSoundState.h" />
     <ClInclude Include="PlayerUIManager.h" />
     <ClInclude Include="PlayerSoulVariable.h" />
+    <ClInclude Include="PlayerLowerMovementState.h" />
     <ClInclude Include="PlayerVariable.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Quest.h" />
@@ -159,7 +160,9 @@
     <ClInclude Include="ShieldAttackState.h" />
     <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
+    <ClInclude Include="SoulManagerModule.h" />
     <ClInclude Include="SoulSelectUI.h" />
+    <ClInclude Include="SoulVariable.h" />
     <ClInclude Include="Spawner.h" />
     <ClInclude Include="SpawnerGroup.h" />
     <ClInclude Include="SpawnStruct.h" />
@@ -264,6 +267,7 @@
     <ClCompile Include="PlantMonsterStareState.cpp" />
     <ClCompile Include="PlayerMovementSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
+    <ClCompile Include="PlayerLowerMovementState.cpp" />
     <ClCompile Include="PlayerVariable.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Quest.cpp" />
@@ -283,7 +287,9 @@
     <ClCompile Include="ShieldAttackState.cpp" />
     <ClCompile Include="ShieldBlockState.cpp" />
     <ClCompile Include="Soul.cpp" />
+    <ClCompile Include="SoulManagerModule.cpp" />
     <ClCompile Include="SoulSelectUI.cpp" />
+    <ClCompile Include="SoulVariable.cpp" />
     <ClCompile Include="Spawner.cpp" />
     <ClCompile Include="SpawnerGroup.cpp" />
     <ClCompile Include="SpawnStruct.cpp" />

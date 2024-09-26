@@ -9,6 +9,8 @@
 #include "../FQGameModule/Event.h"
 
 #include "Attack.h"
+#include "Player.h"
+#include "PlayerSoulVariable.h"
 
 namespace fq::client
 {
@@ -32,6 +34,7 @@ namespace fq::client
 
 	void ArrowAttack::OnUpdate(float dt)
 	{
+		// 화살이 박히고 난 뒤에 일정 시간 뒤 오브젝트 삭제
 		if (mMaxBlockCount <= 0)
 		{
 			mLifeElapsedTime += dt;
@@ -59,20 +62,22 @@ namespace fq::client
 			return;
 		}
 
+		// 몬스터 및 박스에 충돌 시 관통 카운트 감소
 		if (collision.other->GetTag() == fq::game_module::ETag::Monster
 			|| collision.other->GetTag() == fq::game_module::ETag::Spawner
 			|| collision.other->GetTag() == fq::game_module::ETag::Box)
 		{
 			mMaxBlockCount--;
-
 		}
 
+		// 바닥 및 벽에 부딪히면 관통 카운트 즉시 0
 		if (collision.other->GetTag() == fq::game_module::ETag::Floor
 			|| collision.other->GetTag() == fq::game_module::ETag::Wall)
 		{
 			mMaxBlockCount = 0;
 		}
 
+		// 관통 카운트가 0이면, 콜라이더 삭제 및 부딪힌 해당 오브젝트를 부모 오브젝트로 지정
 		if (mMaxBlockCount > 0)
 		{
 			return;
@@ -87,12 +92,11 @@ namespace fq::client
 		GetGameObject()->RemoveComponent<fq::game_module::RigidBody>();
 		GetGameObject()->RemoveComponent<fq::game_module::BoxCollider>();
 		GetGameObject()->RemoveComponent<fq::game_module::CapsuleCollider>();
-
-
 	}
 
 	void ArrowAttack::Set(const ArrowAttackInfo& info)
 	{
+		// 속도, 공격력, 관통 카운트, 강공격 여부 등등
 		mAttacker = info.attacker;
 		mbIsStrongAttack = info.bIsStrongAttack;
 		mWeakAttackPower = info.weakDamage;
@@ -113,6 +117,7 @@ namespace fq::client
 			rigidBody->SetLinearVelocity(mAttackDirection * info.weakProjectileVelocity);
 		}
 
+		// 강공격, 약공격에 따라 Attack 컴포넌트 데이터 세팅
 		if (GetGameObject()->HasComponent<Attack>())
 		{
 			auto attack = GetComponent<Attack>();
@@ -121,6 +126,14 @@ namespace fq::client
 			info.hitSound = mHitSound;
 			info.attackDirection = mAttackDirection;
 			info.attackPosition = mAttackTransform.Translation();
+			info.mHitCallback = [this, isIncrease = false]() mutable
+				{
+					if (!isIncrease)
+					{
+						mAttacker->GetComponent<Player>()->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+						isIncrease = true;
+					}
+				};
 
 			if (mbIsStrongAttack)
 			{
@@ -134,6 +147,10 @@ namespace fq::client
 			}
 
 			attack->Set(info);
+		}
+		else
+		{
+			spdlog::error("ERROR : GameObject(this) have not Attack!!!");
 		}
 	}
 

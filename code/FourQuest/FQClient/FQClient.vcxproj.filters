@@ -11,9 +11,6 @@
     <Filter Include="include\01.Player">
       <UniqueIdentifier>{4cc17fe5-6a77-4aa1-a035-17dfceb38aed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\02.Monster">
-      <UniqueIdentifier>{5284a2c4-bff7-4230-9291-e8f1c7792924}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\03.Attack">
       <UniqueIdentifier>{7cef8521-d7f1-4691-a728-888cad1df5cc}</UniqueIdentifier>
     </Filter>
@@ -25,15 +22,6 @@
     </Filter>
     <Filter Include="include\04.Camera">
       <UniqueIdentifier>{f7fdf64c-1b85-4403-9253-d1e52a174f4c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\02.Monster\Melee">
-      <UniqueIdentifier>{fadcf5a9-afd7-4b02-970b-db5bf7428199}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\02.Monster\Plant">
-      <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\02.Monster\Prototype">
-      <UniqueIdentifier>{0e165353-bacb-40cb-ada4-67b85e75ece7}</UniqueIdentifier>
     </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
@@ -66,17 +54,11 @@
     <Filter Include="src\02.Monster\Spawner">
       <UniqueIdentifier>{6cf66e9b-8b4f-486d-b3ff-fc8305dd321f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\02.Monster\Spawner">
-      <UniqueIdentifier>{ee89627b-99fe-4721-9914-846712ccb4ff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\02.Monster\Melee">
       <UniqueIdentifier>{5ccbf097-0ae6-421f-9b2c-7b83ad2e33d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\07.Quest">
       <UniqueIdentifier>{22aa2c87-7a98-41b4-9204-02a7b94f5ea6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\02.Monster\Boss">
-      <UniqueIdentifier>{afe637d8-9f87-4eb7-b528-eb8f4f612b52}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\02.Monster\Boss">
       <UniqueIdentifier>{d25e1181-1cf8-49fb-b39a-eab8babd5170}</UniqueIdentifier>
@@ -116,6 +98,27 @@
     </Filter>
     <Filter Include="src\03.Attack">
       <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\06.ETC\GameManagerModule">
+      <UniqueIdentifier>{f61a40ad-dbbd-47ad-ad5a-1d736d727c0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster">
+      <UniqueIdentifier>{5284a2c4-bff7-4230-9291-e8f1c7792924}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Melee">
+      <UniqueIdentifier>{fadcf5a9-afd7-4b02-970b-db5bf7428199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Plant">
+      <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Prototype">
+      <UniqueIdentifier>{0e165353-bacb-40cb-ada4-67b85e75ece7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Spawner">
+      <UniqueIdentifier>{ee89627b-99fe-4721-9914-846712ccb4ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Boss">
+      <UniqueIdentifier>{afe637d8-9f87-4eb7-b528-eb8f4f612b52}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -503,6 +506,12 @@
     <ClInclude Include="DebuffPoisonZone.h">
       <Filter>include\03.Attack</Filter>
     </ClInclude>
+    <ClInclude Include="SoulVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulManagerModule.h">
+      <Filter>include\06.ETC\GameManagerModule</Filter>
+	</ClInclude>
     <ClInclude Include="GaugeBar.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
@@ -525,7 +534,10 @@
       <Filter>include\05.UI</Filter>
 	</ClInclude>
     <ClInclude Include="AttackInvalidation.h">
-      <Filter>include</Filter>
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerLowerMovementState.h">
+      <Filter>include\01.Player\State</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -841,9 +853,6 @@
     <ClCompile Include="PlayerVariable.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerMovementSoundState.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="MonsterManager.cpp">
       <Filter>src\02.Monster</Filter>
     </ClCompile>
@@ -874,6 +883,12 @@
     <ClCompile Include="DebuffPoisonZone.cpp">
       <Filter>src\03.Attack</Filter>
     </ClCompile>
+    <ClCompile Include="SoulVariable.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulManagerModule.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
     <ClCompile Include="GaugeBar.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
@@ -899,7 +914,13 @@
       <Filter>src\05.UI</Filter>
 	</ClCompile>
     <ClCompile Include="AttackInvalidation.cpp">
-      <Filter>src</Filter>
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerLowerMovementState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMovementSoundState.cpp">
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

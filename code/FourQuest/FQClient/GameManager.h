@@ -7,6 +7,8 @@
 
 namespace fq::client
 {
+	class SoulManagerModule;
+
 	class GameManager : public fq::game_module::Component
 	{
 		using EventHandler = game_module::EventHandler;
@@ -24,6 +26,7 @@ namespace fq::client
 
 		// temp alpha
 		void SavePlayerState();
+
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }
@@ -41,13 +44,17 @@ namespace fq::client
 		std::shared_ptr<game_module::GameObject> SpawnPlayer(fq::game_module::PrefabResource prefab, int index);
 
 	private:
+		// Player 捞亥飘 贸府
 		EventHandler mRegisterPlayerHandler;
+		EventHandler mUpdatePlayerStateHandler;
+		EventHandler mDestroyArmourHandler;
 
 		// Pause UI Off 贸府
 		EventHandler mOffPopupSettingHandler;
 		EventHandler mOffPopupPauseHandler;
 
 		std::vector<std::shared_ptr<game_module::GameObject>> mPlayers;
+		std::shared_ptr<SoulManagerModule> mSoulManagerModule;
 
 		// pause 贸府
 		bool mIsStop;

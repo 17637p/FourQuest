@@ -176,8 +176,6 @@ void fq::client::KnightArmour::OnUpdate(float dt)
 {
 	checkSkillCoolTime(dt);
 	checkInput();
-
-
 }
 
 void fq::client::KnightArmour::checkInput()
@@ -234,6 +232,9 @@ void fq::client::KnightArmour::UpdateBlockState(float dt)
 
 	float ratio = 1.f - ((mShieldCoolTime - mShieldElapsedTime) / mShieldDuration);
 	GetComponent<GaugeBar>()->SetRatio(ratio);
+
+	// 방패 이동속도 적용
+	mController->AddFinalSpeedMultiplier(mShieldSpeedRatio - 1.f);
 }
 
 
@@ -270,27 +271,9 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSword
 	return effectObj;
 }
 
-void fq::client::KnightArmour::SetShieldMovementSpeed(bool isShieldSpeed)
-{
-	auto info = mController->GetMovementInfo();
-
-	if (isShieldSpeed)
-	{
-		info.maxSpeed *= mShieldSpeedRatio;
-		info.acceleration *= mShieldSpeedRatio;
-	}
-	else
-	{
-		info.maxSpeed /= mShieldSpeedRatio;
-		info.acceleration /= mShieldSpeedRatio;
-	}
-
-	mController->SetMovementInfo(info);
-}
 
 void fq::client::KnightArmour::ExitShieldState()
 {
-	SetShieldMovementSpeed(false);
 	mGaugeBar->SetVisible(false);
 	
 	if (mShieldObject)
@@ -305,10 +288,8 @@ void fq::client::KnightArmour::EnterShieldState()
 	mAnimator->SetParameterBoolean("OnShield", true);
 	mPlayer->SetOnShieldBlock(true);
 	mShieldElapsedTime = mShieldCoolTime;
-	SetShieldMovementSpeed(true);
 	mGaugeBar->SetVisible(true);
 	mGaugeBar->SetRatio(1.f);
-
 
 	// 쉴드 콜라이더 생성
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mShieldCollider);

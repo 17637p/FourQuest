@@ -714,6 +714,7 @@ namespace fq::loader
 
 	fq::graphics::MaterialInfo MaterialLoader::Read(const std::filesystem::path& filePath)
 	{
+
 		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
 		std::ifstream readData(correctedPath);
 
@@ -781,7 +782,22 @@ namespace fq::loader
 		materialInfoJson.at("AlphaCutoff").get_to(materialInfo.AlphaCutoff);
 
 		materialInfoJson.at("SampleType").get_to(sampleTypeStr);
-		materialInfo.SampleType = (sampleTypeStr == "Clamp") ? ESampleMode::Clamp : ESampleMode::Wrap;
+		if (sampleTypeStr == "Clamp")
+		{
+			materialInfo.SampleType = ESampleMode::Clamp;
+		}
+		else if (sampleTypeStr == "Wrap")
+		{
+			materialInfo.SampleType = ESampleMode::Wrap;
+		}
+		else if (sampleTypeStr == "Border")
+		{
+			materialInfo.SampleType = ESampleMode::Border;
+		}
+		else
+		{
+			assert(false);
+		}
 
 		materialInfoJson.at("RasterizeType").get_to(rasterizeTypeStr);
 		materialInfo.RasterizeType = (rasterizeTypeStr == "BackFaceClip") ? ERasterizeMode::BackFaceClip : ERasterizeMode::TwoSide;
@@ -935,24 +951,41 @@ namespace fq::loader
 
 		nlohmann::ordered_json materialInfoJson;
 
+		std::string sampleType;
+
+		switch (material.SampleType)
+		{
+		case ESampleMode::Clamp:
+			sampleType = "Clamp";
+			break;
+		case ESampleMode::Wrap:
+			sampleType = "Wrap";
+			break;
+		case ESampleMode::Border:
+			sampleType = "Border";
+			break;
+		default:
+			assert(false);
+		}
+
 		materialInfoJson =
 		{
 			{"RenderModeType", material.RenderModeType == MaterialInfo::ERenderMode::Opaque ? "Opaque" : "Transparent"},
-			{"SampleType", material.SampleType == ESampleMode::Clamp ? "Clamp" : "Wrap"},
+			{"SampleType", sampleType },
 			{"RasterizeType", material.RasterizeType == ERasterizeMode::BackFaceClip ? "BackFaceClip" : "TwoSide"},
-			
+
 			{"bUseBaseColor", material.bUseBaseColor},
 			{"BaseColor", {material.BaseColor.x, material.BaseColor.y, material.BaseColor.z, material.BaseColor.w}},
 			{"BaseColorFileName", fq::path::GetRelativePath(std::string(material.BaseColorFileName.begin(), material.BaseColorFileName.end())).string() },
-			
+
 			{"bUseMetalness", material.bUseMetalness},
 			{"Metalness", material.Metalness},
 			{"MetalnessFileName", fq::path::GetRelativePath(std::string(material.MetalnessFileName.begin(), material.MetalnessFileName.end())).string() },
-			
+
 			{"bUseRoughness", material.bUseRoughness},
 			{"Roughness", material.Roughness},
 			{"RoughnessFileName", fq::path::GetRelativePath(std::string(material.RoughnessFileName.begin(), material.RoughnessFileName.end())).string() },
-			
+
 			{"bIsUsedEmissive", material.bIsUsedEmissive},
 			{"EmissiveColor", {material.EmissiveColor.x, material.EmissiveColor.y, material.EmissiveColor.z, material.EmissiveColor.w}},
 			{"EmissiveFileName", fq::path::GetRelativePath(std::string(material.EmissiveFileName.begin(), material.EmissiveFileName.end())).string() },
@@ -960,14 +993,14 @@ namespace fq::loader
 
 			{"bUseNormalness", material.bUseNormalness},
 			{"NormalFileName", fq::path::GetRelativePath(std::string(material.NormalFileName.begin(), material.NormalFileName.end())).string() },
-			
+
 			{"bIsUsedMetalnessSmoothness", material.bIsUsedMetalnessSmoothness},
 			{"MetalnessSmoothnessFileName", fq::path::GetRelativePath(std::string(material.MetalnessSmoothnessFileName.begin(), material.MetalnessSmoothnessFileName.end())).string() },
-			
+
 			{"Tiling", {material.Tiling.x, material.Tiling.y}},
 			{"Offset", {material.Offset.x, material.Offset.y}},
 			{"AlphaCutoff", material.AlphaCutoff},
-			
+
 			{"bUseDissolve", material.bUseDissolve },
 			{"NoiseFileName", std::string(material.NoiseFileName.begin(),material.NoiseFileName.end()) },
 			{"OutlineThickness", material.OutlineThickness },
@@ -976,13 +1009,13 @@ namespace fq::loader
 			{"DissolveEndColor", {material.DissolveEndColor.x, material.DissolveEndColor.y, material.DissolveEndColor.z, material.DissolveEndColor.w}},
 			{"DissolveStartEmissive", {material.DissolveStartEmissive.x, material.DissolveStartEmissive.y, material.DissolveStartEmissive.z, material.DissolveStartEmissive.w}},
 			{"DissolveEndEmissive", {material.DissolveEndEmissive.x, material.DissolveEndEmissive.y, material.DissolveEndEmissive.z, material.DissolveEndEmissive.w}},
-		
-			{"bUseRimLight", material.bUseRimLight },		
+
+			{"bUseRimLight", material.bUseRimLight },
 			{"RimLightColor", {material.RimLightColor.x, material.RimLightColor.y, material.RimLightColor.z, material.RimLightColor.w}},
 			{"RimPow", material.RimPow },
 			{"RimIntensity", material.RimIntensity },
 
-			{"bUseInvRimLight", material.bUseInvRimLight },		
+			{"bUseInvRimLight", material.bUseInvRimLight },
 			{"InvRimLightColor", {material.InvRimLightColor.x, material.InvRimLightColor.y, material.InvRimLightColor.z, material.InvRimLightColor.w}},
 			{"InvRimPow", material.InvRimPow },
 			{"InvRimIntensity", material.InvRimIntensity },

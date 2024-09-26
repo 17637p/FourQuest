@@ -37,12 +37,6 @@ namespace fq::client
 
 		float GetShieldDashPower() const { return mShieldDashPower; }
 		float GetXAttackDashPower() const { return mXAttackDashPower; }
-
-		/// <summary>
-		/// 방어상태 이동속도로 설정합니다
-		/// </summary>
-		void SetShieldMovementSpeed(bool isShieldSpeed);
-
 		void ExitShieldState();
 		void EnterShieldState();
 

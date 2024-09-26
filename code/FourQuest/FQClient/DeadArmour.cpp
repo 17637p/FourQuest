@@ -11,10 +11,13 @@
 #include "Soul.h"
 #include "Player.h"
 #include "ClientEvent.h"
+#include "SoulVariable.h"
 
 fq::client::DeadArmour::DeadArmour()
 	:mPlayerCount(0)
 	, mbIsVisible(false)
+	, mUnequippedPlayerId(-1)
+	, mPlayerArmourCoolTime(0.f)
 	, mbIsSummonAble(true)
 {}
 
@@ -40,9 +43,12 @@ std::shared_ptr<fq::game_module::Component> fq::client::DeadArmour::Clone(std::s
 	return cloneController;
 }
 
-void fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
+bool fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 {
 	assert(info.ControllerID <= 3);
+
+	if (mUnequippedPlayerId == info.ControllerID && mPlayerArmourCoolTime < SoulVariable::ArmourCoolTime)
+		return false;
 
 	// 인스턴스 생성
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLivingArmourPrefab);
@@ -66,6 +72,8 @@ void fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 
 	// DeadArmour 삭제 
 	GetScene()->DestroyGameObject(GetGameObject());
+
+	return true;
 }
 
 void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collision)
@@ -131,6 +139,8 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 void fq::client::DeadArmour::OnUpdate(float dt)
 {
 	using namespace DirectX::SimpleMath;
+
+	mPlayerArmourCoolTime += dt;
 
 	// UI 위치 갱신 
 	{

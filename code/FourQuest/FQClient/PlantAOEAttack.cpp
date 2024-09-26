@@ -109,10 +109,10 @@ namespace fq::client
 		{
 			mDestroyDurationTime += dt;
 
-			// 독 타일 판정을 위한 태그 변경
+			// 독 타일 판정을 위한 태그 변경 ( 플레이어가 Hit 애니메이션이 작동 안되면서 Trigger 충돌은 되도록 )
 			if (mDestroyDurationTime >= 0.1f)
 			{
-				GetGameObject()->SetTag(fq::game_module::ETag::Floor);
+				GetGameObject()->SetTag(fq::game_module::ETag::Monster);
 			}
 
 			if (mDestroyDurationTime >= mDestroyTime)
@@ -124,6 +124,7 @@ namespace fq::client
 
 	void PlantAOEAttack::OnTriggerEnter(const fq::game_module::Collision& collision)
 	{
+		// 플레이어와 충돌했을 경우에 플레이어가 독 디버프를 가지고 있지 않으면 독 디버프를 부여
 		if (collision.other->GetTag() == fq::game_module::ETag::Player)
 		{
 			if (collision.other->HasComponent<DebuffPoisonZone>())
@@ -139,6 +140,7 @@ namespace fq::client
 
 	void PlantAOEAttack::OnTriggerExit(const fq::game_module::Collision& collision)
 	{
+		// 벗어났을 경우에 플레이어의 독 디버프 해제
 		if (collision.other->HasComponent<DebuffPoisonZone>())
 		{
 			collision.other->RemoveComponent<DebuffPoisonZone>();

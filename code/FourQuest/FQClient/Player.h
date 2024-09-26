@@ -25,7 +25,7 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void SummonSoul();
+		void SummonSoul(bool isDestroyArmour);
 
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
 		void SetSoulType(fq::client::ESoulType val) { mSoulType = val; }
@@ -37,6 +37,8 @@ namespace fq::client
 
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
 		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit;  }
+		int GetSoulBuffNumber() { return mSoulBuffNumber; }
+		void SetSoulBuffNumber(int buffNumber) { mSoulBuffNumber = buffNumber; }
 
 		/// <summary>
 		/// °©¿ÊÅ¸ÀÔÀ» ¹ÝÈ¯ÇÕ´Ï´Ù
@@ -95,11 +97,13 @@ namespace fq::client
 		/// </summary>
 		void SetLowerBodyAnimation();
 
+
 	private:
-		void processInput();
+		void processInput(float dt);
 		void processCoolTime(float dt);
 		void processFeverTime(float dt);
 		void processDebuff(float dt);
+		void processBuff();
 		void equipWeapone(ESoulType equipType, bool isEquip);
 		void linkWeaponeMeshes();
 		void setFeverBuff(bool isFever);
@@ -109,6 +113,7 @@ namespace fq::client
 		void OnStart() override;
 		void OnDestroy() override;
 		void OnUpdate(float dt) override;
+		void OnLateUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 		void OnTriggerStay(const game_module::Collision& collision) override;
 
@@ -129,17 +134,29 @@ namespace fq::client
 		float mSoulGauge; // ¼Ò¿ï °ÔÀÌÁö
 		float mAttackPower; // °ø°Ý·Â
 
+		float mBaseAcceleration;	// ±âº» °¡¼Ó·Â
+		float mBaseSpeed;	// ±âº» ½ºÇÇµå
+		float mBaseAttackPower; // ±âº» °ø°Ý·Â
+		int mSoulBuffNumber; // ¿µÈ¥ °­È­ °¹¼ö
+
 		float mInvincibleElapsedTime; // ¹«Àû °æ°ú ½Ã°£
 		float mInvincibleTime; // ¹«Àû½Ã°£ 
 		float mFeverTime; // °©¿Ê ¹öÇÁ ½Ã°£
 		float mFeverElapsedTime; // ÇÇ¹öÅ¸ÀÓ °æ°ú ½Ã°£
 		bool mbIsFeverTime; // ÇöÀç ÇÇ¹ö Å¸ÀÓÀÎÁö 
 
+		float mUnequipArmourDurationTime;	// °©¿Ê ¹þ°í ÀÖ´Â ½Ã°£
+		bool mbIsUnequipArmourButton;			// °©¿Ê ¹þ´Â ¹öÆ° Å¬¸¯
+
 		game_module::PrefabResource mSoulPrefab; // ¿µÈ¥È­ ÇÁ¸®ÆÕ 
 		game_module::PrefabResource mSwordSoulAttack;
 		game_module::PrefabResource mAxeSoulAttack; // µµ³¢ ¿µÈ¥ °ø°Ý 
 		game_module::PrefabResource mBowSoulAttack; // È° ¿µÈ¥ °ø°Ý 	
 		game_module::PrefabResource mStaffSoulAttack; // ¸¶¹ý ¿µÈ¥ °ø°Ý
+		game_module::PrefabResource mDeadKnightArmour;	// ±â»ç °©¿Ê
+		game_module::PrefabResource mDeadMagicArmour;	// ¸¶¹ý»ç °©¿Ê
+		game_module::PrefabResource mDeadArcherArmour;	// ±Ã¼ö °©¿Ê
+		game_module::PrefabResource mDeadWarriorArmour; // ±¤Àü»ç °©¿Ê
 		
 		// ¿µÈ¥ ¸Ó¸® 
 		game_module::PrefabResource mSwordHaed;
