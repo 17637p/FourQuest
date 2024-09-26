@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "IGameVariable.h"
 
 namespace fq::client

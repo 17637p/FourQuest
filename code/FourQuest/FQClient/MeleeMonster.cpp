@@ -14,6 +14,7 @@
 #include "MonsterGroup.h"
 #include "KnockBack.h"
 #include "Player.h"
+#include "LevelHepler.h"
 
 fq::client::MeleeMonster::MeleeMonster()
 	:mMaxHp(0.f)

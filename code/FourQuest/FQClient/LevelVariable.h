@@ -10,6 +10,8 @@ namespace fq::client
 	class LevelVariable : public IGameVariable
 	{
 	public:
+		static inline bool OnLevelSystem = true;
+		// Level
 		static inline float EasyDamage = 0.f;
 		static inline float EasyHp = 0.f;
 		static inline float NormalDamage = 0.f;
@@ -29,5 +31,4 @@ namespace fq::client
 		static inline float Player4Spawn = 0.f;
 		static inline float Player4Hp = 0.f;
 	};
-
 }
