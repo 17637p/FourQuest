@@ -377,7 +377,7 @@
     <ClInclude Include="GameVaribleHelper.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterVariable.h">
+    <ClInclude Include="LevelVariable.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
     <ClInclude Include="IGameVariable.h">
@@ -511,7 +511,7 @@
     </ClInclude>
     <ClInclude Include="SoulManagerModule.h">
       <Filter>include\06.ETC\GameManagerModule</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="GaugeBar.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
@@ -532,7 +532,7 @@
     </ClInclude>
     <ClInclude Include="SpeechBubbleUI.h">
       <Filter>include\05.UI</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="AttackInvalidation.h">
       <Filter>include\03.Attack</Filter>
     </ClInclude>
@@ -912,7 +912,7 @@
     </ClCompile>
     <ClCompile Include="SpeechBubbleUI.cpp">
       <Filter>src\05.UI</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="AttackInvalidation.cpp">
       <Filter>src\03.Attack</Filter>
     </ClCompile>

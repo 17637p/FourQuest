@@ -8,6 +8,7 @@
 #include "LinearAttack.h"
 #include "Attack.h"
 #include "Player.h"
+#include "PlayerVariable.h"
 #include "DamageCalculation.h"
 #include "AimAssist.h"
 
@@ -23,8 +24,10 @@ fq::client::MagicArmour::MagicArmour()
 	, mMagicBallSpeed(10.f)
 	, mAOEMoveRange(10.f)
 	, mAOECoolTime(7.f)
+	, mAOECoolTimeReduction(0.f)
 	, mAOEElapsedTime(0.f)
 	, mLaserCoolTime(5.f)
+	, mLaserCoolTimeReduction(0.f)
 	, mLaserElapsedTime(0.f)
 	, mRStickNoInputTime(0.f)
 	, mLaserDistance(30.f)
@@ -99,8 +102,10 @@ void fq::client::MagicArmour::EmitMagicBall()
 
 	// MagicBall Attack 사운드  
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_MagicBoll_Start", false , fq::sound::EChannel::SE });
-
 	GetScene()->AddGameObject(attackObj);
+
+	// 공격시 체력 감소 
+	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 }
 
 void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
@@ -134,7 +139,17 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	GetScene()->AddGameObject(attackObj);
 
 	// CoolTime
-	mAOEElapsedTime = mAOECoolTime;
+	if (mPlayer->IsFeverTime())
+	{
+		mAOEElapsedTime = mAOECoolTime - mAOECoolTimeReduction;
+	}
+	else
+	{
+		mAOEElapsedTime = mAOECoolTime;
+	}
+
+	// 공격시 체력 감소 
+	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 }
 
 void fq::client::MagicArmour::EmitLaser()
@@ -144,7 +159,7 @@ void fq::client::MagicArmour::EmitLaser()
 
 	auto origin = mTransform->GetWorldPosition();
 	origin.y += 1.f;
-	auto direction =mTransform->GetLookAtVector();
+	auto direction = mTransform->GetLookAtVector();
 	auto distance = mLaserDistance;
 	bool bUseDebugDraw = false;
 	auto tag = GetGameObject()->GetTag();
@@ -161,7 +176,7 @@ void fq::client::MagicArmour::EmitLaser()
 	{
 		for (int i = 0; i < data.hitCount; ++i)
 		{
-			float hitDistance =  (origin - data.hitContactPoints[i]).Length();
+			float hitDistance = (origin - data.hitContactPoints[i]).Length();
 
 			if (minDistance >= hitDistance)
 			{
@@ -302,11 +317,25 @@ void fq::client::MagicArmour::checkCoolTime(float dt)
 
 	// Laser Hit Tick
 	mLaserHitElapsedTime = std::max(0.f, mLaserHitElapsedTime - dt);
+
+	if (mPlayer->IsFeverTime())
+	{
+		mPlayer->SetASkillCoolTimeRatio(mAOEElapsedTime / (mAOECoolTime - mAOECoolTimeReduction));
+		mPlayer->SetRSkillCoolTimeRatio(mLaserElapsedTime / (mLaserCoolTime - mLaserCoolTimeReduction));
+	}
+	else
+	{
+		mPlayer->SetASkillCoolTimeRatio(mAOEElapsedTime / mAOECoolTime);
+		mPlayer->SetRSkillCoolTimeRatio(mLaserElapsedTime / mLaserCoolTime);
+	}
 }
 
 void fq::client::MagicArmour::CountLaserCoolTime()
 {
-	mLaserElapsedTime = mLaserCoolTime;
+	if (mPlayer->IsFeverTime())
+		mLaserElapsedTime = mLaserCoolTime - mLaserCoolTimeReduction;
+	else
+		mLaserElapsedTime = mLaserCoolTime;
 }
 
 

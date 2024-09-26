@@ -50,6 +50,9 @@ fq::client::Player::Player()
 	, mStaffHaed{}
 	, mAxeHaed{}
 	, mBowHaed{}
+	, mRSkillCoolTimeRatio(0.f)
+	, mASkillCoolTimeRatio(0.f)
+	, mXSkillCoolTimeRatio(0.f)
 {}
 
 fq::client::Player::~Player()
@@ -165,7 +168,7 @@ void fq::client::Player::processInput(float dt)
 			auto thisTransform = GetComponent<fq::game_module::Transform>();
 			auto deadArmourTransform = soul->GetComponent<fq::game_module::Transform>();
 
-			deadArmourTransform->SetWorldMatrix(thisTransform->GetWorldMatrix() 
+			deadArmourTransform->SetWorldMatrix(thisTransform->GetWorldMatrix()
 				* DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.f, 1.372f, 0.f)));
 
 			// 해당 갑옷에 벗은 플레이어 ID 저장
@@ -223,24 +226,17 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 				}
 			}
 
+			// Hit 애니메이션 
 			if (mbIsActiveOnHit)
 			{
+				// 무적시간 
 				mAnimator->SetParameterTrigger("OnHit");
+				mInvincibleElapsedTime = mInvincibleTime;
 			}
 
+			// 체력 감소
 			float attackPower = monsterAtk->GetAttackPower();
-			mHp -= attackPower;
-
-			mInvincibleElapsedTime = mInvincibleTime;
-
-			// UI 설정
-			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
-
-			// 플레이어 사망처리 
-			if (mHp <= 0.f)
-			{
-				SummonSoul(true);
-			}
+			DecreaseHp(attackPower);
 		}
 	}
 
@@ -340,7 +336,6 @@ void fq::client::Player::EmitStaffSoulAttack()
 
 void fq::client::Player::EmitBowSoulAttack()
 {
-
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mBowSoulAttack);
 	auto& attackObj = *(instance.begin());
 
@@ -710,3 +705,63 @@ void fq::client::Player::SetLowerBodyAnimation()
 
 	mAnimator->SetParameterInt("LowerDir", static_cast<int>(direction));
 }
+
+void fq::client::Player::DecreaseHp(float hp, bool bUseMinHp /*= false*/, bool bIgnoreInvincible /*= fasle*/)
+{
+	bool isHitAble = mInvincibleElapsedTime == 0.f;
+
+	if (!isHitAble && !bIgnoreInvincible) return;
+
+	// 피버타임에는 공격 
+	if (bUseMinHp && bIgnoreInvincible && mbIsFeverTime)
+		return;
+
+	if (bUseMinHp)
+	{
+		float prevHp = mHp;
+		mHp = std::max(PlayerVariable::HpReductionOnAttackMinHp, mHp - hp);
+		GetComponent<HpBar>()->DecreaseHp(hp / mMaxHp);
+	}
+	else
+	{
+		mHp -= hp;
+		GetComponent<HpBar>()->DecreaseHp(hp / mMaxHp);
+	}
+
+	// 플레이어 사망처리 
+	if (mHp <= 0.f)
+	{
+		SummonSoul(true);
+	}
+}
+
+float fq::client::Player::GetASkillCoolTimeRatio() const
+{
+	return mASkillCoolTimeRatio;
+}
+
+float fq::client::Player::GetRSkillCoolTimeRatio() const
+{
+	return mRSkillCoolTimeRatio;
+}
+
+void fq::client::Player::SetASkillCoolTimeRatio(float ratio)
+{
+	mASkillCoolTimeRatio = std::clamp(ratio, 0.f, 1.f);
+}
+
+void fq::client::Player::SetRSkillCoolTimeRatio(float ratio)
+{
+	mRSkillCoolTimeRatio = std::clamp(ratio, 0.f, 1.f);
+}
+
+float fq::client::Player::GetXSkillCoolTimeRatio() const
+{
+	return mXSkillCoolTimeRatio;
+}
+
+void fq::client::Player::SetXSkillCoolTimeRatio(float ratio)
+{
+	mXSkillCoolTimeRatio = std::clamp(ratio, 0.f, 1.f);
+}
+

@@ -1,6 +1,8 @@
 #include "LaserAttackState.h"
 #include "../FQGameModule/GameModule.h"
 #include "MagicArmour.h"
+#include "Player.h"
+#include "PlayerVariable.h"
 
 fq::client::LaserAttackState::LaserAttackState()
 	:mLaserEmitTime(1.f)
@@ -53,6 +55,9 @@ void fq::client::LaserAttackState::OnStateUpdate(game_module::Animator& animator
 			mGatherEffect = nullptr;
 		}
 	}
+
+	// 공격시 체력감소 
+	animator.GetComponent<Player>()->DecreaseHp(PlayerVariable::HpReductionOnAttack * dt, true, true);
 }
 
 void fq::client::LaserAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
