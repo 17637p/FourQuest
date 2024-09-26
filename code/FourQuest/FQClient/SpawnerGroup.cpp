@@ -191,6 +191,7 @@ void fq::client::SpawnerGroup::Spawn(SpawnRule rule)
 
 					// monster 이름 변경
 					monster->SetName(rule.spawnData[k].Name + std::to_string(mCurSpawnMonsterNum));
+					
 					// Monster Spawner 위치로 이동
 					DirectX::SimpleMath::Vector3 spawnPos = children[i]->GetTransform()->GetLocalPosition();
 					monster->GetTransform()->SetLocalPosition(spawnPos);

@@ -171,7 +171,7 @@ namespace fq::client
 		constexpr float rotationOffsetSq = 0.5f * 0.5f;
 
 		// RushCharging
-		if (rightInput.LengthSquared() >= rotationOffsetSq)
+		if (rightInput.LengthSquared() >= rotationOffsetSq && mRushElapsedTime == 0.f)
 		{
 			mAnimator->SetParameterTrigger("OnRushCharging");
 			mRushElapsedTime = mPlayer->IsFeverTime() ? mRushCoolTime - mRushCoolTimeReduction : mRushCoolTime;

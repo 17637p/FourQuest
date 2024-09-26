@@ -290,9 +290,6 @@
     <ClInclude Include="MeleeMonsterExplosionState.h">
       <Filter>include\02.Monster\Melee</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerUIManager.h">
-      <Filter>include\05.UI</Filter>
-    </ClInclude>
     <ClInclude Include="PauseUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
@@ -539,7 +536,13 @@
     <ClInclude Include="PlayerLowerMovementState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
+    <ClInclude Include="LevelHepler.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
     <ClInclude Include="BGaugeUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerUIManager.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -924,6 +927,9 @@
     </ClCompile>
     <ClCompile Include="PlayerMovementSoundState.cpp">
       <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelHepler.cpp">
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="BGaugeUI.cpp">
       <Filter>src\05.UI</Filter>

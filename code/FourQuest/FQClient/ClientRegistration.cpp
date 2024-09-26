@@ -2111,8 +2111,41 @@ void fq::client::RegisterMetaData()
 	entt::meta<LevelVariable>()
 		.type("LevelVariable"_hs)
 		.prop(fq::reflect::prop::Name, "LevelVariable")
+		.data<&LevelVariable::EasyDamage>("EasyDamage"_hs)
+		.prop(fq::reflect::prop::Name, "EasyDamage")
+		.data<&LevelVariable::EasyHp>("EasyHp"_hs)
+		.prop(fq::reflect::prop::Name, "EasyHp")
 
+		.data<&LevelVariable::NormalDamage>("NormalDamage"_hs)
+		.prop(fq::reflect::prop::Name, "NormalDamage")
+		.data<&LevelVariable::NormalHp>("NormalHp"_hs)
+		.prop(fq::reflect::prop::Name, "NormalHp")
 
+		.data<&LevelVariable::HardDamage>("HardDamage"_hs)
+		.prop(fq::reflect::prop::Name, "HardDamage")
+		.data<&LevelVariable::HardHp>("HardHp"_hs)
+		.prop(fq::reflect::prop::Name, "HardHp")
+
+		.data<&LevelVariable::Player2Damage>("Player2Damage"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Damage")
+		.data<&LevelVariable::Player2Hp>("Player2Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Hp")
+		.data<&LevelVariable::Player2Spawn>("Player2Spawn"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Spawn")
+
+		.data<&LevelVariable::Player3Damage>("Player3Damage"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Damage")
+		.data<&LevelVariable::Player3Hp>("Player3Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Hp")
+		.data<&LevelVariable::Player3Spawn>("Player3Spawn"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Spawn")
+
+		.data<&LevelVariable::Player4Damage>("Player4Damage"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Damage")
+		.data<&LevelVariable::Player4Spawn>("Player4Spawn"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Spawn")
+		.data<&LevelVariable::Player4Hp>("Player4Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Hp")
 
 		.base<IGameVariable>();
 	//////////////////////////////////////////////////////////////////////////

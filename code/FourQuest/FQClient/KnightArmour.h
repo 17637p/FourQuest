@@ -72,8 +72,9 @@ namespace fq::client
 		float mSwordKnockBackPower;
 		float mDashKnockBackPower;
 		float mShieldKnockBackPower;
-
 		float mAttackOffset;
+
+		bool mbOnShield;
 
 		game_module::PrefabResource mSwordAttack;
 		game_module::PrefabResource mSwordAttackEffect1;
