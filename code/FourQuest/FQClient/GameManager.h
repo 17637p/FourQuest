@@ -27,6 +27,9 @@ namespace fq::client
 		// temp alpha
 		void SavePlayerState();
 
+		// 플레이어가 갑옷이 파괴된 상태에서 얼마가 지났는 지 시간을 반환해줍니다.
+		float GetDestoryArmourSoulDelayTime(unsigned int id);
+
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }

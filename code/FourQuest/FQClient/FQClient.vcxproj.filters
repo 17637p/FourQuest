@@ -511,7 +511,7 @@
     </ClInclude>
     <ClInclude Include="SoulManagerModule.h">
       <Filter>include\06.ETC\GameManagerModule</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="GaugeBar.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
@@ -532,12 +532,15 @@
     </ClInclude>
     <ClInclude Include="SpeechBubbleUI.h">
       <Filter>include\05.UI</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="AttackInvalidation.h">
       <Filter>include\03.Attack</Filter>
     </ClInclude>
     <ClInclude Include="PlayerLowerMovementState.h">
       <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="BGaugeUI.h">
+      <Filter>include\05.UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -912,7 +915,7 @@
     </ClCompile>
     <ClCompile Include="SpeechBubbleUI.cpp">
       <Filter>src\05.UI</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="AttackInvalidation.cpp">
       <Filter>src\03.Attack</Filter>
     </ClCompile>
@@ -921,6 +924,9 @@
     </ClCompile>
     <ClCompile Include="PlayerMovementSoundState.cpp">
       <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="BGaugeUI.cpp">
+      <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

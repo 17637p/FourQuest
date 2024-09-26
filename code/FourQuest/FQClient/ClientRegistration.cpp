@@ -123,6 +123,7 @@
 #include "AudioSettingUI.h"
 #include "VideoSettingUI.h"
 #include "SpeechBubbleUI.h"
+#include "BGaugeUI.h"
 
 #include "CameraMoving.h"
 
@@ -1536,6 +1537,18 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ScreenOffset")
 		.data<&SpeechBubbleUI::mPlaytime>("Playtime"_hs)
 		.prop(fq::reflect::prop::Name, "Playtime")
+		.base<fq::game_module::Component>();
+
+	entt::meta<BGaugeUI>()
+		.type("BGaugeUI"_hs)
+		.prop(fq::reflect::prop::Name, "BGaugeUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&BGaugeUI::mWorldOffset>("WorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldOffset")
+		.data<&BGaugeUI::mGaugeSize>("GaugeSize"_hs)
+		.prop(fq::reflect::prop::Name, "GaugeSize")
+		.data<&BGaugeUI::mGaugeRatio>("GaugeRatio"_hs)
+		.prop(fq::reflect::prop::Name, "GaugeRatio")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
