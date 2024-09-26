@@ -23,6 +23,7 @@ namespace fq::client
 		void SetPlayerType(unsigned int id, const EPlayerType& playerType);
 
 		ESoulType GetDestroyArmourSoulType(unsigned int id);
+		float GetDestoryArmourSoulDelayTime(unsigned int id);
 
 		/// <summary>
 		/// °©¿Ê ÆÄ±« ¹× °©¿Ê ÇØÃ¼ ½Ã¿¡ »óÅÂ¿¡ µû¶ó ¿µÈ¥ »ý¼º

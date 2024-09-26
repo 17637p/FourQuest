@@ -13,6 +13,7 @@
 #include "PlayerSoulVariable.h"
 #include "Player.h"
 #include "HpBar.h"
+#include "BGaugeUI.h"
 
 #include "SoulVariable.h"
 
@@ -116,8 +117,7 @@ void fq::client::Soul::selectArmour()
 {
 	auto input = GetScene()->GetInputManager();
 
-	if (!mSelectArmours.empty()
-		&& input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold))
+	if (!mSelectArmours.empty())
 	{
 		// °¡Àå °¡±î¿î °©¿Ê Äõ¸®
 		auto soulPos = GetComponent<game_module::Transform>()->GetWorldPosition();
@@ -144,13 +144,19 @@ void fq::client::Soul::selectArmour()
 			return;
 		}
 
-		PlayerInfo info{ mController->GetControllerID(), mSoulType };
+		// °©¿ÊÀ» ÀÔÀ» ¼ö ÀÖ´ÂÁö ÄðÅ¸ÀÓ Ã¼Å© ( UI ³ëÃâ )
+		closestArmour->CheckArmourCoolTime(mController->GetControllerID());
 
-		if (closestArmour->SummonLivingArmour(info))
+		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold))
 		{
-			DestorySoul();
+			PlayerInfo info{ mController->GetControllerID(), mSoulType };
 
-			spdlog::trace("DestroySoul");
+			if (closestArmour->SummonLivingArmour(info))
+			{
+				DestorySoul();
+
+				spdlog::trace("DestroySoul");
+			}
 		}
 	}
 }
