@@ -390,6 +390,12 @@ void fq::client::Soul::ReleaseGoddessStatue()
 	mIsOverlayGoddessStatue = false;
 	GetComponent<game_module::CharacterController>()->SetCanMoveCharater(true);
 
+	// 여신상 살짝 앞으로 소환
+	auto soulT = GetTransform();
+	DirectX::SimpleMath::Vector3 forwardPos = soulT->GetWorldPosition();
+	forwardPos.z -= 1.0f;
+	soulT->SetWorldPosition(forwardPos);
+
 	SetSoulHP();
 }
 
