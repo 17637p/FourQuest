@@ -28,6 +28,7 @@ namespace fq::client
 		float mChargingTime;
 		float mChargingMinimumTime;
 		float mChargingElapsedTime;
+		float mRotationSpeed;
 		bool mbPassedPoint;
 
 		friend void RegisterMetaData();

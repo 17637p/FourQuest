@@ -66,6 +66,8 @@ namespace fq::graphics
 
 	struct MaterialInstanceInfo
 	{
+		bool bUseInstanceing = false;
+
 		bool bUseInstanceAlpha = false;
 		float Alpha = 1.f;
 		bool bUseDissolveCutoff = false;
@@ -114,7 +116,29 @@ namespace fq::graphics
 		bool isCenter = false;
 		bool isRender = true;
 
-		DirectX::SimpleMath::Color Color;
+		DirectX::SimpleMath::Color Color; // Color가 있으면 네모 상자 그리기
+	};
+
+	struct SpriteInfo
+	{
+		float StartX = 0.f; // 좌상단 점 위치 
+		float StartY = 0.f;
+		float Width = 100.f;
+		float Height = 100.f;
+
+		float ScaleX = 1.f;
+		float ScaleY = 1.f;
+
+		std::string ImagePath = "";
+		unsigned int Layer = 0; // 작을 수록 위에 클 수록 아래에 출력
+
+		float ImageNum = 5;
+		float Speed = 0.5f;
+		float CurImage = 0;
+		float CurTime = 0;
+
+		bool isCenter = false;
+		bool isRender = true;
 	};
 
 	enum class ETextAlign
@@ -349,6 +373,16 @@ namespace fq::graphics
 			DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };;
 			bool bIsRenderDebug{ true };
 		} InstanceData;
+
+		struct Sprite
+		{
+			unsigned int WidthCount{ 1 };
+			unsigned int HeightCount{ 1 };
+			unsigned int FrameCount{ 1 };
+			float FramePerSecond{ 0.1 };
+			bool bIsLooping{ false };
+			bool bIsUsed{ false };
+		} SpriteData;
 	};
 
 	struct DecalInfo
@@ -358,7 +392,6 @@ namespace fq::graphics
 		float Depth = 1.f;
 		DirectX::SimpleMath::Vector3 Pivot = { 0, 0, 0 };
 
-		// unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
 		float NormalThresholdInDegree = 180.f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
@@ -528,6 +561,7 @@ namespace fq::graphics
 	{
 		Clamp,
 		Wrap,
+		Border,
 	};
 
 	enum ERasterizeMode
@@ -593,6 +627,18 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color DissolveEndColor = { 0, 0, 0, 0 };
 		DirectX::SimpleMath::Color DissolveStartEmissive = { 0, 0, 0, 0 };
 		DirectX::SimpleMath::Color DissolveEndEmissive = { 0, 0, 0, 0 };
+
+		bool bUseRimLight = false;
+		DirectX::SimpleMath::Color RimLightColor;
+		float RimPow = 2.f;
+		float RimIntensity = 1.f;
+
+		bool bUseInvRimLight = false;
+		DirectX::SimpleMath::Color InvRimLightColor;
+		float InvRimPow = 2.f;
+		float InvRimIntensity = 1.f;
+
+		bool bUseMulEmissiveAlpha = false; // 이미시브 알파값 곱하기 여부
 	};
 
 	struct ParticleMaterialInfo
@@ -617,6 +663,8 @@ namespace fq::graphics
 
 		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
 		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+		
+		float EmissiveIntensity = 1.f;
 
 		std::wstring BaseColorFileName;
 		std::wstring EmissiveFileName;

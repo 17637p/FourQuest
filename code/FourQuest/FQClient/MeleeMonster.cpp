@@ -14,6 +14,7 @@
 #include "MonsterGroup.h"
 #include "KnockBack.h"
 #include "Player.h"
+#include "LevelHepler.h"
 
 fq::client::MeleeMonster::MeleeMonster()
 	:mMaxHp(0.f)
@@ -81,6 +82,10 @@ void fq::client::MeleeMonster::OnStart()
 	mStartPosition = mTransform->GetWorldPosition();
 	mAnimator = GetComponent<game_module::Animator>();
 	mKnockBack = GetComponent<KnockBack>();
+	
+	// 난이도에 따른 공격력 HP 설정
+	mAttackPower = mAttackPower * LevelHepler::GetDamageRatio();
+	mHp = mHp * LevelHepler::GetHpRatio();
 	mMaxHp = mHp;
 
 	// Agent 설정
@@ -120,7 +125,6 @@ void fq::client::MeleeMonster::EmitAttack()
 	// 공격 정보 설정
 	AttackInfo attackInfo{};
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
-
 	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = mAttackPower;
 	attackInfo.attackDirection = foward;
@@ -148,8 +152,6 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonster::EmitAttac
 
 	return effentObj;
 }
-
-
 
 void fq::client::MeleeMonster::Move(DirectX::SimpleMath::Vector3 destination)
 {
@@ -204,7 +206,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 				if (type == EKnockBackType::Fixed)
 				{
 					DirectX::SimpleMath::Vector3 direction = playerAttack->GetAttackDirection();
-					mKnockBack->Set(power, direction);
+					mKnockBack->AddKnockBack(power, direction);
 				}
 				else if (type == EKnockBackType::TargetPosition)
 				{
@@ -216,7 +218,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 					auto knockBackDir = monsterPos - attackPos;
 					knockBackDir.Normalize();
 
-					mKnockBack->Set(power, knockBackDir);
+					mKnockBack->AddKnockBack(power, knockBackDir);
 				}
 				else if (type == EKnockBackType::TargetPositionAndDirectionByAngle)
 				{
@@ -237,7 +239,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 					auto knockBackDir = pushedDir * (1 - directionRatio) * playerAttack->GetTargetPosRatio() + playerAttack->GetAttackDirection() * directionRatio * playerAttack->GetDirectionRatio();
 					//knockBackDir.Normalize();
 
-					mKnockBack->Set(power, knockBackDir);
+					mKnockBack->AddKnockBack(power, knockBackDir);
 				}
 				else if (type == EKnockBackType::TargetPositionAndKnockDown)
 				{
@@ -249,7 +251,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 					auto knockBackDir = monsterPos - attackPos;
 					knockBackDir.Normalize();
 
-					mKnockBack->Set(power, knockBackDir);
+					mKnockBack->AddKnockBack(power, knockBackDir);
 
 					// 몬스터를 넘어트리는 상태 변화 호출
 					// mAnimator->SetParameterBoolean("IsKockDown", true);
@@ -262,6 +264,17 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
+
+			// 이펙트 방출
+			fq::event::OnCreateStateEvent stateEvent;
+			stateEvent.gameObject = GetGameObject();
+			stateEvent.RegisterKeyName = playerAttack->GetAttackEffectEvent();
+			if (!stateEvent.RegisterKeyName.empty())
+			{
+				GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+
+
+			}
 
 			// 사망처리 
 			if (mHp <= 0.f)

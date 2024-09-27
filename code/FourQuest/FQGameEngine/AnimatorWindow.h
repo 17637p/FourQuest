@@ -15,7 +15,7 @@ namespace fq::game_engine
 
 	/// <summary>
 	/// Animator를 편집하는 창
-	/// </summary>S
+	/// </summary>
 	class AnimatorWindow : public IEditorWindow
 	{
 		using NodeID = unsigned int;
@@ -47,8 +47,9 @@ namespace fq::game_engine
 	private:
 		void dragDropWindow();
 
-		// 파라미터 관련
+		//  레이어,파라미터 관련
 		void beginChild_ParameterWindow();
+		void beginRadioBox_SelectController();
 		void beginCombo_AddParameter();
 
 		// 노드관련
@@ -75,8 +76,16 @@ namespace fq::game_engine
 
 		fq::game_module::AnimatorControllerLoader mLoader;
 		std::string mSelectObjectName;
+	
 		std::filesystem::path mSelectControllerPath;
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
+		
+		std::shared_ptr<fq::game_module::AnimatorController> mUpperController;
+		std::filesystem::path mUpperControllerPath;
+
+		std::shared_ptr<fq::game_module::AnimatorController> mLowerController;
+		std::filesystem::path mLowerControllerPath;
+
 		std::string mSettingFilePath;
 		ax::NodeEditor::EditorContext* mContext;
 		entt::id_type mSelectNodeID;

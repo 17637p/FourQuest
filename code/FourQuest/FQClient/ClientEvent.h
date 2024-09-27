@@ -18,6 +18,27 @@ namespace fq::client::event
 	};
 
 	/// <summary>
+	/// 플레이어의 상태를 업데이트 해주는 이벤트
+	/// </summary>
+	struct UpdatePlayerState
+	{
+		int playerID;
+		EPlayerType type;
+	};
+
+	/// <summary>
+	/// 플레이어의 갑옷이 깨졌을 경우에 영혼 생성
+	/// </summary>
+	struct SummonSoul
+	{
+		int id;
+		ESoulType soulType;
+		DirectX::SimpleMath::Matrix worldTransform;
+		game_module::PrefabResource soulPrefab;
+		bool isDestroyArmour;
+	};
+
+	/// <summary>
 	/// 몬스터를 죽였을 때 발생하는 이벤트 
 	/// </summary>
 	struct KillMonster
@@ -32,6 +53,24 @@ namespace fq::client::event
 	{
 		int playerNumber;
 		std::string colliderName;
+	};
+
+	/// <summary>
+	/// 플레이어가 트리거에 부딪히는 중에 발생하는 이벤트
+	/// </summary>
+	struct PlayerCollideStayTrigger
+	{
+		int playerNumber;
+		std::string colliderName;
+	};
+
+	/// <summary>
+	/// 디펜스를 진행중일 때 발생하는 이벤트
+	/// </summary>
+	struct InProgressDefence
+	{
+		std::string colliderName;
+		int curCount;
 	};
 
 	/// <summary>
@@ -68,6 +107,15 @@ namespace fq::client::event
 	};
 
 	/// <summary>
+	/// 진행 중인 퀘스트를 알리는 이벤트
+	/// </summary>
+	struct CurrentQuest
+	{
+		bool isMain;
+		int questIndex;
+	};
+
+	/// <summary>
 	/// Repause 팝업 창 Off 이벤트
 	/// </summary>
 	struct OffPopupRepause
@@ -86,5 +134,21 @@ namespace fq::client::event
 	/// </summary>
 	struct OffPopupPause
 	{
+	};
+
+	/// <summary>
+	/// Reset 팝업 창 Off 이벤트
+	/// </summary>
+	struct OffPopupReset
+	{
+		bool isReset;
+	};
+
+	/// <summary>
+	/// Save 팝업 창 Off 이벤트
+	/// </summary>
+	struct OffPopupSave
+	{
+		bool isSave;
 	};
 }

@@ -46,13 +46,10 @@ void fq::game_engine::AnimationSystem::updateAnimtorState(float dt)
 		{
 			if (!object.IsDestroyed())
 			{
-				assert(!object.IsDestroyed());
 				animator.UpdateState(dt);
 				animator.ProcessAnimationEvent(&object, eventManagerPtr);
 			}
-
 		}
-
 	);
 }
 
@@ -83,17 +80,112 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 
 			auto& controller = animator.GetController();
 			auto& nodeHierarchyInstance = animator.GetNodeHierarchyInstance();
-			float timePos = controller.GetTimePos();
+			bool useLowerController = animator.UseLowerController();
 
-			if (controller.IsInTransition())
+			// 상하체 분리 X 
+			if (!useLowerController)
 			{
-				float blendPos = controller.GetBlendTimePos();
-				float blendWeight = controller.GetBlendWeight();
-				nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
+				float timePos = controller.GetTimePos();
+				if (controller.IsInTransition())
+				{
+					float blendPos = controller.GetBlendTimePos();
+					float blendWeight = controller.GetBlendWeight();
+
+					if (animator.GetUpdateAnimationCPUData())
+					{
+						nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
+					}
+					if (animator.GetUpdateAnimationGPUData())
+					{
+						nodeHierarchyInstance.UpdateGPUData(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
+					}
+				}
+				else if (controller.GetHasCurrentStateAnimation())
+				{
+					if (animator.GetUpdateAnimationCPUData())
+					{
+						nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation());
+					}
+					if (animator.GetUpdateAnimationGPUData())
+					{
+						nodeHierarchyInstance.UpdateGPUData(timePos, controller.GetSharedRefCurrentStateAnimation());
+					}
+				}
 			}
-			else if (controller.GetHasCurrentStateAnimation())
+			else // 상하체 분리 O 
 			{
-				nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation());
+				unsigned int upperStartIndex = nodeHierarchyInstance.GetNodeHierarchy()->GetSpineIndex();
+				unsigned int upperEndIndex = nodeHierarchyInstance.GetNodeHierarchy()->GetUpperBodyEndIndex();
+				unsigned int lowerStartIndex = nodeHierarchyInstance.GetNodeHierarchy()->GetLowerBodyStartIndex();
+				unsigned int lowerEndIndex = nodeHierarchyInstance.GetNodeHierarchy()->GetEndIndex();
+
+				// 1.애니메이션 행렬을 로컬 애니메이션을 초기상태로 만들어둡니다.
+				nodeHierarchyInstance.SetBindPoseLocalTransform();
+
+				// 2. 상체 애니메이션 
+				float timePos = controller.GetTimePos();
+				if (controller.IsInTransition())
+				{
+					float blendTimePos = controller.GetBlendTimePos();
+					float blendWeight = controller.GetBlendWeight();
+					nodeHierarchyInstance.UpdateLocalTransformRange(timePos
+						, controller.GetSharedRefCurrentStateAnimation()
+						, blendTimePos
+						, controller.GetSharedRefNextStateAnimation()
+						, blendWeight
+						, upperStartIndex, upperEndIndex);
+				}
+				else if (controller.GetHasCurrentStateAnimation())
+				{
+					nodeHierarchyInstance.UpdateLocalTransformRange(timePos
+						, controller.GetSharedCurrentStateAnimation()
+						, upperStartIndex
+						, upperEndIndex);
+				}
+				
+				// + 상체 애니메이션을 기준으로 toRoot행렬을 갱신합니다.
+				nodeHierarchyInstance.UpdateByLocalTransform(upperStartIndex, upperEndIndex);
+
+				// 3. 하체 애니메이션 
+				auto& lowerController = animator.GetLowerController();
+				float lowerTimePos = lowerController.GetTimePos();
+
+				if (lowerController.IsInTransition())
+				{
+					float blendTimePos = lowerController.GetBlendTimePos();
+					float blendWeight = lowerController.GetBlendWeight();
+
+					nodeHierarchyInstance.UpdateLocalTransformRange(lowerTimePos
+						, lowerController.GetSharedRefCurrentStateAnimation()
+						, blendTimePos
+						, lowerController.GetSharedRefNextStateAnimation()
+						, blendWeight
+						, lowerStartIndex, lowerEndIndex);
+
+					nodeHierarchyInstance.UpdateLocalTransformRange(lowerTimePos
+						, lowerController.GetSharedRefCurrentStateAnimation()
+						, blendTimePos
+						, lowerController.GetSharedRefNextStateAnimation()
+						, blendWeight
+						, upperStartIndex, upperStartIndex);
+				}
+				else if (lowerController.GetHasCurrentStateAnimation())
+				{
+					nodeHierarchyInstance.UpdateLocalTransformRange(lowerTimePos
+						, lowerController.GetSharedCurrentStateAnimation()
+						, lowerStartIndex
+						, lowerEndIndex);
+
+					nodeHierarchyInstance.UpdateLocalTransformRange(lowerTimePos
+						, lowerController.GetSharedCurrentStateAnimation()
+						, upperStartIndex
+						, upperStartIndex);
+				}
+
+				// + 하체 애니메이션을 기준으로 스파인행렬의 toRoot 행렬을 갱신합니다.
+				nodeHierarchyInstance.UpdateByLocalTransform(upperStartIndex, upperStartIndex);
+				// + 하체 애니메이션을 기준으로 toRoot 행렬을 갱신합니다.
+				nodeHierarchyInstance.UpdateByLocalTransform(lowerStartIndex, lowerEndIndex);
 			}
 		});
 
@@ -115,6 +207,8 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 	auto animator = object->GetComponent<fq::game_module::Animator>();
 	auto controllerPath = animator->GetControllerPath();
 	auto nodeHierarchyPath = animator->GetNodeHierarchyPath();
+	auto lowerControllerPath = animator->GetLowerControllerPath();
+	bool hasLowerController = std::filesystem::exists(lowerControllerPath);
 
 	if (!std::filesystem::exists(controllerPath))
 	{
@@ -128,7 +222,8 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 	}
 
 	// 컨트롤러 로드
-	auto controller = mLoader.Load(controllerPath);
+	std::shared_ptr<game_module::AnimatorController> controller = mLoader.Load(controllerPath);
+	std::shared_ptr<game_module::AnimatorController> lowerController = hasLowerController ? mLoader.Load(lowerControllerPath) : nullptr;
 
 	// 계층 구조 로드
 	auto nodeHierarchyOrNull = mGameProcess->mResourceSystem->GetNodeHierarchy(nodeHierarchyPath);
@@ -168,8 +263,47 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 		nodeHierarchyOrNull->RegisterAnimation(animationInterfaceOrNull);
 	}
 
+	// 하부 애니메이션 컨트롤러 
+	if (hasLowerController)
+	{
+		for (auto& [stateName, animationStateNode] : lowerController->GetStateMap())
+		{
+			const auto& animationPath = animationStateNode.GetAnimationPath();
+
+			if (!std::filesystem::exists(animationPath))
+			{
+				continue;
+			}
+
+			auto animationInterfaceOrNull = mGameProcess->mResourceSystem->GetAnimation(animationPath);
+
+			if (animationInterfaceOrNull == nullptr)
+			{
+				mGameProcess->mResourceSystem->LoadAnimation(animationPath);
+				animationInterfaceOrNull = mGameProcess->mResourceSystem->GetAnimation(animationPath);
+			}
+			assert(animationInterfaceOrNull != nullptr);
+
+			animationStateNode.SetAnimation(animationInterfaceOrNull);
+			nodeHierarchyOrNull->RegisterAnimation(animationInterfaceOrNull);
+		}
+	}
+
 	controller->SetAnimator(animator);
 	animator->SetController(controller);
+
+	if (hasLowerController)
+	{
+		lowerController->SetAnimator(animator);
+		animator->SetLowerController(lowerController);
+	}
+
+	// 스키닝 인스턴싱을 위한 사전 데이터 구성.. 요거 분기 처리할 수 있도록 만들어야댐
+	if (animator->GetCreateAnimationTexture())
+	{
+		assert(nodeHierarchyOrNull != nullptr);
+		mGraphics->CreateAnimationTexture(nodeHierarchyOrNull);
+	}
 
 	return true;
 }

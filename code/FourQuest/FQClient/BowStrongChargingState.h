@@ -20,6 +20,10 @@ namespace fq::client
 	private:
 		float mChargingElapsedTime;
 		float mRotationSpeed;
+		float mForcedChargingWaitingTime;
+		float mChargingWationTime;
+		unsigned int mStringAttackIndex;
+		bool mbIsEmitAttack;
 
 		std::shared_ptr<game_module::GameObject> mChargingEffect;
 

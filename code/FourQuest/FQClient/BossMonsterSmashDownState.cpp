@@ -79,7 +79,5 @@ void fq::client::BossMonsterSmashDownState::OnStateExit(game_module::Animator& a
 		mEffect = nullptr;
 	}
 
-	// 공격이 끝나면 타겟을 무작위 설정
-	animator.GetComponent<BossMonster>()->SetRandomTarget();
-	animator.GetComponent<BossMonster>()->SetNextAttack();
+	animator.GetComponent<BossMonster>()->EndPattern();
 }

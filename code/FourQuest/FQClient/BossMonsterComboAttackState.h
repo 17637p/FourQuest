@@ -20,6 +20,7 @@ namespace fq::client
 	private:
 		float mEmitAttackTime;
 		float mAttackElapsedTime;
+		float mXAxisOffset;
 
 		friend void RegisterMetaData();
 	};

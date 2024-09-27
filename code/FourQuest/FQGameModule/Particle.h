@@ -75,6 +75,9 @@ namespace fq::game_module
 		graphics::ParticleMaterialInfo GetParticleMaterialInfo() const { return mParticleMaterialInfo; }
 		void SetParticleMaterialInfo(graphics::ParticleMaterialInfo data);
 
+		ParticleInfo::Sprite GetSpriteData() const { return mParticleInfo.SpriteData; }
+		void SetSpriteData(const ParticleInfo::Sprite& spriteData);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 

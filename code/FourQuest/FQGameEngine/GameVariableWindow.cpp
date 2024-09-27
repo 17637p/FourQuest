@@ -6,7 +6,7 @@
 #include <directxtk/SimpleMath.h>
 
 #include "../FQClient/PlayerSoulVariable.h"
-#include "../FQClient/MonsterVariable.h"
+#include "../FQClient/LevelVariable.h"
 #include "../FQClient/GameVaribleHelper.h"
 
 fq::game_engine::GameVariableWindow::GameVariableWindow()

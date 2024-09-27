@@ -28,6 +28,7 @@ namespace fq::common
 		unsigned int ParentIndex;
 		DirectX::SimpleMath::Matrix ToParentMatrix;
 		DirectX::SimpleMath::Matrix OffsetMatrix;
+		std::vector<unsigned int> ChildIndices;
 	};
 
 	struct Mesh

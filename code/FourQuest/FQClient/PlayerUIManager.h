@@ -25,7 +25,6 @@ namespace fq::client
 
 		void AddPlayer(int playerID);
 		void DeletePlayer(int playerID);
-
 		void SetPlayerUIPosition();
 
 	private:

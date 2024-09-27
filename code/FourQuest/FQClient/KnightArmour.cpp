@@ -5,22 +5,33 @@
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/CharacterController.h"
 #include "Player.h"
+#include "PlayerVariable.h"
 #include "Attack.h"
 #include "DamageCalculation.h"
 #include "PlayerSoulVariable.h"
+#include "GaugeBar.h"
 
 fq::client::KnightArmour::KnightArmour()
 	:mDashCoolTime(1.f)
 	, mDashElapsedTime(0.f)
 	, mShieldDashPower(0.5f)
 	, mXAttackDashPower(0.1f)
-	, mShieldKnockPower(1.f)
+	, mDashKnockBackPower(1.f)
 	, mSwordKnockBackPower(1.f)
+	, mShieldKnockBackPower(5.f)
 	, mController(nullptr)
 	, mAnimator(nullptr)
 	, mTransform(nullptr)
 	, mPlayer(nullptr)
+	, mGaugeBar(nullptr)
 	, mAttackOffset(2.f)
+	, mShieldElapsedTime(0.f)
+	, mShieldCoolTime(5.f)
+	, mShieldDuration(3.f)
+	, mShieldSpeedRatio(0.5f)
+	, mShieldCoolTimeReduction(0.f)
+	, mDashCoolTimeReduction(0.f)
+	, mbOnShield(false)
 {}
 
 fq::client::KnightArmour::~KnightArmour()
@@ -76,6 +87,7 @@ void fq::client::KnightArmour::EmitSwordAttack()
 	bool isSwing1 = name == "Swing1";
 
 	attackInfo.hitSound = isSwing1 ? "K_Swing1_Hit" : "K_Swing2_Hit";
+	attackInfo.HitEffectName = "K_Swing_Hit_blood";
 	attackComponent->Set(attackInfo);
 
 	// 공격 트랜스폼 설정
@@ -87,6 +99,9 @@ void fq::client::KnightArmour::EmitSwordAttack()
 
 	// Sword 소리
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ isSwing1 ? "K_Swing1" : "K_Swing2", false , fq::sound::EChannel::SE });
+
+	// 공격시 체력 감소 
+	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -113,22 +128,38 @@ void fq::client::KnightArmour::EmitShieldAttack()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.type = EKnockBackType::TargetPosition;
 	attackInfo.attackDirection = foward;
-	attackInfo.knocBackPower = mShieldKnockPower;
+	attackInfo.knocBackPower = mDashKnockBackPower;
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
 	attackInfo.hitSound = "K_Swing3_Hit";
-	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
+	attackInfo.HitEffectName = "W_Hit_blunt";
+	attackInfo.mHitCallback = [this, isIncrease = false, isEmitEffect = false]() mutable
 		{
 			if (!isIncrease)
 			{
 				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
 				isIncrease = true;
 			}
+
+			if (!isEmitEffect)
+			{
+				fq::event::OnCreateStateEvent stateEvent;
+				stateEvent.gameObject = GetGameObject();
+				stateEvent.RegisterKeyName = "K_Swing_3_Hit";
+				if (!stateEvent.RegisterKeyName.empty())
+				{
+					GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+				}
+
+				isEmitEffect = true;
+			}
 		};
 	attackComponent->Set(attackInfo);
 
+	// 공격시 체력 감소 
+	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
 	// ShieldAttack 소리
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Swing3", false , fq::sound::EChannel::SE });
-
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -150,7 +181,7 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.type = EKnockBackType::Fixed;
 	attackInfo.attackDirection = foward;
-	attackInfo.knocBackPower = 20.f;
+	attackInfo.knocBackPower = mDashKnockBackPower;
 	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
 		{
 			if (!isIncrease)
@@ -159,7 +190,11 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 				isIncrease = true;
 			}
 		};
+	attackInfo.HitEffectName = "W_Hit_blunt";
 	attackComponent->Set(attackInfo);
+
+	// 공격시 체력 감소 
+	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Bash", false , fq::sound::EChannel::SE });
 	GetScene()->AddGameObject(attackObj);
@@ -177,15 +212,19 @@ void fq::client::KnightArmour::checkInput()
 
 	auto input = GetScene()->GetInputManager();
 
-	// Dash
+	// Dash Input
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap)
 		&& mDashElapsedTime == 0.f)
 	{
 		mAnimator->SetParameterTrigger("OnDash");
-		mDashElapsedTime = mDashCoolTime;
+
+		if (mPlayer->IsFeverTime())
+			mDashElapsedTime = mDashCoolTime - mDashCoolTimeReduction;
+		else
+			mDashElapsedTime = mDashCoolTime;
 	}
 
-	// Shield 
+	// Shield Input
 	DirectX::SimpleMath::Vector3 rightInput{};
 	rightInput.x = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
 	rightInput.z = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
@@ -193,30 +232,47 @@ void fq::client::KnightArmour::checkInput()
 	// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
 	constexpr float rotationOffsetSq = 0.5f * 0.5f;
 
-	if (rightInput.LengthSquared() >= rotationOffsetSq)
+	// 쉴드 상태 진입 
+	if (rightInput.LengthSquared() >= rotationOffsetSq && mShieldElapsedTime == 0.f)
 	{
-		rightInput.Normalize();
-
-		if (rightInput == Vector3::Backward)
-		{
-			mTransform->SetWorldRotation(Quaternion::LookRotation(rightInput, { 0.f,-1.f,0.f }));
-		}
-		else
-		{
-			mTransform->SetWorldRotation(Quaternion::LookRotation(rightInput, { 0.f,1.f,0.f }));
-		}
-
 		mAnimator->SetParameterBoolean("OnShield", true);
-		mPlayer->SetOnShieldBlock(true);
-
-		// 방패 움직임 판단 
-
 	}
-	else
+}
+
+
+void fq::client::KnightArmour::UpdateBlockState(float dt)
+{
+	mOnShieldElapsedTime += dt;
+
+	// 방패 밀려나는 방향설정
+	if (mShieldObject)
+	{
+		mShieldObject->GetComponent<Attack>()->SetAttackDirection(mTransform->GetLookAtVector());
+	}
+
+	auto input = GetScene()->GetInputManager();
+
+	DirectX::SimpleMath::Vector3 rightInput{};
+	rightInput.x = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
+	rightInput.z = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
+
+	// 방패 해제 조건 
+	if (rightInput.LengthSquared() <= 0.001f
+		|| mOnShieldElapsedTime >= mShieldDuration)
 	{
 		mAnimator->SetParameterBoolean("OnShield", false);
 		mPlayer->SetOnShieldBlock(false);
 	}
+
+	float ratio = 1.f - (mOnShieldElapsedTime / mShieldDuration);
+
+	GetComponent<GaugeBar>()->SetRatio(ratio);
+
+	// 방패 이동속도 적용
+	mController->AddFinalSpeedMultiplier(mShieldSpeedRatio - 1.f);
+
+	// 공격 체력 감소
+	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack * dt, true, true);
 }
 
 void fq::client::KnightArmour::OnStart()
@@ -225,11 +281,24 @@ void fq::client::KnightArmour::OnStart()
 	mController = GetComponent<game_module::CharacterController>();
 	mTransform = GetComponent<game_module::Transform>();
 	mPlayer = GetComponent<Player>();
+	mGaugeBar = GetComponent<GaugeBar>();
 }
 
 void fq::client::KnightArmour::checkSkillCoolTime(float dt)
 {
 	mDashElapsedTime = std::max(0.f, mDashElapsedTime - dt);
+	mShieldElapsedTime = std::max(0.f, mShieldElapsedTime - dt);
+
+	if (mPlayer->IsFeverTime())
+	{
+		mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / (mDashCoolTime - mDashCoolTimeReduction));
+		mPlayer->SetRSkillCoolTimeRatio(mShieldElapsedTime / (mShieldCoolTime - mShieldCoolTimeReduction));
+	}
+	else
+	{
+		mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / mDashCoolTime);
+		mPlayer->SetRSkillCoolTimeRatio(mShieldElapsedTime / mShieldCoolTime);
+	}
 }
 
 std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSwordEffect()
@@ -237,8 +306,8 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSword
 	// 공격 이펙트 생성
 	auto name = mAnimator->GetController().GetCurrentStateName();
 
-	game_module::PrefabResource& res = (name == "Swing1") ? mSwordAttackEffect1
-		: mSwordAttackEffect2; 
+	game_module::PrefabResource& res = (name != "Swing1") ? mSwordAttackEffect1
+		: mSwordAttackEffect2;
 
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(res);
 	auto& effectObj = *(instance.begin());
@@ -247,5 +316,71 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSword
 
 	GetScene()->AddGameObject(effectObj);
 
-	return effectObj;  
+	return effectObj;
+}
+
+
+void fq::client::KnightArmour::ExitShieldState()
+{
+	mGaugeBar->SetVisible(false);
+
+	if (mShieldObject)
+	{
+		GetScene()->DestroyGameObject(mShieldObject.get());
+		mShieldObject = nullptr;
+	}
+
+	mbOnShield = false;
+	mOnShieldElapsedTime = 0.f;
+}
+
+void fq::client::KnightArmour::EnterShieldState()
+{
+	if (mbOnShield)
+	{
+		return;
+	}
+
+	mbOnShield = true;
+	mPlayer->SetOnShieldBlock(true);
+	mGaugeBar->SetVisible(true);
+	mGaugeBar->SetRatio(1.f);
+
+	if (mPlayer->IsFeverTime())
+		mShieldElapsedTime = mShieldCoolTime - mShieldCoolTimeReduction;
+	else
+		mShieldElapsedTime = mShieldCoolTime;
+
+	mOnShieldElapsedTime = 0.f;
+
+	// 쉴드 콜라이더 생성
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mShieldCollider);
+	auto& shieldObj = *(instance.begin());
+
+	// 공격 트랜스폼 설정
+	auto attackComponent = shieldObj->GetComponent<client::Attack>();
+	auto shieldT = shieldObj->GetComponent<game_module::Transform>();
+	auto foward = mTransform->GetLookAtVector();
+	mTransform->AddChild(shieldT);
+	shieldT->SetLocalPosition({ 0.f,1.f,-1.f });
+
+	// 공격 설정
+	AttackInfo attackInfo{};
+	attackInfo.damage = 0.f;
+	attackInfo.attacker = GetGameObject();
+	attackInfo.type = EKnockBackType::Fixed;
+	attackInfo.attackDirection = foward;
+	attackInfo.knocBackPower = mShieldKnockBackPower;
+	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
+		{
+			if (!isIncrease)
+			{
+				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+				isIncrease = true;
+			}
+		};
+	attackComponent->Set(attackInfo);
+
+	GetScene()->AddGameObject(shieldObj);
+	mShieldObject = shieldObj;
 }

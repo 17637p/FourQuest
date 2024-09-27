@@ -38,6 +38,11 @@ namespace fq::game_module
 		/// 컨트롤러를 설정합니다 
 		/// </summary>
 		void SetController(std::shared_ptr<AnimatorController> controller);
+		
+		/// <summary>
+		/// 하부 컨트롤러를 설정합니다 
+		/// </summary>
+		void SetLowerController(std::shared_ptr<AnimatorController> lowerController);
 
 		/// <summary>
 		/// 컨트롤러를 반환합니다 
@@ -48,6 +53,11 @@ namespace fq::game_module
 		/// 컨트롤러를 반환합니다
 		/// </summary>
 		std::shared_ptr<AnimatorController> GetSharedController() const { return mController; }
+
+		/// <summary>
+		/// 하부 컨트롤러를 반환합니다 
+		/// </summary>
+		std::shared_ptr<AnimatorController> GetSharedLowerController() const { return mLowerController; }
 
 		bool GetHasController() const { return mController != nullptr; }
 
@@ -65,6 +75,11 @@ namespace fq::game_module
 		/// 로드할 컨트롤러 경로를 반환합니다
 		/// </summary>
 		ControllerPath GetControllerPath() const { return mControllerPath; }
+
+		/// <summary>
+		/// 로드할 아래쪽 컨트롤러 경로를 반환합니다.
+		/// </summary>
+		ControllerPath GetLowerControllerPath() const { return mLowerControllerPath; }
 
 		/// <summary>
 		/// 로드할 컨트롤러 경로를 설정합니다 
@@ -101,8 +116,13 @@ namespace fq::game_module
 
 		/// <summary>
 		/// 현재 애니메이션 전환중인지 반환합니다.
-		/// </summary>
+		/// </summary>S
 		bool IsInTransition()const;
+
+		/// <summary>
+		/// 현재 하부 컨트롤러의 애니메이션이 전환중인지 반환합니다.
+		/// </summary>
+		bool IsLowerInTransition()const;
 
 		/// <summary>
 		/// 애니메이션 기본 재생속도를 반환합니다
@@ -126,13 +146,46 @@ namespace fq::game_module
 
 		void ProcessAnimationEvent(class GameObject* gameObject, class EventManager* eventManager);
 
+		/// <summary>
+		/// 애니메이션을 CPU 정보를 갱신할지 여부를 설정합니다. 
+		/// </summary>
+		void SetUpdateAnimationCPUData(bool bUpdateAnimationCPUData) { mbUpdateAnimationCPUData = bUpdateAnimationCPUData; }
+		bool GetUpdateAnimationCPUData() const { return mbUpdateAnimationCPUData; }
+
+		/// <summary>
+		/// 애니메이션을 GPU 정보를 갱신할지 여부를 설정합니다. 
+		/// </summary>
+		void SetUpdateAnimationGPUData(bool bUpdateAnimationGPUData) { mbUpdateAnimationGPUData = bUpdateAnimationGPUData; }
+		bool GetUpdateAnimationGPUData() const { return mbUpdateAnimationGPUData; }
+		
+		void SetCreateAnimationTexture(bool bCreateAnimationTexture) {	mbCreateAnimationTexture = bCreateAnimationTexture;	}
+		bool GetCreateAnimationTexture() const { return mbCreateAnimationTexture; }
+
+		/// <summary>
+		/// 하부 애니메이션을 적용여부를 설정합니다 
+		/// </summary>
+		void SetUseLowerController(bool bUseLower);
+
+		/// <summary>
+		/// 하부 애니메이션 적용여부를 반환합니다.
+		/// </summary>
+		bool UseLowerController()const { return mbUseLowerController; }
+
+		/// <summary>
+		/// 하부 컨트롤러를 반환합니다 
+		/// </summary>
+		AnimatorController& GetLowerController() const;
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
-		
 
 	private:
 		ControllerPath mControllerPath;
 		std::shared_ptr<AnimatorController> mController;
+
+		bool mbUseLowerController;
+		ControllerPath mLowerControllerPath;
+		std::shared_ptr<AnimatorController> mLowerController;
 
 		std::string mNodeHierarchyPath;
 		std::shared_ptr<fq::graphics::INodeHierarchy> mNodeHierarchy;
@@ -140,6 +193,12 @@ namespace fq::game_module
 
 		float mDefaultPlaySpeed;
 		bool mbIsStopAnimation;
-	};
 
+		// 동적 인스턴싱 사용 유무 체크
+		bool mbUpdateAnimationCPUData;
+		bool mbUpdateAnimationGPUData;
+		bool mbCreateAnimationTexture;
+
+		friend void RegisterMetaData();
+	};
 }

@@ -51,6 +51,9 @@ namespace fq::client
 		float mSwingAroundCoolTime;
 		float mRushCoolTime;
 
+		float mSwingAroundCoolTimeReduction;
+		float mRushCoolTimeReduction;
+
 		float mTargetPosRatio = 1.f;
 		float mDirectionRatio = 1.f;
 

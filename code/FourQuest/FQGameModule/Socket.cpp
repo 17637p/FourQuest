@@ -70,10 +70,13 @@ void fq::game_module::Socket::BindBone()
 		auto animator = parent->GetComponent<game_module::Animator>();
 
 		auto boneHierarchyInstance = animator->GetSharedNodeHierarchyInstance();
-	
+
 		if (boneHierarchyInstance != nullptr)
 		{
 			auto boneHierarchy = boneHierarchyInstance->GetNodeHierarchy();
+
+			const auto& bones = boneHierarchy->GetBones();
+
 			bool check = boneHierarchy->TryGetBoneIndex(GetBoneName(), &mBoneIndex);
 
 			if (check)

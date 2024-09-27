@@ -14,6 +14,7 @@ namespace fq::game_module
 	class PrefabManager;
 	class ScreenManager;
 	class TimeManager;
+	class SoundManager;
 
 	class Scene
 	{
@@ -29,7 +30,8 @@ namespace fq::game_module
 			, InputManager* inputMgr
 			, PrefabManager* prefabMgr
 			, ScreenManager* screenMgr
-			, TimeManager* timeManager);
+			, TimeManager* timeManager
+			, SoundManager* soundMgr);
 
 		/// <summary>
 		/// EventManager를 반환합니다 
@@ -51,7 +53,15 @@ namespace fq::game_module
 		/// </summary>
 		PrefabManager* GetPrefabManager()const { return mPrefabManager; }
 
+		/// <summary>
+		/// ScreenManager를 반환합니다 
+		/// </summary>
 		ScreenManager* GetScreenManager()const { return mScreenManager; }
+
+		/// <summary>
+		/// SoundManager를 반환합니다 
+		/// </summary>
+		SoundManager* GetSoundManager()const { return mSoundManager; }
 
 		/// <summary>
 		/// 삭제 예정인 오브젝트 제거합니다
@@ -168,6 +178,7 @@ namespace fq::game_module
 		PrefabManager* mPrefabManager;
 		ScreenManager* mScreenManager;
 		TimeManager* mTimeManager;
+		SoundManager* mSoundManager;
 
 		bool mIsStartScene;
 

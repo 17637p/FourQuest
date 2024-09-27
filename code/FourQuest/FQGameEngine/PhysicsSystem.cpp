@@ -659,7 +659,7 @@ void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
 {
 	fq::physics::PhysicsEngineInfo mPhysicsEngineInfomation;
 
-	for (int i = 0; i < 16; ++i)
+	for (int i = 0; i < (int)fq::game_module::ETag::End; ++i)
 	{
 		mPhysicsEngineInfomation.collisionMatrix[i] = static_cast<int>(mCollisionMatrix.data[i].to_ulong());
 	}
@@ -681,7 +681,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto offset = colliderInfo.collider->GetOffset();
 
-		if (rigid->GetBodyType() == game_module::RigidBody::EBodyType::Static)
+		if (rigid->GetBodyType() != game_module::RigidBody::EBodyType::Dynamic)
 			continue;
 
 		if (colliderInfo.enttID == mCharactorControllerTypeID)

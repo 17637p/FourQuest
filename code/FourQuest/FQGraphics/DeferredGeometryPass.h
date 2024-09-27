@@ -24,7 +24,7 @@ namespace fq::graphics
 		void Render() override;
 
 	private:
-		enum { INSTANCING_BUFFER_SIZE = 1024 };
+		enum { INSTANCING_BUFFER_SIZE = 500 };
 
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11JobManager> mJobManager;
@@ -51,9 +51,11 @@ namespace fq::graphics
 		std::shared_ptr<ShaderProgram> mLightmapStaticMeshShaderProgram;
 		std::shared_ptr<ShaderProgram> mVertexColorStaticMeshShaderProgram;
 		std::shared_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
+		std::shared_ptr<ShaderProgram> mSkinnedMeshInstancingShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicClampSamplerState;
+		std::shared_ptr<D3D11SamplerState> mAnisotropicBorderSamplerState;
 		std::shared_ptr<D3D11SamplerState> mPointWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mLinearWrapSamplerState;
 		std::shared_ptr<D3D11RasterizerState> mDefaultRasterizer;
@@ -65,6 +67,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>> mMaterialCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>> mMaterialInstanceCB;
+		std::shared_ptr<D3D11ConstantBuffer<CBTweenBuffer>> mTweenBufferCB;
 
 		struct InstancingInfo
 		{
@@ -74,6 +77,8 @@ namespace fq::graphics
 		};
 
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> mInstancedIL;
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> mSkinnedInstancedIL;
 		std::shared_ptr<D3D11VertexBuffer> mInstancingVertexBuffer;
+		std::shared_ptr<D3D11VertexBuffer> mSkinnedInstancingVertexBuffer;
 	};
 }

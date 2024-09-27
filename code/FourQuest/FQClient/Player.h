@@ -14,6 +14,8 @@ namespace fq::game_module
 
 namespace fq::client
 {
+	class BGaugeUI;
+
 	class Player : public fq::game_module::Component
 	{
 	public:
@@ -25,7 +27,7 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void SummonSoul();
+		void SummonSoul(bool isDestroyArmour);
 
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
 		void SetSoulType(fq::client::ESoulType val) { mSoulType = val; }
@@ -36,7 +38,9 @@ namespace fq::client
 		int GetPlayerID() const;
 
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
-		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit;  }
+		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit; }
+		int GetSoulBuffNumber() { return mSoulBuffNumber; }
+		void SetSoulBuffNumber(int buffNumber) { mSoulBuffNumber = buffNumber; }
 
 		/// <summary>
 		/// 갑옷타입을 반환합니다
@@ -78,7 +82,18 @@ namespace fq::client
 		/// </summary>
 		void AddSoulGauge(float soul);
 
+		/// <summary>
+		/// Hp를 설정합니다 
+		/// </summary>
 		void SetHp(float hp);
+
+		/// <summary>
+		/// 플레이어 Hp를 감소시킵니다
+		/// </summary>
+		/// <param name="hp">hp 감소량</param>
+		/// <param name="bUseMinHp">Hp최소량 설정 사용여부</param>
+		/// <param name="bIgnoreInvisible">무적시간에 무시하는지</param>
+		void DecreaseHp(float hp, bool bUseMinHp = false, bool bIgnoreInvincible = false);
 
 		/// <summary>
 		/// 소울 공격이 가능한 상태인지 확인합니다.
@@ -89,21 +104,51 @@ namespace fq::client
 		/// 현재 피버타임인지 반환합니다
 		/// </summary>
 		bool IsFeverTime()const;
+		
+		/// <summary>
+		/// 하체 애니메이션을 상태를 현재 입력 방향에 따라서 설정합니다. 
+		/// </summary>
+		void SetLowerBodyAnimation();
+
+		/// <summary>
+		/// A 스킬 쿨타임 비율을 반환합니다
+		/// 스킬을 사용가능한 상태가 0.f
+		/// </summary>
+		float GetASkillCoolTimeRatio()const;
+		void SetASkillCoolTimeRatio(float ratio);
+
+		/// <summary>
+		/// X 스킬 쿨타임 비율을 반환합니다 
+		/// 스킬을 사용가능한 상태가 0.f
+		/// </summary>
+		float GetXSkillCoolTimeRatio()const;
+		void SetXSkillCoolTimeRatio(float ratio);
+
+		/// <summary>
+		/// R 스킬 쿨타임 비율을 반환합니다 
+		/// 스킬을 사용가능한 상태가 0.f
+		/// </summary>
+		float GetRSkillCoolTimeRatio()const;
+		void SetRSkillCoolTimeRatio(float ratio);
 
 	private:
-		void processInput();
+		void processInput(float dt);
 		void processCoolTime(float dt);
 		void processFeverTime(float dt);
 		void processDebuff(float dt);
+		void processBuff();
 		void equipWeapone(ESoulType equipType, bool isEquip);
 		void linkWeaponeMeshes();
 		void setFeverBuff(bool isFever);
 		void setDecalColor();
+		void linkSoulTypeHead();
 
 		void OnStart() override;
 		void OnDestroy() override;
 		void OnUpdate(float dt) override;
+		void OnLateUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
+		void OnTriggerStay(const game_module::Collision& collision) override;
 
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -111,6 +156,7 @@ namespace fq::client
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
 		game_module::Transform* mTransform;
+		BGaugeUI* mBGaugeUI;
 
 		ESoulType mSoulType; // 영혼 타입
 		ESoulType mEquipWeapone;
@@ -122,18 +168,40 @@ namespace fq::client
 		float mSoulGauge; // 소울 게이지
 		float mAttackPower; // 공격력
 
+		float mBaseAcceleration;	// 기본 가속력
+		float mBaseSpeed;	// 기본 스피드
+		float mBaseAttackPower; // 기본 공격력
+		int mSoulBuffNumber; // 영혼 강화 갯수
+
 		float mInvincibleElapsedTime; // 무적 경과 시간
 		float mInvincibleTime; // 무적시간 
 		float mFeverTime; // 갑옷 버프 시간
 		float mFeverElapsedTime; // 피버타임 경과 시간
 		bool mbIsFeverTime; // 현재 피버 타임인지 
 
+ 		float mRSkillCoolTimeRatio; // R 버튼 쿨타임  
+		float mASkillCoolTimeRatio; // A 버튼 쿨타임
+		float mXSkillCoolTimeRatio; // X 버튼 쿨타임
+
+		float mUnequipArmourDurationTime;	// 갑옷 벗고 있는 시간
+		bool mbIsUnequipArmourButton;			// 갑옷 벗는 버튼 클릭
+
 		game_module::PrefabResource mSoulPrefab; // 영혼화 프리팹 
 		game_module::PrefabResource mSwordSoulAttack;
 		game_module::PrefabResource mAxeSoulAttack; // 도끼 영혼 공격 
 		game_module::PrefabResource mBowSoulAttack; // 활 영혼 공격 	
 		game_module::PrefabResource mStaffSoulAttack; // 마법 영혼 공격
-		
+		game_module::PrefabResource mDeadKnightArmour;	// 기사 갑옷
+		game_module::PrefabResource mDeadMagicArmour;	// 마법사 갑옷
+		game_module::PrefabResource mDeadArcherArmour;	// 궁수 갑옷
+		game_module::PrefabResource mDeadWarriorArmour; // 광전사 갑옷
+
+		// 영혼 머리 
+		game_module::PrefabResource mSwordHaed;
+		game_module::PrefabResource mBowHaed;
+		game_module::PrefabResource mAxeHaed;
+		game_module::PrefabResource mStaffHaed;
+
 		bool mbOnShieldBlock;
 		bool mbIsActiveOnHit; // 워리어 갑옷 차징과 돌진 시 OnHit로 전이가 불가능하여 추가
 

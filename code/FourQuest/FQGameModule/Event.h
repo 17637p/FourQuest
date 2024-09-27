@@ -177,6 +177,11 @@ namespace fq::event
 		fq::game_module::GameObject* object;
 	};
 
+	struct SetSpriteAnimationInformation
+	{
+		fq::game_module::GameObject* object;
+	};
+
 	//////////////////////////////////////////////////////////////////////////
 	//							Light Event									// 
 	//////////////////////////////////////////////////////////////////////////
@@ -284,18 +289,31 @@ namespace fq::event
 	};
 
 	//////////////////////////////////////////////////////////////////////////
-	//							AnimationStateEvent							// 
+	//							OnCreateStateEvent							// 
 	//////////////////////////////////////////////////////////////////////////
 
-	struct AnimationStateEvent
+	struct OnCreateStateEvent
 	{
 		std::string RegisterKeyName;
 		fq::game_module::GameObject* gameObject;
 	};
 
-	struct AnimationStateExitEvent
+	struct OnDeleteStateEvent
 	{
 		fq::game_module::GameObject* gameObject;
+	};
+
+	//////////////////////////////////////////////////////////////////////////
+	//							Sequence Event								// 
+	//////////////////////////////////////////////////////////////////////////
+	struct SequenceEnterSpeech
+	{
+		std::string name; // 말하는 캐릭터 이름
+	};
+
+	struct SequenceExitSpeech
+	{
+		std::string name; // 말하는 캐릭터 이름
 	};
 }
 

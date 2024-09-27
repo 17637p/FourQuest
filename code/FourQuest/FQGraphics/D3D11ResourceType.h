@@ -77,6 +77,7 @@ namespace fq::graphics
 		Default,
 		AnisotropicWrap,
 		AnisotropicClamp,
+		AnisotropicBorder,
 		Shadow,
 		LinearWrap,
 		PointClamp,

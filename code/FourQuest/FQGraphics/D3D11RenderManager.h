@@ -35,7 +35,7 @@ namespace fq::graphics
 	{
 	public:
 		D3D11RenderManager();
-		~D3D11RenderManager() = default;
+		~D3D11RenderManager();
 
 		void Initialize(std::shared_ptr<D3D11Device> device,
 			std::shared_ptr<D3D11JobManager> jobManager,

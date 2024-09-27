@@ -38,9 +38,6 @@ namespace fq::client
 		/// </summary>
 		void AimToNearMonster();
 
-		float GetChangeChargingTime() { return mChangeChargingTime; }
-		float GetOriginCharacterMaxSpeed() { return mOriginCharacterMaxSpeed; }
-
 	private:
 		void OnStart() override;
 		void OnUpdate(float dt) override;
@@ -59,15 +56,15 @@ namespace fq::client
 		AimAssist*							mAimAssist;
 
 		float mDashCoolTime;
+		float mDashCoolTimeReduction;
 		float mDashElapsedTime;
 		float mStrongAttackCoolTime;
+		float mStrongAttackCoolTimeReduction;
 		float mStrongAttackElapsedTime;
 		float mArrowPower;
-		float mChangeChargingTime;
 		float mRStickNoInputTime;
 		float mWeakProjectileVelocity;
 		float mStrongProjectileVelocity;
-		float mOriginCharacterMaxSpeed;
 
 		game_module::PrefabResource mWeakAttack;
 		game_module::PrefabResource mStrongAttack;
