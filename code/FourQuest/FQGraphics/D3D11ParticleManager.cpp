@@ -209,7 +209,7 @@ namespace fq::graphics
 		particleObjectData.RotationOverLifetimeData.bIsUsed = particleInfo.RotationOverLifetimeData.bIsUsed;
 
 		particleObjectData.ParticleMaterialData.BaseColor = materialInfo.BaseColor;
-		particleObjectData.ParticleMaterialData.EmissiveColor = materialInfo.EmissiveColor;
+		particleObjectData.ParticleMaterialData.EmissiveColor = materialInfo.EmissiveColor * materialInfo.EmissiveIntensity;
 		particleObjectData.ParticleMaterialData.TexTransform = DirectX::SimpleMath::Matrix::CreateScale(materialInfo.Tiling.x, materialInfo.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(materialInfo.Offset.x, materialInfo.Offset.y, 0);
 		particleObjectData.ParticleMaterialData.TexTransform = particleObjectData.ParticleMaterialData.TexTransform.Transpose();
 		particleObjectData.ParticleMaterialData.RenderMode = (int)materialInfo.RenderModeType;

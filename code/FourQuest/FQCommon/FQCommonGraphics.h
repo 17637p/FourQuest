@@ -663,6 +663,8 @@ namespace fq::graphics
 
 		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
 		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+		
+		float EmissiveIntensity = 1.f;
 
 		std::wstring BaseColorFileName;
 		std::wstring EmissiveFileName;

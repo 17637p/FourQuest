@@ -38,7 +38,6 @@ namespace fq::client
 		/// 레이저 기모으기 이펙트를 발산합니다 
 		/// </summary>
 		std::shared_ptr<fq::game_module::GameObject> EmitLaserGatherEffect();
-
 		std::shared_ptr<fq::game_module::GameObject> EmitLaserHeadEffect();
 
 		void EmitLaserLineEffect();
@@ -85,8 +84,10 @@ namespace fq::client
 		float mMagicBallSpeed;
 		float mAOEMoveRange;
 		float mAOECoolTime;
+		float mAOECoolTimeReduction;
 		float mAOEElapsedTime;
 		float mLaserCoolTime;
+		float mLaserCoolTimeReduction;
 		float mLaserElapsedTime;
 		float mRStickNoInputTime;
 		float mLaserDistance;

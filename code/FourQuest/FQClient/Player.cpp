@@ -22,6 +22,7 @@
 #include "PlayerVariable.h"
 #include "DebuffPoisonZone.h"
 #include "DeadArmour.h"
+#include "BGaugeUI.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -38,6 +39,7 @@ fq::client::Player::Player()
 	, mArmourType(EArmourType::Knight)
 	, mbOnShieldBlock(false)
 	, mTransform(nullptr)
+	, mBGaugeUI(nullptr)
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
 	, mFeverElapsedTime(0.f)
@@ -50,6 +52,9 @@ fq::client::Player::Player()
 	, mStaffHaed{}
 	, mAxeHaed{}
 	, mBowHaed{}
+	, mRSkillCoolTimeRatio(0.f)
+	, mASkillCoolTimeRatio(0.f)
+	, mXSkillCoolTimeRatio(0.f)
 {}
 
 fq::client::Player::~Player()
@@ -99,6 +104,11 @@ void fq::client::Player::OnStart()
 	mTransform = GetComponent<fq::game_module::Transform>();
 	mBaseSpeed = GetComponent<fq::game_module::CharacterController>()->GetMovementInfo().maxSpeed;
 	mBaseAcceleration = GetComponent<fq::game_module::CharacterController>()->GetMovementInfo().acceleration;
+	for (const auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<BGaugeUI>())
+			mBGaugeUI = child->GetComponent<BGaugeUI>();
+	}
 	mBaseAttackPower = mAttackPower;
 
 	// Player등록
@@ -143,6 +153,12 @@ void fq::client::Player::processInput(float dt)
 	{
 		mUnequipArmourDurationTime += dt;
 
+		if (mBGaugeUI)
+		{
+			mBGaugeUI->SetVisible(true);
+			mBGaugeUI->SetRatio(mUnequipArmourDurationTime / SoulVariable::ButtonTime * 360.f);
+		}
+
 		if (mUnequipArmourDurationTime < SoulVariable::ButtonTime)
 			return;
 
@@ -165,7 +181,7 @@ void fq::client::Player::processInput(float dt)
 			auto thisTransform = GetComponent<fq::game_module::Transform>();
 			auto deadArmourTransform = soul->GetComponent<fq::game_module::Transform>();
 
-			deadArmourTransform->SetWorldMatrix(thisTransform->GetWorldMatrix() 
+			deadArmourTransform->SetWorldMatrix(thisTransform->GetWorldMatrix()
 				* DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.f, 1.372f, 0.f)));
 
 			// 해당 갑옷에 벗은 플레이어 ID 저장
@@ -182,6 +198,11 @@ void fq::client::Player::processInput(float dt)
 	else if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Away))
 	{
 		mbIsUnequipArmourButton = false;
+
+		if (mBGaugeUI)
+		{
+			mBGaugeUI->SetVisible(false);
+		}
 	}
 }
 
@@ -219,28 +240,30 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 				if (radian >= DirectX::XM_PIDIV2)
 				{
 					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , fq::sound::EChannel::SE });
+
+					fq::event::OnCreateStateEvent stateEvent;
+					stateEvent.gameObject = GetGameObject();
+					stateEvent.RegisterKeyName = "K_Shield_Block";
+					if (!stateEvent.RegisterKeyName.empty())
+					{
+						GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+					}
+
 					return;
 				}
 			}
 
+			// Hit 애니메이션 
 			if (mbIsActiveOnHit)
 			{
+				// 무적시간 
 				mAnimator->SetParameterTrigger("OnHit");
+				mInvincibleElapsedTime = mInvincibleTime;
 			}
 
+			// 체력 감소
 			float attackPower = monsterAtk->GetAttackPower();
-			mHp -= attackPower;
-
-			mInvincibleElapsedTime = mInvincibleTime;
-
-			// UI 설정
-			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
-
-			// 플레이어 사망처리 
-			if (mHp <= 0.f)
-			{
-				SummonSoul(true);
-			}
+			DecreaseHp(attackPower);
 		}
 	}
 
@@ -340,7 +363,6 @@ void fq::client::Player::EmitStaffSoulAttack()
 
 void fq::client::Player::EmitBowSoulAttack()
 {
-
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mBowSoulAttack);
 	auto& attackObj = *(instance.begin());
 
@@ -402,6 +424,7 @@ void fq::client::Player::EmitSwordSoulAttack()
 	attackInfo.attackDirection = foward;
 	attackInfo.knocBackPower = 20.f;
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
+	attackInfo.HitEffectName = "K_Swing_Hit_blood";
 	attackComponent->Set(attackInfo);
 
 
@@ -518,6 +541,7 @@ void fq::client::Player::EmitAxeSoulAttack()
 	AttackInfo attackInfo{};
 	attackInfo.damage = dc::GetAxeSoulDamage(mAttackPower);
 	attackInfo.attacker = GetGameObject();
+	attackInfo.HitEffectName = "W_Hit_blunt";
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
@@ -710,3 +734,63 @@ void fq::client::Player::SetLowerBodyAnimation()
 
 	mAnimator->SetParameterInt("LowerDir", static_cast<int>(direction));
 }
+
+void fq::client::Player::DecreaseHp(float hp, bool bUseMinHp /*= false*/, bool bIgnoreInvincible /*= fasle*/)
+{
+	bool isHitAble = mInvincibleElapsedTime == 0.f;
+
+	if (!isHitAble && !bIgnoreInvincible) return;
+
+	// 피버타임에는 공격 
+	if (bUseMinHp && bIgnoreInvincible && mbIsFeverTime)
+		return;
+
+	if (bUseMinHp)
+	{
+		float prevHp = mHp;
+		mHp = std::max(PlayerVariable::HpReductionOnAttackMinHp, mHp - hp);
+		GetComponent<HpBar>()->DecreaseHp(hp / mMaxHp);
+	}
+	else
+	{
+		mHp -= hp;
+		GetComponent<HpBar>()->DecreaseHp(hp / mMaxHp);
+	}
+
+	// 플레이어 사망처리 
+	if (mHp <= 0.f)
+	{
+		SummonSoul(true);
+	}
+}
+
+float fq::client::Player::GetASkillCoolTimeRatio() const
+{
+	return mASkillCoolTimeRatio;
+}
+
+float fq::client::Player::GetRSkillCoolTimeRatio() const
+{
+	return mRSkillCoolTimeRatio;
+}
+
+void fq::client::Player::SetASkillCoolTimeRatio(float ratio)
+{
+	mASkillCoolTimeRatio = std::clamp(ratio, 0.f, 1.f);
+}
+
+void fq::client::Player::SetRSkillCoolTimeRatio(float ratio)
+{
+	mRSkillCoolTimeRatio = std::clamp(ratio, 0.f, 1.f);
+}
+
+float fq::client::Player::GetXSkillCoolTimeRatio() const
+{
+	return mXSkillCoolTimeRatio;
+}
+
+void fq::client::Player::SetXSkillCoolTimeRatio(float ratio)
+{
+	mXSkillCoolTimeRatio = std::clamp(ratio, 0.f, 1.f);
+}
+

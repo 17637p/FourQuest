@@ -116,6 +116,8 @@ void fq::client::DeadArmour::OnStart()
 
 	setUI(false);
 	mbIsSummonAble = true;
+
+
 }
 
 void fq::client::DeadArmour::setUI(bool isVisible)
@@ -196,6 +198,11 @@ void fq::client::DeadArmour::SetSummonAble(bool isSummonAble)
 bool fq::client::DeadArmour::IsSummonAble() const
 {
 	return !GetGameObject()->IsDestroyed() && mbIsSummonAble;
+}
+
+void fq::client::DeadArmour::CheckArmourCoolTime(unsigned int playerID) const
+{
+
 }
 
 void fq::client::DeadArmour::setOutlineColor(DirectX::SimpleMath::Color color)

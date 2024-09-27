@@ -178,13 +178,17 @@ void fq::game_module::CharacterController::SetPadInputRotation(EPadStickType pad
 	}
 	input.Normalize();
 
-	if (input == Vector3::Backward)
+	if (input.z >= 1.f)
 	{
-		mTransform->SetLocalRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
+		auto rotation = Quaternion::LookRotation({ 0.f,0.f,1.f }, { 0.f,-1.f,0.f });
+		rotation.Normalize();
+		mTransform->SetLocalRotation(rotation);
 	}
 	else if (input != Vector3::Zero)
 	{
-		mTransform->SetLocalRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
+		auto rotation = Quaternion::LookRotation(input, { 0.f,1.f,0.f });
+		rotation.Normalize();
+		mTransform->SetLocalRotation(rotation);
 	}
 }
 

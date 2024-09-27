@@ -3,6 +3,7 @@
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/PrefabResource.h"
 #include "PlayerDefine.h"
+#include "BGaugeUI.h"
 
 namespace fq::client
 {
@@ -20,6 +21,9 @@ namespace fq::client
 		bool SummonLivingArmour(PlayerInfo info);
 
 		void SetUnequippedPlayerId(int playerID) { mUnequippedPlayerId = playerID; }
+		int GetUnequippedPlayerId() { return mUnequippedPlayerId; }
+
+		float GetPlayerArmourCoolTime() { return mPlayerArmourCoolTime; }
 
 		/// <summary>
 		/// 갑옷이 빙의 가능한 상태인지 설정합니다 
@@ -27,6 +31,11 @@ namespace fq::client
 		void SetSummonAble(bool isSummonAble);
 
 		bool IsSummonAble()const;
+
+		/// <summary>
+		/// 플레이어가 갑옷을 입을 수 있는 지 쿨타임을 확인하고 UI를 표시합니다.
+		/// </summary>
+		void CheckArmourCoolTime(unsigned int playerID) const;
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

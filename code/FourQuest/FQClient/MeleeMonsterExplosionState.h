@@ -26,6 +26,4 @@ namespace fq::client
 	private:
 		std::shared_ptr<fq::game_module::GameObject> mWarningUI;
 	};
-
-
 }

@@ -289,16 +289,16 @@ namespace fq::event
 	};
 
 	//////////////////////////////////////////////////////////////////////////
-	//							AnimationStateEvent							// 
+	//							OnCreateStateEvent							// 
 	//////////////////////////////////////////////////////////////////////////
 
-	struct AnimationStateEvent
+	struct OnCreateStateEvent
 	{
 		std::string RegisterKeyName;
 		fq::game_module::GameObject* gameObject;
 	};
 
-	struct AnimationStateExitEvent
+	struct OnDeleteStateEvent
 	{
 		fq::game_module::GameObject* gameObject;
 	};

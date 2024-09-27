@@ -565,6 +565,11 @@ void fq::client::GameManager::SavePlayerState()
 	}
 }
 
+float fq::client::GameManager::GetDestoryArmourSoulDelayTime(unsigned int id)
+{
+	return mSoulManagerModule->GetDestoryArmourSoulDelayTime(id);
+}
+
 std::shared_ptr<fq::game_module::GameObject> fq::client::GameManager::SpawnPlayer(fq::game_module::PrefabResource prefab, int index)
 {
 	std::shared_ptr<game_module::GameObject> newObject;

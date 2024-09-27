@@ -66,6 +66,14 @@ void fq::client::Soul::OnStart()
 			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
 		});
 
+	// GaugeUI 등록
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		auto ui = child->GetComponent<BGaugeUI>();
+
+		if (ui)
+			mBGaugeUI = ui;
+	}
 	
 	SetSoulColor();		// 소울 색깔 지정 
 	SetSoulHP();		// 소울 HP
@@ -137,8 +145,7 @@ void fq::client::Soul::selectArmour()
 {
 	auto input = GetScene()->GetInputManager();
 
-	if (!mSelectArmours.empty()
-		&& input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold))
+	if (!mSelectArmours.empty())
 	{
 		// 가장 가까운 갑옷 쿼리
 		auto soulPos = GetComponent<game_module::Transform>()->GetWorldPosition();
@@ -163,16 +170,39 @@ void fq::client::Soul::selectArmour()
 		if (closestArmour == nullptr)
 		{
 			return;
+			mBGaugeUI->SetVisible(false);
 		}
 
-		PlayerInfo info{ mController->GetControllerID(), mSoulType };
-
-		if (closestArmour->SummonLivingArmour(info))
+		// 갑옷을 입을 수 있는지 쿨타임 체크 ( UI 노출 )
+		if (mBGaugeUI)
 		{
-			DestorySoul();
+			mBGaugeUI->SetVisible(true);
 
-			spdlog::trace("DestroySoul");
+			if (closestArmour->GetUnequippedPlayerId() == mController->GetControllerID())
+			{
+				mBGaugeUI->SetRatio((closestArmour->GetPlayerArmourCoolTime() / SoulVariable::ArmourCoolTime) * 360.f);
+			}
+			else
+			{
+				mBGaugeUI->SetRatio(360.f);
+			}
 		}
+
+		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold))
+		{
+			PlayerInfo info{ mController->GetControllerID(), mSoulType };
+
+			if (closestArmour->SummonLivingArmour(info))
+			{
+				DestorySoul();
+
+				spdlog::trace("DestroySoul");
+			}
+		}
+	}
+	else
+	{
+		mBGaugeUI->SetVisible(false);
 	}
 }
 
