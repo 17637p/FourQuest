@@ -64,6 +64,12 @@ namespace fq::client
 	{
 		mDurationTime = 0.f;
 
+		// Hit -> Hit 상태인 경우 히트 색깔을 끄지 않습니다.
+		if (animator.GetController().GetNextStateName() == "Hit")
+		{
+			return;
+		}
+
 		for (auto child : animator.GetGameObject()->GetChildren())
 		{
 			auto skeletalMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();

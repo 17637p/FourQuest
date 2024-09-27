@@ -596,7 +596,6 @@ void fq::client::Player::setFeverBuff(bool isFever)
 	assert(isFever != mbIsFeverTime);
 
 	mFeverElapsedTime = 0.f;
-
 	mbIsFeverTime = isFever;
 }
 
@@ -605,7 +604,7 @@ void fq::client::Player::processBuff()
 	// 피버 버프 + 영혼 버프 합산된 최종 버프 계산 함수
 	if (mbIsFeverTime)
 	{
-		mAttackPower *= mBaseAttackPower * PlayerVariable::FeverAttackIncreaseRatio;
+		mAttackPower = mBaseAttackPower * PlayerVariable::FeverAttackIncreaseRatio;
 		mController->AddFinalSpeedMultiplier(PlayerVariable::FeverSpeedIncreaseRatio - 1.f);
 	}
 
