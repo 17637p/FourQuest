@@ -13,6 +13,7 @@ namespace fq::client
 {
 	class Player;
 	class Soul;
+	class GameManager;
 
 	class PlayerUI : public fq::game_module::Component
 	{
@@ -26,7 +27,7 @@ namespace fq::client
 		int GetPlayerID() const { return mPlayerID; }
 		void SetPlayerID(int val) { mPlayerID = val; }
 
-		void SetPlayer();
+		void SetPlayer(fq::client::GameManager* gameMgr);
 		void SetSoulGauge(float ratio);
 		void SetHPBar(float ratio);
 
@@ -37,6 +38,7 @@ namespace fq::client
 		// 무기랑 스킬아이콘 어떤 것을 렌더하거나 안할지 
 		void setWeaponAndSkillIcons(int index, bool isRender);
 		void setSkillCoolTime();
+		void resetSkillCoolTime();
 		void SetPlayerStateUpdate();
 
 	private:
