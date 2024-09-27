@@ -129,10 +129,10 @@ void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision
 
 void fq::client::Soul::OnUpdate(float dt)
 {
+	selectGoddessStatue(dt);
 	selectArmour();
 	checkOtherPlayer();
 	updateSoulHP(dt);
-	selectGoddessStatue(dt);
 	checkReleaseGoddessStatue();
 }
 
@@ -188,7 +188,8 @@ void fq::client::Soul::selectArmour()
 			}
 		}
 
-		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold))
+		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold)
+			&& !mIsOverlayGoddessStatue) // 여신상 위치 근처에 갑옷 있을 때 여신상으로 이동하고 갑옷 먹어져서 막음
 		{
 			PlayerInfo info{ mController->GetControllerID(), mSoulType };
 
@@ -358,15 +359,8 @@ void fq::client::Soul::selectGoddessStatue(float dt)
 		if (mCurHoldB > mNeedHoldB)
 		{
 			mCurHoldB = 0;
-			if (mSelectGoddessStatue != nullptr)
+			if (mSelectGoddessStatue != nullptr && mSelectGoddessStatue->GetIsCorrupt())
 			{
-				// 소울 위치를 여신상 위치로 해서 숨기기 
-				auto soulT = GetComponent<game_module::Transform>();
-				auto goddessStatuePos = mSelectGoddessStatue->GetComponent<game_module::Transform>()->GetWorldPosition();
-
-				goddessStatuePos.y += 2.0f;
-				soulT->SetWorldPosition(goddessStatuePos);
-
 				bool isSuccessOverlay = mSelectGoddessStatue->SetOverlaySoul(true, this);
 
 				if (isSuccessOverlay)
@@ -374,6 +368,13 @@ void fq::client::Soul::selectGoddessStatue(float dt)
 					mIsOverlayGoddessStatue = true;
 					// 빙의하면 못 움직이게 처리 
 					GetComponent<game_module::CharacterController>()->SetCanMoveCharater(false);
+
+					// 소울 위치를 여신상 위치로 해서 숨기기 
+					auto soulT = GetComponent<game_module::Transform>();
+					auto goddessStatuePos = mSelectGoddessStatue->GetComponent<game_module::Transform>()->GetWorldPosition();
+
+					goddessStatuePos.y += 2.0f;
+					soulT->SetWorldPosition(goddessStatuePos);
 				}
 			}
 		}

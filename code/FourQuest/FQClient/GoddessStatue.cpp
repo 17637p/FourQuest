@@ -144,5 +144,10 @@ bool fq::client::GoddessStatue::SetOverlaySoul(bool isOverlay, Soul* soul)
 	}
 }
 
+bool fq::client::GoddessStatue::GetIsCorrupt()
+{
+	return mIsCorrupt;
+}
+
 // 康去 葫狼 贸府 (1疙父 葫狼 啊瓷)
 // 康去 葫狼 秦力 贸府

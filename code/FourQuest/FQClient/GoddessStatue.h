@@ -20,6 +20,7 @@ namespace fq::client
 
 		// overlay 하겠다고 보냈는데 이미 빙의한 영혼이 있다면 false 반환
 		bool SetOverlaySoul(bool isOverlay, Soul* soul);
+		bool GetIsCorrupt();
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
