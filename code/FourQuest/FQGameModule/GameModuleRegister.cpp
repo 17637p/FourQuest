@@ -16,6 +16,7 @@
 #include "PostProcessing.h"
 #include "Sequence.h"
 #include "StateEvent.h"
+#include "StateEventEmitter.h"
 
 // UI
 #include "ImageUI.h"
@@ -42,6 +43,7 @@
 #include "UVAnimator.h"
 #include "MaterialAnimator.h"
 #include "LogStateBehaviour.h"
+#include "SoundEmitter.h"
 
 // PathFinding
 #include "NavigationAgent.h"
@@ -1112,6 +1114,27 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"로드하는 사운드를 드래그드랍으로 추가합니다")
 		.base<Component>();
 
+	entt::meta<SoundEmitter>()
+		.type("SoundEmitter"_hs)
+		.prop(fq::reflect::prop::Name, "SoundEmitter")
+		.prop(fq::reflect::prop::Label, "Audio")
+		.data<&SoundEmitter::mbIsPlayLoop>("IsPlayLoop"_hs)
+		.prop(reflect::prop::Name, "IsPlayLoop")
+		.prop(reflect::prop::Comment, u8"반복 재생 여부")
+		.data<&SoundEmitter::mbIsPlayStateEnter>("IsPlayStateEnter"_hs)
+		.prop(reflect::prop::Name, "IsPlayStateEnter")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
+		.data<&SoundEmitter::mSoundTurm>("SoundTurm"_hs)
+		.prop(reflect::prop::Name, "SoundTurm")
+		.prop(reflect::prop::Comment, u8"반복 재생 시간")
+		.data<&SoundEmitter::mbUseRandomPlay>("mbUseRandomIndex"_hs)
+		.prop(reflect::prop::Name, "UseRandomPlay")
+		.prop(reflect::prop::Comment, u8"랜덤 재생 여부, off 시 순차적으로 사운드 재생")
+		.data<&SoundEmitter::mSoundNames>("mSoundNames"_hs)
+		.prop(reflect::prop::Name, "mSoundNames")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
+		.base<Component>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                            Animation                                 //
@@ -2132,4 +2155,25 @@ void fq::game_module::RegisterMetaData()
 		.data<&StateEvent::mPlaySoundInfos>("PlaySoundInfos"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerSoundInfos")
 		.base<fq::game_module::Component>();
+
+	entt::meta<StateEventEmitter>()
+		.type("StateEventEmitter"_hs)
+		.prop(fq::reflect::prop::Name, "StateEventEmitter")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&StateEventEmitter::mbIsPlayLoop>("IsPlayLoop"_hs)
+		.prop(reflect::prop::Name, "IsPlayLoop")
+		.prop(reflect::prop::Comment, u8"반복 재생 여부")
+		.data<&StateEventEmitter::mbIsPlayStateEnter>("IsPlayStateEnter"_hs)
+		.prop(reflect::prop::Name, "IsPlayStateEnter")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 방출 여부")
+		.data<&StateEventEmitter::mTurm>("Turm"_hs)
+		.prop(reflect::prop::Name, "Turm")
+		.prop(reflect::prop::Comment, u8"반복 재생 시간")
+		.data<&StateEventEmitter::mbUseRandomIndex>("UseRandomIndex"_hs)
+		.prop(reflect::prop::Name, "UseRandomIndex")
+		.prop(reflect::prop::Comment, u8"랜덤 재생 여부, off 시 순차적으로 사운드 재생")
+		.data<&StateEventEmitter::mNames>("Names"_hs)
+		.prop(reflect::prop::Name, "Names")
+		.prop(reflect::prop::Comment, u8"사용할 State 이름들")
+		.base<Component>();
 }

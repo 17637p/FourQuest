@@ -29,9 +29,6 @@ namespace fq::client
 
 	void BerserkerRushChargingState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 	{
-		// 에디터에서 이펙트 생성
-
-		// 우측 키보드로 입력을 받음
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 		controller->SetPadInputRotation(fq::game_module::EPadStickType::Right);
 		controller->SetDashInput(true);
@@ -43,6 +40,12 @@ namespace fq::client
 		if (playerOrNull != nullptr)
 		{
 			playerOrNull->SetIsActiveOnHit(false);
+		}
+
+		auto berserkerArmour = animator.GetComponent<BerserkerArmour>();
+		if (berserkerArmour != nullptr)
+		{
+			berserkerArmour->EmitSound(EBerserkerSoundType::RushReady);
 		}
 	}
 

@@ -374,6 +374,12 @@
     <ClInclude Include="SpriteAnimationUI.h">
       <Filter>include\01.EntityComponent\UI</Filter>
     </ClInclude>
+    <ClInclude Include="SoundEmitter.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="StateEventEmitter.h">
+      <Filter>include\04.Event</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -603,6 +609,12 @@
     </ClCompile>
     <ClCompile Include="SpriteAnimationUI.cpp">
       <Filter>src\01.EntityComponent\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundEmitter.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="StateEventEmitter.cpp">
+      <Filter>src\04.Event</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

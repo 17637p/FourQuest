@@ -26,6 +26,27 @@ namespace fq::client
 		mChargingElapsedTime = 0.f;
 		auto archer = animator.GetComponent<ArcherArmour>();
 		mbIsEmitAttack = false;
+		
+		if (archer != nullptr)
+		{
+			switch (mStringAttackIndex)
+			{
+			case 1:
+				archer->EmitSound(EArcherSound::ShootStart);
+				break;
+			case 2:
+				// fall through
+			case 3:
+				archer->EmitSound(EArcherSound::Charge1);
+				break;
+			case 4:
+				archer->EmitSound(EArcherSound::Charge2);
+				break;
+			default:
+				assert(false);
+				break;
+			}
+		}
 	}
 
 	void BowStrongChargingState::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
@@ -46,6 +67,7 @@ namespace fq::client
 
 			if (!mbIsEmitAttack)
 			{
+				archer->EmitSound(EArcherSound::Shoot);
 				archer->EmitStrongAttack(mStringAttackIndex);
 				mbIsEmitAttack = true;
 			}

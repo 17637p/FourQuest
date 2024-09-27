@@ -147,6 +147,15 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			{
 				mAnimator->SetParameterBoolean("IsDead", true);
 			}
+	
+			// ÀÌÆåÆ® ¹æÃâ
+			fq::event::OnCreateStateEvent stateEvent;
+			stateEvent.gameObject = GetGameObject();
+			stateEvent.RegisterKeyName = playerAttack->GetAttackEffectEvent();
+			if (!stateEvent.RegisterKeyName.empty())
+			{
+				GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+			}
 		}
 	}
 }

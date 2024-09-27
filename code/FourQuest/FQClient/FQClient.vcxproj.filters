@@ -548,6 +548,9 @@
     <ClInclude Include="PlayerUIManager.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerSoundState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -939,6 +942,9 @@
     </ClCompile>
     <ClCompile Include="BGaugeUI.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerSoundState.cpp">
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -13,6 +13,7 @@
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
 #include "PlayerMovementSoundState.h"
+#include "PlayerSoundState.h"
 #include "DeadArmour.h"
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
@@ -482,6 +483,26 @@ void fq::client::RegisterMetaData()
 		.data<&BerserkerArmour::mCircleAttackPrefab>("CircleAttackPrefab"_hs)
 		.prop(reflect::prop::Name, "CircleAttackPrefab")
 		.prop(reflect::prop::Comment, u8"공격 시 생성되는 기본 콜라이더(원형)")
+
+		.data<&BerserkerArmour::mLeftAttackSound>("LeftAttackSound"_hs)
+		.prop(reflect::prop::Name, "LeftAttackSound")
+		.prop(reflect::prop::Comment, u8"기본공격(1타) 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mRightAttackSound>("RightAttackSound"_hs)
+		.prop(reflect::prop::Name, "RightAttackSound")
+		.prop(reflect::prop::Comment, u8"기본공격(2타) 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mStrikeDownAttackSound>("StrikeDownAttackSound"_hs)
+		.prop(reflect::prop::Name, "StrikeDownAttackSound")
+		.prop(reflect::prop::Comment, u8"기본공격(3타) 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mSwingAroundSound>("SwingAroundSound"_hs)
+		.prop(reflect::prop::Name, "SwingAroundSound")
+		.prop(reflect::prop::Comment, u8"휩쓸기 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mAttackRushSound>("AttackRushSound"_hs)
+		.prop(reflect::prop::Name, "AttackRushSound")
+		.prop(reflect::prop::Comment, u8"돌진 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mAttackRushReadySound>("AttackRushReadySound"_hs)
+		.prop(reflect::prop::Name, "AttackRushReadySound")
+		.prop(reflect::prop::Comment, u8"돌진 사운드(사운드 클립키)")
+
 		.data<&BerserkerArmour::mLeftAttackHitSound>("LeftAttackHitSound"_hs)
 		.prop(reflect::prop::Name, "LeftAttackHitSound")
 		.prop(reflect::prop::Comment, u8"기본공격(1타)로 피해 입을 시 사운드(사운드 클립키)")
@@ -567,6 +588,26 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "PlayerMovementSoundState")
 		.data<&PlayerMovementSoundState::mWalkSoundTurm>("WalkSoundTurm"_hs)
 		.prop(reflect::prop::Name, "WalkSoundTurm")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<PlayerSoundState>()
+		.type("PlayerSoundState"_hs)
+		.prop(reflect::prop::Name, "PlayerSoundState")
+		.data<&PlayerSoundState::mbIsPlayLoop>("IsPlayLoop"_hs)
+		.prop(reflect::prop::Name, "IsPlayLoop")
+		.prop(reflect::prop::Comment, u8"반복 재생 여부")
+		.data<&PlayerSoundState::mbIsPlayStateEnter>("IsPlayStateEnter"_hs)
+		.prop(reflect::prop::Name, "IsPlayStateEnter")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
+		.data<&PlayerSoundState::mSoundTurm>("SoundTurm"_hs)
+		.prop(reflect::prop::Name, "SoundTurm")
+		.prop(reflect::prop::Comment, u8"반복 재생 시간")
+		.data<&PlayerSoundState::mbUseRandomPlay>("UseRandomPlay"_hs)
+		.prop(reflect::prop::Name, "UseRandomPlay")
+		.prop(reflect::prop::Comment, u8"랜덤 재생 여부, off 시 순차적으로 사운드 재생")
+		.data<&PlayerSoundState::mSoundNames>("mSoundNames"_hs)
+		.prop(reflect::prop::Name, "mSoundNames")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<MagicBallAttackState>()
