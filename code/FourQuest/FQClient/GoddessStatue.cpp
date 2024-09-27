@@ -24,7 +24,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::GoddessStatue::Clone(std
 	return cloneGoddessStatue;
 }
 
-void fq::client::GoddessStatue::OnCollisionEnter(const game_module::Collision& collision)
+void fq::client::GoddessStatue::OnTriggerEnter(const game_module::Collision& collision)
 {
 	if (collision.other->GetTag() == game_module::ETag::Player)
 	{
@@ -32,7 +32,7 @@ void fq::client::GoddessStatue::OnCollisionEnter(const game_module::Collision& c
 	}
 }
 
-void fq::client::GoddessStatue::OnCollisionExit(const game_module::Collision& collision)
+void fq::client::GoddessStatue::OnTriggerExit(const game_module::Collision& collision)
 {
 	if (collision.other->GetTag() == game_module::ETag::Player)
 	{
@@ -88,7 +88,7 @@ void fq::client::GoddessStatue::DealingPlayer(float dt)
 
 		for (auto& player : mInRangePlayer)
 		{
-			//player->Damage(mDealingDamage);
+			player->DecreaseHp(mDealingDamage);
 		}
 	}
 }

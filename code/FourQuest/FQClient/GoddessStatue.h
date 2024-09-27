@@ -15,8 +15,8 @@ namespace fq::client
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 
-		virtual void OnCollisionEnter(const game_module::Collision& collision) override;
-		virtual void OnCollisionExit(const game_module::Collision& collision) override;
+		virtual void OnTriggerEnter(const game_module::Collision& collision) override;
+		virtual void OnTriggerExit(const game_module::Collision& collision) override;
 
 		// overlay 하겠다고 보냈는데 이미 빙의한 영혼이 있다면 false 반환
 		bool SetOverlaySoul(bool isOverlay, Soul* soul);
