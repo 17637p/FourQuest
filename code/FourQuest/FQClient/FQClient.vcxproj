@@ -45,6 +45,7 @@
     <ClInclude Include="GaugeBar.h" />
     <ClInclude Include="AudioSettingUI.h" />
     <ClInclude Include="GameSettingUI.h" />
+    <ClInclude Include="GoddessStatue.h" />
     <ClInclude Include="LevelHepler.h" />
     <ClInclude Include="PlantAOEAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="GaugeBar.cpp" />
     <ClCompile Include="AudioSettingUI.cpp" />
     <ClCompile Include="GameSettingUI.cpp" />
+    <ClCompile Include="GoddessStatue.cpp" />
     <ClCompile Include="LevelHepler.cpp" />
     <ClCompile Include="PlantAOEAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />

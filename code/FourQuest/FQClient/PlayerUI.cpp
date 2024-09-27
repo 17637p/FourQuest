@@ -4,8 +4,11 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/ScreenManager.h"
+#include "../FQGameModule/CharacterController.h"
 
+#include "GameManager.h"
 #include "Player.h"
+#include "Soul.h"
 #include "SoulVariable.h"
 #include "GameManager.h"
 
@@ -96,9 +99,6 @@ void fq::client::PlayerUI::OnStart()
 		mPlayerState = playerState->GetComponent<fq::game_module::ImageUI>();
 	}
 
-	fq::game_module::Scene* scene = GetScene();
-	SetPlayer();
-
 	for (int i = 0; i < 4; i++)
 	{
 		setWeaponAndSkillIcons(i, false);
@@ -135,7 +135,7 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 		{
 			// HP 바 조정
 			SetHPBar(mPlayer->GetHPRatio());
-			
+
 			// 갑옷 타입 받아오기 
 			// 무기 아이콘, 스킬 아이콘 변화
 			fq::client::EArmourType armourType = mPlayer->GetArmourType();
@@ -161,12 +161,26 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 			setWeaponAndSkillIcons(armourTypeIndex, true);
 			SetSoulGauge(mPlayer->GetSoultGaugeRatio());
 			setSkillCoolTime();
+		}
 	}
+	else if (mSoul) // 소울 상태 설정 
+	{
+		if (mSoul->GetGameObject()->IsDestroyed())
+		{
+			mSoul = nullptr;
+		}
+		else
+		{
+			SetHPBar(mSoul->GetSoulHpRatio());
+			SetSoulGauge(0);
+			resetSkillCoolTime();
+		}
 	}
 	else
 	{
 		SetSoulGauge(0);
 		SetHPBar(0);
+		resetSkillCoolTime();
 	}
 
 	// 플레이어 상태 UI 위치조정 및 렌더러
@@ -311,9 +325,9 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 	}
 }
 
-void fq::client::PlayerUI::SetPlayer()
+void fq::client::PlayerUI::SetPlayer(fq::client::GameManager* gameMgr)
 {
-	fq::game_module::Scene* scene = GetScene();
+	/*fq::game_module::Scene* scene = GetScene();
 	for (auto& object : scene->GetComponentView<fq::client::Player>())
 	{
 		auto player = object.GetComponent<fq::client::Player>();
@@ -321,6 +335,26 @@ void fq::client::PlayerUI::SetPlayer()
 		if (GetPlayerID() == player->GetPlayerID())
 		{
 			mPlayer = player;
+		}
+	}*/
+
+	// 플레이어 연결 로직 수정 
+	for (auto& playerObject : gameMgr->GetPlayers())
+	{
+		auto id = playerObject->GetComponent<game_module::CharacterController>()->GetControllerID();
+
+		if (GetPlayerID() == id)
+		{
+			if (playerObject->HasComponent<Soul>())
+			{
+				mPlayer = nullptr;
+				mSoul = playerObject->GetComponent<Soul>();
+			}
+			else if (playerObject->HasComponent<Player>())
+			{
+				mPlayer = playerObject->GetComponent<Player>();
+				mSoul = nullptr;
+			}
 		}
 	}
 }
@@ -365,7 +399,32 @@ void fq::client::PlayerUI::setSkillCoolTime()
 	auto uiInfo = mACoolTimeImage->GetUIInfomation(0);
 	uiInfo.Height = mCoolTimeHeight * aCool;
 	mACoolTimeImage->SetUIInfomation(0, uiInfo);
-	mACoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0});
+	mACoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
+
+	uiInfo = mRCoolTimeImage->GetUIInfomation(0);
+	uiInfo.Height = mCoolTimeHeight * rCool;
+	mRCoolTimeImage->SetUIInfomation(0, uiInfo);
+	mRCoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
+
+	uiInfo = mXCoolTimeImage->GetUIInfomation(0);
+	uiInfo.Height = mCoolTimeHeight * xCool;
+	mXCoolTimeImage->SetUIInfomation(0, uiInfo);
+	mXCoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
+}
+
+void fq::client::PlayerUI::resetSkillCoolTime()
+{
+	float aCool = 0.f;
+	float rCool = 0.f;
+	float xCool = 0.f;
+
+	float coolX = -25;
+	float coolY = -25;
+
+	auto uiInfo = mACoolTimeImage->GetUIInfomation(0);
+	uiInfo.Height = mCoolTimeHeight * aCool;
+	mACoolTimeImage->SetUIInfomation(0, uiInfo);
+	mACoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
 
 	uiInfo = mRCoolTimeImage->GetUIInfomation(0);
 	uiInfo.Height = mCoolTimeHeight * rCool;

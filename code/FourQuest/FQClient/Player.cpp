@@ -252,6 +252,9 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 					return;
 				}
 			}
+			// 체력 감소
+			float attackPower = monsterAtk->GetAttackPower();
+			DecreaseHp(attackPower);
 
 			// Hit 애니메이션 
 			if (mbIsActiveOnHit)
@@ -261,9 +264,6 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 				mInvincibleElapsedTime = mInvincibleTime;
 			}
 
-			// 체력 감소
-			float attackPower = monsterAtk->GetAttackPower();
-			DecreaseHp(attackPower);
 		}
 	}
 
@@ -426,7 +426,6 @@ void fq::client::Player::EmitSwordSoulAttack()
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
 	attackInfo.HitEffectName = "K_Swing_Hit_blood";
 	attackComponent->Set(attackInfo);
-
 
 	GetScene()->AddGameObject(attackObj);
 }

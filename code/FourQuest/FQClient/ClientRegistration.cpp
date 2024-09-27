@@ -156,6 +156,7 @@
 // etc
 #include "BGM.h"
 #include "Portal.h"
+#include "GoddessStatue.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -235,6 +236,21 @@ void fq::client::RegisterMetaData()
 		.data<&MaterialManager::mbUseDebugDraw>("UseDebugDraw"_hs)
 		.prop(fq::reflect::prop::Name, "UseDebugDraw")
 		.prop(reflect::prop::Comment, u8"디버깅 정보 사용 여부")
+		.base<game_module::Component>();
+
+	entt::meta<GoddessStatue>()
+		.type("GoddessStatue"_hs)
+		.prop(reflect::prop::Name, "GoddessStatue")
+		.data<&GoddessStatue::mDealingTime>("DealingTime"_hs)
+		.prop(fq::reflect::prop::Name, "DealingTime")
+		.data<&GoddessStatue::mDealingDamage>("DealingDamage"_hs)
+		.prop(fq::reflect::prop::Name, "DealingDamage")
+		.data<&GoddessStatue::mMaxGauge>("MaxGauge"_hs)
+		.prop(fq::reflect::prop::Name, "MaxGauge")
+		.data<&GoddessStatue::mFillGaugeSpeed>("FillGaugeSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "FillGaugeSpeed")
+		.data<&GoddessStatue::mDecreaseSpeed>("DecreaseSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "DecreaseSpeed")
 		.base<game_module::Component>();
 
 

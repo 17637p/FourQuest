@@ -536,6 +536,9 @@
     <ClInclude Include="PlayerLowerMovementState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
+    <ClInclude Include="GoddessStatue.h">
+      <Filter>include\06.ETC</Filter>
+	</ClInclude>
     <ClInclude Include="LevelHepler.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
@@ -931,6 +934,9 @@
     <ClCompile Include="PlayerMovementSoundState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
+    <ClCompile Include="GoddessStatue.cpp">
+      <Filter>src\06.ETC</Filter>
+	</ClCompile>
     <ClCompile Include="LevelHepler.cpp">
       <Filter>src</Filter>
     </ClCompile>
