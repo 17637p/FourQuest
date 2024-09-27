@@ -89,6 +89,7 @@ void fq::client::GoddessStatue::DealingPlayer(float dt)
 		for (auto& player : mInRangePlayer)
 		{
 			player->DecreaseHp(mDealingDamage);
+			player->SetPoisonRimLight(0.2f);
 		}
 	}
 }

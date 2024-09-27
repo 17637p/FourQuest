@@ -10,6 +10,7 @@ namespace fq::game_module
 	class CharacterController;
 	class Transform;
 	class StaticMeshRenderer;
+	class SkinnedMeshRenderer;
 }
 
 namespace fq::client
@@ -131,6 +132,11 @@ namespace fq::client
 		float GetRSkillCoolTimeRatio()const;
 		void SetRSkillCoolTimeRatio(float ratio);
 
+		/// <summary>
+		/// 초록색 림라이트 활성화
+		/// </summary>
+		void SetPoisonRimLight(float duration);
+
 	private:
 		void processInput(float dt);
 		void processCoolTime(float dt);
@@ -142,6 +148,7 @@ namespace fq::client
 		void setFeverBuff(bool isFever);
 		void setDecalColor();
 		void linkSoulTypeHead();
+		void checkPoisonDuration(float dt); // 독 림라이트 지속시간 체크해서 off
 
 		void OnStart() override;
 		void OnDestroy() override;
@@ -149,6 +156,7 @@ namespace fq::client
 		void OnLateUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 		void OnTriggerStay(const game_module::Collision& collision) override;
+
 
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -204,6 +212,11 @@ namespace fq::client
 
 		bool mbOnShieldBlock;
 		bool mbIsActiveOnHit; // 워리어 갑옷 차징과 돌진 시 OnHit로 전이가 불가능하여 추가
+
+		// 독 림라이트
+		float mDuration;
+		float mCurTime;
+		game_module::SkinnedMeshRenderer* mSkinnedMesh;
 
 		std::array<game_module::StaticMeshRenderer*, static_cast<int>(EWeaponeMesh::End)> mWeaponeMeshes;
 		friend void RegisterMetaData();
