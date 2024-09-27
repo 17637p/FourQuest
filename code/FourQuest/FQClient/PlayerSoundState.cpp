@@ -51,6 +51,11 @@ namespace fq::client
 	}
 	void PlayerSoundState::playSound(fq::game_module::Animator& animator)
 	{
+		if (mSoundNames.empty())
+		{
+			return;
+		}
+
 		if (mbUseRandomPlay)
 		{
 			mSoundIndex = std::rand() % mSoundNames.size();

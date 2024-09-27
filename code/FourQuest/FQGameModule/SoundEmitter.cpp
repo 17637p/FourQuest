@@ -76,6 +76,11 @@ void fq::game_module::SoundEmitter::OnUpdate(float dt)
 
 void fq::game_module::SoundEmitter::playSound()
 {
+	if (mSoundNames.empty())
+	{
+		return;
+	}
+
 	if (mbUseRandomPlay)
 	{
 		mSoundIndex = std::rand() % mSoundNames.size();
