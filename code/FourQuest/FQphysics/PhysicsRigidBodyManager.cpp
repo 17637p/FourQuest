@@ -40,7 +40,7 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::Update(physx::PxScene* scene)
+	bool PhysicsRigidBodyManager::Update(physx::PxScene* scene, physx::PxScene* gpuScene)
 	{
 		/// <summary>
 		/// 물리 공간 씬에 바디 액터 추가하기
@@ -58,7 +58,26 @@ namespace fq::physics
 				scene->addActor(*staticBody->GetPxRigidStatic());
 			}
 		}
+
+		/// <summary>
+		/// GPU 물리 공간 씬에 바디 액터 추가하기
+		/// <summary>
+		for (const std::shared_ptr<RigidBody>& body : mUpcomingGpuActors)
+		{
+			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
+			if (dynamicBody)
+			{
+				gpuScene->addActor(*dynamicBody->GetPxRigidDynamic());
+			}
+			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
+			if (staticBody)
+			{
+				gpuScene->addActor(*staticBody->GetPxRigidStatic());
+			}
+		}
+
 		mUpcomingActors.clear();
+		mUpcomingGpuActors.clear();
 
 		return true;
 	}
@@ -281,7 +300,7 @@ namespace fq::physics
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh, physx::PxMeshScale(), physx::PxMeshGeometryFlag::eDOUBLE_SIDED), *pxMaterial);
 
-		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix, true);
 
 		shape->release();
 
@@ -403,7 +422,7 @@ namespace fq::physics
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh, physx::PxMeshScale(), physx::PxMeshGeometryFlag::eDOUBLE_SIDED), *pxMaterial);
 
-		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
+		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic, true);
 
 		shape->release();
 
@@ -438,7 +457,12 @@ namespace fq::physics
 		return false;
 	}
 
-	StaticRigidBody* PhysicsRigidBodyManager::SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
+	StaticRigidBody* PhysicsRigidBodyManager::SettingStaticBody(
+		physx::PxShape* shape, 
+		const ColliderInfo& info,
+		const EColliderType& colliderType, 
+		int* collisionMatrix, 
+		bool isGpuScene)
 	{
 		physx::PxFilterData filterdata;
 		filterdata.word0 = info.layerNumber;
@@ -455,12 +479,22 @@ namespace fq::physics
 
 		mCollisionDataManager.lock()->Create(info.id, collisiondata);
 		mRigidBodyContainer.insert(std::make_pair(staticBody->GetID(), staticBody));
-		mUpcomingActors.push_back(staticBody);
+
+		if (isGpuScene)
+			mUpcomingGpuActors.push_back(staticBody);
+		else
+			mUpcomingActors.push_back(staticBody);
 
 		return staticBody.get();
 	}
 
-	DynamicRigidBody* PhysicsRigidBodyManager::SettingDynamicBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic)
+	DynamicRigidBody* PhysicsRigidBodyManager::SettingDynamicBody(
+		physx::PxShape* shape
+		, const ColliderInfo& info
+		, const EColliderType& colliderType
+		, int* collisionMatrix
+		, bool isKinematic
+		, bool isGpuScene)
 	{
 		physx::PxFilterData filterdata;
 		filterdata.word0 = info.layerNumber;
@@ -474,7 +508,11 @@ namespace fq::physics
 		         
 		mCollisionDataManager.lock()->Create(info.id, collisiondata);
 		mRigidBodyContainer.insert(std::make_pair(dynamicBody->GetID(), dynamicBody));
-		mUpcomingActors.push_back(dynamicBody);
+
+		if (isGpuScene)
+			mUpcomingGpuActors.push_back(dynamicBody);
+		else
+			mUpcomingActors.push_back(dynamicBody);
 
 		return dynamicBody.get();
 	}

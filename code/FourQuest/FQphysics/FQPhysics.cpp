@@ -121,17 +121,21 @@ namespace fq::physics
 		sceneDesc.cpuDispatcher = mPhysics->GetDispatcher();
 		sceneDesc.filterShader = CustomSimulationFilterShader;
 		sceneDesc.simulationEventCallback = mMyEventCallback.get();
-		//sceneDesc.cudaContextManager = mCudaContextManager;
 		sceneDesc.staticStructure = physx::PxPruningStructureType::eDYNAMIC_AABB_TREE;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
-		//sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::ePABP;
 		sceneDesc.solverType = physx::PxSolverType::ePGS;
 
-		// PhysX Phsics에서 PhysX의 Scene을 생성합니다.
+		// PhysX Physics에서 PhysX의 Scene을 생성합니다.
 		mScene = physics->createScene(sceneDesc);
+
+		// PhysX Physics에서 GPU로 작동하는 Scene을 생성합니다 ( Cloth 입자를 위한 )
+		sceneDesc.cudaContextManager = mCudaContextManager;
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
+		mGpuScene = physics->createScene(sceneDesc);
 		assert(mScene);
+		assert(mGpuScene);
 
 		// PVD 클라이언트에 PhysX Scene 연결 ( Debug )
 #ifdef _DEBUG
@@ -143,7 +147,7 @@ namespace fq::physics
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager)) return false;
 		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager)) return false;
 		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene, mCollisionDataManager)) return false;
-		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mScene, mCudaContextManager)) return false;
+		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mGpuScene, mCudaContextManager)) return false;
 		mMyEventCallback->Initialize(mCollisionDataManager);
 
 		return true;
@@ -153,7 +157,7 @@ namespace fq::physics
 	{
 		RemoveActors();
 
-		if (!mRigidBodyManager->Update(mScene))
+		if (!mRigidBodyManager->Update(mScene, mGpuScene))
 			return false;
 		if (!mCCTManager->Update(deltaTime))
 			return false;
@@ -163,7 +167,11 @@ namespace fq::physics
 			return false;
 		if (!mScene->simulate(deltaTime))
 			return false;
+		if (!mGpuScene->simulate(deltaTime))
+			return false;
 		if (!mScene->fetchResults(true))
+			return false;
+		if (!mGpuScene->fetchResults(true))
 			return false;
 		mMyEventCallback->OnTrigger();
 

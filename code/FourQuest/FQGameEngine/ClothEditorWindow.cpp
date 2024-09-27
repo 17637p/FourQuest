@@ -119,7 +119,7 @@ namespace fq::game_engine
 
 				for (int i = 0; i < mesh.Vertices.size(); ++i)
 				{
-					vertices[i] = -mesh.Vertices[i].Pos;
+					vertices[i] = mesh.Vertices[i].Pos;
 				}
 				for (int i = 0; i < mesh.Indices.size(); ++i)
 				{
