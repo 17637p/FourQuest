@@ -12,6 +12,7 @@ namespace fq::game_module
 namespace fq::client
 {
 	class Player;
+	class Soul;
 
 	class PlayerUI : public fq::game_module::Component
 	{
@@ -36,12 +37,12 @@ namespace fq::client
 		// 무기랑 스킬아이콘 어떤 것을 렌더하거나 안할지 
 		void setWeaponAndSkillIcons(int index, bool isRender);
 		void setSkillCoolTime();
-
 		void SetPlayerStateUpdate();
 
 	private:
 		int mPlayerID;
 		fq::client::Player* mPlayer;
+		fq::client::Soul* mSoul;
 
 		float mHPWidth;
 		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 

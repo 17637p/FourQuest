@@ -6,6 +6,7 @@
 #include "../FQGameModule/ScreenManager.h"
 
 #include "Player.h"
+#include "Soul.h"
 #include "SoulVariable.h"
 #include "GameManager.h"
 
@@ -135,7 +136,7 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 		{
 			// HP 바 조정
 			SetHPBar(mPlayer->GetHPRatio());
-			
+
 			// 갑옷 타입 받아오기 
 			// 무기 아이콘, 스킬 아이콘 변화
 			fq::client::EArmourType armourType = mPlayer->GetArmourType();
@@ -161,7 +162,10 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 			setWeaponAndSkillIcons(armourTypeIndex, true);
 			SetSoulGauge(mPlayer->GetSoultGaugeRatio());
 			setSkillCoolTime();
+		}
 	}
+	else if (mSoul) // 소울 상태 설정 
+	{
 	}
 	else
 	{
@@ -365,7 +369,7 @@ void fq::client::PlayerUI::setSkillCoolTime()
 	auto uiInfo = mACoolTimeImage->GetUIInfomation(0);
 	uiInfo.Height = mCoolTimeHeight * aCool;
 	mACoolTimeImage->SetUIInfomation(0, uiInfo);
-	mACoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0});
+	mACoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
 
 	uiInfo = mRCoolTimeImage->GetUIInfomation(0);
 	uiInfo.Height = mCoolTimeHeight * rCool;

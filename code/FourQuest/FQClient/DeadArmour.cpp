@@ -133,7 +133,7 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 		uiInfo[0].isRender = true;
 
 		if (uiInfo.size() > 1)
-			uiInfo[1].isRender = isVisible;
+			uiInfo[1].isRender = false;
 	}
 	imageUI->SetUIInfomations(uiInfo);
 }
