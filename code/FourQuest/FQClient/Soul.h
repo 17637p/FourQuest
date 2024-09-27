@@ -28,6 +28,8 @@ namespace fq::client
 		void SetSoulHP();
 
 		void ReleaseGoddessStatue();
+		
+		float GetSoulHpRatio()const;
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

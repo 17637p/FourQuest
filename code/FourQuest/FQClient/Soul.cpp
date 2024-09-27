@@ -74,7 +74,7 @@ void fq::client::Soul::OnStart()
 		if (ui)
 			mBGaugeUI = ui;
 	}
-	
+
 	SetSoulColor();		// 소울 색깔 지정 
 	SetSoulHP();		// 소울 HP
 }
@@ -405,5 +405,10 @@ void fq::client::Soul::checkReleaseGoddessStatue()
 			ReleaseGoddessStatue();
 		}
 	}
+}
+
+float fq::client::Soul::GetSoulHpRatio() const
+{
+	return mHP / static_cast<float>(SoulVariable::SoulMaxHp);
 }
 
