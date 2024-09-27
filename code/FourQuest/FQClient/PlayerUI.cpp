@@ -54,6 +54,12 @@ std::shared_ptr<fq::game_module::Component> fq::client::PlayerUI::Clone(std::sha
 
 void fq::client::PlayerUI::OnStart()
 {
+	mWeaponIcons.clear();
+	mSkillIconXs.clear();
+	mSkillIconAs.clear();
+	mSkillIconRs.clear();
+	mSoulSkillIcons.clear();
+
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren();
 
 	fq::game_module::GameObject* staminaGauge = GetGameObject()->GetChildren()[3]->GetChildren()[0];
@@ -90,6 +96,13 @@ void fq::client::PlayerUI::OnStart()
 	mSkillIconRs.push_back(skillRs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[3]->GetComponent<fq::game_module::ImageUI>());
+
+	std::vector<fq::game_module::GameObject*> soulIcons = children[1]->GetChildren()[0]->GetChildren();
+	mSoulSkillIcons.push_back(soulIcons[0]->GetComponent<fq::game_module::ImageUI>());
+	mSoulSkillIcons.push_back(soulIcons[1]->GetComponent<fq::game_module::ImageUI>());
+	mSoulSkillIcons.push_back(soulIcons[2]->GetComponent<fq::game_module::ImageUI>());
+	mSoulSkillIcons.push_back(soulIcons[3]->GetComponent<fq::game_module::ImageUI>());
+
 	mRCoolTimeImage = skillRs[4]->GetComponent<fq::game_module::ImageUI>();
 	mCoolTimeHeight = mRCoolTimeImage->GetUIInfomation(0).Height;
 
@@ -105,6 +118,7 @@ void fq::client::PlayerUI::OnStart()
 	}
 
 	mScreenManager = GetScene()->GetScreenManager();
+	setSoulSkillIcon();
 }
 
 void fq::client::PlayerUI::OnUpdate(float dt)
@@ -435,5 +449,28 @@ void fq::client::PlayerUI::resetSkillCoolTime()
 	uiInfo.Height = mCoolTimeHeight * xCool;
 	mXCoolTimeImage->SetUIInfomation(0, uiInfo);
 	mXCoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
+}
+
+void fq::client::PlayerUI::setSoulSkillIcon()
+{
+	int soulType = -1;
+	if (mPlayer != nullptr)
+	{
+		soulType = static_cast<int>(mPlayer->GetSoulType());
+	}
+	if (mSoul != nullptr)
+	{
+		soulType = static_cast<int>(mSoul->GetSoulType());
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		mSoulSkillIcons[i]->SetIsRender(0, false);
+	}
+
+	if (soulType != -1)
+	{
+		mSoulSkillIcons[soulType]->SetIsRender(0, true);
+	}
 }
 
