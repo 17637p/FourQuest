@@ -61,7 +61,7 @@ void fq::client::PlayerUIManager::OnUpdate(float dt)
 
 	for (int i = 0; i < mPlayerUIs.size(); i++)
 	{
-		mPlayerUIs[i]->GetComponent<PlayerUI>()->SetPlayer();
+		mPlayerUIs[i]->GetComponent<PlayerUI>()->SetPlayer(mGameManager);
 	}
 }
 
@@ -88,7 +88,7 @@ void fq::client::PlayerUIManager::AddPlayer(int playerID)
 	}
 
 	playerUIObject->GetComponent<PlayerUI>()->SetPlayerID(playerID);
-	playerUIObject->GetComponent<PlayerUI>()->SetPlayer();
+	playerUIObject->GetComponent<PlayerUI>()->SetPlayer(mGameManager);
 
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
 	playerUIObject->GetComponent<game_module::Transform>()->SetParent(myTransform);

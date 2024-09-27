@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "../FQReflect/FQReflect.h"
+#include "../FQCommon/FQPath.h"
 
 using json = nlohmann::json;
 
@@ -13,10 +14,10 @@ void fq::game_module::SkyBox::Save(const Path& directory)
 
 	json skybox_json;
 
-	skybox_json["skyBox"] = mSkyBox.wstring();
-	skybox_json["diffuse"] = mDiffuse.wstring();
-	skybox_json["specular"] = mSpecular.wstring();
-	skybox_json["brdfLUT"] = mBrdfLUT.wstring();
+	skybox_json["skyBox"] = path::GetRelativePath(mSkyBox).wstring();
+	skybox_json["diffuse"] = path::GetRelativePath(mDiffuse).wstring();
+	skybox_json["specular"] = path::GetRelativePath(mSpecular).wstring();
+	skybox_json["brdfLUT"] = path::GetRelativePath(mBrdfLUT).wstring();
 
 	std::ofstream output(filePath);
 
@@ -48,10 +49,10 @@ void fq::game_module::SkyBox::Load(const Path& directory)
 		readData >> skybox_json;
 		readData.close();
 
-		mSkyBox = skybox_json.at("skyBox").get<std::wstring>();
-		mDiffuse = skybox_json.at("diffuse").get<std::wstring>();
-		mSpecular = skybox_json.at("specular").get<std::wstring>();
-		mBrdfLUT = skybox_json.at("brdfLUT").get<std::wstring>();
+		mSkyBox = path::GetAbsolutePath(skybox_json.at("skyBox").get<std::wstring>());
+		mDiffuse = path::GetAbsolutePath(skybox_json.at("diffuse").get<std::wstring>());
+		mSpecular = path::GetAbsolutePath(skybox_json.at("specular").get<std::wstring>());
+		mBrdfLUT = path::GetAbsolutePath(skybox_json.at("brdfLUT").get<std::wstring>());
 	}
 }
 
