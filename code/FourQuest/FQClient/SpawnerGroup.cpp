@@ -8,6 +8,7 @@
 #include "Spawner.h"
 #include "ClientEvent.h"
 #include "MonsterManager.h"
+#include "LevelHepler.h"
 
 #include "MeleeMonster.h"
 #include "BossMonster.h"
@@ -184,7 +185,8 @@ void fq::client::SpawnerGroup::Spawn(SpawnRule rule)
 
 				// Prefab으로 소환
 				std::shared_ptr<game_module::GameObject> monster;
-				for (int j = 0; j < rule.spawnData[k].SpawnMonsterNum; j++)
+				int spawnMonsterNum = LevelHepler::GetSpawnRatio() * rule.spawnData[k].SpawnMonsterNum;
+				for (int j = 0; j < spawnMonsterNum; j++)
 				{
 					auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSelectPrefab);
 					monster = *(instance.begin());
