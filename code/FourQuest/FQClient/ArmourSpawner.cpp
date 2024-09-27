@@ -98,3 +98,47 @@ void fq::client::ArmourSpawner::OnUpdate(float dt)
 	//	SpawnArmour();
 	//}
 }
+
+void fq::client::ArmourSpawner::SpawnArmourAll()
+{
+	// 갑옷 소환
+	std::shared_ptr<game_module::GameObject> armourObject;
+
+	for (const auto& armour : mArmourList)
+	{
+		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(armour);
+		armourObject = *(instance.begin());
+
+		GetScene()->AddGameObject(armourObject);
+
+		/// 갑옷 위치 설정
+		// 카메라 중심 가져오기
+		DirectX::SimpleMath::Vector3 center = GetTransform()->GetWorldPosition();
+		DirectX::SimpleMath::Vector3 nearPos = { 0, 0, 0 };
+
+		// 랜덤 위치 설정
+		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+		std::mt19937 generator(seed);
+		std::uniform_real_distribution<float> distanceDistribution(0, SettingVariable::ArmourSpawnDistance);
+		std::uniform_real_distribution<float> degreeDistribution(0, 360);
+
+		float randomDistance = distanceDistribution(generator);
+		float randomDegree = degreeDistribution(generator);
+
+		float radian = randomDegree * 3.1415926535f / 180.0f;
+
+		center.x += std::cosf(radian) * randomDistance;
+		center.z += std::sinf(radian) * randomDistance;
+
+		// 유효한 위치인지 확인
+		int count = 0;
+		bool isValid = false;
+		while (!isValid && count < 100)
+		{
+			isValid = GetGameObject()->GetComponent<game_module::NavigationAgent>()->IsValid(center, nearPos);
+			count++;
+		}
+		nearPos.y += 1.0f;
+		armourObject->GetComponent<game_module::Transform>()->SetLocalPosition(nearPos);
+	}
+}

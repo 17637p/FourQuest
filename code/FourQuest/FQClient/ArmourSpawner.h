@@ -12,7 +12,10 @@ namespace fq::client
 
 		std::vector<game_module::PrefabResource> GetArmourPrefabList() { return mArmourList; }
 
+		// 몬스터, 항아리, 상자 등 
 		void SpawnArmour();
+		// 여신상 용
+		void SpawnArmourAll();
 
 		virtual void OnUpdate(float dt) override;
 
