@@ -6,6 +6,7 @@
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
 
 #include "Attack.h"
 #include "CameraMoving.h"
@@ -85,6 +86,8 @@ void fq::client::Player::OnUpdate(float dt)
 	processFeverTime(dt);
 	processCoolTime(dt);
 	processDebuff(dt);
+
+	checkPoisonDuration(dt);
 }
 
 void fq::client::Player::OnLateUpdate(float dt)
@@ -138,6 +141,14 @@ void fq::client::Player::OnStart()
 
 	// 머리 설정
 	linkSoulTypeHead();
+
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
+		{
+			mSkinnedMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
+		}
+	}
 }
 
 void fq::client::Player::processInput(float dt)
@@ -791,5 +802,25 @@ float fq::client::Player::GetXSkillCoolTimeRatio() const
 void fq::client::Player::SetXSkillCoolTimeRatio(float ratio)
 {
 	mXSkillCoolTimeRatio = std::clamp(ratio, 0.f, 1.f);
+}
+
+void fq::client::Player::SetPoisonRimLight(float duration)
+{
+	mDuration = duration;
+	mCurTime = 0;
+	auto matInfo = mSkinnedMesh->GetMaterialInstanceInfo();
+	matInfo.bUseRimLight = true;
+	mSkinnedMesh->SetMaterialInstanceInfo(matInfo);
+}
+
+void fq::client::Player::checkPoisonDuration(float dt)
+{
+	mCurTime += dt;
+	if (mCurTime > mDuration)
+	{
+		auto matInfo = mSkinnedMesh->GetMaterialInstanceInfo();
+		matInfo.bUseRimLight = false;
+		mSkinnedMesh->SetMaterialInstanceInfo(matInfo);
+	}
 }
 
