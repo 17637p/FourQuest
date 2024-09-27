@@ -34,6 +34,8 @@ namespace fq::client
 
 		// 플레이어 태그를 변경
 		animator.GetGameObject()->SetTag(game_module::ETag::Dash);
+
+		archerArmour->EmitSound(EArcherSound::Rolling);
 	}
 
 	void BowDashState::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)

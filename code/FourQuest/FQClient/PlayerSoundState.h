@@ -3,11 +3,11 @@
 
 namespace fq::client
 {
-	class PlayerMovementSoundState : public fq::game_module::IStateBehaviour
+	class PlayerSoundState : public fq::game_module::IStateBehaviour
 	{
 	public:
-		PlayerMovementSoundState();
-		~PlayerMovementSoundState();
+		PlayerSoundState();
+		~PlayerSoundState();
 
 		void OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state) override;
 		void OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt) override;
@@ -20,8 +20,15 @@ namespace fq::client
 		std::shared_ptr<IStateBehaviour> Clone() override;
 
 	private:
-		float mWalkElapsedTime;
-		float mWalkSoundTurm;
+		bool mbIsPlayLoop;
+		bool mbIsPlayStateEnter;
+		float mSoundTurm;
+		bool mbUseRandomPlay;
+		std::vector<std::string> mSoundNames;
+
+		float mElapsedTime;
+		unsigned int mSoundIndex;
+		bool mbIsPlaySoundOnce;
 
 		friend void RegisterMetaData();
 	};

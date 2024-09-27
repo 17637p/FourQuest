@@ -73,7 +73,7 @@ namespace fq::client
 		attackInfo.attackDirection = foward;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = false;
-		attackInfo.hitSound = "A_WeakAttack_Hit";
+		attackInfo.hitSound = "A_Fastshoot_Hit";
 		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
 		attackComponent->Set(attackInfo);
 
@@ -166,6 +166,43 @@ namespace fq::client
 
 		// 공격 체력 감소
 		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+	}
+
+	void ArcherArmour::EmitSound(EArcherSound archerSound)
+	{
+		std::string soundName;
+
+		switch (archerSound)
+		{
+		case fq::client::EArcherSound::ShootStart:
+			soundName = "A_Shoot_start";
+			break;
+		case fq::client::EArcherSound::Charge1:
+			soundName = "A_Charge_1";
+			break;
+		case fq::client::EArcherSound::Charge2:
+			soundName = "A_Charge_2";
+			break;
+		case fq::client::EArcherSound::Shoot:
+			soundName = "A_Fastshoot_end";
+			break;
+		case fq::client::EArcherSound::Fastshoot1:
+			soundName = "A_Fastshoot_1";
+			break;
+		case fq::client::EArcherSound::Fastshoot2:
+			soundName = "A_Fastshoot_2";
+			break;
+		case fq::client::EArcherSound::Fastshoot3:
+			soundName = "A_Fastshoot_3";
+			break;
+		case fq::client::EArcherSound::Rolling:
+			soundName = "A_Rolling";
+			break;
+		default:
+			break;
+		}
+
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ soundName, false , fq::sound::EChannel::SE });
 	}
 
 	std::shared_ptr<game_module::GameObject> ArcherArmour::EmitChargingEffect()

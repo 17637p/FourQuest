@@ -15,6 +15,16 @@ namespace fq::client
 	class Player;
 	class GaugeBar;
 
+	enum class EKnightSound
+	{
+		Swing1,
+		Swing2,
+		Swing3,
+		ShieldStart,
+		ShieldLoop,
+		Bash,
+	};
+
 	/// <summary>
 	/// ±â»ç °©¿Ê
 	/// </summary>
@@ -26,6 +36,7 @@ namespace fq::client
 
 		std::shared_ptr<game_module::GameObject> EmitSwordEffect();
 
+		void EmitSound(EKnightSound soundType);
 		void EmitSwordAttack();
 		void EmitShieldAttack();
 		void EmitShieldDashAttack();

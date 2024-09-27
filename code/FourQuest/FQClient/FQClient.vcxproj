@@ -138,6 +138,7 @@
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerInfoVariable.h" />
     <ClInclude Include="PlayerMovementSoundState.h" />
+    <ClInclude Include="PlayerSoundState.h" />
     <ClInclude Include="PlayerUIManager.h" />
     <ClInclude Include="PlayerSoulVariable.h" />
     <ClInclude Include="PlayerLowerMovementState.h" />
@@ -270,6 +271,7 @@
     <ClCompile Include="PlantMonsterIdleState.cpp" />
     <ClCompile Include="PlantMonsterStareState.cpp" />
     <ClCompile Include="PlayerMovementSoundState.cpp" />
+    <ClCompile Include="PlayerSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
     <ClCompile Include="PlayerLowerMovementState.cpp" />
     <ClCompile Include="PlayerVariable.cpp" />
