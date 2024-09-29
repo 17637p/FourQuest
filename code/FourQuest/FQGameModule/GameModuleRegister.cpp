@@ -12,12 +12,16 @@
 #include "Particle.h"
 #include "Decal.h"
 #include "Trail.h"
-#include "ImageUI.h"
-#include "TextUI.h"
 #include "Socket.h"
 #include "PostProcessing.h"
 #include "Sequence.h"
 #include "StateEvent.h"
+#include "StateEventEmitter.h"
+
+// UI
+#include "ImageUI.h"
+#include "TextUI.h"
+#include "SpriteAnimationUI.h"
 
 // Physics
 #include "Terrain.h"
@@ -39,6 +43,7 @@
 #include "UVAnimator.h"
 #include "MaterialAnimator.h"
 #include "LogStateBehaviour.h"
+#include "SoundEmitter.h"
 
 // PathFinding
 #include "NavigationAgent.h"
@@ -88,7 +93,9 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Box>("Box"_hs) // 14
 		.prop(fq::reflect::prop::Name, "Box")
 		.data<ETag::AimAssist>("AimAssist"_hs) // 15
-		.prop(fq::reflect::prop::Name, "AimAssist");
+		.prop(fq::reflect::prop::Name, "AimAssist")
+		.data<ETag::PlayerMonsterIgnore>("PlayerMonsterIgnore"_hs) // 16
+		.prop(fq::reflect::prop::Name, "PlayerMonsterIgnore");;
 
 
 	// GameObject
@@ -150,6 +157,8 @@ void fq::game_module::RegisterMetaData()
 		.type("MaterialInstanceInfo"_hs)
 		.prop(fq::reflect::prop::Name, "MaterialInstanceInfo")
 		.prop(fq::reflect::prop::POD)
+		.data<&fq::graphics::MaterialInstanceInfo::bUseInstanceing>("UseInstanceing"_hs)
+		.prop(fq::reflect::prop::Name, "UseInstanceing")
 		.data<&fq::graphics::MaterialInstanceInfo::bUseInstanceAlpha>("bUseInstanceAlpha"_hs)
 		.prop(fq::reflect::prop::Name, "bUseInstanceAlpha")
 		.data<&fq::graphics::MaterialInstanceInfo::Alpha>("Alpha"_hs)
@@ -375,6 +384,37 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&TextUI::SetTextInfo, &TextUI::GetTextInfo>("TextInformation"_hs)
 		.prop(fq::reflect::prop::Name, "TextInformation")
+		.base<Component>();
+
+	entt::meta<graphics::SpriteInfo>()
+		.type("SpriteInfo"_hs)
+		.prop(fq::reflect::prop::Name, "SpriteInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&graphics::SpriteInfo::Width>("Width"_hs)
+		.prop(fq::reflect::prop::Name, "Width")
+		.data<&graphics::SpriteInfo::Height>("Height"_hs)
+		.prop(fq::reflect::prop::Name, "Height")
+		.data<&graphics::SpriteInfo::ImagePath>("ImagePath"_hs)
+		.prop(fq::reflect::prop::Name, "ImagePath")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.data<&graphics::SpriteInfo::Layer>("Layer"_hs)
+		.prop(fq::reflect::prop::Name, "Layer")
+		.data<&graphics::SpriteInfo::ImageNum>("ImageNum"_hs)
+		.prop(fq::reflect::prop::Name, "ImageNum")
+		.data<&graphics::SpriteInfo::Speed>("Speed"_hs)
+		.prop(fq::reflect::prop::Name, "Speed")
+		.data<&graphics::SpriteInfo::isCenter>("isCenter"_hs)
+		.prop(fq::reflect::prop::Name, "isCenter")
+		.data<&graphics::SpriteInfo::isRender>("isRender"_hs)
+		.prop(fq::reflect::prop::Name, "isRender");
+
+	entt::meta<SpriteAnimationUI>()
+		.type("SpriteAnimationUI"_hs)
+		.prop(fq::reflect::prop::Name, "SpriteAnimationUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&SpriteAnimationUI::SetSpriteInfo, &SpriteAnimationUI::GetSpriteInfo>("SpriteAnimationInfo"_hs)
+		.prop(fq::reflect::prop::Name, "SpriteAnimationInfo")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1074,6 +1114,27 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"로드하는 사운드를 드래그드랍으로 추가합니다")
 		.base<Component>();
 
+	entt::meta<SoundEmitter>()
+		.type("SoundEmitter"_hs)
+		.prop(fq::reflect::prop::Name, "SoundEmitter")
+		.prop(fq::reflect::prop::Label, "Audio")
+		.data<&SoundEmitter::mbIsPlayLoop>("IsPlayLoop"_hs)
+		.prop(reflect::prop::Name, "IsPlayLoop")
+		.prop(reflect::prop::Comment, u8"반복 재생 여부")
+		.data<&SoundEmitter::mbIsPlayStateEnter>("IsPlayStateEnter"_hs)
+		.prop(reflect::prop::Name, "IsPlayStateEnter")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
+		.data<&SoundEmitter::mSoundTurm>("SoundTurm"_hs)
+		.prop(reflect::prop::Name, "SoundTurm")
+		.prop(reflect::prop::Comment, u8"반복 재생 시간")
+		.data<&SoundEmitter::mbUseRandomPlay>("mbUseRandomIndex"_hs)
+		.prop(reflect::prop::Name, "UseRandomPlay")
+		.prop(reflect::prop::Comment, u8"랜덤 재생 여부, off 시 순차적으로 사운드 재생")
+		.data<&SoundEmitter::mSoundNames>("mSoundNames"_hs)
+		.prop(reflect::prop::Name, "mSoundNames")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
+		.base<Component>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                            Animation                                 //
@@ -1124,11 +1185,24 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ControllerPath")
 		.prop(fq::reflect::prop::DragDrop, ".controller")
 		.prop(fq::reflect::prop::RelativePath)
+		.data<&Animator::mLowerControllerPath>("LowerControllerPath"_hs)
+		.prop(fq::reflect::prop::Name, "LowerControllerPath")
+		.prop(fq::reflect::prop::DragDrop, ".controller")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&Animator::SetNodeHierarchyPath, &Animator::GetNodeHierarchyPath>("NodeHierarchyModelPath"_hs)
 		.prop(fq::reflect::prop::Comment, u8"애니메이션 처리 시 참조할 본 계층 구조")
 		.prop(fq::reflect::prop::DragDrop, ".nodeHierachy")
 		.prop(fq::reflect::prop::Name, "NodeHierarchyModelPath")
 		.prop(fq::reflect::prop::RelativePath)
+		.data<&Animator::SetUpdateAnimationCPUData, &Animator::GetUpdateAnimationCPUData>("isUpdateAnimationCPUData"_hs)
+		.prop(fq::reflect::prop::Name, "isUpdateAnimationCPUData")
+		.prop(fq::reflect::prop::Comment, u8"CPU 애니메이션 데이터를 갱신할지 여부")
+		.data<&Animator::SetUpdateAnimationGPUData, &Animator::GetUpdateAnimationGPUData>("isUpdateAnimationGPUData"_hs)
+		.prop(fq::reflect::prop::Name, "isUpdateAnimationGPUData")
+		.prop(fq::reflect::prop::Comment, u8"GPU 애니메이션 데이터를 갱신할지 여부")
+		.data<&Animator::SetCreateAnimationTexture, &Animator::GetCreateAnimationTexture>("isCreateAnimationTexture"_hs)
+		.prop(fq::reflect::prop::Name, "isCreateAnimationTexture")
+		.prop(fq::reflect::prop::Comment, u8"GPU 애니메이션을 위한 텍스처 데이터 생성 여부")
 		.base<Component>();
 
 	entt::meta<UVAnimator>()
@@ -1515,6 +1589,29 @@ void fq::game_module::RegisterMetaData()
 			.data<&ParticleInfo::Instance::bIsRenderDebug>("IsRenderDebug"_hs)
 			.prop(fq::reflect::prop::Name, "IsRenderDebug");
 
+		entt::meta<ParticleInfo::Sprite>()
+			.type("ParticleSpriteData"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleSpriteData")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::Sprite::WidthCount>("WidthCount"_hs)
+			.prop(fq::reflect::prop::Name, "WidthCount")
+			.prop(fq::reflect::prop::Comment, u8"가로 개수")
+			.data<&ParticleInfo::Sprite::HeightCount>("HeightCount"_hs)
+			.prop(fq::reflect::prop::Name, "HeightCount")
+			.prop(fq::reflect::prop::Comment, u8"세로 개수")
+			.data<&ParticleInfo::Sprite::FrameCount>("FrameCount"_hs)
+			.prop(fq::reflect::prop::Name, "FrameCount")
+			.prop(fq::reflect::prop::Comment, u8"셀(하나의 스프라이트) 개수")
+			.data<&ParticleInfo::Sprite::FramePerSecond>("FramePerSecond"_hs)
+			.prop(fq::reflect::prop::Name, "FramePerSecond")
+			.prop(fq::reflect::prop::Comment, u8"한 셀마다 보여줄 프레임 시간")
+			.data<&ParticleInfo::Sprite::bIsLooping>("IsLooping"_hs)
+			.prop(fq::reflect::prop::Name, "IsLooping")
+			.prop(fq::reflect::prop::Comment, u8"애니메이션 반복 여부")
+			.data<&ParticleInfo::Sprite::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed")
+			.prop(fq::reflect::prop::Comment, u8"스프라이트 모듈 사용 여부");
+
 		entt::meta<Particle>()
 			.type("Particle"_hs)
 			.prop(fq::reflect::prop::Name, "Particle")
@@ -1553,6 +1650,8 @@ void fq::game_module::RegisterMetaData()
 			.prop(fq::reflect::prop::Name, "ParticleInstanceData")
 			.data<&Particle::SetParticleMaterialInfo, &Particle::GetParticleMaterialInfo>("ParticleMaterialInfo"_hs)
 			.prop(fq::reflect::prop::Name, "ParticleMaterialInfo")
+			.data<&Particle::SetSpriteData, &Particle::GetSpriteData>("ParticleSpriteInfo"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleSpriteInfo")
 			.base<Component>();
 
 		entt::meta<fq::common::Material>()
@@ -1634,6 +1733,9 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "DecalInfo")
 		.data<&Decal::SetDecalMaterialInfo, &Decal::GetDecalMaterialInfo>("DecalMaterialInfo"_hs)
 		.prop(fq::reflect::prop::Name, "DecalMaterialInfo")
+		.data<&Decal::SetLayer, &Decal::GetLayer>("Layer"_hs)
+		.prop(fq::reflect::prop::Name, "Layer")
+		.prop(fq::reflect::prop::Comment, u8"그려지는 순서, 숫자가 높을수록 나중에 그려짐, 0 ~ 4까지 지원")
 		.base<Component>();
 	//////////////////////////////////////////////////////////////////////////
 	//                             트레일									//
@@ -1843,6 +1945,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BaseColor")
 		.data<&fq::graphics::ParticleMaterialInfo::EmissiveColor>("EmissiveColor"_hs)
 		.prop(fq::reflect::prop::Name, "EmissiveColor")
+		.data<&fq::graphics::ParticleMaterialInfo::EmissiveIntensity>("EmissiveIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "EmissiveIntensity")
 		.data<&fq::graphics::ParticleMaterialInfo::BaseColorFileName>("BaseColorFileName"_hs)
 		.prop(fq::reflect::prop::Name, "BaseColorFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
@@ -2048,7 +2152,28 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "Miscellaneous")
 		.data<&StateEvent::mInstantiatePrefabs>("InstantiatePrefabInfos"_hs)
 		.prop(fq::reflect::prop::Name, "InstantiatePrefabInfos")
-		.data<&StateEvent::mPlayerSoundInfos>("PlayerSoundInfos"_hs)
+		.data<&StateEvent::mPlaySoundInfos>("PlaySoundInfos"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerSoundInfos")
 		.base<fq::game_module::Component>();
+
+	entt::meta<StateEventEmitter>()
+		.type("StateEventEmitter"_hs)
+		.prop(fq::reflect::prop::Name, "StateEventEmitter")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&StateEventEmitter::mbIsPlayLoop>("IsPlayLoop"_hs)
+		.prop(reflect::prop::Name, "IsPlayLoop")
+		.prop(reflect::prop::Comment, u8"반복 재생 여부")
+		.data<&StateEventEmitter::mbIsPlayStateEnter>("IsPlayStateEnter"_hs)
+		.prop(reflect::prop::Name, "IsPlayStateEnter")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 방출 여부")
+		.data<&StateEventEmitter::mTurm>("Turm"_hs)
+		.prop(reflect::prop::Name, "Turm")
+		.prop(reflect::prop::Comment, u8"반복 재생 시간")
+		.data<&StateEventEmitter::mbUseRandomIndex>("UseRandomIndex"_hs)
+		.prop(reflect::prop::Name, "UseRandomIndex")
+		.prop(reflect::prop::Comment, u8"랜덤 재생 여부, off 시 순차적으로 사운드 재생")
+		.data<&StateEventEmitter::mNames>("Names"_hs)
+		.prop(reflect::prop::Name, "Names")
+		.prop(reflect::prop::Comment, u8"사용할 State 이름들")
+		.base<Component>();
 }

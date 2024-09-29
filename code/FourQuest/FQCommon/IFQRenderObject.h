@@ -230,6 +230,9 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetUVAnimationInstance(std::shared_ptr<IUVAnimationInstance> uvAnimationInstance) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const abstract;
 
+			virtual FQ_GRAPHICS void SetLayer(unsigned int layer) abstract;
+			virtual FQ_GRAPHICS unsigned int GetLayer() const abstract;
+
 		protected:
 			virtual ~IDecalObject() = default;
 		};
@@ -283,6 +286,15 @@ extern "C" {
 
 			virtual FQ_GRAPHICS void SetTextInformation(TextInfo textInfo) abstract;
 			virtual FQ_GRAPHICS TextInfo GetTextInformation() abstract;
+		};
+
+		class ISpriteAnimationObject
+		{
+		public:
+			virtual ~ISpriteAnimationObject() = default;
+
+			virtual FQ_GRAPHICS void SetSpriteInfo(SpriteInfo spriteInfo) abstract;
+			virtual FQ_GRAPHICS SpriteInfo GetSpriteInfo() abstract;
 		};
 
 #ifdef __cplusplus

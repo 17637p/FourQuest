@@ -40,6 +40,7 @@ namespace fq::client
 	private:
 		void OnAwake() override;
 		void OnDestroy() override;
+		void OnUpdate(float dt) override;
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -50,7 +51,7 @@ namespace fq::client
 		EventHandler mOnDestroyHandler;
 		EventHandler mAddGameObjectHandler;
 
-		std::vector<TestPOD> mRes;
+		std::vector<TestPOD> mRes;	
 
 		friend void RegisterMetaData();
 	};

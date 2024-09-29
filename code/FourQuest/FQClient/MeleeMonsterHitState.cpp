@@ -22,6 +22,7 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterHitSta
 
 void fq::client::MeleeMonsterHitState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
+	mDurationTime = 0.f;
 	auto agent = animator.GetComponent<game_module::NavigationAgent>();
 	agent->Stop();
 
@@ -62,7 +63,6 @@ void fq::client::MeleeMonsterHitState::OnStateUpdate(game_module::Animator& anim
 			{
 				fq::graphics::MaterialInstanceInfo info;
 				info.bUseRimLight = false;
-
 				skeletalMesh->SetMaterialInstanceInfo(info);
 			}
 		}
@@ -73,6 +73,12 @@ void fq::client::MeleeMonsterHitState::OnStateExit(game_module::Animator& animat
 {
 	mDurationTime = 0.f;
 
+	// Hit -> Hit 상태인 경우 히트 색깔을 끄지 않습니다.
+	if (animator.GetController().GetNextStateName() == "Hit")
+	{
+		return;
+	}
+
 	for (auto child : animator.GetGameObject()->GetChildren())
 	{
 		auto skeletalMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
@@ -81,7 +87,6 @@ void fq::client::MeleeMonsterHitState::OnStateExit(game_module::Animator& animat
 		{
 			fq::graphics::MaterialInstanceInfo info;
 			info.bUseRimLight = false;
-
 			skeletalMesh->SetMaterialInstanceInfo(info);
 		}
 	}

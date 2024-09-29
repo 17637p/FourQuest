@@ -54,8 +54,6 @@ namespace fq::game_module
 		{
 			std::string FunctionName;
 			PrefabResource PrefabResourceData;
-
-
 		};
 
 	public:
@@ -64,15 +62,23 @@ namespace fq::game_module
 
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
+		void UpdateMapData();
+
 		const std::vector<InstantiatePrefab>& GetInstantiatePrefabs() const { return mInstantiatePrefabs; }
-		const std::vector<PlaySoundInfo>& GetPlaySoundInfos() const { return mPlayerSoundInfos; }
+		const std::vector<PlaySoundInfo>& GetPlaySoundInfos() const { return mPlaySoundInfos; }
+
+		const std::map<std::string, fq::game_module::StateEvent::InstantiatePrefab> GetInstantiatePrefabMap() const { return mInstantiatePrefabMap; }
+		const std::map<std::string, fq::game_module::StateEvent::PlaySoundInfo> GetPlaySoundInfoMap() const { return mPlaySoundInfoMap; }
 
 	private:
 		entt::meta_handle GetHandle() override;
 
 	private:
 		std::vector<InstantiatePrefab> mInstantiatePrefabs;
-		std::vector<PlaySoundInfo> mPlayerSoundInfos;
+		std::vector<PlaySoundInfo> mPlaySoundInfos;
+
+		std::map<std::string, fq::game_module::StateEvent::InstantiatePrefab> mInstantiatePrefabMap;
+		std::map<std::string, fq::game_module::StateEvent::PlaySoundInfo> mPlaySoundInfoMap;
 
 		friend void RegisterMetaData();
 	};

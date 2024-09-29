@@ -12,6 +12,8 @@ namespace fq::game_module
 namespace fq::client
 {
 	class Player;
+	class Soul;
+	class GameManager;
 
 	class PlayerUI : public fq::game_module::Component
 	{
@@ -25,7 +27,7 @@ namespace fq::client
 		int GetPlayerID() const { return mPlayerID; }
 		void SetPlayerID(int val) { mPlayerID = val; }
 
-		void SetPlayer();
+		void SetPlayer(fq::client::GameManager* gameMgr);
 		void SetSoulGauge(float ratio);
 		void SetHPBar(float ratio);
 
@@ -34,14 +36,25 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		// 무기랑 스킬아이콘 어떤 것을 렌더하거나 안할지 
-		void SetWeaponAndSkillIcons(int index, bool isRender);
+		void setWeaponAndSkillIcons(int index, bool isRender);
+		void setSoulSkillIcon();
+		void setSkillCoolTime();
+		void resetSkillCoolTime();
+		void SetPlayerStateUpdate();
 
 	private:
 		int mPlayerID;
 		fq::client::Player* mPlayer;
+		fq::client::Soul* mSoul;
 
 		float mHPWidth;
 		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 
+
+		// CoolTime 적용
+		float mCoolTimeHeight;
+		game_module::ImageUI* mXCoolTimeImage;
+		game_module::ImageUI* mACoolTimeImage;
+		game_module::ImageUI* mRCoolTimeImage;
 
 		int mSoulGaugeDegree;
 		game_module::ImageUI* mSoulGauge; // Soul Gauge 조정 25 - 255
@@ -52,6 +65,9 @@ namespace fq::client
 		std::vector<game_module::ImageUI*> mSkillIconXs; // 스킬 아이콘
 		std::vector<game_module::ImageUI*> mSkillIconAs; // 스킬 아이콘 
 		std::vector<game_module::ImageUI*> mSkillIconRs; // 스킬 아이콘 
+
+		std::vector<game_module::ImageUI*> mSoulSkillIcons; // 스킬 아이콘 
+		game_module::ImageUI* mPlayerState;				 // 플레이어 상태
 
 		game_module::ScreenManager* mScreenManager;
 

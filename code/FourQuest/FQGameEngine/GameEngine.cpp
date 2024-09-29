@@ -78,6 +78,7 @@ void fq::game_engine::GameEngine::Initialize()
 		, mGameProcess->mPrefabManager.get()
 		, mGameProcess->mScreenManager.get()
 		, mGameProcess->mTimeManager.get()
+		, mGameProcess->mSoundManager.get()
 		, true);
 
 	mGameProcess->mSoundManager->Initialize();
@@ -89,7 +90,7 @@ void fq::game_engine::GameEngine::Initialize()
 	UINT height = mGameProcess->mWindowSystem->GetScreenHeight();
 	mGameProcess->mGraphics->Initialize(hwnd, width, height);
 
-	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get(), width, height);
+	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get(), width, height, hwnd);
 
 	// 물리 엔진 초기화
 	mGameProcess->mPhysics = fq::physics::EngineExporter().GetEngine();
@@ -218,7 +219,7 @@ void fq::game_engine::GameEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
-			mGameProcess->mUISystem->Update();
+			mGameProcess->mUISystem->Update(deltaTime);
 			mGameProcess->mStateEventSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////
@@ -262,6 +263,7 @@ void fq::game_engine::GameEngine::Finalize()
 	mGameProcess->mLightProbeSystem->Finalize();
 
 	mGameProcess->mSceneManager->UnloadScene();
+	mGameProcess->mLoadingSystem->Finalize();
 	mGameProcess->mUISystem->Finalize();
 
 	mGameProcess->mGraphics->Finalize();

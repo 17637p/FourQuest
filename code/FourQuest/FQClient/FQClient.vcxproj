@@ -40,7 +40,14 @@
   <ItemGroup>
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
-    <ClInclude Include="ArcAttack.h" />
+    <ClInclude Include="AttackInvalidation.h" />
+    <ClInclude Include="BGaugeUI.h" />
+    <ClInclude Include="GaugeBar.h" />
+    <ClInclude Include="AudioSettingUI.h" />
+    <ClInclude Include="GameSettingUI.h" />
+    <ClInclude Include="GoddessStatue.h" />
+    <ClInclude Include="LevelHepler.h" />
+    <ClInclude Include="PlantAOEAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
     <ClInclude Include="ArmourSpawner.h" />
@@ -55,9 +62,13 @@
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="BossMonsterComboAttackState.h" />
+    <ClInclude Include="BossMonsterContinousState.h" />
+    <ClInclude Include="BossMonsterEatState.h" />
     <ClInclude Include="BossMonsterGroggyState.h" />
     <ClInclude Include="BossMonsterHomingRushState.h" />
+    <ClInclude Include="BossMonsterPreContinousState.h" />
     <ClInclude Include="BossMonsterPrepareAttackState.h" />
+    <ClInclude Include="BossMonsterRoarState.h" />
     <ClInclude Include="BossMonsterSmashDownState.h" />
     <ClInclude Include="BossMonsterChaseState.h" />
     <ClInclude Include="BossMonsterDeadState.h" />
@@ -78,6 +89,7 @@
     <ClInclude Include="DeadArmour.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />
+    <ClInclude Include="DebuffPoisonZone.h" />
     <ClInclude Include="DefenceCounter.h" />
     <ClInclude Include="EBerserkerAttackType.h" />
     <ClInclude Include="GameManager.h" />
@@ -116,7 +128,7 @@
     <ClInclude Include="MonsterManager.h" />
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="LinearAttack.h" />
-    <ClInclude Include="MonsterVariable.h" />
+    <ClInclude Include="LevelVariable.h" />
     <ClInclude Include="PauseUI.h" />
     <ClInclude Include="PlantMonster.h" />
     <ClInclude Include="PlantMonsterAOEAttackState.h" />
@@ -127,15 +139,19 @@
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerInfoVariable.h" />
     <ClInclude Include="PlayerMovementSoundState.h" />
+    <ClInclude Include="PlayerSoundState.h" />
     <ClInclude Include="PlayerUIManager.h" />
     <ClInclude Include="PlayerSoulVariable.h" />
+    <ClInclude Include="PlayerLowerMovementState.h" />
     <ClInclude Include="PlayerVariable.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Quest.h" />
     <ClInclude Include="QuestColliderTriggerChecker.h" />
     <ClInclude Include="QuestManager.h" />
     <ClInclude Include="RepauseUI.h" />
+    <ClInclude Include="ResetPopupUI.h" />
     <ClInclude Include="ResultUI.h" />
+    <ClInclude Include="SavePopupUI.h" />
     <ClInclude Include="SettingUI.h" />
     <ClInclude Include="SettingVariable.h" />
     <ClInclude Include="ShieldDashState.h" />
@@ -148,10 +164,13 @@
     <ClInclude Include="ShieldAttackState.h" />
     <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
+    <ClInclude Include="SoulManagerModule.h" />
     <ClInclude Include="SoulSelectUI.h" />
+    <ClInclude Include="SoulVariable.h" />
     <ClInclude Include="Spawner.h" />
     <ClInclude Include="SpawnerGroup.h" />
     <ClInclude Include="SpawnStruct.h" />
+    <ClInclude Include="SpeechBubbleUI.h" />
     <ClInclude Include="SwordSoulAttackState.h" />
     <ClInclude Include="SoundDefine.h" />
     <ClInclude Include="SpawnerDeadState.h" />
@@ -161,11 +180,19 @@
     <ClInclude Include="SwordAttackState.h" />
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="UILayerDefine.h" />
+    <ClInclude Include="VideoSettingUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
-    <ClCompile Include="ArcAttack.cpp" />
+    <ClCompile Include="AttackInvalidation.cpp" />
+    <ClCompile Include="BGaugeUI.cpp" />
+    <ClCompile Include="GaugeBar.cpp" />
+    <ClCompile Include="AudioSettingUI.cpp" />
+    <ClCompile Include="GameSettingUI.cpp" />
+    <ClCompile Include="GoddessStatue.cpp" />
+    <ClCompile Include="LevelHepler.cpp" />
+    <ClCompile Include="PlantAOEAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
     <ClCompile Include="ArmourSpawner.cpp" />
@@ -179,9 +206,13 @@
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="BossMonsterComboAttackState.cpp" />
+    <ClCompile Include="BossMonsterContinousState.cpp" />
+    <ClCompile Include="BossMonsterEatState.cpp" />
     <ClCompile Include="BossMonsterGroggyState.cpp" />
     <ClCompile Include="BossMonsterHomingRushState.cpp" />
+    <ClCompile Include="BossMonsterPreContinousState.cpp" />
     <ClCompile Include="BossMonsterPrepareAttackState.cpp" />
+    <ClCompile Include="BossMonsterRoarState.cpp" />
     <ClCompile Include="BossMonsterSmashDownState.cpp" />
     <ClCompile Include="BossMonsterChaseState.cpp" />
     <ClCompile Include="BossMonsterDeadState.cpp" />
@@ -199,6 +230,7 @@
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="CameraMoving.cpp" />
+    <ClCompile Include="DebuffPoisonZone.cpp" />
     <ClCompile Include="DefenceCounter.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameVaribleHelper.cpp" />
@@ -241,14 +273,18 @@
     <ClCompile Include="PlantMonsterIdleState.cpp" />
     <ClCompile Include="PlantMonsterStareState.cpp" />
     <ClCompile Include="PlayerMovementSoundState.cpp" />
+    <ClCompile Include="PlayerSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
+    <ClCompile Include="PlayerLowerMovementState.cpp" />
     <ClCompile Include="PlayerVariable.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Quest.cpp" />
     <ClCompile Include="QuestColliderTriggerChecker.cpp" />
     <ClCompile Include="QuestManager.cpp" />
     <ClCompile Include="RepauseUI.cpp" />
+    <ClCompile Include="ResetPopupUI.cpp" />
     <ClCompile Include="ResultUI.cpp" />
+    <ClCompile Include="SavePopupUI.cpp" />
     <ClCompile Include="SettingUI.cpp" />
     <ClCompile Include="ShieldDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
@@ -259,10 +295,13 @@
     <ClCompile Include="ShieldAttackState.cpp" />
     <ClCompile Include="ShieldBlockState.cpp" />
     <ClCompile Include="Soul.cpp" />
+    <ClCompile Include="SoulManagerModule.cpp" />
     <ClCompile Include="SoulSelectUI.cpp" />
+    <ClCompile Include="SoulVariable.cpp" />
     <ClCompile Include="Spawner.cpp" />
     <ClCompile Include="SpawnerGroup.cpp" />
     <ClCompile Include="SpawnStruct.cpp" />
+    <ClCompile Include="SpeechBubbleUI.cpp" />
     <ClCompile Include="SwordSoulAttackState.cpp" />
     <ClCompile Include="SpawnerDeadState.cpp" />
     <ClCompile Include="SpawnerOpenState.cpp" />
@@ -270,6 +309,7 @@
     <ClCompile Include="StaffSoulAttackState.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
     <ClCompile Include="TitleUI.cpp" />
+    <ClCompile Include="VideoSettingUI.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

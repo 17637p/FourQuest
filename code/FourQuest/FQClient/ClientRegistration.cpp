@@ -13,6 +13,7 @@
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
 #include "PlayerMovementSoundState.h"
+#include "PlayerSoundState.h"
 #include "DeadArmour.h"
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
@@ -21,6 +22,7 @@
 #include "ShieldDashState.h"
 #include "KnightArmour.h"
 #include "SwordAttackState.h"
+#include "ShieldBlockState.h"
 #include "ShieldAttackState.h"
 #include "StaffSoulAttackState.h"
 #include "SwordSoulAttackState.h"
@@ -36,6 +38,8 @@
 #include "BerserkerAttackState.h"
 #include "BerserkerRushState.h"
 #include "BerserkerRushChargingState.h"
+#include "AttackInvalidation.h"
+#include "PlayerLowerMovementState.h"
 
 // Monster
 #include "Monster.h"
@@ -73,11 +77,16 @@
 #include "BossMonsterComboAttackState.h"
 #include "BossMonsterPrepareAttackState.h"
 #include "BossMonsterGroggyState.h"
+#include "BossMonsterEatState.h"
+#include "BossMonsterRoarState.h"
+#include "BossMonsterContinousState.h"
+#include "BossMonsterPreContinousState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
 #include "LinearAttack.h"
-#include "ArcAttack.h"
+#include "PlantAOEAttack.h"
+#include "DebuffPoisonZone.h"
 #include "PlantMonsterAttckState.h"
 #include "PlantMonsterAOEAttackState.h"
 #include "PlantMonsterDeadState.h"
@@ -98,6 +107,7 @@
 
 // UI
 #include "HpBar.h"
+#include "GaugeBar.h"
 #include "PlayerUI.h"
 #include "PlayerUIManager.h"
 #include "BossHP.h"
@@ -107,7 +117,14 @@
 #include "SoulSelectUI.h"
 #include "SettingUI.h"
 #include "RepauseUI.h"
+#include "ResetPopupUI.h"
+#include "SavePopupUI.h"
 #include "ResultUI.h"
+#include "GameSettingUI.h"
+#include "AudioSettingUI.h"
+#include "VideoSettingUI.h"
+#include "SpeechBubbleUI.h"
+#include "BGaugeUI.h"
 
 #include "CameraMoving.h"
 
@@ -125,12 +142,13 @@
 #include "Spawner.h"
 
 // GameVariable
-
 #include "PlayerSoulVariable.h"
 #include "DamageVariable.h"
 #include "SettingVariable.h"
 #include "PlayerInfoVariable.h"
 #include "PlayerVariable.h"
+#include "SoulVariable.h"
+#include "LevelVariable.h"
 
 // Box
 #include "Box.h"
@@ -138,6 +156,7 @@
 // etc
 #include "BGM.h"
 #include "Portal.h"
+#include "GoddessStatue.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -182,7 +201,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mRes")
 		.base<game_module::Component>();
 
-
 	//////////////////////////////////////////////////////////////////////////
 	//                             ETC										//
 	//////////////////////////////////////////////////////////////////////////
@@ -218,6 +236,21 @@ void fq::client::RegisterMetaData()
 		.data<&MaterialManager::mbUseDebugDraw>("UseDebugDraw"_hs)
 		.prop(fq::reflect::prop::Name, "UseDebugDraw")
 		.prop(reflect::prop::Comment, u8"디버깅 정보 사용 여부")
+		.base<game_module::Component>();
+
+	entt::meta<GoddessStatue>()
+		.type("GoddessStatue"_hs)
+		.prop(reflect::prop::Name, "GoddessStatue")
+		.data<&GoddessStatue::mDealingTime>("DealingTime"_hs)
+		.prop(fq::reflect::prop::Name, "DealingTime")
+		.data<&GoddessStatue::mDealingDamage>("DealingDamage"_hs)
+		.prop(fq::reflect::prop::Name, "DealingDamage")
+		.data<&GoddessStatue::mMaxGauge>("MaxGauge"_hs)
+		.prop(fq::reflect::prop::Name, "MaxGauge")
+		.data<&GoddessStatue::mFillGaugeSpeed>("FillGaugeSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "FillGaugeSpeed")
+		.data<&GoddessStatue::mDecreaseSpeed>("DecreaseSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "DecreaseSpeed")
 		.base<game_module::Component>();
 
 
@@ -277,6 +310,23 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AxeSoulAttack")
 		.data<&Player::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(reflect::prop::Name, "SoulPrefab")
+		.data<&Player::mSwordHaed>("SwordHaed"_hs)
+		.prop(reflect::prop::Name, "SwordHaed")
+		.data<&Player::mStaffHaed>("StaffHaed"_hs)
+		.prop(reflect::prop::Name, "StaffHaed")
+		.data<&Player::mAxeHaed>("AxeHaed"_hs)
+		.prop(reflect::prop::Name, "AxeHaed")
+		.data<&Player::mBowHaed>("BowHaed"_hs)
+		.prop(reflect::prop::Name, "BowHaed")
+
+		.data<&Player::mDeadKnightArmour>("DeadKnightArmour"_hs)
+		.prop(reflect::prop::Name, "DeadKnightArmour")
+		.data<&Player::mDeadMagicArmour>("DeadMagicArmour"_hs)
+		.prop(reflect::prop::Name, "DeadMagicArmour")
+		.data<&Player::mDeadArcherArmour>("DeadArcherArmour"_hs)
+		.prop(reflect::prop::Name, "DeadArcherArmour")
+		.data<&Player::mDeadWarriorArmour>("DeadWarriorArmour"_hs)
+		.prop(reflect::prop::Name, "DeadWarriorArmour")
 		.base<game_module::Component>();
 
 	entt::meta<DeadArmour>()
@@ -302,6 +352,14 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "RazerDistance")
 		.data<&MagicArmour::mLaserHiTick>("RazerHiTick"_hs)
 		.prop(reflect::prop::Name, "RazerHiTick")
+		.data<&MagicArmour::mLaserCoolTime>("LaserCoolTime"_hs)
+		.prop(reflect::prop::Name, "LaserCoolTime")
+		.data<&MagicArmour::mLaserCoolTimeReduction>("LaserCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "LaserCoolTimeReduction")
+		.data<&MagicArmour::mAOECoolTime>("AOECoolTime"_hs)
+		.prop(reflect::prop::Name, "AOECoolTime")
+		.data<&MagicArmour::mAOECoolTimeReduction>("AOECoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "AOECoolTimeReduction")
 		.data<&MagicArmour::mMagicBall>("MagicBall"_hs)
 		.prop(reflect::prop::Name, "MagicBall")
 		.data<&MagicArmour::mAOE>("AOE"_hs)
@@ -324,6 +382,9 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&KnightArmour::mDashCoolTime>("DashCoolTime"_hs)
 		.prop(reflect::prop::Name, "DashCoolTime")
+		.data<&KnightArmour::mDashCoolTimeReduction>("DashCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "DashCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버타임 대쉬 쿨타임감소량")
 		.data<&KnightArmour::mAttackOffset>("AttackOffset"_hs)
 		.prop(reflect::prop::Name, "AttackOffset")
 		.data<&KnightArmour::mShieldDashPower>("ShieldDashPushPower"_hs)
@@ -338,9 +399,24 @@ void fq::client::RegisterMetaData()
 		.data<&KnightArmour::mSwordKnockBackPower>("SwordKnockBackPower"_hs)
 		.prop(reflect::prop::Name, "SwordKnockBackPower")
 		.prop(reflect::prop::Comment, u8"검 공격 넉백")
-		.data<&KnightArmour::mShieldKnockPower>("ShieldKnockPower"_hs)
+		.data<&KnightArmour::mDashKnockBackPower>("ShieldKnockPower"_hs)
 		.prop(reflect::prop::Name, "ShieldKnockPower")
-		.prop(reflect::prop::Comment, u8"방패 공격 넉백")
+		.prop(reflect::prop::Comment, u8"대쉬 넉백")
+		.data<&KnightArmour::mShieldSpeedRatio>("ShieldSpeedRatio"_hs)
+		.prop(reflect::prop::Name, "ShieldSpeedRatio")
+		.prop(reflect::prop::Comment, u8"쉴드 상태 이동속도 배율")
+		.data<&KnightArmour::mShieldCoolTime>("ShieldCoolTime"_hs)
+		.prop(reflect::prop::Name, "ShieldCoolTime")
+		.prop(reflect::prop::Comment, u8"쉴드 쿨타임")
+		.data<&KnightArmour::mShieldCoolTimeReduction>("ShieldCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "ShieldCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버타임 쉴드 쿨타임감소량")
+		.data<&KnightArmour::mShieldDuration>("ShieldDuration"_hs)
+		.prop(reflect::prop::Name, "ShieldDuration")
+		.prop(reflect::prop::Comment, u8"쉴드 지속시간")
+		.data<&KnightArmour::mShieldKnockBackPower>("ShieldKnockBackPower"_hs)
+		.prop(reflect::prop::Name, "ShieldKnockBackPower")
+		.prop(reflect::prop::Comment, u8"쉴드 넉백")
 		.data<&KnightArmour::mSwordAttack>("SwordAttack"_hs)
 		.prop(reflect::prop::Name, "SwordAttack")
 		.data<&KnightArmour::mSwordAttackEffect1>("SwordAttackEffect1"_hs)
@@ -351,6 +427,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "ShieldAttack")
 		.data<&KnightArmour::mDashAttack>("DashAttack"_hs)
 		.prop(reflect::prop::Name, "DashAttack")
+		.data<&KnightArmour::mShieldCollider>("ShieldCollider"_hs)
+		.prop(reflect::prop::Name, "ShieldCollider")
 		.base<game_module::Component>();
 
 	entt::meta<ArcherArmour>()
@@ -360,15 +438,18 @@ void fq::client::RegisterMetaData()
 		.data<&ArcherArmour::mDashCoolTime>("DashCoolTime"_hs)
 		.prop(reflect::prop::Name, "DashCoolTime")
 		.prop(reflect::prop::Comment, u8"구르기 쿨타임")
+		.data<&ArcherArmour::mDashCoolTimeReduction>("DashCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "DashCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버시 구르기 쿨타임 감소량")
 		.data<&ArcherArmour::mStrongAttackCoolTime>("StrongAttackCoolTime"_hs)
 		.prop(reflect::prop::Name, "StrongAttackCoolTime")
 		.prop(reflect::prop::Comment, u8"X공격(강공격) 쿨타임")
+		.data<&ArcherArmour::mStrongAttackCoolTimeReduction>("StrongAttackCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "StrongAttackCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버시 X공격(강공격) 쿨타임 감소량")
 		.data<&ArcherArmour::mArrowPower>("ArrowPower"_hs)
 		.prop(reflect::prop::Name, "ArrowPower")
 		.prop(reflect::prop::Comment, u8"공격력")
-		.data<&ArcherArmour::mChangeChargingTime>("ChangeChargingTime"_hs)
-		.prop(reflect::prop::Name, "ChangeChargingTime")
-		.prop(reflect::prop::Comment, u8"X공격 차징 시간")
 		.data<&ArcherArmour::mWeakProjectileVelocity>("WeakProjectileVelocity"_hs)
 		.prop(reflect::prop::Name, "WeakProjectileVelocity")
 		.prop(reflect::prop::Comment, u8"약공격 속도")
@@ -402,6 +483,26 @@ void fq::client::RegisterMetaData()
 		.data<&BerserkerArmour::mCircleAttackPrefab>("CircleAttackPrefab"_hs)
 		.prop(reflect::prop::Name, "CircleAttackPrefab")
 		.prop(reflect::prop::Comment, u8"공격 시 생성되는 기본 콜라이더(원형)")
+
+		.data<&BerserkerArmour::mLeftAttackSound>("LeftAttackSound"_hs)
+		.prop(reflect::prop::Name, "LeftAttackSound")
+		.prop(reflect::prop::Comment, u8"기본공격(1타) 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mRightAttackSound>("RightAttackSound"_hs)
+		.prop(reflect::prop::Name, "RightAttackSound")
+		.prop(reflect::prop::Comment, u8"기본공격(2타) 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mStrikeDownAttackSound>("StrikeDownAttackSound"_hs)
+		.prop(reflect::prop::Name, "StrikeDownAttackSound")
+		.prop(reflect::prop::Comment, u8"기본공격(3타) 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mSwingAroundSound>("SwingAroundSound"_hs)
+		.prop(reflect::prop::Name, "SwingAroundSound")
+		.prop(reflect::prop::Comment, u8"휩쓸기 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mAttackRushSound>("AttackRushSound"_hs)
+		.prop(reflect::prop::Name, "AttackRushSound")
+		.prop(reflect::prop::Comment, u8"돌진 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mAttackRushReadySound>("AttackRushReadySound"_hs)
+		.prop(reflect::prop::Name, "AttackRushReadySound")
+		.prop(reflect::prop::Comment, u8"돌진 사운드(사운드 클립키)")
+
 		.data<&BerserkerArmour::mLeftAttackHitSound>("LeftAttackHitSound"_hs)
 		.prop(reflect::prop::Name, "LeftAttackHitSound")
 		.prop(reflect::prop::Comment, u8"기본공격(1타)로 피해 입을 시 사운드(사운드 클립키)")
@@ -420,12 +521,15 @@ void fq::client::RegisterMetaData()
 		.data<&BerserkerArmour::mSwingAroundCoolTime>("mSwingAroundCoolTime"_hs)
 		.prop(reflect::prop::Name, "mSwingAroundCoolTime")
 		.prop(reflect::prop::Comment, u8"휩쓸기(A 버튼) 쿨타임")
+		.data<&BerserkerArmour::mSwingAroundCoolTimeReduction>("SwingAroundCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "SwingAroundCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버시 휩쓸기(A 버튼) 쿨타임 감소량")
 		.data<&BerserkerArmour::mRushCoolTime>("RushCoolTime"_hs)
 		.prop(reflect::prop::Name, "RushCoolTime")
 		.prop(reflect::prop::Comment, u8"돌진(R 스틱) 쿨타임")
-		.data<&BerserkerArmour::mRushCoolTime>("RushCoolTime"_hs)
-		.prop(reflect::prop::Name, "RushCoolTime")
-		.prop(reflect::prop::Comment, u8"돌진(R 스틱) 쿨타임")
+		.data<&BerserkerArmour::mRushCoolTimeReduction>("RushCoolTimeReduction"_hs)
+		.prop(reflect::prop::Name, "RushCoolTimeReduction")
+		.prop(reflect::prop::Comment, u8"피버시 돌진(R 스틱) 쿨타임 감소량")
 		.data<&BerserkerArmour::mTargetPosRatio>("Pushed Back Ratio"_hs)
 		.prop(reflect::prop::Name, "Pushed Back Ratio")
 		.prop(reflect::prop::Comment, u8"기본 공격 시 뒤로 밀리는 비율")
@@ -469,11 +573,41 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "OnRotation")
 		.base<game_module::IStateBehaviour>();
 
+	entt::meta<PlayerLowerMovementState>()
+		.type("PlayerLowerMovementState"_hs)
+		.prop(reflect::prop::Name, "PlayerLowerMovementState")
+		.data<&PlayerLowerMovementState::mbOnEnterToLowerMovement>("OnEnterToLowerMovement"_hs)
+		.prop(reflect::prop::Name, "OnEnterToLowerMovement")
+		.data<&PlayerLowerMovementState::mbOffExitToLowerMovement>("OffExitToLowerMovement"_hs)
+		.prop(reflect::prop::Name, "OffExitToLowerMovement")
+		.base<game_module::IStateBehaviour>();
+
+
 	entt::meta<PlayerMovementSoundState>()
 		.type("PlayerMovementSoundState"_hs)
 		.prop(reflect::prop::Name, "PlayerMovementSoundState")
 		.data<&PlayerMovementSoundState::mWalkSoundTurm>("WalkSoundTurm"_hs)
 		.prop(reflect::prop::Name, "WalkSoundTurm")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<PlayerSoundState>()
+		.type("PlayerSoundState"_hs)
+		.prop(reflect::prop::Name, "PlayerSoundState")
+		.data<&PlayerSoundState::mbIsPlayLoop>("IsPlayLoop"_hs)
+		.prop(reflect::prop::Name, "IsPlayLoop")
+		.prop(reflect::prop::Comment, u8"반복 재생 여부")
+		.data<&PlayerSoundState::mbIsPlayStateEnter>("IsPlayStateEnter"_hs)
+		.prop(reflect::prop::Name, "IsPlayStateEnter")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
+		.data<&PlayerSoundState::mSoundTurm>("SoundTurm"_hs)
+		.prop(reflect::prop::Name, "SoundTurm")
+		.prop(reflect::prop::Comment, u8"반복 재생 시간")
+		.data<&PlayerSoundState::mbUseRandomPlay>("UseRandomPlay"_hs)
+		.prop(reflect::prop::Name, "UseRandomPlay")
+		.prop(reflect::prop::Comment, u8"랜덤 재생 여부, off 시 순차적으로 사운드 재생")
+		.data<&PlayerSoundState::mSoundNames>("mSoundNames"_hs)
+		.prop(reflect::prop::Name, "mSoundNames")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<MagicBallAttackState>()
@@ -502,6 +636,11 @@ void fq::client::RegisterMetaData()
 	entt::meta<ShieldDashState>()
 		.type("ShiedlDashState"_hs)
 		.prop(reflect::prop::Name, "ShiedlDashState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<ShieldBlockState>()
+		.type("ShieldBlockState"_hs)
+		.prop(reflect::prop::Name, "ShieldBlockState")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<SwordAttackState>()
@@ -543,12 +682,12 @@ void fq::client::RegisterMetaData()
 	entt::meta<BowDashState>()
 		.type("BowDashState"_hs)
 		.prop(reflect::prop::Name, "BowDashState")
-		.data<&BowDashState::mMaxSpeed>("MaxSpeed"_hs)
+		.data<&BowDashState::mMaxSpeedMultiplier>("MaxSpeed"_hs)
 		.prop(reflect::prop::Name, "MaxSpeed")
-		.prop(fq::reflect::prop::Comment, u8"최대로 늘어날 스피드")
-		.data<&BowDashState::mMinSpeed>("MinSpeed"_hs)
+		.prop(fq::reflect::prop::Comment, u8"최대로 늘어날 스피드 배수")
+		.data<&BowDashState::mMinSpeedMultiplier>("MinSpeed"_hs)
 		.prop(reflect::prop::Name, "MinSpeed")
-		.prop(fq::reflect::prop::Comment, u8"최소 스피드")
+		.prop(fq::reflect::prop::Comment, u8"최소 스피드 배수")
 		.data<&BowDashState::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(reflect::prop::Name, "RotationSpeed")
 		.prop(fq::reflect::prop::Comment, u8"회전 스피드")
@@ -574,6 +713,15 @@ void fq::client::RegisterMetaData()
 		.data<&BowStrongChargingState::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(reflect::prop::Name, "RotationSpeed")
 		.prop(fq::reflect::prop::Comment, u8"회전 속도")
+		.data<&BowStrongChargingState::mForcedChargingWaitingTime>("ForcedChargingWaitingTime"_hs)
+		.prop(reflect::prop::Name, "ForcedChargingWaitingTime")
+		.prop(fq::reflect::prop::Comment, u8"강제 차징 대기 시간")
+		.data<&BowStrongChargingState::mChargingWationTime>("ChargingWationTime"_hs)
+		.prop(reflect::prop::Name, "ChargingWationTime")
+		.prop(fq::reflect::prop::Comment, u8"다음 단계로 가기 위한 대기 시간")
+		.data<&BowStrongChargingState::mStringAttackIndex>("StringAttackIndex"_hs)
+		.prop(reflect::prop::Name, "StringAttackIndex")
+		.prop(fq::reflect::prop::Comment, u8"강공격 단계 (1 ~ 4)")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<EBerserkerAttackType>()
@@ -662,6 +810,9 @@ void fq::client::RegisterMetaData()
 		.data<&BerserkerRushChargingState::mChargingMinimumTime>("ChargingMinimumTime"_hs)
 		.prop(reflect::prop::Name, "ChargingMinimumTime")
 		.prop(fq::reflect::prop::Comment, u8"Rush 상태 진입을 위한 최소 차징 시간")
+		.data<&BerserkerRushChargingState::mRotationSpeed>("RotationSpeed"_hs)
+		.prop(reflect::prop::Name, "RotationSpeed")
+		.prop(fq::reflect::prop::Comment, u8"회진 속도, 현재방향에서 패드 방향까지 전환에 적용될 시간, 소요시간 : 1 / speed")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -862,12 +1013,37 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.data<&BossMonster::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "RotationSpeed")
+		.data<&BossMonster::mSecondComboAttackRatio>("SecondComboAttackRatio"_hs)
+		.prop(fq::reflect::prop::Name, "SecondComboAttackRatio")
+		.prop(fq::reflect::prop::Comment, u8"콤보 공격에서 2타만 사용하는 확률 0 ~ 1")
+		.data<&BossMonster::mMinWaitAttackTime>("MinWaitAttackTime"_hs)
+		.prop(fq::reflect::prop::Name, "minWaitAttackTime")
+		.prop(fq::reflect::prop::Comment, u8"공격하고 대기하는 최소 시간")
+		.data<&BossMonster::mMaxWaitAttackTime>("MaxWaitAttackTime"_hs)
+		.prop(fq::reflect::prop::Name, "MaxWaitAttackTime")
+		.prop(fq::reflect::prop::Comment, u8"공격하고 대기하는 최대 시간")
 		.data<&BossMonster::mGroggyIncreaseRatio>("GroggyIncreaseRatio"_hs)
 		.prop(fq::reflect::prop::Name, "GroggyIncreaseRatio")
 		.prop(fq::reflect::prop::Comment, u8"피격시 대미지 비례 그로기 게이지 증가량")
 		.data<&BossMonster::mGroggyDecreasePerSecond>("GroggyDecreasePerSecond"_hs)
 		.prop(fq::reflect::prop::Name, "GroggyDecreasePerSecond")
 		.prop(fq::reflect::prop::Comment, u8"초당 그로기 게이지 감소량")
+
+		.data<&BossMonster::mRushProbability>("RushProbability"_hs)
+		.prop(fq::reflect::prop::Name, "RushProbability")
+		.prop(fq::reflect::prop::Comment, u8"러쉬 패턴 확률\n확률합계는 1.f 이하이고 남은 확률은 콤보 공격 확률이 됩니다")
+		.data<&BossMonster::mSmashProbability>("SmashProbability"_hs)
+		.prop(fq::reflect::prop::Name, "SmashProbability")
+		.prop(fq::reflect::prop::Comment, u8"내려찍기 패턴 확률 ")
+		.data<&BossMonster::mRoarProbability>("RoarProbability"_hs)
+		.prop(fq::reflect::prop::Name, "RoarProbability")
+		.prop(fq::reflect::prop::Comment, u8"로어 패턴 확률")
+		.data<&BossMonster::mContinousProbability>("ContinousProbability"_hs)
+		.prop(fq::reflect::prop::Name, "ContinousProbability")
+		.prop(fq::reflect::prop::Comment, u8"연속 공격 패턴 확률")
+		.data<&BossMonster::mEatProbability>("EatProbability"_hs)
+		.prop(fq::reflect::prop::Name, "EatProbability")
+		.prop(fq::reflect::prop::Comment, u8"먹기 패턴 확률")
 		.data<&BossMonster::mSmashDownAttack>("SmashDownAttack"_hs)
 		.prop(fq::reflect::prop::Name, "SmashDownAttack")
 		.data<&BossMonster::mSmashDownEffect>("SmashDownEffect"_hs)
@@ -940,6 +1116,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BossMonsterComboAttackState")
 		.data<&BossMonsterComboAttackState::mEmitAttackTime>("EmitAttackTime"_hs)
 		.prop(fq::reflect::prop::Name, "EmitAttackTime")
+		.data<&BossMonsterComboAttackState::mXAxisOffset>("XAxisOffset"_hs)
+		.prop(fq::reflect::prop::Name, "XAxisOffset")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<BossMonsterPrepareAttackState>()
@@ -956,6 +1134,36 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "GroggyTime")
 		.base<fq::game_module::IStateBehaviour>();
 
+	entt::meta<BossMonsterEatState>()
+		.type("BossMonsterEatState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterEatState")
+		.data<&BossMonsterEatState::mEatTime>("EatTime"_hs)
+		.prop(fq::reflect::prop::Name, "EatTime")
+		.data<&BossMonsterEatState::mRecoverHp>("RecoverHp"_hs)
+		.prop(fq::reflect::prop::Name, "RecoverHp")
+		.prop(fq::reflect::prop::Comment, u8"초당 HP 회복량")
+		.data<&BossMonsterEatState::mRimLightColor>("RimLightColor"_hs)
+		.prop(fq::reflect::prop::Name, "RimLightColor")
+		.prop(fq::reflect::prop::Comment, u8"체력회복시 림라이트 색깔")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterRoarState>()
+		.type("BossMonsterRoarState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterRoarState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterContinousState>()
+		.type("BossMonsterContinousState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterContinousState")
+		.data<&BossMonsterContinousState::mAttackDuration>("AttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "AttackDuration")
+		.prop(fq::reflect::prop::Comment, u8"공격 지속시간")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterPreContinousState>()
+		.type("BossMonsterPreContinousState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterPreContinousState")
+		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//
@@ -1121,6 +1329,9 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Attack")
 		.data<&Attack::mDestroyTime>("DestroyTime"_hs)
 		.prop(fq::reflect::prop::Name, "DestroyTime")
+		.data<&Attack::mAttackEffectEvent>("HitEffect"_hs)
+		.prop(fq::reflect::prop::Name, "HitEffect")
+		.prop(fq::reflect::prop::Comment, u8"해당 공격에 피격 시 발생할 StateEvent 이펙트 이름")
 		.base<fq::game_module::Component>();
 
 	entt::meta<LinearAttack>()
@@ -1128,24 +1339,35 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "LinearAttack")
 		.base<fq::game_module::Component>();
 
-	entt::meta<ArcAttack>()
-		.type("ArcAttack"_hs)
-		.prop(fq::reflect::prop::Name, "ArcAttack")
-		.data<&ArcAttack::mDestroyTime>("DestroyTime"_hs)
+	entt::meta<PlantAOEAttack>()
+		.type("PlantAOEAttack"_hs)
+		.prop(fq::reflect::prop::Name, "PlantAOEAttack")
+		.data<&PlantAOEAttack::mDestroyTime>("DestroyTime"_hs)
 		.prop(fq::reflect::prop::Name, "DestroyTime")
 		.prop(fq::reflect::prop::Comment, u8"범위 공격이 없어지는 시간")
-		.data<&ArcAttack::mMinArrivalTime>("MinArrivalTime"_hs)
+		.data<&PlantAOEAttack::mMinArrivalTime>("MinArrivalTime"_hs)
 		.prop(fq::reflect::prop::Name, "MinArrivalTime")
 		.prop(fq::reflect::prop::Comment, u8"최소 도착 시간")
-		.data<&ArcAttack::mMaxArrivalTime>("MaxArrivalTime"_hs)
+		.data<&PlantAOEAttack::mMaxArrivalTime>("MaxArrivalTime"_hs)
 		.prop(fq::reflect::prop::Name, "MaxArrivalTime")
 		.prop(fq::reflect::prop::Comment, u8"최대 도착 시간")
-		.data<&ArcAttack::mAOEAttackSplashEffectPrefeb>("AOEAttackSplashEffectPrefeb"_hs)
+		.data<&PlantAOEAttack::mPoisonDamage>("PoisonDamage"_hs)
+		.prop(fq::reflect::prop::Name, "PoisonDamage")
+		.prop(fq::reflect::prop::Comment, u8"독 데미지")
+		.data<&PlantAOEAttack::mPoisonTurm>("PoisonTurm"_hs)
+		.prop(fq::reflect::prop::Name, "PoisonTurm")
+		.prop(fq::reflect::prop::Comment, u8"독 데미지 받는 시간 딜레이")
+		.data<&PlantAOEAttack::mAOEAttackSplashEffectPrefeb>("AOEAttackSplashEffectPrefeb"_hs)
 		.prop(fq::reflect::prop::Name, "AOEAttackSplashEffectPrefeb")
 		.prop(fq::reflect::prop::Comment, u8"스플래쉬 이펙트 프리펩 경로")
-		.data<&ArcAttack::mAOEAttackPoolEffectPrefeb>("mAOEAttackPoolEffectPrefeb"_hs)
+		.data<&PlantAOEAttack::mAOEAttackPoolEffectPrefeb>("mAOEAttackPoolEffectPrefeb"_hs)
 		.prop(fq::reflect::prop::Name, "mAOEAttackPoolEffectPrefeb")
 		.prop(fq::reflect::prop::Comment, u8"풀 이펙트 프리펩 경로")
+		.base<fq::game_module::Component>();
+
+	entt::meta<DebuffPoisonZone>()
+		.type("DebuffPoisonZone"_hs)
+		.prop(fq::reflect::prop::Name, "DebuffPoisonZone")
 		.base<fq::game_module::Component>();
 
 	entt::meta<ArrowAttack>()
@@ -1176,6 +1398,11 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Attack")
 		.base<fq::game_module::Component>();
 
+	entt::meta<AttackInvalidation>()
+		.type("AttackInvalidation"_hs)
+		.prop(fq::reflect::prop::Name, "AttackInvalidation")
+		.base<fq::game_module::Component>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             UI										//
@@ -1185,7 +1412,7 @@ void fq::client::RegisterMetaData()
 		.type("HpBar"_hs)
 		.prop(fq::reflect::prop::Name, "HpBar")
 		.prop(fq::reflect::prop::Label, "UI")
-		.data<&HpBar::mIsVisible>("IsVisible"_hs)
+		.data<&HpBar::mbIsVisible>("IsVisible"_hs)
 		.prop(fq::reflect::prop::Name, "IsVisible")
 		.data<&HpBar::mBarSize>("BarSize"_hs)
 		.prop(fq::reflect::prop::Name, "BarSize")
@@ -1203,6 +1430,26 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "InnerOffset")
 		.prop(fq::reflect::prop::Comment, u8"Bar 외부와 내부의 크기 차이")
 		.base<fq::game_module::Component>();
+
+	entt::meta<GaugeBar>()
+		.type("GaugeBar"_hs)
+		.prop(fq::reflect::prop::Name, "GaugeBar")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&GaugeBar::mbIsVisible>("IsVisible"_hs)
+		.prop(fq::reflect::prop::Name, "IsVisible")
+		.data<&GaugeBar::mBarSize>("BarSize"_hs)
+		.prop(fq::reflect::prop::Name, "BarSize")
+		.data<&GaugeBar::mWorldOffset>("WorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldOffset")
+		.prop(fq::reflect::prop::Comment, u8"월드 공간의 Y를 더한후 UI 위치 계산")
+		.data<&GaugeBar::mScreenOffset>("ScreenOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ScreenOffset")
+		.prop(fq::reflect::prop::Comment, u8"Screen 공간의 Y를 더한후 UI 위치 계산")
+		.data<&GaugeBar::mInnerOffset>("InnerOffset"_hs)
+		.prop(fq::reflect::prop::Name, "InnerOffset")
+		.prop(fq::reflect::prop::Comment, u8"Bar 외부와 내부의 크기 차이")
+		.base<fq::game_module::Component>();
+
 
 	entt::meta<PlayerUI>()
 		.type("PlayerUI"_hs)
@@ -1234,8 +1481,8 @@ void fq::client::RegisterMetaData()
 		.data<&PauseUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
 		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
-		.data<&PauseUI::mRepauseUIPrefab>("ResourceUIPrefab"_hs)
-		.prop(fq::reflect::prop::Name, "ResourceUIPrefab")
+		.data<&PauseUI::mRepauseUIPrefab>("RepauseUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "RepauseUIPrefab")
 		.data<&PauseUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
 		.base<fq::game_module::Component>();
@@ -1274,12 +1521,28 @@ void fq::client::RegisterMetaData()
 		.type("SoulSelectUI"_hs)
 		.prop(fq::reflect::prop::Name, "SoulSelectUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.data<&SoulSelectUI::mSoulPrefab>("SoulPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SoulPrefab")
+		.data<&SoulSelectUI::mMagicSymbolPrefab>("MagicSymbolPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "MagicSymbolPrefab")
+		.data<&SoulSelectUI::mSoulMoveSpeed>("SoulMoveSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "SoulMoveSpeed")
+		.prop(fq::reflect::prop::Comment, u8"레디 때 소환된 영혼 이동 속도")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SettingUI>()
 		.type("SettingUI"_hs)
 		.prop(fq::reflect::prop::Name, "SettingUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.data<&SettingUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&SettingUI::mGameSettingPrefab>("GameSettingPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "GameSettingPrefab")
+		.data<&SettingUI::mVideoSettingPrefab>("VideoSettingPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "VideoSettingPrefab")
+		.data<&SettingUI::mAudioSettingPrefab>("AudioSettingPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "AudioSettingPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<RepauseUI>()
@@ -1292,6 +1555,89 @@ void fq::client::RegisterMetaData()
 		.type("ResultUI"_hs)
 		.prop(fq::reflect::prop::Name, "ResultUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ResetPopupUI>()
+		.type("ResetPopupUI"_hs)
+		.prop(fq::reflect::prop::Name, "ResetPopupUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<SavePopupUI>()
+		.type("SavePopupUI"_hs)
+		.prop(fq::reflect::prop::Name, "SavePopupUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<AudioSettingUI>()
+		.type("AudioSettingUI"_hs)
+		.prop(fq::reflect::prop::Name, "AudioSettingUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&AudioSettingUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&AudioSettingUI::mResetMessagePrefab>("ResetMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ResetMessagePrefab")
+		.data<&AudioSettingUI::mSaveMessagePrefab>("SaveMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SaveMessagePrefab")
+		.data<&AudioSettingUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<GameSettingUI>()
+		.type("GameSettingUI"_hs)
+		.prop(fq::reflect::prop::Name, "GameSettingUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&GameSettingUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&GameSettingUI::mResetMessagePrefab>("ResetMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ResetMessagePrefab")
+		.data<&GameSettingUI::mSaveMessagePrefab>("SaveMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SaveMessagePrefab")
+		.data<&GameSettingUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<VideoSettingUI>()
+		.type("VideoSettingUI"_hs)
+		.prop(fq::reflect::prop::Name, "VideoSettingUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&VideoSettingUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&VideoSettingUI::mResetMessagePrefab>("ResetMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ResetMessagePrefab")
+		.data<&VideoSettingUI::mSaveMessagePrefab>("SaveMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SaveMessagePrefab")
+		.data<&VideoSettingUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<SpeechBubbleUI>()
+		.type("SpeechBubbleUI"_hs)
+		.prop(fq::reflect::prop::Name, "SpeechBubbleUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&SpeechBubbleUI::mName>("Name"_hs)
+		.prop(fq::reflect::prop::Name, "Name")
+		.data<&SpeechBubbleUI::mWorldOffset>("WorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldOffset")
+		.data<&SpeechBubbleUI::mScreenOffset>("ScreenOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ScreenOffset")
+		.data<&SpeechBubbleUI::mPlaytime>("Playtime"_hs)
+		.prop(fq::reflect::prop::Name, "Playtime")
+		.base<fq::game_module::Component>();
+
+	entt::meta<BGaugeUI>()
+		.type("BGaugeUI"_hs)
+		.prop(fq::reflect::prop::Name, "BGaugeUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&BGaugeUI::mWorldOffset>("WorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldOffset")
+		.data<&BGaugeUI::mGaugeSize>("GaugeSize"_hs)
+		.prop(fq::reflect::prop::Name, "GaugeSize")
+		.data<&BGaugeUI::mGaugeRatio>("GaugeRatio"_hs)
+		.prop(fq::reflect::prop::Name, "GaugeRatio")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1518,6 +1864,24 @@ void fq::client::RegisterMetaData()
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
+	//                             Player Type								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<EPlayerType>()
+		.prop(fq::reflect::prop::Name, "PlayerType")
+		.conv<std::underlying_type_t<EPlayerType>>()
+		.data<EPlayerType::None>("None"_hs)
+		.prop(fq::reflect::prop::Name, "None")
+		.data<EPlayerType::LivingArmour>("LivingArmour"_hs)
+		.prop(fq::reflect::prop::Name, "LivingArmour")
+		.data<EPlayerType::ArmourDestroyed>("ArmourDestroyed"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourDestroyed")
+		.data<EPlayerType::Soul>("Soul"_hs)
+		.prop(fq::reflect::prop::Name, "Soul")
+		.data<EPlayerType::SoulDestoryed>("SoulDestoryed"_hs)
+		.prop(fq::reflect::prop::Name, "SoulDestoryed");
+
+	//////////////////////////////////////////////////////////////////////////
 	//                            Game Variable								//
 	//////////////////////////////////////////////////////////////////////////
 
@@ -1623,10 +1987,22 @@ void fq::client::RegisterMetaData()
 		.data<&SettingVariable::SFXVolume>("SFXVolume"_hs)
 		.prop(fq::reflect::prop::Name, "SFXVolume")
 
+		.data<&SettingVariable::MuteMasterVolume>("MuteMasterVolume"_hs)
+		.prop(fq::reflect::prop::Name, "MuteMasterVolume")
+		.data<&SettingVariable::MuteBGMVolume>("MuteBGMVolume"_hs)
+		.prop(fq::reflect::prop::Name, "MuteBGMVolume")
+		.data<&SettingVariable::MuteSFXVolume>("MuteSFXVolume"_hs)
+		.prop(fq::reflect::prop::Name, "MuteSFXVolume")
+		.data<&SettingVariable::MuteVoiceVolume>("MuteVoiceVolume"_hs)
+		.prop(fq::reflect::prop::Name, "MuteVoiceVolume")
+
 		.data<&SettingVariable::IsVibe>("IsVibe"_hs)
 		.prop(fq::reflect::prop::Name, "IsVibe")
 		.data<&SettingVariable::IsUsedAimAssist>("IsUsedAimAssist"_hs)
 		.prop(fq::reflect::prop::Name, "IsUsedAimAssist")
+		.data<&SettingVariable::IsAllowOtherPlayerAttack>("IsAllowOtherPlayerAttack"_hs)
+		.prop(fq::reflect::prop::Name, "IsAllowOtherPlayerAttack")
+
 		.data<&SettingVariable::ArmourSpawnDistance>("ArmourSpawnDistance"_hs)
 		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
 		.data<&SettingVariable::IsUseCameraInit>("IsUseCameraInit"_hs)
@@ -1640,11 +2016,16 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "FeverAttackIncreaseRatio")
 		.data<&PlayerVariable::FeverSpeedIncreaseRatio>("FeverSpeedIncreaseRatio"_hs)
 		.prop(fq::reflect::prop::Name, "FeverSpeedIncreaseRatio")
+		.data<&PlayerVariable::HpReductionOnAttack>("HpReductionOnAttack"_hs)
+		.prop(fq::reflect::prop::Name, "HpReductionOnAttack")
+		.data<&PlayerVariable::HpReductionOnAttackMinHp>("HpReductionOnAttackMinHp"_hs)
+		.prop(fq::reflect::prop::Name, "HpReductionOnAttackMinHp")
 		.base<IGameVariable>();
 
 	entt::meta<PlayerInfoVariable>()
 		.type("PlayerInfoVariable"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerInfoVariable")
+
 		.data<&PlayerInfoVariable::Player1SoulType>("Player1SoulType"_hs)
 		.prop(fq::reflect::prop::Name, "Player1SoulType")
 		.data<&PlayerInfoVariable::Player2SoulType>("Player2SoulType"_hs)
@@ -1653,6 +2034,15 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Player3SoulType")
 		.data<&PlayerInfoVariable::Player4SoulType>("Player4SoulType"_hs)
 		.prop(fq::reflect::prop::Name, "Player4SoulType")
+
+		.data<&PlayerInfoVariable::Player1SoulType>("Player1State"_hs)
+		.prop(fq::reflect::prop::Name, "Player1State")
+		.data<&PlayerInfoVariable::Player2SoulType>("Player2State"_hs)
+		.prop(fq::reflect::prop::Name, "Player2State")
+		.data<&PlayerInfoVariable::Player3SoulType>("Player3State"_hs)
+		.prop(fq::reflect::prop::Name, "Player3State")
+		.data<&PlayerInfoVariable::Player4SoulType>("Player4State"_hs)
+		.prop(fq::reflect::prop::Name, "Player4State")
 
 		.data<&PlayerInfoVariable::Player1HP>("Player1HP"_hs)
 		.prop(fq::reflect::prop::Name, "Player1HP")
@@ -1716,6 +2106,104 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Player3Monster")
 		.data<&PlayerInfoVariable::Player4Monster>("Player4Monster"_hs)
 		.prop(fq::reflect::prop::Name, "Player4Monster")
+		.base<IGameVariable>();
+
+	entt::meta<SoulVariable>()
+		.type("SoulVariable"_hs)
+		.prop(fq::reflect::prop::Name, "SoulVariable")
+		.data<&SoulVariable::ButtonTime>("ButtonTime"_hs)
+		.prop(fq::reflect::prop::Name, "ButtonTime")
+		.prop(reflect::prop::Comment, u8"영혼 이탈 시간")
+		.data<&SoulVariable::OutTime>("OutTime"_hs)
+		.prop(fq::reflect::prop::Name, "OutTime")
+		.prop(reflect::prop::Comment, u8"갑옷 파괴 시, 게임 아웃 시간")
+		.data<&SoulVariable::HpPercent>("HpPercent"_hs)
+		.prop(fq::reflect::prop::Name, "HpPercent")
+		.prop(reflect::prop::Comment, u8"갑옷 입고 있는 상태에서 이탈할 시에 갑옷 생성할 수 있는 최소 HP")
+
+		.data<&SoulVariable::SoulMaxHp>("SoulMaxHp"_hs)
+		.prop(fq::reflect::prop::Name, "SoulMaxHp")
+		.prop(reflect::prop::Comment, u8"소울의 HP 최대치")
+		.data<&SoulVariable::SoulMinHp>("SoulMinHp"_hs)
+		.prop(fq::reflect::prop::Name, "SoulMinHp")
+		.prop(reflect::prop::Comment, u8"사망 시 영혼 최대 체력이 줄어드는데, 일정 사망 횟수 이상에서도 최소 HP값에 도달하면 최대 HP값이 줄어들지 않는 변수")
+		.data<&SoulVariable::SoulHpDown>("SoulHpDown"_hs)
+		.prop(fq::reflect::prop::Name, "SoulHpDown")
+		.prop(reflect::prop::Comment, u8"영혼 파괴 시, 최대 체력 감소량")
+		.data<&SoulVariable::SoulHpDecreas>("SoulHpDecreas"_hs)
+		.prop(fq::reflect::prop::Name, "SoulHpDecreas")
+		.prop(reflect::prop::Comment, u8"초당 HP가 감소하는 양")
+		.data<&SoulVariable::SoulDistance>("SoulDistance"_hs)
+		.prop(fq::reflect::prop::Name, "SoulDistance")
+		.prop(reflect::prop::Comment, u8"영혼 HP 피해 감소 및 영혼의 갑옷 버프 사정거리")
+		.data<&SoulVariable::SoulDecreasPercentage>("SoulDecreasPercentage"_hs)
+		.prop(fq::reflect::prop::Name, "SoulDecreasPercentage")
+		.prop(reflect::prop::Comment, u8"사정거리 안에 갑옷 플레이어가 있을 때, HP 피해 감소량")
+
+		.data<&SoulVariable::SpeedUpRatio>("SpeedUp"_hs)
+		.prop(fq::reflect::prop::Name, "SpeedUp")
+		.prop(reflect::prop::Comment, u8"플레이어 이동속도 증가량")
+		.data<&SoulVariable::DamageUpRatio>("DamageUp"_hs)
+		.prop(fq::reflect::prop::Name, "DamageUp")
+		.prop(reflect::prop::Comment, u8"플레이어 공격력 증가량")
+
+		.data<&SoulVariable::Player1Type>("Player1Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player1Type")
+		.data<&SoulVariable::Player1DeathCount>("Player1DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player1DeathCount")
+		.data<&SoulVariable::Player2Type>("Player2Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Type")
+		.data<&SoulVariable::Player2DeathCount>("Player2DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player2DeathCount")
+		.data<&SoulVariable::Player3Type>("Player3Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Type")
+		.data<&SoulVariable::Player3DeathCount>("Player3DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player3DeathCount")
+		.data<&SoulVariable::Player4Type>("Player4Type"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Type")
+		.data<&SoulVariable::Player4DeathCount>("Player4DeathCount"_hs)
+		.prop(fq::reflect::prop::Name, "Player4DeathCount")
+		.base<IGameVariable>();
+
+	entt::meta<LevelVariable>()
+		.type("LevelVariable"_hs)
+		.prop(fq::reflect::prop::Name, "LevelVariable")
+		.data<&LevelVariable::EasyDamage>("EasyDamage"_hs)
+		.prop(fq::reflect::prop::Name, "EasyDamage")
+		.data<&LevelVariable::EasyHp>("EasyHp"_hs)
+		.prop(fq::reflect::prop::Name, "EasyHp")
+
+		.data<&LevelVariable::NormalDamage>("NormalDamage"_hs)
+		.prop(fq::reflect::prop::Name, "NormalDamage")
+		.data<&LevelVariable::NormalHp>("NormalHp"_hs)
+		.prop(fq::reflect::prop::Name, "NormalHp")
+
+		.data<&LevelVariable::HardDamage>("HardDamage"_hs)
+		.prop(fq::reflect::prop::Name, "HardDamage")
+		.data<&LevelVariable::HardHp>("HardHp"_hs)
+		.prop(fq::reflect::prop::Name, "HardHp")
+
+		.data<&LevelVariable::Player2Damage>("Player2Damage"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Damage")
+		.data<&LevelVariable::Player2Hp>("Player2Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Hp")
+		.data<&LevelVariable::Player2Spawn>("Player2Spawn"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Spawn")
+
+		.data<&LevelVariable::Player3Damage>("Player3Damage"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Damage")
+		.data<&LevelVariable::Player3Hp>("Player3Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Hp")
+		.data<&LevelVariable::Player3Spawn>("Player3Spawn"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Spawn")
+
+		.data<&LevelVariable::Player4Damage>("Player4Damage"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Damage")
+		.data<&LevelVariable::Player4Spawn>("Player4Spawn"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Spawn")
+		.data<&LevelVariable::Player4Hp>("Player4Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Hp")
+
 		.base<IGameVariable>();
 	//////////////////////////////////////////////////////////////////////////
 	//								  Box									//
@@ -1781,6 +2269,24 @@ void fq::client::RegisterMetaData()
 		.data<&ObjectLive::ObjectOrPrefabName>("ObjectOrPrefabName"_hs)
 		.prop(fq::reflect::prop::Name, "ObjectOrPrefabName");
 
+	entt::meta<InProgressQuest>()
+		.type("InProgressQuest"_hs)
+		.prop(fq::reflect::prop::Name, "InProgressQuest")
+		.prop(fq::reflect::prop::POD)
+		.data<&InProgressQuest::isMain>("isMain"_hs)
+		.prop(fq::reflect::prop::Name, "isMain")
+		.data<&InProgressQuest::QuestIndex>("QuestIndex"_hs)
+		.prop(fq::reflect::prop::Name, "QuestIndex");
+
+	entt::meta<InProgressDefence>()
+		.type("InProgressDefence"_hs)
+		.prop(fq::reflect::prop::Name, "InProgressDefence")
+		.prop(fq::reflect::prop::POD)
+		.data<&InProgressDefence::ColliderName>("ColliderName"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderName")
+		.data<&InProgressDefence::Count>("Count"_hs)
+		.prop(fq::reflect::prop::Name, "Count");
+
 	entt::meta<SpawnCondition>()
 		.type("SpawnCondition"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnCondition")
@@ -1792,20 +2298,31 @@ void fq::client::RegisterMetaData()
 		.data<&SpawnCondition::TimerList>("TimerList"_hs)
 		.prop(fq::reflect::prop::Name, "TimerList")
 		.data<&SpawnCondition::ObjectLiveList>("ObjectLiveList"_hs)
-		.prop(fq::reflect::prop::Name, "ObjectLiveList");
+		.prop(fq::reflect::prop::Name, "ObjectLiveList")
+		.data<&SpawnCondition::InProgressQuestList>("InProgressQuestList"_hs)
+		.prop(fq::reflect::prop::Name, "InProgressQuestList")
+		.data<&SpawnCondition::InProgressDefenceList>("InProgressDefenceList"_hs)
+		.prop(fq::reflect::prop::Name, "InProgressDefenceList");
+
+	entt::meta<SpawnData>()
+		.type("SpawnData"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnData")
+		.prop(fq::reflect::prop::POD)
+		.data<&SpawnData::MonsterType>("MonsterType"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterType")
+		.data<&SpawnData::Name>("Name"_hs)
+		.prop(fq::reflect::prop::Name, "Name")
+		.data<&SpawnData::SpawnerNum>("SpawnerNum"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnerNum")
+		.data<&SpawnData::SpawnMonsterNum>("SpawnMonsterNum"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnMonsterNum");
 
 	entt::meta<SpawnRule>()
 		.type("SpawnRule"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnRule")
 		.prop(fq::reflect::prop::POD)
-		.data<&SpawnRule::MonsterType>("MonsterType"_hs)
-		.prop(fq::reflect::prop::Name, "MonsterType")
-		.data<&SpawnRule::Name>("Name"_hs)
-		.prop(fq::reflect::prop::Name, "Name")
-		.data<&SpawnRule::SpawnerNum>("SpawnerNum"_hs)
-		.prop(fq::reflect::prop::Name, "SpawnerNum")
-		.data<&SpawnRule::SpawnMonsterNum>("SpawnMonsterNum"_hs)
-		.prop(fq::reflect::prop::Name, "SpawnMonsterNum");
+		.data<&SpawnRule::spawnData>("SpawnData"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnData");
 
 	entt::meta<SpawnRules>()
 		.type("SpawnRules"_hs)

@@ -14,7 +14,7 @@ fq::client::HpBar::~HpBar()
 }
 
 fq::client::HpBar::HpBar()
-	:mIsVisible(true)
+	:mbIsVisible(true)
 	, mMainCamera(nullptr)
 	, mTransform(nullptr)
 	, mImageUI(nullptr)
@@ -52,7 +52,7 @@ void fq::client::HpBar::OnUpdate(float dt)
 	if (mDeceraseTime >= mDecreaseOffset)
 		mDecreaseRatio = std::max(mDecreaseRatio - mDecreaseSpeed * dt, 0.f);
 
-	if (!mIsVisible) return;
+	if (!mbIsVisible) return;
 
 	// UI 정도 전달 
 	setUIInfo();
@@ -60,26 +60,14 @@ void fq::client::HpBar::OnUpdate(float dt)
 
 void fq::client::HpBar::SetVisible(bool isVisible)
 {
-	mIsVisible = isVisible;
+	mbIsVisible = isVisible;
 
-	if (!mIsVisible)
+	auto infomations = mImageUI->GetUIInfomations();
+	for (int i = 0; i < 3; ++i)
 	{
-		auto infomations = mImageUI->GetUIInfomations();
-		for (int i = 0; i < 3; ++i)
-		{
-			infomations[i].Alpha = 0.f;
-		}
-		mImageUI->SetUIInfomations(infomations);
+		infomations[i].isRender = isVisible;
 	}
-	else
-	{
-		auto infomations = mImageUI->GetUIInfomations();
-		for (int i = 0; i < 3; ++i)
-		{
-			infomations[i].Alpha = 1.f;
-		}
-		mImageUI->SetUIInfomations(infomations);
-	}
+	mImageUI->SetUIInfomations(infomations);
 }
 
 void fq::client::HpBar::OnStart()
@@ -104,7 +92,7 @@ void fq::client::HpBar::OnStart()
 	}
 
 	auto infomations = mImageUI->GetUIInfomations();
-	assert(infomations.size() == 3);
+	assert(infomations.size() > 2);
 
 	// OutBar
 	infomations[0].Width = mBarSize.x;
@@ -123,14 +111,14 @@ void fq::client::HpBar::OnStart()
 
 	mImageUI->SetUIInfomations(infomations);
 
-	SetVisible(mIsVisible);
+	SetVisible(mbIsVisible);
 }
 
 void fq::client::HpBar::DecreaseHp(float ratio)
 {
 	if (mHpRatio == 0.f) return;
 
-	if (!mIsVisible)
+	if (!mbIsVisible)
 	{
 		SetVisible(true);
 	}

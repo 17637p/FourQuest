@@ -18,6 +18,7 @@ namespace fq::client
 		, mChargingMinimumTime(0.5f)
 		, mChargingElapsedTime(0.f)
 		, mbPassedPoint(false)
+		, mRotationSpeed(1.f)
 	{
 	}
 
@@ -28,9 +29,6 @@ namespace fq::client
 
 	void BerserkerRushChargingState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 	{
-		// 에디터에서 이펙트 생성
-
-		// 우측 키보드로 입력을 받음
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 		controller->SetPadInputRotation(fq::game_module::EPadStickType::Right);
 		controller->SetDashInput(true);
@@ -43,12 +41,19 @@ namespace fq::client
 		{
 			playerOrNull->SetIsActiveOnHit(false);
 		}
+
+		auto berserkerArmour = animator.GetComponent<BerserkerArmour>();
+		if (berserkerArmour != nullptr)
+		{
+			berserkerArmour->EmitSound(EBerserkerSoundType::RushReady);
+		}
 	}
 
 	void BerserkerRushChargingState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 	{
 		auto input = animator.GetScene()->GetInputManager();
 		auto controller = animator.GetComponent<game_module::CharacterController>();
+		auto transform = animator.GetComponent<game_module::Transform>();
 		mChargingElapsedTime = std::min<float>(mChargingElapsedTime + dt * state.GetPlayBackSpeed(), mChargingTime);
 
 		DirectX::SimpleMath::Vector3 rightInput{};
@@ -58,7 +63,14 @@ namespace fq::client
 
 		if (rightInput.LengthSquared() >= rotationOffsetSq)
 		{
-			controller->SetPadInputRotation(fq::game_module::EPadStickType::Right);
+			rightInput.Normalize();
+			float targetYaw = atan2f(-rightInput.x, -rightInput.z); // atan2 사용으로 XZ 평면 기준 각도 계산
+
+			DirectX::SimpleMath::Quaternion inputRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(targetYaw, 0, 0);
+			DirectX::SimpleMath::Quaternion startRotation = transform->GetWorldRotation();
+			DirectX::SimpleMath::Quaternion newRotation = DirectX::SimpleMath::Quaternion::Slerp(startRotation, inputRotation, mRotationSpeed * dt);
+
+			transform->SetWorldRotation(newRotation);
 		}
 		else
 		{

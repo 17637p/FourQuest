@@ -7,6 +7,8 @@
 
 namespace fq::client
 {
+	class SoulManagerModule;
+
 	class GameManager : public fq::game_module::Component
 	{
 		using EventHandler = game_module::EventHandler;
@@ -24,6 +26,10 @@ namespace fq::client
 
 		// temp alpha
 		void SavePlayerState();
+
+		// 플레이어가 갑옷이 파괴된 상태에서 얼마가 지났는 지 시간을 반환해줍니다.
+		float GetDestoryArmourSoulDelayTime(unsigned int id);
+
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }
@@ -41,13 +47,17 @@ namespace fq::client
 		std::shared_ptr<game_module::GameObject> SpawnPlayer(fq::game_module::PrefabResource prefab, int index);
 
 	private:
+		// Player 이벤트 처리
 		EventHandler mRegisterPlayerHandler;
+		EventHandler mUpdatePlayerStateHandler;
+		EventHandler mDestroyArmourHandler;
 
 		// Pause UI Off 처리
 		EventHandler mOffPopupSettingHandler;
 		EventHandler mOffPopupPauseHandler;
 
 		std::vector<std::shared_ptr<game_module::GameObject>> mPlayers;
+		std::shared_ptr<SoulManagerModule> mSoulManagerModule;
 
 		// pause 처리
 		bool mIsStop;

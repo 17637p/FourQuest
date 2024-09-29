@@ -294,6 +294,14 @@ namespace fq::graphics
 		mPipelineState->Bind(device);
 	}
 
+	void ShaderProgram::Unbind(const std::shared_ptr<D3D11Device>& device)
+	{
+		device->GetDeviceContext()->VSSetShader(NULL, NULL, NULL);
+		device->GetDeviceContext()->GSSetShader(NULL, NULL, NULL);
+		device->GetDeviceContext()->PSSetShader(NULL, NULL, NULL);
+		device->GetDeviceContext()->CSSetShader(NULL, NULL, NULL);
+	}
+
 	void D3D11HullShader::Bind(const std::shared_ptr<D3D11Device>& device)
 	{
 		device->GetDeviceContext()->HSSetShader(mShader.Get(), NULL, NULL);

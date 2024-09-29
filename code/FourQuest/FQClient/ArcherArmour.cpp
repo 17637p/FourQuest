@@ -7,6 +7,7 @@
 #include "../FQGameModule/RigidBody.h"
 
 #include "Player.h"
+#include "PlayerVariable.h"
 #include "AimAssist.h"
 #include "ArrowAttack.h"
 #include "DamageCalculation.h"
@@ -25,7 +26,9 @@ namespace fq::client
 		, mDashCoolTime()
 		, mDashElapsedTime()
 		, mArrowPower()
-		, mOriginCharacterMaxSpeed()
+		, mDashCoolTimeReduction(0.f)
+		, mStrongAttackCoolTime(0.f)
+		, mStrongAttackCoolTimeReduction(0.f)
 	{
 	}
 
@@ -63,7 +66,6 @@ namespace fq::client
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};
 		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
-		attackInfo.strongDamage = dc::GetArcherSADamage(mPlayer->GetAttackPower());
 		attackInfo.weakProjectileVelocity = mWeakProjectileVelocity;
 		attackInfo.strongProjectileVelocity = mStrongProjectileVelocity;
 		attackInfo.attacker = GetGameObject();
@@ -71,16 +73,20 @@ namespace fq::client
 		attackInfo.attackDirection = foward;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = false;
-		attackInfo.hitSound = "A_WeakAttack_Hit";
+		attackInfo.hitSound = "A_Fastshoot_Hit";
+		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
 		attackComponent->Set(attackInfo);
 
 		// 약공격 소리
 		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_WeakAttack", false , 0 });
 
 		GetScene()->AddGameObject(attackObj);
+
+		// 공격 체력 감소
+		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 	}
 
-	void ArcherArmour::EmitStrongAttack()
+	void ArcherArmour::EmitStrongAttack(int chargeLevel)
 	{
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mStrongAttack);
 		auto& attackObj = *(instance.begin());
@@ -111,22 +117,92 @@ namespace fq::client
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};
 		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
-		attackInfo.strongDamage = dc::GetArcherSADamage(mPlayer->GetAttackPower());
 		attackInfo.weakProjectileVelocity = mWeakProjectileVelocity;
-		attackInfo.strongProjectileVelocity = mStrongProjectileVelocity;
 		attackInfo.attacker = GetGameObject();
 		attackInfo.attackDirection = foward;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = true;
-		attackInfo.remainingAttackCount = 0b11111111;
 		attackInfo.hitSound = "A_StrongAttack_Hit";
-		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_StrongAttack", false , 0 });
+		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
+
+		switch (chargeLevel)
+		{
+			case 1:
+			{
+				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 1.f;
+				attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 1.5f;
+				attackInfo.remainingAttackCount = 1;
+			}
+			break;
+			case 2:
+			{
+				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 2.f;
+				attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 2.f;
+				attackInfo.remainingAttackCount = 3;
+			}
+			break;
+			case 3:
+			{
+				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 3.f;
+				attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 3.f;
+				attackInfo.remainingAttackCount = 5;
+			}
+			break;
+			case 4:
+			{
+				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 5.f;
+				attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 5.f;
+				attackInfo.remainingAttackCount = 0b11111111;
+			}
+			break;
+			default:
+				break;
+		}
 
 		attackComponent->Set(attackInfo);
 
 		// MagicBall Attack 사운드  
-
 		GetScene()->AddGameObject(attackObj);
+
+		// 공격 체력 감소
+		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+	}
+
+	void ArcherArmour::EmitSound(EArcherSound archerSound)
+	{
+		std::string soundName;
+
+		switch (archerSound)
+		{
+		case fq::client::EArcherSound::ShootStart:
+			soundName = "A_Shoot_start";
+			break;
+		case fq::client::EArcherSound::Charge1:
+			soundName = "A_Charge_1";
+			break;
+		case fq::client::EArcherSound::Charge2:
+			soundName = "A_Charge_2";
+			break;
+		case fq::client::EArcherSound::Shoot:
+			soundName = "A_Fastshoot_end";
+			break;
+		case fq::client::EArcherSound::Fastshoot1:
+			soundName = "A_Fastshoot_1";
+			break;
+		case fq::client::EArcherSound::Fastshoot2:
+			soundName = "A_Fastshoot_2";
+			break;
+		case fq::client::EArcherSound::Fastshoot3:
+			soundName = "A_Fastshoot_3";
+			break;
+		case fq::client::EArcherSound::Rolling:
+			soundName = "A_Rolling";
+			break;
+		default:
+			break;
+		}
+
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ soundName, false , fq::sound::EChannel::SE });
 	}
 
 	std::shared_ptr<game_module::GameObject> ArcherArmour::EmitChargingEffect()
@@ -166,6 +242,9 @@ namespace fq::client
 
 		GetScene()->AddGameObject(effectObj);
 
+		// 공격 체력 감소
+		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
 		return effectObj;
 	}
 
@@ -183,8 +262,6 @@ namespace fq::client
 				break;
 			}
 		}
-
-		mOriginCharacterMaxSpeed = mController->GetMovementInfo().maxSpeed;
 	}
 
 	void ArcherArmour::OnUpdate(float dt)
@@ -197,6 +274,17 @@ namespace fq::client
 	{
 		mDashElapsedTime = std::max(0.f, mDashElapsedTime - dt);
 		mStrongAttackElapsedTime = std::max(0.f, mStrongAttackElapsedTime - dt);
+
+		if (mPlayer->IsFeverTime())
+		{
+			mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / (mDashCoolTime - mDashCoolTimeReduction));
+			mPlayer->SetXSkillCoolTimeRatio(mStrongAttackElapsedTime / (mStrongAttackCoolTime - mStrongAttackCoolTimeReduction));
+		}
+		else
+		{
+			mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / mDashCoolTime);
+			mPlayer->SetXSkillCoolTimeRatio(mStrongAttackElapsedTime / mStrongAttackCoolTime);
+		}
 	}
 
 	void ArcherArmour::checkInput(float dt)
@@ -211,14 +299,14 @@ namespace fq::client
 			&& mDashElapsedTime == 0.f)
 		{
 			mAnimator->SetParameterTrigger("OnDash");
-			mDashElapsedTime = mDashCoolTime;
+			mDashElapsedTime = mPlayer->IsFeverTime() ? mDashCoolTime - mDashCoolTimeReduction : mDashCoolTime;
 		}
 		// StrongAttack
 		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::X, EKeyState::Tap)
 			&& mStrongAttackElapsedTime == 0.f)
 		{
-			mStrongAttackElapsedTime = mStrongAttackCoolTime;
 			mAnimator->SetParameterTrigger("OnStrongAttack");
+			mStrongAttackElapsedTime = mPlayer->IsFeverTime() ? mStrongAttackCoolTime - mStrongAttackCoolTimeReduction : mStrongAttackCoolTime;
 		}
 
 		// MultiShot R Stick 조작
@@ -275,7 +363,7 @@ namespace fq::client
 				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
 			}
 		}
-	} 
+	}
 
 	void ArcherArmour::SetLookAtLStickInput(float dt, float rotationSpeed)
 	{

@@ -18,6 +18,11 @@ namespace fq::graphics
 	{
 	}
 
+	D3D11RenderManager::~D3D11RenderManager()
+	{
+		Finalize();
+	}
+
 	void D3D11RenderManager::Initialize(std::shared_ptr<D3D11Device> device,
 		std::shared_ptr<D3D11JobManager> jobManager,
 		std::shared_ptr<D3D11CameraManager> cameraManager,

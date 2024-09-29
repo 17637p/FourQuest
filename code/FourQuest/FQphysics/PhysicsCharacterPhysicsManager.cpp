@@ -81,10 +81,10 @@ namespace fq::physics
 			// 모든 링크가 제거된 후 Articulation을 Scene에서 제거합니다.
 			mScene->removeArticulation(*pxArticulation);
 			PX_RELEASE(pxArticulation);
-
-			// 컨테이너에서 해당 Articulation을 삭제합니다.
-			mCharacterPhysicsContainer.erase(articulationIter);
 		}
+
+		// 컨테이너에서 해당 Articulation을 삭제합니다.
+		mCharacterPhysicsContainer.erase(articulationIter);
 
 		return true;
 	}

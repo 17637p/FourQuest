@@ -181,6 +181,11 @@ namespace fq::physics
 		/// </summary>
 		virtual ArticulationGetData GetArticulationData(const unsigned int& id) override;
 		virtual void SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData) override;
+
+		/// <summary>
+		/// 생성된 관절 갯수를 반환합니다.
+		/// </summary>
+		virtual unsigned int GetArticulationCount() override;
 #pragma endregion
 
 #pragma region PhysicsClothManager
@@ -235,7 +240,7 @@ namespace fq::physics
 		std::shared_ptr<PhysicsSimulationEventCallback> mMyEventCallback;
 
 		// 충돌 매트릭스
-		int mCollisionMatrix[16];
+		int mCollisionMatrix[COLLISION_MATRIX_SIZE];
 
 		std::vector<physx::PxActor*> mActorsToRemove;
 	};

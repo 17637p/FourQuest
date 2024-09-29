@@ -36,6 +36,7 @@ namespace fq::graphics
 
 	class IImageObject;
 	class ITextObject;
+	class ISpriteAnimationObject;
 	/// <summary>
 	/// 일단 3D스러운 UI가 필요 없어 보여서 Direct2D로 만든다. 
 	/// 다른 게 필요하다면 그 때 만들어야지
@@ -71,12 +72,16 @@ namespace fq::graphics
 		void SetDefaultFontSize(const unsigned short fontSize);
 
 		ITextObject* CreateText(TextInfo textInfo);
-		void DeleteText(fq::graphics::ITextObject* textObject);
+		void DeleteText(ITextObject* textObject);
 
 		// Image
 		IImageObject* CreateImageObject(const UIInfo& uiInfo);
 		void AddImage(IImageObject* imageObject);
 		void DeleteImage(IImageObject* imageObject);
+
+		// Sprite Animation
+		ISpriteAnimationObject* CreateSpriteAniamtion(SpriteInfo spriteInfo);
+		void DeleteSpriteAniamtion(ISpriteAnimationObject* spriteAniamtionObject);
 
 		void SetIsRenderObjects(bool isRenderObjects) { mIsRenderObjects = isRenderObjects; }
 
@@ -87,11 +92,9 @@ namespace fq::graphics
 		void initializeImage();
 
 		void draw();
-		void drawText(fq::graphics::ITextObject* textObject);
+		void drawText(ITextObject* textObject);
 		void drawImage(IImageObject* imageObject);
-
-		void drawAllText();
-		void drawAllImage(bool isOnText);
+		void drawSpriteAnimation(ISpriteAnimationObject* spriteAnimationObject);
 
 		void registerFont(const std::wstring& path);
 
@@ -127,6 +130,9 @@ namespace fq::graphics
 
 		std::vector<IImageObject*> mImages;
 		std::vector<ITextObject*> mTexts;
+		std::vector<ISpriteAnimationObject*> mSpriteAnimations;
+
+		bool mIsSortedSpriteAnimation;
 		bool mIsSortedImage;
 		bool mIsSortedText;
 		bool mIsSortedAll;

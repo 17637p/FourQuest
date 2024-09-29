@@ -45,6 +45,9 @@ namespace fq::client
 		foward.z *= mAttackMovement;
 		rigid->SetLinearVelocity(foward);
 
+		// 몬스터 충돌에 의한 밀림 무시
+		animator.GetGameObject()->SetTag(game_module::ETag::PlayerMonsterIgnore);
+
 		mElapsedTime = 0.f;
 	}
 
@@ -60,7 +63,10 @@ namespace fq::client
 		if (mElapsedTime == mAttackTiming)
 		{
 			auto berserkerArmour = animator.GetComponent<BerserkerArmour>();
-			berserkerArmour->EmitAttackIntend(mAttackType, mColliderOffset, mColliderScale, mKnocBackPower, mDestroyTime);
+			if (berserkerArmour != nullptr)
+			{
+				berserkerArmour->EmitAttackIntend(mAttackType, mColliderOffset, mColliderScale, mKnocBackPower, mDestroyTime);
+			}
 		}
 	}
 
@@ -68,5 +74,8 @@ namespace fq::client
 	{
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 		controller->SetDashInput(false);
+
+		// 몬스터 충돌에 의한 밀림 무시
+		animator.GetGameObject()->SetTag(game_module::ETag::Player);
 	}
 }

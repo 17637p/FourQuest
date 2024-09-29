@@ -5,7 +5,6 @@
 #include "../FQGameModule/ScreenManager.h"
 #include "../FQGameModule/InputManager.h"
 #include "../FQGameModule/EventManager.h"
-#include "../FQGameModule/SceneManager.h"
 
 #include "ClientEvent.h"
 
@@ -31,23 +30,18 @@ void fq::client::RepauseUI::OnUpdate(float dt)
 
 	// UI 조작 (계속하기, 선택 옮기기 등)
 	auto input = GetScene()->GetInputManager();
-	if (input->IsPadKeyState(0, EPadKey::B, EKeyState::Tap)
-		|| input->IsPadKeyState(1, EPadKey::B, EKeyState::Tap)
-		|| input->IsPadKeyState(2, EPadKey::B, EKeyState::Tap)
-		|| input->IsPadKeyState(3, EPadKey::B, EKeyState::Tap)
-		|| input->IsKeyState(EKey::S, EKeyState::Tap))
+	for (int i = 0; i < 4; i++)
 	{
-		GetScene()->GetEventManager()->FireEvent<event::OffPopupRepause>({});
-		GetScene()->DestroyGameObject(GetGameObject());
-	}
+		if (input->IsPadKeyState(i, EPadKey::B, EKeyState::Tap))
+		{
+			GetScene()->GetEventManager()->FireEvent<event::OffPopupRepause>({});
+			GetScene()->DestroyGameObject(GetGameObject());
+		}
 
-	if (input->IsPadKeyState(0, EPadKey::A, EKeyState::Tap)
-		|| input->IsPadKeyState(1, EPadKey::A, EKeyState::Tap)
-		|| input->IsPadKeyState(2, EPadKey::A, EKeyState::Tap)
-		|| input->IsPadKeyState(3, EPadKey::A, EKeyState::Tap)
-		|| input->IsKeyState(EKey::F, EKeyState::Tap))
-	{
-		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({"Scene1", true});
+		if (input->IsPadKeyState(i, EPadKey::A, EKeyState::Tap))
+		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "TitleUI", true });
+		}
 	}
 }
 

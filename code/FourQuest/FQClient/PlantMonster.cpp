@@ -5,9 +5,10 @@
 #include "../FQGameModule/Animator.h"
 #include "GameManager.h"
 #include "LinearAttack.h"
-#include "ArcAttack.h"
+#include "PlantAOEAttack.h"
 #include "Attack.h"
 #include "HpBar.h"
+#include "LevelHepler.h"
 
 fq::client::PlantMonster::PlantMonster()
 	:mMaxHp(0.f)
@@ -53,6 +54,10 @@ void fq::client::PlantMonster::OnStart()
 	mAnimator = GetComponent<game_module::Animator>();
 	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
 
+	
+	// 난이도에 따른 공경력 HP 설정
+	mAttackPower = mAttackPower * LevelHepler::GetDamageRatio();
+	mHp = mHp * LevelHepler::GetHpRatio();
 	mMaxHp = mHp;
 }
 
@@ -110,7 +115,7 @@ void fq::client::PlantMonster::EmitAOEAttack()
 	attackT->SetLocalPosition(transform->GetWorldPosition() + offset);
 
 	// 포물선 공격 설정
-	auto arcAttack = attackObj->GetComponent<ArcAttack>();
+	auto arcAttack = attackObj->GetComponent<PlantAOEAttack>();
 	arcAttack->SetmaxRange(mAttackRange);
 	arcAttack->SetStartPosition(transform->GetWorldPosition() + offset);
 	arcAttack->SetTargetPosition(mTarget->GetComponent<fq::game_module::Transform>()->GetWorldPosition());
@@ -169,7 +174,17 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 			{
 				mAnimator->SetParameterBoolean("IsDead", true);
 			}
+
+			// 이펙트 방출
+			fq::event::OnCreateStateEvent stateEvent;
+			stateEvent.gameObject = GetGameObject();
+			stateEvent.RegisterKeyName = playerAttack->GetAttackEffectEvent();
+			if (!stateEvent.RegisterKeyName.empty())
+			{
+				GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+			}
 		}
+
 	}
 }
 

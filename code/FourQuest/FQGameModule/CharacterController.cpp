@@ -42,6 +42,7 @@ fq::game_module::CharacterController::CharacterController()
 	, mbCanMoveCharater(true)
 	, mCollisionCount(0)
 	, mbMoveRestriction{}
+	, mFinalSpeedMultiplier(1.f)
 
 {}
 
@@ -116,8 +117,18 @@ void fq::game_module::CharacterController::SetControllerID(ControllerID id)
 void fq::game_module::CharacterController::OnStart()
 {
 	mTransform = GetComponent<Transform>();
+
+	mBaseSpeed = mMovementInfo.maxSpeed;
+	mBaseAcceleration = mMovementInfo.acceleration;
 }
 
+void fq::game_module::CharacterController::OnLateUpdate(float dt)
+{
+	mMovementInfo.maxSpeed = mBaseSpeed * mFinalSpeedMultiplier;
+	mMovementInfo.acceleration = mBaseAcceleration * mFinalSpeedMultiplier;
+
+	mFinalSpeedMultiplier = 1.f;
+}
 
 void fq::game_module::CharacterController::OnCollisionEnter(const Collision& collision)
 {
@@ -167,13 +178,17 @@ void fq::game_module::CharacterController::SetPadInputRotation(EPadStickType pad
 	}
 	input.Normalize();
 
-	if (input == Vector3::Backward)
+	if (input.z >= 1.f)
 	{
-		mTransform->SetLocalRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
+		auto rotation = Quaternion::LookRotation({ 0.f,0.f,1.f }, { 0.f,-1.f,0.f });
+		rotation.Normalize();
+		mTransform->SetLocalRotation(rotation);
 	}
 	else if (input != Vector3::Zero)
 	{
-		mTransform->SetLocalRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
+		auto rotation = Quaternion::LookRotation(input, { 0.f,1.f,0.f });
+		rotation.Normalize();
+		mTransform->SetLocalRotation(rotation);
 	}
 }
 

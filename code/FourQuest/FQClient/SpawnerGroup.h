@@ -41,6 +41,8 @@ namespace fq::client
 		void CheckObjectLive(int size);
 
 		void EventProcessPlayerSpawnCollideTrigger();
+		void EventProcessInProgressQuest();
+		void EventProcessInProgressDefence();
 
 	private:
 		//인스펙터 용 변수
@@ -61,6 +63,8 @@ namespace fq::client
 		int mCurSpawnMonsterNum; // SpawnRule에서 이름 지어줄때 뒤에 번호 붙일 숫자 
 
 		game_module::EventHandler mPlayerSpawnCollideTriggerHandler;
+		game_module::EventHandler mInProgressQuestHandler;
+		game_module::EventHandler mInProgressDefenceHandler;
 
 		MonsterManager* mMonsterManager;
 

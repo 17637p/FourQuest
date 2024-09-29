@@ -9,10 +9,9 @@
 namespace fq::client
 {
 	BowDashState::BowDashState()
-		: mOriginSpeed()
-		, mMaxSpeed()
-		, mMinSpeed()
-		, mCurrentSpeed()
+		: mMaxSpeedMultiplier()
+		, mMinSpeedMultiplier()
+		, mCurrentSpeedMultiplier()
 		, mRotationSpeed()
 		, mPeakSpeedTime()
 		, mDurationTime()
@@ -32,10 +31,11 @@ namespace fq::client
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 
 		mDashEffect = archerArmour->EmitDash();
-		mOriginSpeed = archerArmour->GetOriginCharacterMaxSpeed();
 
 		// 플레이어 태그를 변경
 		animator.GetGameObject()->SetTag(game_module::ETag::Dash);
+
+		archerArmour->EmitSound(EArcherSound::Rolling);
 	}
 
 	void BowDashState::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
@@ -50,33 +50,20 @@ namespace fq::client
 
 		if (mDurationTime <= mPeakSpeedTime)
 		{
-			mCurrentSpeed = std::lerp(mOriginSpeed, mMaxSpeed, mDurationTime / mPeakSpeedTime);
-			
-			auto movementInfo = controller->GetMovementInfo();
-			movementInfo.maxSpeed = mCurrentSpeed;
-			controller->SetMovementInfo(movementInfo);
+			mCurrentSpeedMultiplier = std::lerp(1.f, mMaxSpeedMultiplier, mDurationTime / mPeakSpeedTime);
 		}
 		else
 		{
-			mCurrentSpeed = std::fmax(mMinSpeed, mCurrentSpeed - mSpeedDecayRate * dt);
-
-			auto movementInfo = controller->GetMovementInfo();
-			movementInfo.maxSpeed = mCurrentSpeed;
-			controller->SetMovementInfo(movementInfo);
+			mCurrentSpeedMultiplier = std::fmax(mMinSpeedMultiplier, mCurrentSpeedMultiplier - mSpeedDecayRate * dt);
 		}
 
 		DirectX::SimpleMath::Vector3 direction = transform->GetWorldMatrix().Forward();
-		rigidBody->SetLinearVelocity(direction * mCurrentSpeed);
+		rigidBody->SetLinearVelocity(direction * (mCurrentSpeedMultiplier * controller->GetBaseSpeed()));
+		controller->AddFinalSpeedMultiplier(mCurrentSpeedMultiplier - 1.f);
 	}
 
 	void BowDashState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 	{
-		auto controller = animator.GetComponent<game_module::CharacterController>();
-
-		auto movementInfo = controller->GetMovementInfo();
-		movementInfo.maxSpeed = mOriginSpeed;
-		controller->SetMovementInfo(movementInfo);
-
 		if (mDashEffect != nullptr)
 		{
 			animator.GetScene()->DestroyGameObject(mDashEffect.get());

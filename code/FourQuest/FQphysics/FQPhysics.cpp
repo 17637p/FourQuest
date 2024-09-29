@@ -115,7 +115,7 @@ namespace fq::physics
 		sceneDesc.gravity.x = info.gravity.x;
 		sceneDesc.gravity.y = info.gravity.y;
 		sceneDesc.gravity.z = -info.gravity.z;
-		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * 16);
+		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * COLLISION_MATRIX_SIZE);
 
 		// Scene 설명자에 CPU 디스패처와 필터 셰이더를 설정합니다.
 		sceneDesc.cpuDispatcher = mPhysics->GetDispatcher();
@@ -190,7 +190,7 @@ namespace fq::physics
 	void FQPhysics::SetPhysicsInfo(PhysicsEngineInfo& info)
 	{
 		mScene->setGravity(physx::PxVec3(info.gravity.x, info.gravity.y, -info.gravity.z));
-		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * 16);
+		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * COLLISION_MATRIX_SIZE);
 		mRigidBodyManager->UpdateCollisionMatrix(mCollisionMatrix);
 		mCCTManager->UpdateCollisionMatrix(mCollisionMatrix);
 	}
@@ -430,6 +430,10 @@ namespace fq::physics
 	void FQPhysics::SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData)
 	{
 		mCharacterPhysicsManager->SetArticulationData(id, articulationData, mCollisionMatrix);
+	}
+	unsigned int FQPhysics::GetArticulationCount()
+	{
+		return mCharacterPhysicsManager->GetCharacterPhysicsCount();
 	}
 #pragma endregion
 

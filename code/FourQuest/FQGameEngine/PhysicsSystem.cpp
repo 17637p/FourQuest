@@ -43,6 +43,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mRaycastHandler{}
 	, mArticulationTypeID(0)
 	, mAddInputMoveHandler{}
+	, mMaxRagdollNumber(15)
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -167,6 +168,11 @@ void fq::game_engine::PhysicsSystem::SetCollisionMatrix(fq::physics::CollisionMa
 {
 	mCollisionMatrix = matrix;
 	setPhysicsEngineinfo();
+}
+
+void fq::game_engine::PhysicsSystem::SetMaxRagdollNumber(int maxRagdollNumber)
+{
+	mMaxRagdollNumber = maxRagdollNumber;
 }
 
 void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObject* object)
@@ -653,7 +659,7 @@ void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
 {
 	fq::physics::PhysicsEngineInfo mPhysicsEngineInfomation;
 
-	for (int i = 0; i < 16; ++i)
+	for (int i = 0; i < (int)fq::game_module::ETag::End; ++i)
 	{
 		mPhysicsEngineInfomation.collisionMatrix[i] = static_cast<int>(mCollisionMatrix.data[i].to_ulong());
 	}
@@ -675,7 +681,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto offset = colliderInfo.collider->GetOffset();
 
-		if (rigid->GetBodyType() == game_module::RigidBody::EBodyType::Static)
+		if (rigid->GetBodyType() != game_module::RigidBody::EBodyType::Dynamic)
 			continue;
 
 		if (colliderInfo.enttID == mCharactorControllerTypeID)
@@ -731,8 +737,11 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			}
 			transform->SetWorldMatrix(matrix);
 		}
-		else if (colliderInfo.enttID == mArticulationTypeID)
+		else if (colliderInfo.enttID == mArticulationTypeID )
 		{
+			if (mGameProcess->mTimeManager->GetFPS() <= 60 && mMaxRagdollNumber <= mPhysicsEngine->GetArticulationCount())
+				continue;
+
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 			auto data = mPhysicsEngine->GetArticulationData(id);
 
@@ -942,6 +951,9 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID)
 		{
+			if (mGameProcess->mTimeManager->GetFPS() <= 60)
+				continue;
+
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 
 			if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
@@ -979,6 +991,9 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			//{
 			//	linkDataUpdate(link);
 			//}
+
+			if (mMaxRagdollNumber <= mPhysicsEngine->GetArticulationCount())
+				continue;
 
 			mPhysicsEngine->SetArticulationData(id, data);
 		}

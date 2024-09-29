@@ -1,12 +1,16 @@
 #include "PauseUI.h"
 
-#include "../FQGameModule/Transform.h"
-#include "../FQGameModule/Scene.h"
 #include "../FQGameModule/ScreenManager.h"
 #include "../FQGameModule/InputManager.h"
 #include "../FQGameModule/PrefabManager.h"
+#include "../FQGameModule/TimeManager.h"
+#include "../FQGameModule/Scene.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/TextUI.h"
 
 #include "ClientEvent.h"
+
+#include <boost/locale.hpp>
 
 fq::client::PauseUI::PauseUI()
 	:mSelectButtonID(0),
@@ -17,7 +21,11 @@ fq::client::PauseUI::PauseUI()
 	mIsActive(true),
 	mRepauseUIPrefab(),
 	mOffPopupRepauseHandler(),
-	mSettingUIPrefab()
+	mSettingUIPrefab(),
+	mStickDelay(0.2f),
+	mCurStickDelay(0),
+	mExplanationTexts(),
+	mExplanationTextUI()
 {
 }
 
@@ -29,8 +37,26 @@ fq::client::PauseUI::PauseUI(const PauseUI& other)
 	mScreenManager(other.mScreenManager),
 	mIsActive(other.mIsActive),
 	mRepauseUIPrefab(other.mRepauseUIPrefab),
-	mSettingUIPrefab(other.mSettingUIPrefab)
+	mSettingUIPrefab(other.mSettingUIPrefab),
+	mStickDelay(other.mStickDelay),
+	mCurStickDelay(other.mCurStickDelay)
 {
+}
+
+fq::client::PauseUI& fq::client::PauseUI::operator=(const PauseUI& other)
+{
+	mSelectButtonID = other.mSelectButtonID;
+	mSelectBackground = other.mSelectBackground;
+	mButtons = other.mButtons;
+	mUIAnimSpeed = other.mUIAnimSpeed;
+	mScreenManager = other.mScreenManager;
+	mIsActive = other.mIsActive;
+	mRepauseUIPrefab = other.mRepauseUIPrefab;
+	mSettingUIPrefab = other.mSettingUIPrefab;
+	mStickDelay = other.mStickDelay;
+	mCurStickDelay = other.mCurStickDelay;
+
+	return *this;
 }
 
 fq::client::PauseUI::~PauseUI()
@@ -41,7 +67,6 @@ void fq::client::PauseUI::OnStart()
 {
 	// 자식 버튼 가져오기
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
-
 	auto children = myTransform->GetChildren();
 
 	mButtons.push_back(children[0]->GetGameObject());
@@ -53,53 +78,31 @@ void fq::client::PauseUI::OnStart()
 	mSelectButtonID = 0;
 	mSelectBackground = children[4]->GetGameObject();
 
-	// screenManager 등록
+	// Manager 등록
 	fq::game_module::Scene* scene = GetScene();
-	mScreenManager = GetScene()->GetScreenManager();
+	mScreenManager = scene->GetScreenManager();
+	mTimeManager = scene->GetTimeManager();
 
 	// EventHandler 등록
-	EventProcessOffPopupRepause();
+	eventProcessOffPopupRepause();
+
+	// Text 넣기
+	mExplanationTextUI = GetGameObject()->GetChildren()[6]->GetChildren()[0]->GetComponent<game_module::TextUI>();
+	mExplanationTexts.push_back(wstringToString(L"게임으로 돌아갑니다."));
+	mExplanationTexts.push_back(wstringToString(L"비디오, 오디오 등의 플레이 환경을 설정합니다."));
+	mExplanationTexts.push_back(wstringToString(L"현재 진행중인 미션을 종료하고, 준비 단계로 돌아갑니다."));
+	mExplanationTexts.push_back(wstringToString(L"4Quest를 종료하고 윈도우로 돌아갑니다."));
 }
 
 void fq::client::PauseUI::OnUpdate(float dt)
 {
-	SetScaleScreen();
-	SetSelectBoxPosition(GetScene()->GetTimeManager()->GetDeltaTime());
+	setScaleScreen();
+	setSelectBoxPosition(mTimeManager->GetDeltaTime());
 
 	if (mIsActive)
 	{
-		// UI 조작 (계속하기, 선택 옮기기 등)
-		// 아마 텍스트도 넣어야 할듯?
-		auto input = GetScene()->GetInputManager();
-		if (input->IsPadKeyState(0, EPadKey::B, EKeyState::Tap)
-			|| input->IsPadKeyState(1, EPadKey::B, EKeyState::Tap)
-			|| input->IsPadKeyState(2, EPadKey::B, EKeyState::Tap)
-			|| input->IsPadKeyState(3, EPadKey::B, EKeyState::Tap)
-			|| input->IsKeyState(EKey::O, EKeyState::Tap))
-		{
-			GetScene()->GetEventManager()->FireEvent<event::OffPopupPause>({});
-			GetScene()->DestroyGameObject(GetGameObject());
-		}
-
-		if (input->GetKeyState(EKey::S) == EKeyState::Tap)
-		{
-			if (mSelectButtonID < 3)
-			{
-				mSelectButtonID++;
-			}
-		}
-		if (input->GetKeyState(EKey::W) == EKeyState::Tap)
-		{
-			if (mSelectButtonID > 0)
-			{
-				mSelectButtonID--;
-			}
-		}
-
-		if (input->GetKeyState(EKey::F) == EKeyState::Tap)
-		{
-			ClickButton();
-		}
+		processInput();
+		mCurStickDelay += mTimeManager->GetDeltaTime();
 	}
 }
 
@@ -120,7 +123,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::PauseUI::Clone(std::shar
 	return clonePauseUI;
 }
 
-void fq::client::PauseUI::SetScaleScreen()
+void fq::client::PauseUI::setScaleScreen()
 {
 	// Scale 자동 조정 
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
@@ -134,7 +137,7 @@ void fq::client::PauseUI::SetScaleScreen()
 	}
 }
 
-void fq::client::PauseUI::SetSelectBoxPosition(float dt)
+void fq::client::PauseUI::setSelectBoxPosition(float dt)
 {
 	// 선택UI 위치로 SelectBox 옮기기 
 	game_module::Transform* selectTransform = mButtons[mSelectButtonID]->GetComponent<game_module::Transform>();
@@ -159,7 +162,7 @@ void fq::client::PauseUI::SetSelectBoxPosition(float dt)
 	mSelectBackground->GetComponent<game_module::Transform>()->SetLocalPosition(curPosition);
 }
 
-void fq::client::PauseUI::ClickButton()
+void fq::client::PauseUI::clickButton()
 {
 	switch (mSelectButtonID)
 	{
@@ -170,13 +173,13 @@ void fq::client::PauseUI::ClickButton()
 			break;
 		case 1:
 			// 설정
-			SpawnUIObject(mSettingUIPrefab);
+			spawnUIObject(mSettingUIPrefab);
 			GetScene()->DestroyGameObject(GetGameObject());
 			break;
 		case 2:
 			// 미션 중단 - repause 소환, 이벤트 받으면 isActive on
 			mIsActive = false;
-			SpawnUIObject(mRepauseUIPrefab);
+			spawnUIObject(mRepauseUIPrefab);
 			break;
 		case 3:
 			// 게임 종료
@@ -187,7 +190,7 @@ void fq::client::PauseUI::ClickButton()
 	}
 }
 
-void fq::client::PauseUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
+void fq::client::PauseUI::spawnUIObject(fq::game_module::PrefabResource prefab)
 {
 	std::shared_ptr<game_module::GameObject> newObject;
 
@@ -197,7 +200,7 @@ void fq::client::PauseUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
 	GetScene()->AddGameObject(newObject);
 }
 
-void fq::client::PauseUI::EventProcessOffPopupRepause()
+void fq::client::PauseUI::eventProcessOffPopupRepause()
 {
 	mOffPopupRepauseHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::OffPopupRepause>
 		(
@@ -208,21 +211,85 @@ void fq::client::PauseUI::EventProcessOffPopupRepause()
 	);
 }
 
-fq::client::PauseUI& fq::client::PauseUI::operator=(const PauseUI& other)
-{
-	mSelectButtonID = other.mSelectButtonID;
-	mSelectBackground = other.mSelectBackground;
-	mButtons = other.mButtons;
-	mUIAnimSpeed = other.mUIAnimSpeed;
-	mScreenManager = other.mScreenManager;
-	mIsActive = other.mIsActive;
-	mRepauseUIPrefab = other.mRepauseUIPrefab;
-	mSettingUIPrefab = other.mSettingUIPrefab;
-
-	return *this;
-}
-
 void fq::client::PauseUI::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mOffPopupRepauseHandler);
+}
+
+void fq::client::PauseUI::processInput()
+{
+	// UI 조작 (계속하기, 선택 옮기기 등)
+	auto input = GetScene()->GetInputManager();
+	for (int i = 0; i < 4; i++)
+	{
+		// Stick Y 값
+		float isLeftStickY = input->GetStickInfomation(i, EPadStick::leftY);
+
+		// 아래로
+		bool isDpadDownTap = input->GetPadKeyState(i, EPadKey::DpadDown) == EKeyState::Tap;
+		// Stick 처리
+		bool isLeftStickDownTap = false;
+		if (isLeftStickY < -0.9f)
+		{
+			if (mCurStickDelay > mStickDelay)
+			{
+				mCurStickDelay = 0;
+				isLeftStickDownTap = true;
+			}
+		}
+
+		if (isDpadDownTap || isLeftStickDownTap)
+		{
+			if (mSelectButtonID < 3)
+			{
+				mSelectButtonID++;
+				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+			}
+		}
+
+		// 위로
+		bool isDpadUpTap = input->GetPadKeyState(i, EPadKey::DpadUp) == EKeyState::Tap;
+		// Stick 처리
+		bool isLeftStickUpTap = false;
+		if (isLeftStickY > 0.9f)
+		{
+			if (mCurStickDelay > mStickDelay)
+			{
+				mCurStickDelay = 0;
+				isLeftStickUpTap = true;
+			}
+		}
+
+		if (isDpadUpTap || isLeftStickUpTap)
+		{
+			if (mSelectButtonID > 0)
+			{
+				mSelectButtonID--;
+				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+			}
+		}
+	}
+
+	// B Button
+	for (int i = 0; i < 4; i++)
+	{
+		if (input->IsPadKeyState(i, EPadKey::B, EKeyState::Tap))
+		{
+			GetScene()->GetEventManager()->FireEvent<event::OffPopupPause>({});
+			GetScene()->DestroyGameObject(GetGameObject());
+		}
+	}
+	// A Button
+	for (int i = 0; i < 4; i++)
+	{
+		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
+		{
+			clickButton();
+		}
+	}
+}
+
+std::string fq::client::PauseUI::wstringToString(std::wstring wStr)
+{
+	return boost::locale::conv::from_utf(wStr, "UTF-8");
 }

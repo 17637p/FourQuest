@@ -30,10 +30,25 @@ namespace fq::graphics
 		virtual void SetUVAnimationInstance(std::shared_ptr<IUVAnimationInstance> uvAnimationInstance) { mIUVAnimationInstance = uvAnimationInstance; }
 		virtual std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const { return mIUVAnimationInstance; }
 
+		virtual void SetLayer(unsigned int layer) override;
+		virtual unsigned int GetLayer() const override { return mLayer; }
+
+		unsigned int GetPrevLayer() const { return mPrevLayer; }
+
+		virtual void SetIsDirtyLayer(bool bIsDirtylayer) { mbIsDirtyLayer = bIsDirtylayer; }
+		virtual bool GetIsDirtyLayer() const { return mbIsDirtyLayer; }
+
+	public:
+		enum { MAX_LAYER = 4 };
+
 	private:
 		std::shared_ptr<IDecalMaterial> mIDecalMaterial;
 		DecalInfo mDecalInfo;
 		DirectX::SimpleMath::Matrix mTransform;
 		std::shared_ptr<IUVAnimationInstance> mIUVAnimationInstance;
+
+		bool mbIsDirtyLayer;
+		unsigned int mLayer;
+		unsigned int mPrevLayer;
 	};
 }

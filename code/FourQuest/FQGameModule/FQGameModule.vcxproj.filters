@@ -367,9 +367,18 @@
     </ClInclude>
     <ClInclude Include="StateEvent.h">
       <Filter>include\04.Event</Filter>
-	</ClInclude>
-	<ClInclude Include="SoundEnum.h">
+    </ClInclude>
+    <ClInclude Include="SoundEnum.h">
       <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteAnimationUI.h">
+      <Filter>include\01.EntityComponent\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEmitter.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="StateEventEmitter.h">
+      <Filter>include\04.Event</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -596,6 +605,15 @@
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
     <ClCompile Include="StateEvent.cpp">
+      <Filter>src\04.Event</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteAnimationUI.cpp">
+      <Filter>src\01.EntityComponent\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundEmitter.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="StateEventEmitter.cpp">
       <Filter>src\04.Event</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,18 +18,16 @@ namespace fq::client
 
 	void BowMultiShotAttackState::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 	{
-		auto controller = animator.GetComponent<fq::game_module::CharacterController>();
-
-		auto movementInfo = controller->GetMovementInfo();
-
-		movementInfo.maxSpeed = movementInfo.maxSpeed / 2.f;
-		controller->SetMovementInfo(movementInfo);
 	}
+
 	void BowMultiShotAttackState::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
 	{
 		auto archer = animator.GetComponent<ArcherArmour>();
 		archer->SetLookAtRStickInput();
 		archer->AimToNearMonster();
+
+		auto controller = animator.GetComponent<fq::game_module::CharacterController>();
+		controller->AddFinalSpeedMultiplier((-controller->GetFinalSpeedMultiplier() / 2.f));
 
 		mShotElapsedTime += dt;
 
@@ -38,16 +36,13 @@ namespace fq::client
 			mShotElapsedTime -= mShotDelay;
 
 			archer->EmitmWeakAttack();
+
+			size_t index = (size_t)EArcherSound::Fastshoot1 + rand() % 3;
+			archer->EmitSound((EArcherSound)index);
 		}
 	}
 	void BowMultiShotAttackState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 	{
-		auto controller = animator.GetComponent<fq::game_module::CharacterController>();
-
-		auto movementInfo = controller->GetMovementInfo();
-
-		movementInfo.maxSpeed = movementInfo.maxSpeed * 2.f;
-		controller->SetMovementInfo(movementInfo);
 	}
 
 

@@ -148,6 +148,15 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 				mAnimator->SetParameterBoolean("IsDead", true);
 				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "Spawner_Death", false , fq::sound::EChannel::SE });
 			}
+
+			// ÀÌÆåÆ® ¹æÃâ
+			fq::event::OnCreateStateEvent stateEvent;
+			stateEvent.gameObject = GetGameObject();
+			stateEvent.RegisterKeyName = playerAttack->GetAttackEffectEvent();
+			if (!stateEvent.RegisterKeyName.empty())
+			{
+				GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+			}
 		}
 	}
 }

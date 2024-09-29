@@ -23,13 +23,13 @@ namespace fq::game_engine
 		~StateEventSystem();
 
 		void OnLoadScene();
+		void OnAnimationStateEvent(const fq::event::OnCreateStateEvent& data);
 
 		void Initialize(GameProcess* gameProcess);
 		void Update(float dt);
 
 	private:
 		DirectX::SimpleMath::Vector3 genarateRenderVector(const DirectX::SimpleMath::Vector3& random);
-
 
 	private:
 		struct InstantiatePrefabLifeTimeInfo
@@ -61,8 +61,6 @@ namespace fq::game_engine
 
 		std::vector<InstantiatePrefabLifeTimeInfo> mInstantiatePrefabLifeTimeInfos;
 		std::vector<PlaySoundLifeTimeInfo> mPlaySoundLifeTimeInfos;
-		std::map<std::string, fq::game_module::StateEvent::InstantiatePrefab> mInstantiatePrefabMap;
-		std::map<std::string, fq::game_module::StateEvent::PlaySoundInfo> mPlaySoundInfoMap;
 
 		std::random_device mRandomDevice;  // ·£´ý ÀåÄ¡
 		std::mt19937 mGenerarator;

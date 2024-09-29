@@ -55,6 +55,29 @@ namespace fq::graphics
 		}
 	}
 
+	void AnimationHelper::FindKeyframeIndex(const std::vector<fq::common::Keyframe>& keyframes,
+		const fq::common::AnimationClip& animationClip,
+		float timePos,
+		unsigned int* outLhsIndex,
+		unsigned int* outRhsIndex,
+		float* outWeight)
+	{
+		size_t prevIndex = (size_t)floor(timePos / animationClip.FramePerSecond);
+
+		if (prevIndex < keyframes.size())
+		{
+			*outLhsIndex = prevIndex;
+			*outRhsIndex = prevIndex == keyframes.size() - 1 ? keyframes.size() - 1 : prevIndex + 1;
+			*outWeight = fmod(timePos, animationClip.FramePerSecond) / animationClip.FramePerSecond;
+		}
+		else
+		{
+			*outLhsIndex = keyframes.size() - 1;
+			*outRhsIndex = keyframes.size() - 1;
+			*outWeight = 0.f;
+		}
+	}
+
 	DirectX::SimpleMath::Matrix AnimationHelper::CreateMatrix(const fq::common::Keyframe& keyframe)
 	{
 		return DirectX::SimpleMath::Matrix::CreateScale(keyframe.Scale)

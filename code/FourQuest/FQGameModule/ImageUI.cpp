@@ -74,6 +74,7 @@ void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics:
 	mImageObjects[index]->SetScaleY(infomation.ScaleY);
 
 	mImageObjects[index]->SetRenderMode(infomation.isCenter);
+	mImageObjects[index]->SetIsRender(infomation.isRender);
 
 	mUIInfomations[index] = infomation;
 }

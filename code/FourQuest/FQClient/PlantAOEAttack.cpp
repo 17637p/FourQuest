@@ -1,4 +1,4 @@
-#include "ArcAttack.h"
+#include "PlantAOEAttack.h"
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/Transform.h"
@@ -6,10 +6,11 @@
 #include "../FQGameModule/SphereCollider.h"
 
 #include "Attack.h"
+#include "DebuffPoisonZone.h"
 
 namespace fq::client
 {
-	ArcAttack::ArcAttack()
+	PlantAOEAttack::PlantAOEAttack()
 		: mAOEAttackPoolEffectPrefeb()
 		, mAOEAttackSplashEffectPrefeb()
 		, mStartPosition{}
@@ -24,16 +25,19 @@ namespace fq::client
 		, mbIsCreateEffect(false)
 		, mDestroyTime()
 		, mDestroyDurationTime()
+		, mPoisonTurm()
+		, mPoisonDamage()
 	{
 	}
 
-	ArcAttack::~ArcAttack()
+	PlantAOEAttack::~PlantAOEAttack()
 	{
 	}
 
-	void ArcAttack::DetermineArrivalTime()
+	void PlantAOEAttack::DetermineArrivalTime()
 	{
 		GetGameObject()->SetTag(fq::game_module::ETag::Untagged);
+		GetComponent<Attack>()->SetDestroyTime(mDestroyTime + mMaxArrivalTime);
 
 		// 거리 값 계산해서 도착 시간 계산
 		mYPosition = mStartPosition.y;
@@ -48,14 +52,14 @@ namespace fq::client
 		determineYVelocity();
 	}
 
-	void ArcAttack::determineYVelocity()
+	void PlantAOEAttack::determineYVelocity()
 	{
 		// 초기 Y속도 계산
 		mInitialYVelocity = (mTargetPosition.y - mStartPosition.y + 0.5f * 9.81f * mArrivalTime * mArrivalTime) / mArrivalTime;
 		mYVelocity = mInitialYVelocity;
 	}
 
-	void ArcAttack::OnUpdate(float dt)
+	void PlantAOEAttack::OnUpdate(float dt)
 	{
 		mDurationTime += dt;
 
@@ -105,6 +109,12 @@ namespace fq::client
 		{
 			mDestroyDurationTime += dt;
 
+			// 독 타일 판정을 위한 태그 변경 ( 플레이어가 Hit 애니메이션이 작동 안되면서 Trigger 충돌은 되도록 )
+			if (mDestroyDurationTime >= 0.1f)
+			{
+				GetGameObject()->SetTag(fq::game_module::ETag::Monster);
+			}
+
 			if (mDestroyDurationTime >= mDestroyTime)
 			{
 				GetScene()->DestroyGameObject(GetGameObject());
@@ -112,13 +122,38 @@ namespace fq::client
 		}
 	}
 
-	std::shared_ptr<fq::game_module::Component> fq::client::ArcAttack::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
+	void PlantAOEAttack::OnTriggerEnter(const fq::game_module::Collision& collision)
 	{
-		std::shared_ptr<ArcAttack> cloneAttack = std::dynamic_pointer_cast<ArcAttack>(clone);
+		// 플레이어와 충돌했을 경우에 플레이어가 독 디버프를 가지고 있지 않으면 독 디버프를 부여
+		if (collision.other->GetTag() == fq::game_module::ETag::Player)
+		{
+			if (collision.other->HasComponent<DebuffPoisonZone>())
+				return;
+
+			collision.other->AddComponent<DebuffPoisonZone>();
+			auto poisonZone = collision.other->GetComponent<DebuffPoisonZone>();
+
+			poisonZone->SetPoisonTurm(mPoisonTurm);
+			poisonZone->SetPosionDamage(mPoisonDamage);
+		}
+	}
+
+	void PlantAOEAttack::OnTriggerExit(const fq::game_module::Collision& collision)
+	{
+		// 벗어났을 경우에 플레이어의 독 디버프 해제
+		if (collision.other->HasComponent<DebuffPoisonZone>())
+		{
+			collision.other->RemoveComponent<DebuffPoisonZone>();
+		}
+	}
+
+	std::shared_ptr<fq::game_module::Component> fq::client::PlantAOEAttack::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
+	{
+		std::shared_ptr<PlantAOEAttack> cloneAttack = std::dynamic_pointer_cast<PlantAOEAttack>(clone);
 
 		if (cloneAttack == nullptr) // 새로 생성해서 복사본을 준다
 		{
-			cloneAttack = game_module::ObjectPool::GetInstance()->Assign<ArcAttack>(*this);
+			cloneAttack = game_module::ObjectPool::GetInstance()->Assign<PlantAOEAttack>(*this);
 		}
 		else // clone에 데이터를 복사한다.
 		{

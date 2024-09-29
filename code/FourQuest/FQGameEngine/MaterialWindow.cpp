@@ -175,7 +175,7 @@ void fq::game_engine::MaterialWindow::Render()
 		ImGui::SliderFloat("Alpha Cutoff", &materialInfo.AlphaCutoff, 0.0f, 1.0f);
 
 		// SampleType
-		const char* sampleModes[] = { "Clamp", "Repeat" };
+		const char* sampleModes[] = { "Clamp", "Repeat", "Border" };
 		int currentSampleMode = static_cast<int>(materialInfo.SampleType);
 		if (ImGui::Combo("Sample Mode", &currentSampleMode, sampleModes, IM_ARRAYSIZE(sampleModes)))
 		{
@@ -201,6 +201,21 @@ void fq::game_engine::MaterialWindow::Render()
 		ImGui::ColorEdit4("Dissolve EndColor", reinterpret_cast<float*>(&materialInfo.DissolveEndColor));
 		ImGui::ColorEdit4("Dissolve StartEmissive", reinterpret_cast<float*>(&materialInfo.DissolveStartEmissive));
 		ImGui::ColorEdit4("Dissolve EndEmissive", reinterpret_cast<float*>(&materialInfo.DissolveEndEmissive));
+
+		// rim light
+		ImGui::Checkbox("Use Rim Light", &materialInfo.bUseRimLight);
+		ImGui::InputFloat("RimPow", reinterpret_cast<float*>(&materialInfo.RimPow));
+		ImGui::InputFloat("RimIntensity", reinterpret_cast<float*>(&materialInfo.RimIntensity));
+		ImGui::ColorEdit4("Rim Color", reinterpret_cast<float*>(&materialInfo.RimLightColor));
+
+		// inv rim light
+		ImGui::Checkbox("Use Inv Rim Light", &materialInfo.bUseInvRimLight);
+		ImGui::InputFloat("InvRimPow", reinterpret_cast<float*>(&materialInfo.InvRimPow));
+		ImGui::InputFloat("InvRimIntensity", reinterpret_cast<float*>(&materialInfo.InvRimIntensity));
+		ImGui::ColorEdit4("InvRim Color", reinterpret_cast<float*>(&materialInfo.InvRimLightColor));
+
+		// mul emissive Alpha
+		ImGui::Checkbox("Use Mul Emissive Alpha", &materialInfo.bUseMulEmissiveAlpha);
 	}
 
 	if (mMaterialInterface != nullptr)

@@ -2,6 +2,7 @@
 #include "Attack.h"
 #include "DamageCalculation.h"
 #include "Player.h"
+#include "PlayerVariable.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Animator.h"
@@ -22,6 +23,7 @@ namespace fq::client
 		switch (attackType)
 		{
 		case EBerserkerAttackType::Left:
+			EmitSound(EBerserkerSoundType::Left);
 			hitSoundName = mLeftAttackHitSound;
 			knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
 			direction = -right;
@@ -29,6 +31,7 @@ namespace fq::client
 			attackPrefabResource = mBoxAttackPrefab;
 			break;
 		case EBerserkerAttackType::Right:
+			EmitSound(EBerserkerSoundType::Right);
 			hitSoundName = mRightAttackHitSound;
 			knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
 			direction = right;
@@ -36,6 +39,7 @@ namespace fq::client
 			attackPrefabResource = mBoxAttackPrefab;
 			break;
 		case EBerserkerAttackType::StrikeDown:
+			EmitSound(EBerserkerSoundType::StrikeDown);
 			hitSoundName = mStrikeDownAttackHitSound;
 			knockBackType = EKnockBackType::TargetPosition;
 			direction = foward;
@@ -43,6 +47,7 @@ namespace fq::client
 			attackPrefabResource = mBoxAttackPrefab;
 			break;
 		case EBerserkerAttackType::SwingAround:
+			EmitSound(EBerserkerSoundType::SwingAround);
 			hitSoundName = mSwingAroundHitSound;
 			knockBackType = EKnockBackType::TargetPositionAndKnockDown;
 			direction = foward;
@@ -50,6 +55,7 @@ namespace fq::client
 			attackPrefabResource = mCircleAttackPrefab;
 			break;
 		case EBerserkerAttackType::Rush:
+			EmitSound(EBerserkerSoundType::Rush);
 			hitSoundName = mAttackRushHitSound;
 			knockBackType = EKnockBackType::TargetPosition;
 			direction = foward;
@@ -90,12 +96,48 @@ namespace fq::client
 		attackInfo.hitSound = hitSoundName;
 		attackInfo.targetPosRatio = mTargetPosRatio;
 		attackInfo.directionRatio = mDirectionRatio;
+		attackInfo.HitEffectName = "W_Hit_blunt";
 
 		attackComponent->Set(attackInfo);
 
 		GetScene()->AddGameObject(attackObj);
 
+		// 공격시 체력 감소 
+		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
 		return attackObj;
+	}
+
+	void BerserkerArmour::EmitSound(EBerserkerSoundType soundType)
+	{
+		std::string soundName;
+
+		switch (soundType)
+		{
+		case fq::client::EBerserkerSoundType::Left:
+			soundName = mLeftAttackSound;
+			break;
+		case fq::client::EBerserkerSoundType::Right:
+			soundName = mRightAttackSound;
+			break;
+		case fq::client::EBerserkerSoundType::StrikeDown:
+			soundName = mStrikeDownAttackSound;
+			break;
+		case fq::client::EBerserkerSoundType::SwingAround:
+			soundName = mSwingAroundSound;
+			break;
+		case fq::client::EBerserkerSoundType::Rush:
+			soundName = mAttackRushSound;
+			break;
+		case fq::client::EBerserkerSoundType::RushReady:
+			soundName = mAttackRushReadySound;
+			break;
+		default:
+			assert(false);
+			break;
+		}
+
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ soundName, false , fq::sound::EChannel::SE });
 	}
 
 	std::shared_ptr<fq::game_module::Component> BerserkerArmour::Clone(std::shared_ptr<Component> clone) const
@@ -133,6 +175,17 @@ namespace fq::client
 	{
 		mSwingAroundElapsedTime = std::max<float>(0.f, mSwingAroundElapsedTime - dt);
 		mRushElapsedTime = std::max<float>(0.f, mRushElapsedTime - dt);
+
+		if (mPlayer->IsFeverTime())
+		{
+			mPlayer->SetASkillCoolTimeRatio(mSwingAroundElapsedTime / (mSwingAroundCoolTime - mSwingAroundCoolTimeReduction));
+			mPlayer->SetRSkillCoolTimeRatio(mRushElapsedTime / (mRushCoolTime - mRushCoolTimeReduction));
+		}
+		else
+		{
+			mPlayer->SetASkillCoolTimeRatio(mSwingAroundElapsedTime / mSwingAroundCoolTime);
+			mPlayer->SetRSkillCoolTimeRatio(mRushElapsedTime / mRushCoolTime);
+		}
 	}
 
 	void BerserkerArmour::checkInput()
@@ -146,7 +199,7 @@ namespace fq::client
 			&& mSwingAroundElapsedTime == 0.f)
 		{
 			mAnimator->SetParameterTrigger("OnSwingAround");
-			mSwingAroundElapsedTime = mSwingAroundCoolTime;
+			mSwingAroundElapsedTime = mPlayer->IsFeverTime() ? mSwingAroundCoolTime - mSwingAroundCoolTimeReduction : mSwingAroundCoolTime;
 		}
 
 		DirectX::SimpleMath::Vector3 rightInput{};
@@ -155,10 +208,10 @@ namespace fq::client
 		constexpr float rotationOffsetSq = 0.5f * 0.5f;
 
 		// RushCharging
-		if (rightInput.LengthSquared() >= rotationOffsetSq)
+		if (rightInput.LengthSquared() >= rotationOffsetSq && mRushElapsedTime == 0.f)
 		{
 			mAnimator->SetParameterTrigger("OnRushCharging");
-			mRushElapsedTime = mRushCoolTime;
+			mRushElapsedTime = mPlayer->IsFeverTime() ? mRushCoolTime - mRushCoolTimeReduction : mRushCoolTime;
 		}
 		else
 		{

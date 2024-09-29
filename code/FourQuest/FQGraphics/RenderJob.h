@@ -18,6 +18,7 @@ namespace fq::graphics
 	class StaticMeshObject;
 	class SkinnedMeshObject;
 	class TerrainMeshObject;
+	class NodeHierarchy;
 	class NodeHierarchyInstance;
 
 	struct StaticMeshJob
@@ -35,6 +36,7 @@ namespace fq::graphics
 		std::shared_ptr<SkinnedMesh> SkinnedMesh;
 		std::shared_ptr<Material> Material;
 		SkinnedMeshObject* SkinnedMeshObject;
+		std::shared_ptr<NodeHierarchy> NodeHierarchy;
 		std::shared_ptr<NodeHierarchyInstance> NodeHierarchyInstnace;
 	};
 

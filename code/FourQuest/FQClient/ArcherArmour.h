@@ -15,6 +15,18 @@ namespace fq::client
 	class Player;
 	class AimAssist;
 
+	enum class EArcherSound
+	{
+		ShootStart,
+		Charge1,
+		Charge2,
+		Shoot,
+		Fastshoot1,
+		Fastshoot2,
+		Fastshoot3,
+		Rolling,
+	};
+
 	class ArcherArmour : public game_module::Component
 	{
 	public:
@@ -22,7 +34,8 @@ namespace fq::client
 		~ArcherArmour();
 
 		void EmitmWeakAttack();
-		void EmitStrongAttack();
+		void EmitStrongAttack(int chargeLevel);
+		void EmitSound(EArcherSound archerSound);
 		std::shared_ptr<game_module::GameObject> EmitChargingEffect();
 		std::shared_ptr<game_module::GameObject> EmitStrongAttackEffect();
 		std::shared_ptr<game_module::GameObject> EmitDash();
@@ -37,9 +50,6 @@ namespace fq::client
 		/// 가까운 몬스터에게 에임을 보정합니다.
 		/// </summary>
 		void AimToNearMonster();
-
-		float GetChangeChargingTime() { return mChangeChargingTime; }
-		float GetOriginCharacterMaxSpeed() { return mOriginCharacterMaxSpeed; }
 
 	private:
 		void OnStart() override;
@@ -59,15 +69,15 @@ namespace fq::client
 		AimAssist*							mAimAssist;
 
 		float mDashCoolTime;
+		float mDashCoolTimeReduction;
 		float mDashElapsedTime;
 		float mStrongAttackCoolTime;
+		float mStrongAttackCoolTimeReduction;
 		float mStrongAttackElapsedTime;
 		float mArrowPower;
-		float mChangeChargingTime;
 		float mRStickNoInputTime;
 		float mWeakProjectileVelocity;
 		float mStrongProjectileVelocity;
-		float mOriginCharacterMaxSpeed;
 
 		game_module::PrefabResource mWeakAttack;
 		game_module::PrefabResource mStrongAttack;

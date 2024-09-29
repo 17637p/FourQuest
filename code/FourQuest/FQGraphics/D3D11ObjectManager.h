@@ -26,7 +26,7 @@ namespace fq::graphics
 	class D3D11ObjectManager
 	{
 	public:
-		D3D11ObjectManager() = default;
+		D3D11ObjectManager();
 		~D3D11ObjectManager();
 
 		void ClearDeleteQueue();
@@ -58,6 +58,9 @@ namespace fq::graphics
 		const std::set<IDecalObject*>& GetDecalObjects() const { return mDecalObjects; }
 		const std::set<ITrailObject*>& GetTrailObjects() const { return mTrailObjects; }
 		const std::set<IProbeObject*>& GetProbeObjects() const { return mProbeObjects; }
+		const std::vector<std::set<IDecalObject*>>& GetDecalLayerRef() const { return mDecalLayerRef; }
+
+		void CheckDecalLayer();
 
 	private:
 		template <typename Child, typename Parent>
@@ -83,5 +86,7 @@ namespace fq::graphics
 		std::queue<IDecalObject*> mDecalObjectDeleteQueue;
 		std::queue<ITrailObject*> mTrailObjectDeleteQueue;
 		std::queue<IProbeObject*> mProbeObjectDeleteQueue;
+
+		std::vector<std::set<IDecalObject*>> mDecalLayerRef;
 	};
 }

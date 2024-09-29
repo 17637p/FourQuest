@@ -32,6 +32,7 @@ fq::client::Attack::Attack()
 	, mHitCallback{}
 	, mTargetPosRatio{}
 	, mDirectionRatio{}
+	, mAttackEffectEvent{}
 {}
 
 fq::client::Attack::~Attack()
@@ -90,6 +91,11 @@ void fq::client::Attack::Set(const AttackInfo& info)
 	mHitCallback = info.mHitCallback;
 	mTargetPosRatio = info.targetPosRatio;
 	mDirectionRatio = info.directionRatio;
+
+	if (!info.HitEffectName.empty())
+	{
+		mAttackEffectEvent = info.HitEffectName;
+	}
 }
 
 bool fq::client::Attack::HasKnockBack() const
@@ -108,4 +114,9 @@ void fq::client::Attack::PlayHitSound()
 void fq::client::Attack::SetDestroyTime(float destroyTime)
 {
 	mDestroyTime = destroyTime;
+}
+
+void fq::client::Attack::SetAttackDirection(DirectX::SimpleMath::Vector3 direction)
+{
+	mAttackDirection = direction;
 }

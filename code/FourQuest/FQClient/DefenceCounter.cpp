@@ -41,8 +41,11 @@ void fq::client::DefenceCounter::OnUpdate(float dt)
 {
 	if (!mIsClear && mIsStart)
 	{
+		GetScene()->GetEventManager()->FireEvent<client::event::InProgressDefence>(
+			{ GetGameObject()->GetName(), (int)mCurCount });
+
 		mCurCount += dt * mCountSpeed * mCollidingPlayerNum;
-		spdlog::trace("CurCount: {}, RequestCount: {}", mCurCount, mRequestCount);
+		//spdlog::trace("CurCount: {}, RequestCount: {}", mCurCount, mRequestCount);
 
 		if (mCurCount > mRequestCount)
 		{
