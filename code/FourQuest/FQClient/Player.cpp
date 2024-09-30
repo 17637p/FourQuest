@@ -629,16 +629,16 @@ void fq::client::Player::setDecalColor()
 			switch (mSoulType)
 			{
 				case fq::client::ESoulType::Sword:
-					info.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
+					info.BaseColor = PlayerSoulVariable::SwordSoulColor;
 					break;
 				case fq::client::ESoulType::Staff:
-					info.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
+					info.BaseColor = PlayerSoulVariable::StaffSoulColor;
 					break;
 				case fq::client::ESoulType::Axe:
-					info.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
+					info.BaseColor = PlayerSoulVariable::AxeSoulColor;
 					break;
 				case fq::client::ESoulType::Bow:
-					info.EmissiveColor = PlayerSoulVariable::BowSoulColor;
+					info.BaseColor = PlayerSoulVariable::BowSoulColor;
 					break;
 			}
 

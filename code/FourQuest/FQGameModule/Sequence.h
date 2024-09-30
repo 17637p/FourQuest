@@ -85,7 +85,7 @@ namespace fq::game_module
 	
 	struct TextPrintTrackInfo
 	{
-		std::string fontPath = "던파 연단된 칼날";
+		std::string fontPath = {};// "던파 연단된 칼날";
 		float startTime = 0.f;
 		float totalPlayTime = 1.f;
 

@@ -173,7 +173,7 @@ namespace fq::game_module
 			mDurationTime += dt;
 
 			// UI ²ô±â
-			GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
+			//GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
 
 			for (const auto& track : mTracks)
 			{
@@ -189,7 +189,7 @@ namespace fq::game_module
 				mDurationTime = 0;
 
 				// UI ÄÑ±â
-				GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
+				//GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
 
 				for (const auto& track : mTracks)
 				{
