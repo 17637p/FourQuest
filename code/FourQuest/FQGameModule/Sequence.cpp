@@ -22,6 +22,7 @@ namespace fq::game_module
 		, mbIsPlay(false)
 		, mbIsLoop(false)
 		, mbIsOnce(true)
+		, mbIsOffUIRender(false)
 		, mTotalPlayTime(0.f)
 		, mDurationTime(0.f)
 		, mAnimationContainer{}
@@ -173,7 +174,8 @@ namespace fq::game_module
 			mDurationTime += dt;
 
 			// UI ²ô±â
-			GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
+			if (mbIsOffUIRender)
+				GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
 
 			for (const auto& track : mTracks)
 			{

@@ -127,6 +127,8 @@ namespace fq::game_module
 		void SetIsLoop(bool isLoop) { mbIsLoop = isLoop; }
 		bool GetIsOnce() const { return mbIsOnce; }
 		void SetIsOnce(bool isOnce) { mbIsOnce = isOnce; }
+		bool GetIsOffUIRender() const { return mbIsOffUIRender; }
+		void SetIsOffUIRender(bool isOffUIRender) { mbIsOffUIRender = isOffUIRender; }
 
 		/// <summary>
 		/// 인스펙터 창에서 해당 시간에 정지되어 있는 화면을 확인할 수 있도록 만든 함수입니다.
@@ -163,6 +165,7 @@ namespace fq::game_module
 		bool mbIsPlay;
 		bool mbIsLoop;
 		bool mbIsOnce;
+		bool mbIsOffUIRender;
 
 		float mTotalPlayTime;
 		float mDurationTime;
