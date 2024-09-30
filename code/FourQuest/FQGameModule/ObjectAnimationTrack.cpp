@@ -20,6 +20,7 @@ namespace fq::game_module
 
 	bool ObjectAnimationTrack::Initialize(const ObjectAnimationInfo& info, Scene* scene, std::vector<std::shared_ptr<fq::graphics::IAnimation>> animationContainer)
 	{
+		mTrackObjectName.push_back(info.targetObjectName);
 		mAnimationContainer = animationContainer;
 		mTotalPlayTime = info.totalPlayTime;
 		mStartTime = info.startTime;

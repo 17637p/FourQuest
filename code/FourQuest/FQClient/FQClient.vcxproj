@@ -47,6 +47,7 @@
     <ClInclude Include="GameSettingUI.h" />
     <ClInclude Include="GoddessStatue.h" />
     <ClInclude Include="LevelHepler.h" />
+    <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="PlantAOEAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
@@ -297,7 +298,6 @@
     <ClCompile Include="Soul.cpp" />
     <ClCompile Include="SoulManagerModule.cpp" />
     <ClCompile Include="SoulSelectUI.cpp" />
-    <ClCompile Include="SoulVariable.cpp" />
     <ClCompile Include="Spawner.cpp" />
     <ClCompile Include="SpawnerGroup.cpp" />
     <ClCompile Include="SpawnStruct.cpp" />

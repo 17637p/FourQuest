@@ -22,6 +22,7 @@ namespace fq::game_module
 
 	bool ObjectMoveTrack::Initialize(const ObjectMoveTrackInfo& info, Scene* scene)
 	{
+		mTrackObjectName.push_back(info.targetObjectName);
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
 		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;

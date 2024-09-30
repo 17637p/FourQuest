@@ -24,6 +24,7 @@ namespace fq::game_module
 	{
 		mScene = scene;
 
+		
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
 
@@ -36,6 +37,11 @@ namespace fq::game_module
 	void EffectTrack::PlayEnter()
 	{
 		mObjects = mScene->GetPrefabManager()->LoadPrefab(mPrefebPath);
+		
+		for (auto object : mObjects)
+		{
+			mTrackObjectName.push_back(object->GetName());
+		}
 
 		assert(!mObjects.empty());
 
