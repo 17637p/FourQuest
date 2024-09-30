@@ -10,6 +10,8 @@
 #include "DamageCalculation.h"
 #include "PlayerSoulVariable.h"
 #include "GaugeBar.h"
+#include "SpeechBubbleUI.h"
+#include "PlayerInfoVariable.h"
 
 fq::client::KnightArmour::KnightArmour()
 	:mDashCoolTime(1.f)
@@ -324,6 +326,8 @@ void fq::client::KnightArmour::OnStart()
 	mTransform = GetComponent<game_module::Transform>();
 	mPlayer = GetComponent<Player>();
 	mGaugeBar = GetComponent<GaugeBar>();
+
+	setName();
 }
 
 void fq::client::KnightArmour::checkSkillCoolTime(float dt)
@@ -440,4 +444,38 @@ void fq::client::KnightArmour::EnterShieldState()
 
 	GetScene()->AddGameObject(shieldObj);
 	mShieldObject = shieldObj;
+}
+
+void fq::client::KnightArmour::setName()
+{
+	int soulType = static_cast<int>(mPlayer->GetSoulType());
+	SpeechBubbleUI* speechBubble = nullptr;
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<SpeechBubbleUI>())
+		{
+			speechBubble = child->GetComponent<SpeechBubbleUI>();
+		}
+	}
+
+	if (speechBubble != nullptr)
+	{
+		switch (soulType)
+		{
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
+		}
+	}
 }

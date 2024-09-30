@@ -12,6 +12,8 @@
 #include "ArrowAttack.h"
 #include "DamageCalculation.h"
 #include "LinearAttack.h"
+#include "SpeechBubbleUI.h"
+#include "PlayerInfoVariable.h"
 
 namespace fq::client
 {
@@ -262,6 +264,8 @@ namespace fq::client
 				break;
 			}
 		}
+
+		setName();
 	}
 
 	void ArcherArmour::OnUpdate(float dt)
@@ -428,4 +432,39 @@ namespace fq::client
 
 		return cloneArmour;
 	}
+
+	void ArcherArmour::setName()
+	{
+		int soulType = static_cast<int>(mPlayer->GetSoulType());
+		SpeechBubbleUI* speechBubble = nullptr;
+		for (auto& child : GetGameObject()->GetChildren())
+		{
+			if (child->HasComponent<SpeechBubbleUI>())
+			{
+				speechBubble = child->GetComponent<SpeechBubbleUI>();
+			}
+		}
+
+		if (speechBubble != nullptr)
+		{
+			switch (soulType)
+			{
+				case 0:
+					speechBubble->SetName(PlayerInfoVariable::KnightName);
+					break;
+				case 1:
+					speechBubble->SetName(PlayerInfoVariable::MagicName);
+					break;
+				case 2:
+					speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+					break;
+				case 3:
+					speechBubble->SetName(PlayerInfoVariable::ArcherName);
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
 }
