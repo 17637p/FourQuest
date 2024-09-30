@@ -12,6 +12,8 @@
 #include "EffectTrack.h"
 #include "SoundTrack.h"
 #include "ObjectAnimationTrack.h"
+#include "EventManager.h"
+#include "Event.h"
 
 namespace fq::game_module
 {
@@ -170,6 +172,9 @@ namespace fq::game_module
 		{
 			mDurationTime += dt;
 
+			// UI ²ô±â
+			GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
+
 			for (const auto& track : mTracks)
 			{
 				if (dt == 0.f && track->GetType() == ETrackType::TEXT_PRINT)
@@ -178,9 +183,13 @@ namespace fq::game_module
 				track->Play(mDurationTime);
 			}
 
+
 			if (mDurationTime >= mTotalPlayTime)
 			{
 				mDurationTime = 0;
+
+				// UI ÄÑ±â
+				GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
 
 				for (const auto& track : mTracks)
 				{
