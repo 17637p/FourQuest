@@ -180,7 +180,8 @@ fq::client::SoulSelectUI::SoulSelectUI()
 	mStickDelay(0.2f),
 	mCurStickDelay(0),
 	mUIAnimSpeed(1000),
-	mSelectButtonID(0)
+	mSelectButtonID(0),
+	mNextSceneName("Scene1")
 {
 }
 
@@ -640,7 +641,7 @@ void fq::client::SoulSelectUI::CheckAllReady(float dt)
 		mCurTime += dt;
 		if (mCurTime > mChangeSceneTime)
 		{
-			GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({ "Scene1", true });
+			GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({ mNextSceneName, true });
 		}
 	}
 }

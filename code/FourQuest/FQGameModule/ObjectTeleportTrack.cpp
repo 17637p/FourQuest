@@ -21,6 +21,7 @@ namespace fq::game_module
 
 	bool ObjectTeleportTrack::Initialize(const ObjectTeleportTrackInfo& info, Scene* scene)
 	{
+		mTrackObjectName.push_back(info.targetObjectName);
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
 		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;

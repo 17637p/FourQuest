@@ -149,6 +149,7 @@
 #include "PlayerVariable.h"
 #include "SoulVariable.h"
 #include "LevelVariable.h"
+#include "MonsterVariable.h"
 
 // Box
 #include "Box.h"
@@ -251,6 +252,12 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "FillGaugeSpeed")
 		.data<&GoddessStatue::mDecreaseSpeed>("DecreaseSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "DecreaseSpeed")
+		.data<&GoddessStatue::mPlayerDebuff>("PlayerDebuff"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerDebuff")
+		.data<&GoddessStatue::mPlayerBuff>("PlayerBuff"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerBuff")
+		.data<&GoddessStatue::mBuff>("Buff"_hs)
+		.prop(fq::reflect::prop::Name, "Buff")
 		.base<game_module::Component>();
 
 
@@ -1528,6 +1535,8 @@ void fq::client::RegisterMetaData()
 		.data<&SoulSelectUI::mSoulMoveSpeed>("SoulMoveSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "SoulMoveSpeed")
 		.prop(fq::reflect::prop::Comment, u8"레디 때 소환된 영혼 이동 속도")
+		.data<&SoulSelectUI::mNextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SettingUI>()
@@ -2204,6 +2213,19 @@ void fq::client::RegisterMetaData()
 		.data<&LevelVariable::Player4Hp>("Player4Hp"_hs)
 		.prop(fq::reflect::prop::Name, "Player4Hp")
 
+		.base<IGameVariable>();
+
+	entt::meta<MonsterVariable>()
+		.type("MonsterVariable"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterVariable")
+		.data<&MonsterVariable::OnRagdoll>("OnRagdoll"_hs)
+		.prop(fq::reflect::prop::Name, "OnRagdoll")
+		.data<&MonsterVariable::MaxRagdollsPerScene>("MaxRagdollsPerScene"_hs)
+		.prop(fq::reflect::prop::Name, "MaxRagdollsPerScene")
+		.data<&MonsterVariable::MinFrameCountForRagdoll>("MinFrameCountForRagdoll"_hs)
+		.prop(fq::reflect::prop::Name, "MinFrameCountForRagdoll")
+		.data<&MonsterVariable::MaxOneFrameCreateRagdollCount>("MaxOneFrameCreateRagdollCount"_hs)
+		.prop(fq::reflect::prop::Name, "MaxOneFrameCreateRagdollCount")
 		.base<IGameVariable>();
 	//////////////////////////////////////////////////////////////////////////
 	//								  Box									//

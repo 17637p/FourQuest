@@ -90,6 +90,8 @@ namespace fq::client
 		// Soul Move
 		float mSoulMoveSpeed;
 
+		std::string mNextSceneName;
+
 	private:
 		friend void RegisterMetaData();
 	};

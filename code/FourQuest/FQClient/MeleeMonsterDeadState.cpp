@@ -15,6 +15,7 @@
 #include "MeleeMonsterExplosion.h"
 
 #include "ArmourSpawner.h"
+#include "MonsterVariable.h"
 
 fq::client::MeleeMonsterDeadState::MeleeMonsterDeadState()
 	: mEraseTime()

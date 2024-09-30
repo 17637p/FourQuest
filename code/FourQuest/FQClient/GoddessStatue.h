@@ -1,6 +1,9 @@
 #pragma once
 
 #include "../FQGameModule/Component.h"
+#include "../FQGameModule/PrefabResource.h"
+
+#include <list>
 #include <list>
 namespace fq::client
 {
@@ -35,7 +38,9 @@ namespace fq::client
 		bool mIsOverlayedSoul; // 영혼 빙의 중인지
 		Soul* mCurOverlaySoul; // 현재 빙의 중인 soul
 
-		std::list<Player*> mInRangePlayer; // 콜라이더 범위 안에 있는 플레이어
+		std::list<Player*> mInRangePlayers; // 콜라이더 범위 안에 있는 플레이어
+		std::unordered_map<Player*, std::shared_ptr<game_module::GameObject>> mDebuffEffects;
+		std::unordered_map<Player*, std::shared_ptr<game_module::GameObject>> mBuffEffects;
 		float mCurGauge; // 정화 정도
 		float mDealingCoolTime;
 
@@ -46,6 +51,11 @@ namespace fq::client
 		float mMaxGauge; // 채워야 하는 게이지
 		float mFillGaugeSpeed; // 1초에 채워지는 양
 		float mDecreaseSpeed; // 영혼 이탈 시, 감소하는 양
+
+		// Effect
+		game_module::PrefabResource mPlayerDebuff;
+		game_module::PrefabResource mPlayerBuff;
+		game_module::PrefabResource mBuff;
 
 	private:
 		friend void RegisterMetaData();
