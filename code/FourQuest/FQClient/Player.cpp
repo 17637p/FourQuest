@@ -406,6 +406,9 @@ void fq::client::Player::EmitBowSoulAttack()
 	attackInfo.remainingAttackCount = 1;
 	attackComponent->Set(attackInfo);
 
+	// 사운드 실행
+	playBowSoulSound();
+
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -696,6 +699,29 @@ void fq::client::Player::OnTriggerStay(const game_module::Collision& collision)
 	{
 		GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideStayTrigger>(
 			{ (int)GetPlayerID(), collision.other->GetName() });
+	}
+}
+
+void fq::client::Player::playBowSoulSound()
+{
+	int random = std::rand() % 4;
+
+	switch (random)
+	{
+		case 0:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_1", false , fq::sound::EChannel::SE });
+			break;
+		case 1:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_2", false , fq::sound::EChannel::SE });
+			break;
+		case 2:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_3", false , fq::sound::EChannel::SE });
+			break;
+		case 3:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_4", false , fq::sound::EChannel::SE });
+			break;
+		default:
+			break;
 	}
 }
 
