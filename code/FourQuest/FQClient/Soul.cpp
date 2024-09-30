@@ -14,6 +14,8 @@
 #include "PlayerSoulVariable.h"
 #include "Player.h"
 #include "HpBar.h"
+#include "SpeechBubbleUI.h"
+#include "PlayerInfoVariable.h"
 
 #include "SoulVariable.h"
 
@@ -77,6 +79,8 @@ void fq::client::Soul::OnStart()
 
 	SetSoulColor();		// 소울 색깔 지정 
 	SetSoulHP();		// 소울 HP
+
+	setName();
 }
 
 void fq::client::Soul::DestorySoul()
@@ -201,7 +205,7 @@ void fq::client::Soul::selectArmour()
 			}
 		}
 	}
-	else
+	else if(mBGaugeUI)
 	{
 		mBGaugeUI->SetVisible(false);
 	}
@@ -416,5 +420,39 @@ void fq::client::Soul::checkReleaseGoddessStatue()
 float fq::client::Soul::GetSoulHpRatio() const
 {
 	return mHP / static_cast<float>(SoulVariable::SoulMaxHp);
+}
+
+void fq::client::Soul::setName()
+{
+	int soulType = static_cast<int>(GetSoulType());
+	SpeechBubbleUI* speechBubble = nullptr;
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<SpeechBubbleUI>())
+		{
+			speechBubble = child->GetComponent<SpeechBubbleUI>();
+		}
+	}
+
+	if (speechBubble != nullptr)
+	{
+		switch (soulType)
+		{
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
+		}
+	}
 }
 

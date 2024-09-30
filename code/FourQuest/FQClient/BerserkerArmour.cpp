@@ -6,6 +6,8 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Animator.h"
+#include "SpeechBubbleUI.h"
+#include "PlayerInfoVariable.h"
 
 namespace fq::client
 {
@@ -169,6 +171,8 @@ namespace fq::client
 		mController = GetComponent<game_module::CharacterController>();
 		mTransform = GetComponent<game_module::Transform>();
 		mPlayer = GetComponent<Player>();
+
+		setName();
 	}
 
 	void BerserkerArmour::checkSkillCoolTime(float dt)
@@ -218,4 +222,39 @@ namespace fq::client
 			mAnimator->SetParameterOffTrigger("OnRushCharging");
 		}
 	}
+
+	void BerserkerArmour::setName()
+	{
+		int soulType = static_cast<int>(mPlayer->GetSoulType());
+		SpeechBubbleUI* speechBubble = nullptr;
+		for (auto& child : GetGameObject()->GetChildren())
+		{
+			if (child->HasComponent<SpeechBubbleUI>())
+			{
+				speechBubble = child->GetComponent<SpeechBubbleUI>();
+			}
+		}
+
+		if (speechBubble != nullptr)
+		{
+			switch (soulType)
+			{
+				case 0:
+					speechBubble->SetName(PlayerInfoVariable::KnightName);
+					break;
+				case 1:
+					speechBubble->SetName(PlayerInfoVariable::MagicName);
+					break;
+				case 2:
+					speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+					break;
+				case 3:
+					speechBubble->SetName(PlayerInfoVariable::ArcherName);
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
 }

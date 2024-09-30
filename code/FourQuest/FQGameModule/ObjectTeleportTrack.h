@@ -34,6 +34,7 @@ namespace fq::game_module
 		std::weak_ptr<GameObject> mTargetObject;
 		std::vector<TrackKey> mKeys;
 
+		bool mbIsObjectReturnToStartTransform;
 		DirectX::SimpleMath::Vector3 mPrevPosition;
 		DirectX::SimpleMath::Quaternion mPrevRotation;
 		DirectX::SimpleMath::Vector3 mPrevScale;

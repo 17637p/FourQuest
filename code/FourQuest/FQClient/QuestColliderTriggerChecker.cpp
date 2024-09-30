@@ -1,9 +1,11 @@
 #include "QuestColliderTriggerChecker.h"
 
 #include "../FQGameModule/Scene.h" 
+#include "../FQGameModule/EventManager.h" 
 #include "GameManager.h"
 
 #include "ClientEvent.h"
+#include "PlayerInfoVariable.h"
 
 std::shared_ptr<fq::game_module::Component> fq::client::QuestColliderTriggerChecker::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -27,6 +29,22 @@ fq::client::QuestColliderTriggerChecker::QuestColliderTriggerChecker()
 	mIsClear(false),
 	mMaxPlayerNum(0)
 {
+}
+
+fq::client::QuestColliderTriggerChecker::QuestColliderTriggerChecker(const QuestColliderTriggerChecker& other)
+	:mCollidingPlayerNum(0),
+	mIsClear(0),
+	mMaxPlayerNum(0)
+{
+}
+
+fq::client::QuestColliderTriggerChecker& fq::client::QuestColliderTriggerChecker::operator=(const QuestColliderTriggerChecker& other)
+{
+	mCollidingPlayerNum = 0;
+	mIsClear = false;
+	mMaxPlayerNum = 0;
+
+	return *this;
 }
 
 fq::client::QuestColliderTriggerChecker::~QuestColliderTriggerChecker()
@@ -65,10 +83,39 @@ void fq::client::QuestColliderTriggerChecker::OnTriggerExit(const game_module::C
 	}
 }
 
-void fq::client::QuestColliderTriggerChecker::OnUpdate(float dt)
+void fq::client::QuestColliderTriggerChecker::OnAwake()
 {
-	// 임시 코드
-	auto gameManager = GetScene()->GetObjectByName("GameManager");
-	auto gameManagerComponent = gameManager->GetComponent<GameManager>();
-	mMaxPlayerNum = gameManagerComponent->GetPlayers().size();
+	mMaxPlayerNum = 0;
+
+	if (PlayerInfoVariable::Player1SoulType != -1)
+	{
+		mMaxPlayerNum++;
+	}
+	if (PlayerInfoVariable::Player2SoulType != -1)
+	{
+		mMaxPlayerNum++;
+	}
+	if (PlayerInfoVariable::Player3SoulType != -1)
+	{
+		mMaxPlayerNum++;
+	}
+	if (PlayerInfoVariable::Player4SoulType != -1)
+	{
+		mMaxPlayerNum++;
+	}
+
+	EventProcessUpdatePlayerState();
 }
+
+void fq::client::QuestColliderTriggerChecker::EventProcessUpdatePlayerState()
+{
+	mUpdatePlayerStateHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::UpdatePlayerState>(
+		[this](const client::event::UpdatePlayerState& event)
+		{
+			if (event.type == EPlayerType::SoulDestoryed)
+			{
+				mMaxPlayerNum--;
+			}
+		});
+}
+

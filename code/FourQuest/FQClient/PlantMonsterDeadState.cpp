@@ -5,10 +5,11 @@
 #include "../FQGameModule/MaterialAnimator.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/ImageUI.h"
-
-#include "ClientEvent.h"
+#include "../FQGameModule/RigidBody.h"
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/Event.h"
+
+#include "ClientEvent.h"
 
 #include "ArmourSpawner.h"
 
@@ -52,8 +53,10 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	if (animator.GetGameObject()->HasComponent<game_module::Articulation>())
 	{
 		auto articulation = animator.GetComponent<game_module::Articulation>();
+		auto ragdoll = animator.GetComponent<game_module::RigidBody>();
 
 		articulation->SetIsRagdoll(true);
+		ragdoll->SetBodyType(game_module::RigidBody::EBodyType::Dynamic);
 	}
 
 	// BurnEffect

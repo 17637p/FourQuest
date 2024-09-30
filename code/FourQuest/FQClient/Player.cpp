@@ -809,6 +809,7 @@ void fq::client::Player::SetPoisonRimLight(float duration)
 	mCurTime = 0;
 	auto matInfo = mSkinnedMesh->GetMaterialInstanceInfo();
 	matInfo.bUseRimLight = true;
+	matInfo.RimPow = 0.4f;
 	matInfo.RimLightColor = { 6 / (float)255, 97 / (float)255, 0, 1 };
 	mSkinnedMesh->SetMaterialInstanceInfo(matInfo);
 }

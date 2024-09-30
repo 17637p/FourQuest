@@ -73,6 +73,8 @@ namespace fq::client
 		void checkInput(float dt);
 		void checkCoolTime(float dt);
 
+		void setName();
+
 	private:
 		game_module::Transform* mTransform;
 		game_module::Animator* mAnimator;

@@ -261,7 +261,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 			// HP 설정
 			mHp -= attackPower;
 			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
-
+			
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
 
