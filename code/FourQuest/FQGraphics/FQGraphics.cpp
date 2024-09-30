@@ -37,7 +37,7 @@ FQGraphics::FQGraphics()
 	, mPostProcessingManager(std::make_shared<D3D11PostProcessingManager>())
 	, mIsOnPostProcessing(true)
 	, mIsRenderObjects(true)
-
+	, mbIsRenderUI(true)
 {
 }
 
@@ -434,7 +434,10 @@ bool FQGraphics::Render()
 		}
 	}
 
-	mUIManager->Render();
+	if (mbIsRenderUI)
+	{
+		mUIManager->Render();
+	}
 	mRenderManager->RenderFullScreen();
 
 	return true;
@@ -975,6 +978,11 @@ void FQGraphics::SetIsRenderObjects(bool isRenderObjects)
 {
 	mUIManager->SetIsRenderObjects(isRenderObjects);
 	mIsRenderObjects = isRenderObjects;
+}
+
+void fq::graphics::FQGraphics::SetIsRenderUI(bool bIsRenderUI)
+{
+	mbIsRenderUI = bIsRenderUI;
 }
 
 void FQGraphics::DeleteText(fq::graphics::ITextObject* textObject)
