@@ -192,6 +192,10 @@ void fq::client::QuestManager::EventProcessKillMonster()
 							monsterKillList[i].isClear = true;
 						}
 					}
+					else if (monsterKillList[i].monsterType == EMonsterType::All)
+					{
+						monsterKillList[i].curNumber++;
+					}
 
 					if (!monsterKillList[i].isClear)
 					{

@@ -22,6 +22,11 @@ void fq::client::MeleeMonsterExplosionState::OnStateEnter(game_module::Animator&
 	agent->Stop();
 
 	mWarningUI = animator.GetComponent<MeleeMonsterExplosion>()->EmitExplosionEffect();
+
+	// 몬스터 죽음 이벤트 발생
+	auto scene = animator.GetScene();
+	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
+		{ EMonsterType::Explosion });
 }
 
 void fq::client::MeleeMonsterExplosionState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -33,11 +38,6 @@ void fq::client::MeleeMonsterExplosionState::OnStateExit(game_module::Animator& 
 	}
 
 	animator.GetComponent<MeleeMonsterExplosion>()->Explode();
-
-	// 몬스터 죽음 이벤트 발생
-	auto scene = animator.GetScene();
-	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
-		{ EMonsterType::Explosion });
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterExplosionState::Clone()
