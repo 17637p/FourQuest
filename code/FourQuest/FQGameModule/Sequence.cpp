@@ -2,6 +2,7 @@
 
 #include "..\FQClient\Player.h"
 
+#include "Scene.h"
 #include "Track.h"
 #include "CameraChangeTrack.h"
 #include "CameraShakeTrack.h"
@@ -18,6 +19,7 @@ namespace fq::game_module
 		: mTracks()
 		, mbIsPlay(false)
 		, mbIsLoop(false)
+		, mbIsOnce(true)
 		, mTotalPlayTime(0.f)
 		, mDurationTime(0.f)
 		, mAnimationContainer{}
@@ -189,6 +191,12 @@ namespace fq::game_module
 				if (!mbIsLoop)
 				{
 					mbIsPlay = false;
+				}
+
+				// 한 번만 재생되는 거라면 한 번 재생이 끝난 후 시퀀스 제거
+				if (mbIsOnce)
+				{
+					GetScene()->DestroyGameObject(GetGameObject());
 				}
 			}
 		}

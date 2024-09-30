@@ -37,6 +37,7 @@ namespace fq::game_module
 
 	struct ObjectMoveTrackInfo
 	{
+		bool isObjectReturnToStartTransform = true;
 		float startTime = 0.f;
 		float totalPlayTime = 1.f;
 
@@ -46,6 +47,7 @@ namespace fq::game_module
 
 	struct ObjectTeleportTrackInfo
 	{
+		bool isObjectReturnToStartTransform = true;
 		float startTime = 0.f;
 		float totalPlayTime = 1.f;
 
@@ -122,6 +124,8 @@ namespace fq::game_module
 		void SetIsPlay(bool isPlay) { mbIsPlay = isPlay; }
 		bool GetIsLoop() const { return mbIsLoop; }
 		void SetIsLoop(bool isLoop) { mbIsLoop = isLoop; }
+		bool GetIsOnce() const { return mbIsOnce; }
+		void SetIsOnce(bool isOnce) { mbIsOnce = isOnce; }
 
 		/// <summary>
 		/// 인스펙터 창에서 해당 시간에 정지되어 있는 화면을 확인할 수 있도록 만든 함수입니다.
@@ -157,6 +161,7 @@ namespace fq::game_module
 		std::vector<std::shared_ptr<Track>> mTracks;
 		bool mbIsPlay;
 		bool mbIsLoop;
+		bool mbIsOnce;
 
 		float mTotalPlayTime;
 		float mDurationTime;
