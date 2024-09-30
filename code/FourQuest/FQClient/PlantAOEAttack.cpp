@@ -84,6 +84,7 @@ namespace fq::client
 
 			auto transform = GetComponent<fq::game_module::Transform>();
 
+			mTargetPosition.y = mYPosition;
 			transform->SetWorldPosition(mTargetPosition);
 
 			// 폭발하는 공격 이펙트 오브젝트 생성
