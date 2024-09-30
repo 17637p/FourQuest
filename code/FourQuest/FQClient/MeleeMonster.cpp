@@ -54,6 +54,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::MeleeMonster::Clone(std:
 		*cloneMonster = *this;
 	}
 
+
+
 	return cloneMonster;
 }
 

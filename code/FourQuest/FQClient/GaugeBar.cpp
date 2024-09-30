@@ -96,6 +96,9 @@ void fq::client::GaugeBar::OnUpdate(float dt)
 
 void fq::client::GaugeBar::setUIInfo()
 {
+	if (GetGameObject()->IsDestroyed())
+		return;
+
 	using namespace DirectX::SimpleMath;
 
 	Vector3 pos = mTransform->GetWorldPosition();
