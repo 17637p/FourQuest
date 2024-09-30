@@ -30,6 +30,7 @@ namespace fq::game_module
 	{
 		mScene = scene;
 
+		mTrackObjectName.push_back(info.cameraObjectName);
 		mTotalPlayTime = info.totalPlayTime;
 		mStartTime = info.startTime;
 

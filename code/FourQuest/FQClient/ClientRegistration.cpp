@@ -149,6 +149,7 @@
 #include "PlayerVariable.h"
 #include "SoulVariable.h"
 #include "LevelVariable.h"
+#include "MonsterVariable.h"
 
 // Box
 #include "Box.h"
@@ -2212,6 +2213,19 @@ void fq::client::RegisterMetaData()
 		.data<&LevelVariable::Player4Hp>("Player4Hp"_hs)
 		.prop(fq::reflect::prop::Name, "Player4Hp")
 
+		.base<IGameVariable>();
+
+	entt::meta<MonsterVariable>()
+		.type("MonsterVariable"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterVariable")
+		.data<&MonsterVariable::OnRagdoll>("OnRagdoll"_hs)
+		.prop(fq::reflect::prop::Name, "OnRagdoll")
+		.data<&MonsterVariable::MaxRagdollsPerScene>("MaxRagdollsPerScene"_hs)
+		.prop(fq::reflect::prop::Name, "MaxRagdollsPerScene")
+		.data<&MonsterVariable::MinFrameCountForRagdoll>("MinFrameCountForRagdoll"_hs)
+		.prop(fq::reflect::prop::Name, "MinFrameCountForRagdoll")
+		.data<&MonsterVariable::MaxOneFrameCreateRagdollCount>("MaxOneFrameCreateRagdollCount"_hs)
+		.prop(fq::reflect::prop::Name, "MaxOneFrameCreateRagdollCount")
 		.base<IGameVariable>();
 	//////////////////////////////////////////////////////////////////////////
 	//								  Box									//

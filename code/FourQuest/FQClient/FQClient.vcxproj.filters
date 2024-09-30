@@ -538,7 +538,7 @@
     </ClInclude>
     <ClInclude Include="GoddessStatue.h">
       <Filter>include\06.ETC</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="LevelHepler.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
@@ -550,6 +550,9 @@
     </ClInclude>
     <ClInclude Include="PlayerSoundState.h">
       <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterVariable.h">
+      <Filter>include\08.GameVariable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -895,9 +898,6 @@
     <ClCompile Include="DebuffPoisonZone.cpp">
       <Filter>src\03.Attack</Filter>
     </ClCompile>
-    <ClCompile Include="SoulVariable.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="SoulManagerModule.cpp">
       <Filter>src\06.ETC</Filter>
     </ClCompile>
@@ -936,7 +936,7 @@
     </ClCompile>
     <ClCompile Include="GoddessStatue.cpp">
       <Filter>src\06.ETC</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="LevelHepler.cpp">
       <Filter>src</Filter>
     </ClCompile>
