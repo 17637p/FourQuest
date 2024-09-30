@@ -3,7 +3,7 @@
 namespace layer
 {
 	// HpBar
-	constexpr unsigned int OutBar = 12;
-	constexpr unsigned int InnerBar = 10;
-	constexpr unsigned int DecreaseBar = 11;
+	constexpr unsigned int OutBar = 212;
+	constexpr unsigned int InnerBar = 210;
+	constexpr unsigned int DecreaseBar = 211;
 }

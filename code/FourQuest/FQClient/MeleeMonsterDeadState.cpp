@@ -116,19 +116,6 @@ void fq::client::MeleeMonsterDeadState::OnStateUpdate(game_module::Animator& ani
 	{
 		auto scene = animator.GetScene();
 		scene->DestroyGameObject(animator.GetGameObject());
-
-		// 몬스터 죽음 이벤트 발생
-		auto explosion = animator.GetComponent<MeleeMonsterExplosion>();
-		if (explosion)
-		{
-			scene->GetEventManager()->FireEvent<client::event::KillMonster>(
-				{ EMonsterType::Explosion });
-		}
-		else
-		{
-			scene->GetEventManager()->FireEvent<client::event::KillMonster>(
-				{ EMonsterType::Melee });
-		}
 	}
 }
 

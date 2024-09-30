@@ -205,7 +205,7 @@ void fq::client::Soul::selectArmour()
 			}
 		}
 	}
-	else
+	else if(mBGaugeUI)
 	{
 		mBGaugeUI->SetVisible(false);
 	}
