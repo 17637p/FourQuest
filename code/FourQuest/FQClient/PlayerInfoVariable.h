@@ -17,6 +17,12 @@ namespace fq::client
 		static inline int Player3SoulType = -1;
 		static inline int Player4SoulType = -1;
 
+		// 플레이어 영혼 이름
+		static inline std::string KnightName = "루카스";
+		static inline std::string MagicName = "아르카나";
+		static inline std::string ArcherName = "실버";
+		static inline std::string BerserkerName = "발더";
+
 		// 플레이어 현재 상태 
 		static inline int Player1State = -1; // 0 영혼, 1 검방, 2 마법, 3 궁수, 4 광전사
 		static inline int Player2State = -1; 

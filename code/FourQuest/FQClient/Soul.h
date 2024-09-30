@@ -50,6 +50,8 @@ namespace fq::client
 		// 영혼 HP 업데이트
 		void updateSoulHP(float dt);
 
+		void setName();
+
 	private:
 		game_module::CharacterController* mController;
 		std::vector<DeadArmour*> mSelectArmours;

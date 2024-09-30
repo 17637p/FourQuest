@@ -69,8 +69,10 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	if (animator.GetGameObject()->HasComponent<game_module::Articulation>())
 	{
 		auto articulation = animator.GetComponent<game_module::Articulation>();
+		auto ragdoll = animator.GetComponent<game_module::RigidBody>();
 
 		articulation->SetIsRagdoll(true);
+		ragdoll->SetBodyType(game_module::RigidBody::EBodyType::Dynamic);
 	}
 
 	// BurnEffect

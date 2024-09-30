@@ -25,14 +25,15 @@ namespace fq::client
 		virtual void OnUpdate(float dt) override;
 		virtual void OnDestroy() override;
 
-		void eventProcessSequenceEnterSpeech();
-		void eventProcessSequenceExitSpeech();
-
 		void play();
+		void SetName(std::string name) { mName = name; }
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
+
+		void eventProcessSequenceEnterSpeech();
+		void eventProcessSequenceExitSpeech();
 
 	private:
 		std::string mName;

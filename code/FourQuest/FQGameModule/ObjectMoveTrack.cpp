@@ -8,6 +8,7 @@ namespace fq::game_module
 {
 	ObjectMoveTrack::ObjectMoveTrack()
 		: Track(ETrackType::OBJECT_MOVE)
+		, mbIsObjectReturnToStartTransform()
 		, mTargetObject()
 		, mKeys{}
 		, mPrevPosition{}
@@ -23,6 +24,7 @@ namespace fq::game_module
 	{
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
+		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;
 
 		mTargetObject = scene->GetObjectByName(info.targetObjectName);
 
@@ -107,7 +109,7 @@ namespace fq::game_module
 	}
 	void ObjectMoveTrack::End()
 	{
-		if (!mTargetObject.expired())
+		if (!mTargetObject.expired() && mbIsObjectReturnToStartTransform)
 		{
 			if (!mTargetObject.lock()->HasComponent<Transform>()) return;
 

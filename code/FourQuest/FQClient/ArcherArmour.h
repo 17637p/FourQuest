@@ -58,6 +58,8 @@ namespace fq::client
 		void checkSkillCoolTime(float dt);
 		void checkInput(float dt);
 
+		void setName();
+
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 

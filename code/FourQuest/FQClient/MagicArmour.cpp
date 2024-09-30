@@ -11,6 +11,8 @@
 #include "PlayerVariable.h"
 #include "DamageCalculation.h"
 #include "AimAssist.h"
+#include "SpeechBubbleUI.h"
+#include "PlayerInfoVariable.h"
 
 fq::client::MagicArmour::MagicArmour()
 	:mPlayer(nullptr)
@@ -260,6 +262,8 @@ void fq::client::MagicArmour::OnStart()
 			mAimAisst = child->GetComponent<AimAssist>();
 		}
 	}
+
+	setName();
 }
 
 void fq::client::MagicArmour::OnUpdate(float dt)
@@ -437,5 +441,39 @@ void fq::client::MagicArmour::AimToNearMonster()
 {
 	if (mAimAisst)
 		mAimAisst->SetNearMonsterDirection();
+}
+
+void fq::client::MagicArmour::setName()
+{
+	int soulType = static_cast<int>(mPlayer->GetSoulType());
+	SpeechBubbleUI* speechBubble = nullptr;
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<SpeechBubbleUI>())
+		{
+			speechBubble = child->GetComponent<SpeechBubbleUI>();
+		}
+	}
+
+	if (speechBubble != nullptr)
+	{
+		switch (soulType)
+		{
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
+		}
+	}
 }
 
