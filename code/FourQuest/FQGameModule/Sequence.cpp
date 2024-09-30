@@ -219,7 +219,7 @@ namespace fq::game_module
 
 	void Sequence::OnTriggerEnter(const Collision& collision)
 	{
-		//if (collision.object->HasComponent<fq::client::Player>())
+		if (collision.object->HasComponent<fq::client::Player>())
 		{
 			mbIsPlay = true;
 
