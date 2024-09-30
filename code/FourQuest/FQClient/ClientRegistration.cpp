@@ -251,6 +251,12 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "FillGaugeSpeed")
 		.data<&GoddessStatue::mDecreaseSpeed>("DecreaseSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "DecreaseSpeed")
+		.data<&GoddessStatue::mPlayerDebuff>("PlayerDebuff"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerDebuff")
+		.data<&GoddessStatue::mPlayerBuff>("PlayerBuff"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerBuff")
+		.data<&GoddessStatue::mBuff>("Buff"_hs)
+		.prop(fq::reflect::prop::Name, "Buff")
 		.base<game_module::Component>();
 
 
@@ -1528,6 +1534,8 @@ void fq::client::RegisterMetaData()
 		.data<&SoulSelectUI::mSoulMoveSpeed>("SoulMoveSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "SoulMoveSpeed")
 		.prop(fq::reflect::prop::Comment, u8"레디 때 소환된 영혼 이동 속도")
+		.data<&SoulSelectUI::mNextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SettingUI>()
