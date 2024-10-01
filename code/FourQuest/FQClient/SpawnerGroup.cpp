@@ -195,8 +195,8 @@ void fq::client::SpawnerGroup::Spawn(SpawnRule rule)
 					monster->SetName(rule.spawnData[k].Name + std::to_string(mCurSpawnMonsterNum));
 					
 					// Monster Spawner 위치로 이동
-					DirectX::SimpleMath::Vector3 spawnPos = children[i]->GetTransform()->GetLocalPosition();
-					monster->GetTransform()->SetLocalPosition(spawnPos);
+					DirectX::SimpleMath::Vector3 spawnPos = children[i]->GetTransform()->GetWorldPosition();
+					monster->GetTransform()->SetWorldPosition(spawnPos);
 					mAddedMonsterList.push_back(monster);
 
 					GetScene()->AddGameObject(monster);
