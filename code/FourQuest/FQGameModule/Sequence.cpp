@@ -2,6 +2,7 @@
 
 #include "..\FQClient\Player.h"
 
+#include "Scene.h"
 #include "Track.h"
 #include "CameraChangeTrack.h"
 #include "CameraShakeTrack.h"
@@ -11,6 +12,8 @@
 #include "EffectTrack.h"
 #include "SoundTrack.h"
 #include "ObjectAnimationTrack.h"
+#include "EventManager.h"
+#include "Event.h"
 
 namespace fq::game_module
 {
@@ -18,6 +21,8 @@ namespace fq::game_module
 		: mTracks()
 		, mbIsPlay(false)
 		, mbIsLoop(false)
+		, mbIsOnce(true)
+		, mbIsOffUIRender(false)
 		, mTotalPlayTime(0.f)
 		, mDurationTime(0.f)
 		, mAnimationContainer{}
@@ -168,6 +173,10 @@ namespace fq::game_module
 		{
 			mDurationTime += dt;
 
+			// UI 끄기
+			if (mbIsOffUIRender)
+				GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
+
 			for (const auto& track : mTracks)
 			{
 				if (dt == 0.f && track->GetType() == ETrackType::TEXT_PRINT)
@@ -176,9 +185,13 @@ namespace fq::game_module
 				track->Play(mDurationTime);
 			}
 
+
 			if (mDurationTime >= mTotalPlayTime)
 			{
 				mDurationTime = 0;
+
+				// UI 켜기
+				GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
 
 				for (const auto& track : mTracks)
 				{
@@ -190,6 +203,12 @@ namespace fq::game_module
 				{
 					mbIsPlay = false;
 				}
+
+				// 한 번만 재생되는 거라면 한 번 재생이 끝난 후 시퀀스 제거
+				if (mbIsOnce)
+				{
+					GetScene()->DestroyGameObject(GetGameObject());
+				}
 			}
 		}
 		else
@@ -200,7 +219,7 @@ namespace fq::game_module
 
 	void Sequence::OnTriggerEnter(const Collision& collision)
 	{
-		//if (collision.object->HasComponent<fq::client::Player>())
+		if (collision.object->HasComponent<fq::client::Player>())
 		{
 			mbIsPlay = true;
 

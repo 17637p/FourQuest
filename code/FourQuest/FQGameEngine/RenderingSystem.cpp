@@ -77,6 +77,12 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 			{
 				mGameProcess->mGraphics->DrawRay(event.rayInfo);
 			});
+
+	mUIRenderHandler = eventMgr->
+		RegisterHandle<fq::event::UIRender>([this](fq::event::UIRender event)
+			{
+				mGameProcess->mGraphics->SetIsRenderUI(event.bIsRenderingUI);
+			});
 }
 
 void fq::game_engine::RenderingSystem::Update(float dt)

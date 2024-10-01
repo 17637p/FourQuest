@@ -95,6 +95,8 @@ void fq::client::TitleUI::OnStart()
 	// screenManager µî·Ï
 	fq::game_module::Scene* scene = GetScene();
 	mScreenManager = GetScene()->GetScreenManager();
+
+	eventProcessOffPopupSetting();
 }
 
 void fq::client::TitleUI::OnUpdate(float dt)

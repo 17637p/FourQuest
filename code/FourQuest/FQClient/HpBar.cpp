@@ -85,7 +85,7 @@ void fq::client::HpBar::OnStart()
 	{
 		auto camera = object.GetComponent<game_module::Camera>();
 
-		if (camera->IsMain())
+		if (object.GetName() == "MainCamera")
 		{
 			mMainCamera = camera;
 		}
@@ -142,6 +142,9 @@ void fq::client::HpBar::DecreaseHp(float ratio)
 
 void fq::client::HpBar::setUIInfo()
 {
+	if (GetGameObject()->IsDestroyed())
+		return;
+
 	using namespace DirectX::SimpleMath;
 
 	Vector3 pos = mTransform->GetWorldPosition();

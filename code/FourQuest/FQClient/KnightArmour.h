@@ -57,6 +57,8 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnStart() override;
 
+		void setName();
+
 		void checkSkillCoolTime(float dt);
 		void checkInput();
 

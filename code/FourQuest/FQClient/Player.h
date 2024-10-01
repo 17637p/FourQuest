@@ -157,6 +157,7 @@ namespace fq::client
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 		void OnTriggerStay(const game_module::Collision& collision) override;
 
+		void playBowSoulSound();
 
 		entt::meta_handle GetHandle() override { return *this; }
 

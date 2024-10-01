@@ -56,6 +56,12 @@ void fq::game_module::ImageUI::SetUIInfomations(std::vector<fq::graphics::UIInfo
 
 void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics::UIInfo& infomation)
 {
+	if (mImageObjects.size() <= index)
+	{
+		spdlog::warn("ImageUI index error");
+		return;
+	}
+
 	if (mImageObjects[index] == nullptr) return;
 
 	mImageObjects[index]->SetStartX(infomation.StartX);

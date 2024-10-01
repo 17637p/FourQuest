@@ -397,7 +397,7 @@ namespace fq::graphics
 					{
 						mStaticMeshShaderProgram->Bind(mDevice);
 					}
-					
+
 					bindingState(materialInfo);
 					mLessEqualStencilReplaceState->Bind(mDevice, job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal ? 0 : 1);
 
@@ -477,7 +477,11 @@ namespace fq::graphics
 					bindingState(materialInfo);
 					mDevice->GetDeviceContext()->IASetInputLayout(mSkinnedInstancedIL.Get());
 					mTweenBufferCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 4);
-					nodeHierarchyCache->GetAnimationKeyframeTexture()->Bind(mDevice, 0, ED3D11ShaderType::VertexShader);
+
+					if (nodeHierarchyCache->GetAnimationKeyframeTexture() != nullptr)
+					{
+						nodeHierarchyCache->GetAnimationKeyframeTexture()->Bind(mDevice, 0, ED3D11ShaderType::VertexShader);
+					}
 
 					std::vector<std::shared_ptr<D3D11VertexBuffer>> buffers;
 					buffers.push_back(skinnedMeshCache->GetSharedVertexBuffer());

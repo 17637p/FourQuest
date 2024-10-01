@@ -46,6 +46,8 @@ namespace fq::client
 		void checkSkillCoolTime(float dt);
 		void checkInput();
 
+		void setName();
+
 	private:
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;

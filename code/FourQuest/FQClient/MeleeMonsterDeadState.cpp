@@ -15,6 +15,7 @@
 #include "MeleeMonsterExplosion.h"
 
 #include "ArmourSpawner.h"
+#include "MonsterVariable.h"
 
 fq::client::MeleeMonsterDeadState::MeleeMonsterDeadState()
 	: mEraseTime()
@@ -69,8 +70,10 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	if (animator.GetGameObject()->HasComponent<game_module::Articulation>())
 	{
 		auto articulation = animator.GetComponent<game_module::Articulation>();
+		auto ragdoll = animator.GetComponent<game_module::RigidBody>();
 
 		articulation->SetIsRagdoll(true);
+		ragdoll->SetBodyType(game_module::RigidBody::EBodyType::Dynamic);
 	}
 
 	// BurnEffect
@@ -113,19 +116,6 @@ void fq::client::MeleeMonsterDeadState::OnStateUpdate(game_module::Animator& ani
 	{
 		auto scene = animator.GetScene();
 		scene->DestroyGameObject(animator.GetGameObject());
-
-		// 몬스터 죽음 이벤트 발생
-		auto explosion = animator.GetComponent<MeleeMonsterExplosion>();
-		if (explosion)
-		{
-			scene->GetEventManager()->FireEvent<client::event::KillMonster>(
-				{ EMonsterType::Explosion });
-		}
-		else
-		{
-			scene->GetEventManager()->FireEvent<client::event::KillMonster>(
-				{ EMonsterType::Melee });
-		}
 	}
 }
 

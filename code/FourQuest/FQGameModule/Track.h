@@ -42,6 +42,7 @@ namespace fq::game_module
 		virtual void End() abstract;
 		void WakeUp();
 
+		const std::vector<std::string>& GetTrackObjectName() { return mTrackObjectName; }
 		const ETrackType& GetType() { return mType; }
 		const ETrackState& GetCurrentState() { return mCurrentState; }
 		const float& GetStartTime() { return mStartTime; }
@@ -62,6 +63,7 @@ namespace fq::game_module
 		void nodeUpdate();
 
 	protected:
+		std::vector<std::string> mTrackObjectName;
 		ETrackType mType;
 		ETrackState mCurrentState;
 
