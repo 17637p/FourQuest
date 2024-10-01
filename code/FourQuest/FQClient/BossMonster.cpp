@@ -98,7 +98,7 @@ void fq::client::BossMonster::OnStart()
 void fq::client::BossMonster::OnUpdate(float dt)
 {
 	// 그로기 게이지 
-	mGroggyGauge -= mGroggyDecreasePerSecond *dt;
+	mGroggyGauge -= mGroggyDecreasePerSecond * dt;
 
 	// 공격 쿨타임 계산 
 	mAttackElapsedTime = std::min(mAttackCoolTime, mAttackElapsedTime + dt);
@@ -134,7 +134,10 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			playerAttack->PlayHitSound();
 
 			// 그로기 
-			mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
+			if (!isGroggyState())
+			{
+				mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
+			}
 
 			if (mGroggyGauge == mStartGroggyGauge)
 			{
@@ -147,7 +150,7 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			{
 				mAnimator->SetParameterBoolean("IsDead", true);
 			}
-	
+
 			// 이펙트 방출
 			fq::event::OnCreateStateEvent stateEvent;
 			stateEvent.gameObject = GetGameObject();
@@ -580,5 +583,10 @@ void fq::client::BossMonster::StepBack()
 float fq::client::BossMonster::GetGroggyGaugeRatio() const
 {
 	return mGroggyGauge / mStartGroggyGauge;
+}
+
+bool fq::client::BossMonster::isGroggyState() const
+{
+	return mAnimator->GetController().GetParameter("OnGroggy").cast<bool>();
 }
 

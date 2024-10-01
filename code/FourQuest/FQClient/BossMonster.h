@@ -136,6 +136,8 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 
+		bool isGroggyState()const;
+
 	private:
 		GameManager* mGameManager;
 		KnockBack* mKnockBack;
