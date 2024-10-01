@@ -119,6 +119,7 @@ namespace fq::game_module
 
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
+		virtual void OnDestroy() override;
 		virtual void OnTriggerEnter(const Collision& collision) override;
 
 		bool GetIsPlay() const { return mbIsPlay; }
@@ -127,6 +128,8 @@ namespace fq::game_module
 		void SetIsLoop(bool isLoop) { mbIsLoop = isLoop; }
 		bool GetIsOnce() const { return mbIsOnce; }
 		void SetIsOnce(bool isOnce) { mbIsOnce = isOnce; }
+		bool GetIsTimeStop() const { return mbIsTimeStop; }
+		void SetIsTimeStop(bool isTimeStop) { mbIsTimeStop = isTimeStop; }
 		bool GetIsOffUIRender() const { return mbIsOffUIRender; }
 		void SetIsOffUIRender(bool isOffUIRender) { mbIsOffUIRender = isOffUIRender; }
 
@@ -157,6 +160,10 @@ namespace fq::game_module
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>>& GetAnimationContainer() { return mAnimationContainer; }
 		  
 	private:
+		void playTrack(float dt);
+		void updateUI();
+		void updateSequenceObject(float dt);
+
 		virtual entt::meta_handle GetHandle() override;
 		virtual std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 
@@ -165,6 +172,7 @@ namespace fq::game_module
 		bool mbIsPlay;
 		bool mbIsLoop;
 		bool mbIsOnce;
+		bool mbIsTimeStop;
 		bool mbIsOffUIRender;
 
 		float mTotalPlayTime;

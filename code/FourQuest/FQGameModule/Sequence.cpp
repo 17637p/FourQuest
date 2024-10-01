@@ -14,6 +14,8 @@
 #include "ObjectAnimationTrack.h"
 #include "EventManager.h"
 #include "Event.h"
+#include "TimeManager.h"
+#include "TextUI.h"
 
 namespace fq::game_module
 {
@@ -22,6 +24,7 @@ namespace fq::game_module
 		, mbIsPlay(false)
 		, mbIsLoop(false)
 		, mbIsOnce(true)
+		, mbIsTimeStop(false)
 		, mbIsOffUIRender(false)
 		, mTotalPlayTime(0.f)
 		, mDurationTime(0.f)
@@ -171,33 +174,16 @@ namespace fq::game_module
 	{
 		if (mbIsPlay)
 		{
-			mDurationTime += dt;
+			float deltaTime = GetScene()->GetTimeManager()->GetDeltaTime();
+			mDurationTime += deltaTime;
 
-			// UI ²ô±â
-			if (mbIsOffUIRender)
-				GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
-
-			for (const auto& track : mTracks)
-			{
-				if (dt == 0.f && track->GetType() == ETrackType::TEXT_PRINT)
-					continue;
-
-				track->Play(mDurationTime);
-			}
-
+			playTrack(deltaTime);
+			updateUI();
+			updateSequenceObject(deltaTime);
 
 			if (mDurationTime >= mTotalPlayTime)
 			{
 				mDurationTime = 0;
-
-				// UI ÄÑ±â
-				GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
-
-				for (const auto& track : mTracks)
-				{
-					track->WakeUp();
-					track->End();
-				}
 
 				if (!mbIsLoop)
 				{
@@ -217,6 +203,11 @@ namespace fq::game_module
 		}
 	}
 
+	void Sequence::OnDestroy()
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
+	}
+
 	void Sequence::OnTriggerEnter(const Collision& collision)
 	{
 		if (collision.object->HasComponent<fq::client::Player>())
@@ -226,6 +217,71 @@ namespace fq::game_module
 			for (const auto& track : mTracks)
 				track->WakeUp();
 		}
+	}
+
+	void Sequence::playTrack(float dt)
+	{
+		for (const auto& track : mTracks)
+		{
+			if (dt == 0.f && track->GetType() == ETrackType::TEXT_PRINT)
+				continue;
+
+			track->Play(mDurationTime);
+		}
+
+		if (mDurationTime >= mTotalPlayTime)
+		{
+			for (const auto& track : mTracks)
+			{
+				track->WakeUp();
+				track->End();
+			}
+		}
+	}
+
+	void Sequence::updateUI()
+	{
+		// UI ²ô±â
+		if (mbIsOffUIRender)
+			GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
+
+		// UI ÄÑ±â
+		if (mDurationTime >= mTotalPlayTime)
+			GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
+	}
+
+	void Sequence::updateSequenceObject(float dt)
+	{
+		if (!mbIsTimeStop)
+			return;
+
+		GetScene()->GetTimeManager()->SetTimeScale(0.01f);
+
+		for (const auto& track : mTracks)
+		{
+			for (auto& objectName : track->GetTrackObjectName())
+			{
+				auto object = GetScene()->GetObjectByName(objectName);
+
+				if (!object)
+					continue;
+
+				if (!object->HasComponent<TextUI>())
+					object->OnUpdate(dt);
+
+				for (auto child : object->GetChildren())
+				{
+					if (!child)
+						continue;
+
+					if (!child->HasComponent<TextUI>())
+						object->OnUpdate(dt);
+				}
+			}
+		}
+
+		if (mDurationTime >= mTotalPlayTime)
+			GetScene()->GetTimeManager()->SetTimeScale(1.f);
 	}
 
 	entt::meta_handle Sequence::GetHandle()
