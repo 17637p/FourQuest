@@ -34,6 +34,9 @@ fq::graphics::UIManager::UIManager()
 	mResourceManager(nullptr),
 	mIsRenderObjects(true)
 {
+	boost::locale::generator gen;
+	std::locale loc = gen("en_US.UTF-8");
+	std::locale::global(loc);
 }
 
 fq::graphics::UIManager::~UIManager()
@@ -58,7 +61,7 @@ fq::graphics::UIManager::~UIManager()
 	mDirect2DFactory->Release();
 }
 
-void fq::graphics::UIManager::Initialize(HWND hWnd, std::shared_ptr<D3D11Device> device, 
+void fq::graphics::UIManager::Initialize(HWND hWnd, std::shared_ptr<D3D11Device> device,
 	std::shared_ptr<D3D11ResourceManager> resourceManager,
 	const short width, const short height)
 {
@@ -97,7 +100,7 @@ HRESULT fq::graphics::UIManager::createRenderTarget(std::shared_ptr<D3D11Device>
 
 	IDXGISurface1* pDXGISurface = nullptr;
 	auto renderTarget = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
-	
+
 	ID3D11Texture2D* texture = nullptr;
 	renderTarget->GetRTV().Get()->GetResource(reinterpret_cast<ID3D11Resource**>(&texture));
 
@@ -402,16 +405,12 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 
 void fq::graphics::UIManager::DeleteText(fq::graphics::ITextObject* textObject)
 {
-	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), textObject),mTexts.end());
+	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), textObject), mTexts.end());
 	delete textObject;
 }
 
 std::wstring fq::graphics::UIManager::stringToWstring(std::string str)
 {
-	boost::locale::generator gen;
-	std::locale loc = gen("en_US.UTF-8");
-	std::locale::global(loc);
-
 	// 문자열 변환
 	std::string narrow_str = str;
 	std::wstring wide_str = boost::locale::conv::to_utf<wchar_t>(narrow_str, "UTF-8");
@@ -542,13 +541,13 @@ void fq::graphics::UIManager::draw()
 			}
 		}
 
-		else if (mImages[imageIndex]->GetLayer() > mTexts[textIndex]->GetTextInformation().Layer 
+		else if (mImages[imageIndex]->GetLayer() > mTexts[textIndex]->GetTextInformation().Layer
 			&& mImages[imageIndex]->GetLayer() > mSpriteAnimations[spriteAnimationIndex]->GetSpriteInfo().Layer)
 		{
 			drawImage(mImages[imageIndex]);
 			imageIndex++;
 		}
-		else if(mTexts[textIndex]->GetTextInformation().Layer > mSpriteAnimations[spriteAnimationIndex]->GetSpriteInfo().Layer)
+		else if (mTexts[textIndex]->GetTextInformation().Layer > mSpriteAnimations[spriteAnimationIndex]->GetSpriteInfo().Layer)
 		{
 			drawText(mTexts[textIndex]);
 			textIndex++;
@@ -568,8 +567,8 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 		mRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
 		ID2D1SolidColorBrush* tempBrush = nullptr;
-		
-		
+
+
 		if (!textObject->GetTextInformation().IsRender)
 		{
 			return;
@@ -715,7 +714,7 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 					drawTextInformation.CenterY + drawTextInformation.Height),
 				mBrushes[drawTextInformation.FontColor]);
 		}
-		
+
 	}
 }
 
@@ -900,7 +899,7 @@ void fq::graphics::UIManager::drawImage(IImageObject* image)
 			mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
 		}
 	}
-	
+
 }
 
 fq::graphics::ISpriteAnimationObject* fq::graphics::UIManager::CreateSpriteAniamtion(SpriteInfo spriteInfo)
@@ -959,7 +958,7 @@ void fq::graphics::UIManager::drawSpriteAnimation(ISpriteAnimationObject* sprite
 
 	D2D1_SIZE_F imageSize = mBitmaps[imagePath]->bitmap->GetSize();
 	float animWidth = imageSize.width / (float)spriteInfo.ImageNum;
-	D2D1_RECT_F imageRect = { animWidth * spriteInfo.CurImage, 0, animWidth * spriteInfo.CurImage + animWidth, imageSize.height}; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
+	D2D1_RECT_F imageRect = { animWidth * spriteInfo.CurImage, 0, animWidth * spriteInfo.CurImage + animWidth, imageSize.height }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
 	D2D1_RECT_F screenRect{};
 	if (spriteInfo.isCenter) // true가 isCenter
 	{

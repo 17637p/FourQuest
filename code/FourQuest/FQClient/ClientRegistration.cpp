@@ -125,6 +125,7 @@
 #include "VideoSettingUI.h"
 #include "SpeechBubbleUI.h"
 #include "BGaugeUI.h"
+#include "PlayerCheckUI.h"
 
 #include "CameraMoving.h"
 
@@ -158,6 +159,7 @@
 #include "BGM.h"
 #include "Portal.h"
 #include "GoddessStatue.h"
+#include "VibrationState.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -260,6 +262,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Buff")
 		.base<game_module::Component>();
 
+	entt::meta<VibrationState>()
+		.type("VibrationState"_hs)
+		.prop(reflect::prop::Name, "VibrationState")
+		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             플레이어 관련								//
@@ -1647,6 +1653,16 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "GaugeSize")
 		.data<&BGaugeUI::mGaugeRatio>("GaugeRatio"_hs)
 		.prop(fq::reflect::prop::Name, "GaugeRatio")
+		.base<fq::game_module::Component>();
+
+	entt::meta<PlayerCheckUI>()
+		.type("PlayerCheckUI"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerCheckUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&PlayerCheckUI::mOffset>("mOffset"_hs)
+		.prop(fq::reflect::prop::Name, "mOffset")
+		.data<&PlayerCheckUI::mWorldOffset>("mWorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "mWorldOffset")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

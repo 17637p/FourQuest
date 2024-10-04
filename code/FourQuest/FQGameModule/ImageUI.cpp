@@ -9,6 +9,7 @@
 fq::game_module::ImageUI::ImageUI()
 	:mUIInfomations{}
 	, mbIsBindTransform(true)
+	, mImageObjects{}
 {}
 
 fq::game_module::ImageUI::~ImageUI()

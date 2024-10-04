@@ -509,7 +509,7 @@ void fq::client::QuestManager::EventProcessClearQuest()
 						preQuestList[0].preIsMain == event.clearQuest.mIsMain)
 					{
 						mCurSubQuest.push_back(mSubQuests[i]);
-						RenderOnSubQuest(i, true);
+						RenderOnSubQuest(mCurSubQuest.size()-1, true);
 						spdlog::trace("Complete PreQuest!");
 					}
 				}
