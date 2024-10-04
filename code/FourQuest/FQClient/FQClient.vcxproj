@@ -140,6 +140,7 @@
     <ClInclude Include="PlantMonsterHitState.h" />
     <ClInclude Include="PlantMonsterIdleState.h" />
     <ClInclude Include="PlantMonsterStareState.h" />
+    <ClInclude Include="PlayerCheckUI.h" />
     <ClInclude Include="PlayerInfoVariable.h" />
     <ClInclude Include="PlayerMovementSoundState.h" />
     <ClInclude Include="PlayerSoundState.h" />
@@ -183,6 +184,7 @@
     <ClInclude Include="SwordAttackState.h" />
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="UILayerDefine.h" />
+    <ClInclude Include="VibrationState.h" />
     <ClInclude Include="VideoSettingUI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -277,6 +279,7 @@
     <ClCompile Include="PlantMonsterHitState.cpp" />
     <ClCompile Include="PlantMonsterIdleState.cpp" />
     <ClCompile Include="PlantMonsterStareState.cpp" />
+    <ClCompile Include="PlayerCheckUI.cpp" />
     <ClCompile Include="PlayerMovementSoundState.cpp" />
     <ClCompile Include="PlayerSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
@@ -313,6 +316,7 @@
     <ClCompile Include="StaffSoulAttackState.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
     <ClCompile Include="TitleUI.cpp" />
+    <ClCompile Include="VibrationState.cpp" />
     <ClCompile Include="VideoSettingUI.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

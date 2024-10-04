@@ -128,6 +128,7 @@
 #include "VideoSettingUI.h"
 #include "SpeechBubbleUI.h"
 #include "BGaugeUI.h"
+#include "PlayerCheckUI.h"
 
 #include "CameraMoving.h"
 
@@ -161,6 +162,7 @@
 #include "BGM.h"
 #include "Portal.h"
 #include "GoddessStatue.h"
+#include "VibrationState.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -255,6 +257,12 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "FillGaugeSpeed")
 		.data<&GoddessStatue::mDecreaseSpeed>("DecreaseSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "DecreaseSpeed")
+		.data<&GoddessStatue::mGodDamageBuff>("GodDamageBuff"_hs)
+		.prop(fq::reflect::prop::Name, "GodDamageBuff")
+		.data<&GoddessStatue::mGodCoolTimeBuff>("GodCoolTimeBuff"_hs)
+		.prop(fq::reflect::prop::Name, "GodCoolTimeBuff")
+		.data<&GoddessStatue::mGodMoveBuff>("GodMoveBuff"_hs)
+		.prop(fq::reflect::prop::Name, "GodMoveBuff")
 		.data<&GoddessStatue::mPlayerDebuff>("PlayerDebuff"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerDebuff")
 		.data<&GoddessStatue::mPlayerBuff>("PlayerBuff"_hs)
@@ -263,6 +271,7 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Buff")
 		.base<game_module::Component>();
 
+<<<<<<< HEAD
 	entt::meta<EffectColorManager>()
 		.type("EffectColorManager"_hs)
 		.prop(reflect::prop::Name, "EffectColorManager")
@@ -291,6 +300,37 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MagicEmissiveColor")
 		.prop(reflect::prop::Comment, u8"마법 영혼 베이스 컬러")
 		.base<game_module::Component>();
+=======
+	entt::meta<EVibrationMode>()
+		.type("VibrationMode"_hs)
+		.prop(reflect::prop::Name, "VibrationState")
+		.data<EVibrationMode::Both>("Both"_hs)
+		.prop(fq::reflect::prop::Name, "Both")
+		.data<EVibrationMode::Left>("Left"_hs)
+		.prop(fq::reflect::prop::Name, "Left")
+		.data<EVibrationMode::Right>("Right"_hs)
+		.prop(fq::reflect::prop::Name, "Right");
+
+
+	entt::meta<VibrationState>()
+		.type("VibrationState"_hs)
+		.prop(reflect::prop::Name, "VibrationState")
+		.data<&VibrationState::mbUseAllController>("UseAllController"_hs)
+		.prop(fq::reflect::prop::Name, "mbUseAllController")
+		.prop(fq::reflect::prop::Comment, u8"모든 컨트롤러 진동 여부")
+		.data<&VibrationState::mMode>("Mode"_hs)
+		.prop(fq::reflect::prop::Name, "Mode")
+		.prop(fq::reflect::prop::Comment, u8"진동 모드")
+		.data<&VibrationState::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.data<&VibrationState::mIntensity>("Intensity"_hs)
+		.prop(fq::reflect::prop::Name, "Intensity")
+		.prop(fq::reflect::prop::Comment, u"진동강도0 ~65535")
+		.data<&VibrationState::mVibrationTime>("VibrationTime"_hs)
+		.prop(fq::reflect::prop::Name, "VibrationTime")
+		.prop(fq::reflect::prop::Comment, u"진동 발동 시간 ")
+		.base<game_module::IStateBehaviour>();
+>>>>>>> main
 
 	entt::meta<EffectColorTransmitter>()
 		.type("EffectColorTransmitter"_hs)
@@ -1686,6 +1726,16 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "GaugeRatio")
 		.base<fq::game_module::Component>();
 
+	entt::meta<PlayerCheckUI>()
+		.type("PlayerCheckUI"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerCheckUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&PlayerCheckUI::mOffset>("mOffset"_hs)
+		.prop(fq::reflect::prop::Name, "mOffset")
+		.data<&PlayerCheckUI::mWorldOffset>("mWorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "mWorldOffset")
+		.base<fq::game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             Monster Type								//
 	//////////////////////////////////////////////////////////////////////////
@@ -1771,6 +1821,13 @@ void fq::client::RegisterMetaData()
 		.data<&ObjectInteraction::tag>("Tag"_hs)
 		.prop(fq::reflect::prop::Name, "Tag");
 
+	entt::meta<ClearGoddessStatue>()
+		.type("ClearGoddessStatue"_hs)
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatue")
+		.prop(fq::reflect::prop::POD)
+		.data<&ClearGoddessStatue::goddessStatueName>("GoddessStatueName"_hs)
+		.prop(fq::reflect::prop::Name, "GoddessStatueName");
+
 	entt::meta<QuestJoinCondition>()
 		.type("QuestJoinCondition"_hs)
 		.prop(fq::reflect::prop::Name, "QuestJoinCondition")
@@ -1794,8 +1851,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ClearQuestList")
 		.data<&QuestClearCondition::colliderTriggerList>("ColliderTriggerList"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
-		.data<&QuestClearCondition::objectInteration>("ObjectInteration"_hs)
-		.prop(fq::reflect::prop::Name, "ObjectInteration");
+		.data<&QuestClearCondition::clearGoddessStatueList>("ClearGoddessStatueList"_hs)
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatueList");
 
 	entt::meta<RewardPortal>()
 		.type("RewardPortal"_hs)

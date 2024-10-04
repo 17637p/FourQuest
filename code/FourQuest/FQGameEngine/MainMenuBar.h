@@ -74,6 +74,9 @@ namespace fq::game_engine
 		std::string mCreateSceneName;
 		bool mbIsOpenCreateWindowPopup;
 
+		int mColliderTagIndex;
+
+
 		fq::game_module::EventHandler mOnLoadSceneHandler;
 	};
 

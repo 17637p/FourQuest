@@ -137,6 +137,22 @@ namespace fq::client
 		/// </summary>
 		void SetPoisonRimLight(float duration);
 
+		/// <summary>
+		/// Goddess Buff 
+		/// </summary>
+		/// <returns></returns>
+		bool GetGBDecreaseDurability() const { return mGBDecreaseDurability; } // 내구도 감소  
+		void SetGBDecreaseDurability(bool val) { mGBDecreaseDurability = val; } 
+
+		float GetGBIncreaseAttackPower() const { return mGBIncreaseAttackPower; } // 공격력 강화
+		void SetGBIncreaseAttackPower(float val) { mGBIncreaseAttackPower = val; } // 버프 없을 때 0
+
+		float GetGBDecreaseCooltime() const { return mGBDecreaseCooltime; } // 쿨타임 감소
+		void SetGBDecreaseCooltime(float val) { mGBDecreaseCooltime = val; } // 버프 없을 때 1
+
+		float GetGBIncreaseSpeed() const { return mGBIncreaseSpeed; } // 이동속도 증가 
+		void SetGBIncreaseSpeed(float val) { mGBIncreaseSpeed = val; } // 버프 없을 때 0
+
 	private:
 		void processInput(float dt);
 		void processCoolTime(float dt);
@@ -217,6 +233,13 @@ namespace fq::client
 		// 독 림라이트
 		float mDuration;
 		float mCurTime;
+
+		// Goddess Buff
+		bool mGBDecreaseDurability; // 갑옷 내구도 감소 여부
+		float mGBIncreaseAttackPower; // 공격력 증가
+		float mGBDecreaseCooltime; // 쿨타임 감소
+		float mGBIncreaseSpeed; // 이동속도 증가 
+
 		game_module::SkinnedMeshRenderer* mSkinnedMesh;
 
 		std::array<game_module::StaticMeshRenderer*, static_cast<int>(EWeaponeMesh::End)> mWeaponeMeshes;

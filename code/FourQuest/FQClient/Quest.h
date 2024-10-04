@@ -45,7 +45,7 @@ namespace fq::client
 		float curCount = 0;
 	};
 
-	// UI 없음 
+	// UI 없음 - 코드 내에서 사용
 	struct ClearQuest
 	{
 		int clearIndex = 0;
@@ -62,6 +62,11 @@ namespace fq::client
 	{
 		game_module::ETag tag = game_module::ETag::Armour;
 	};
+
+	struct ClearGoddessStatue
+	{
+		std::string goddessStatueName = "";
+	};
 	
 	struct QuestClearCondition
 	{
@@ -70,7 +75,8 @@ namespace fq::client
 		std::vector<Defence> defenceList;
 		std::vector<ClearQuest> clearQuestList;
 		std::vector<QuestColliderTrigger> colliderTriggerList;
-		std::vector<ObjectInteraction> objectInteration;
+		std::vector<ObjectInteraction> objectInterationList;
+		std::vector<ClearGoddessStatue> clearGoddessStatueList;
 	};
 
 	struct RewardPortal

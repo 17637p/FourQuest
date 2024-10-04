@@ -56,6 +56,7 @@ namespace fq::client
 		void EventProcessClearQuest();
 		void EventProcessAllColliderTrigger();
 		void EventProcessObjectInteraction();
+		void EventProcessClearGoddessStatue();
 
 	private:
 		// ¿ŒΩ∫∆Â≈Õ øÎ
@@ -80,6 +81,7 @@ namespace fq::client
 		game_module::EventHandler mClearQuestHandler;
 		game_module::EventHandler mAllCollideTriggerHandler;
 		game_module::EventHandler mObjectInteractionHandler;
+		game_module::EventHandler mClearGoddessStatueHandler;
 
 		// TextUI
 		game_module::TextUI* mMainQuestText;
