@@ -107,6 +107,14 @@ namespace fq::client::event
 	};
 
 	/// <summary>
+	/// 플레이어가 오브젝트(갑옷, 여신상)와 상호작용할 때 발생하는 이벤트
+	/// </summary>
+	struct ClearGoddessStatue
+	{
+		std::string goddessStatueName;
+	};
+
+	/// <summary>
 	/// 진행 중인 퀘스트를 알리는 이벤트
 	/// </summary>
 	struct CurrentQuest

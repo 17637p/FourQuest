@@ -372,6 +372,7 @@ void fq::client::Soul::selectGoddessStatue(float dt)
 					mIsOverlayGoddessStatue = true;
 					// 빙의하면 못 움직이게 처리 
 					GetComponent<game_module::CharacterController>()->SetCanMoveCharater(false);
+					GetComponent<HpBar>()->SetVisible(false);
 
 					// 소울 위치를 여신상 위치로 해서 숨기기 
 					auto soulT = GetComponent<game_module::Transform>();

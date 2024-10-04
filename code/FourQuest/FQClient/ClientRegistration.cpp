@@ -254,6 +254,12 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "FillGaugeSpeed")
 		.data<&GoddessStatue::mDecreaseSpeed>("DecreaseSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "DecreaseSpeed")
+		.data<&GoddessStatue::mGodDamageBuff>("GodDamageBuff"_hs)
+		.prop(fq::reflect::prop::Name, "GodDamageBuff")
+		.data<&GoddessStatue::mGodCoolTimeBuff>("GodCoolTimeBuff"_hs)
+		.prop(fq::reflect::prop::Name, "GodCoolTimeBuff")
+		.data<&GoddessStatue::mGodMoveBuff>("GodMoveBuff"_hs)
+		.prop(fq::reflect::prop::Name, "GodMoveBuff")
 		.data<&GoddessStatue::mPlayerDebuff>("PlayerDebuff"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerDebuff")
 		.data<&GoddessStatue::mPlayerBuff>("PlayerBuff"_hs)
@@ -1750,6 +1756,13 @@ void fq::client::RegisterMetaData()
 		.data<&ObjectInteraction::tag>("Tag"_hs)
 		.prop(fq::reflect::prop::Name, "Tag");
 
+	entt::meta<ClearGoddessStatue>()
+		.type("ClearGoddessStatue"_hs)
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatue")
+		.prop(fq::reflect::prop::POD)
+		.data<&ClearGoddessStatue::goddessStatueName>("GoddessStatueName"_hs)
+		.prop(fq::reflect::prop::Name, "GoddessStatueName");
+
 	entt::meta<QuestJoinCondition>()
 		.type("QuestJoinCondition"_hs)
 		.prop(fq::reflect::prop::Name, "QuestJoinCondition")
@@ -1773,8 +1786,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ClearQuestList")
 		.data<&QuestClearCondition::colliderTriggerList>("ColliderTriggerList"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
-		.data<&QuestClearCondition::objectInteration>("ObjectInteration"_hs)
-		.prop(fq::reflect::prop::Name, "ObjectInteration");
+		.data<&QuestClearCondition::clearGoddessStatueList>("ClearGoddessStatueList"_hs)
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatueList");
 
 	entt::meta<RewardPortal>()
 		.type("RewardPortal"_hs)
