@@ -22,8 +22,8 @@ namespace fq::game_module
 
 			// 삭제여부
 			bool bUseAutoDelete = true; // 상태변화나 시간에 따른 변화에 삭제될지 여부
-			bool bUseDeleteByStateEnd = false;  // 상태변화에 따라 삭제될지 여부
 			float DeleteTime = 1.f;  // 삭제될 시간
+			bool bUseDeleteByStateEnd = false;  // 상태변화에 따라 삭제될지 여부
 
 			// 오프셋
 			DirectX::SimpleMath::Vector3 Scale = { 1, 1, 1 };
@@ -32,6 +32,9 @@ namespace fq::game_module
 
 			float PlayBackSpeed = 1.f;
 			bool bIsPlaybackSppedHandleChildHierarchy = false;
+
+			// 생성된 오브젝트 포인터로 이벤트 던질지 여부
+			bool bIsGenerateEvent = false;
 		};
 
 		struct PlaySoundInfo

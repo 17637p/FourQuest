@@ -24,6 +24,7 @@
 #include "DebuffPoisonZone.h"
 #include "DeadArmour.h"
 #include "BGaugeUI.h"
+#include "EffectColorTransmitter.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -56,6 +57,7 @@ fq::client::Player::Player()
 	, mRSkillCoolTimeRatio(0.f)
 	, mASkillCoolTimeRatio(0.f)
 	, mXSkillCoolTimeRatio(0.f)
+	, mbIsEmitFeverEffect(false)
 {}
 
 fq::client::Player::~Player()
@@ -317,6 +319,22 @@ void fq::client::Player::processFeverTime(float dt)
 	if (mFeverElapsedTime >= mFeverTime)
 	{
 		setFeverBuff(false);
+
+		mbIsEmitFeverEffect = false;
+	}
+
+	// 피버 타임 이펙트
+	if (mbIsEmitFeverEffect)
+	{
+		fq::event::OnCreateStateEvent stateEvent;
+		stateEvent.gameObject = GetGameObject();
+		stateEvent.RegisterKeyName = "P_Fever";
+		if (!stateEvent.RegisterKeyName.empty())
+		{
+			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+		}
+
+		mbIsEmitFeverEffect = true;
 	}
 }
 
@@ -369,6 +387,13 @@ void fq::client::Player::EmitStaffSoulAttack()
 	attackT->SetParent(mTransform);
 	attackComponent->SetPlayer(this);
 
+	// 이펙트 색상 설정
+	auto effectColorTransmitter = attackObj->GetComponent<EffectColorTransmitter>();
+	if (effectColorTransmitter != nullptr)
+	{
+		effectColorTransmitter->SetSoulType(GetSoulType());
+	}
+
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -408,6 +433,13 @@ void fq::client::Player::EmitBowSoulAttack()
 
 	// 사운드 실행
 	playBowSoulSound();
+
+	// 이펙트 색상 설정
+	auto effectColorTransmitter = attackObj->GetComponent<EffectColorTransmitter>();
+	if (effectColorTransmitter != nullptr)
+	{
+		effectColorTransmitter->SetSoulType(GetSoulType());
+	}
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -462,27 +494,27 @@ void fq::client::Player::equipWeapone(ESoulType equipType, bool isEquip)
 {
 	switch (equipType)
 	{
-		case fq::client::ESoulType::Sword:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
-		}
-		break;
-		case fq::client::ESoulType::Staff:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
-		}
-		break;
-		case fq::client::ESoulType::Axe:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
-		}
-		break;
-		case fq::client::ESoulType::Bow:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
-		}
-		break;
+	case fq::client::ESoulType::Sword:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
+	}
+	break;
+	case fq::client::ESoulType::Staff:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
+	}
+	break;
+	case fq::client::ESoulType::Axe:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
+	}
+	break;
+	case fq::client::ESoulType::Bow:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
+	}
+	break;
 	}
 }
 
@@ -577,18 +609,18 @@ bool fq::client::Player::CanUseSoulAttack() const
 
 	switch (mSoulType)
 	{
-		case fq::client::ESoulType::Sword:
-			cost = PlayerSoulVariable::SoulSwordAttackCost;
-			break;
-		case fq::client::ESoulType::Staff:
-			cost = PlayerSoulVariable::SoulStaffAttackCost;
-			break;
-		case fq::client::ESoulType::Axe:
-			cost = PlayerSoulVariable::SoulAxeAttackCost;
-			break;
-		case fq::client::ESoulType::Bow:
-			cost = PlayerSoulVariable::SoulBowAttackCost;
-			break;
+	case fq::client::ESoulType::Sword:
+		cost = PlayerSoulVariable::SoulSwordAttackCost;
+		break;
+	case fq::client::ESoulType::Staff:
+		cost = PlayerSoulVariable::SoulStaffAttackCost;
+		break;
+	case fq::client::ESoulType::Axe:
+		cost = PlayerSoulVariable::SoulAxeAttackCost;
+		break;
+	case fq::client::ESoulType::Bow:
+		cost = PlayerSoulVariable::SoulBowAttackCost;
+		break;
 	}
 
 	return mSoulGauge >= cost;
@@ -631,18 +663,18 @@ void fq::client::Player::setDecalColor()
 			info.BaseColor = { 0.f,0.f,0.f,1.f };
 			switch (mSoulType)
 			{
-				case fq::client::ESoulType::Sword:
-					info.BaseColor = PlayerSoulVariable::SwordSoulColor;
-					break;
-				case fq::client::ESoulType::Staff:
-					info.BaseColor = PlayerSoulVariable::StaffSoulColor;
-					break;
-				case fq::client::ESoulType::Axe:
-					info.BaseColor = PlayerSoulVariable::AxeSoulColor;
-					break;
-				case fq::client::ESoulType::Bow:
-					info.BaseColor = PlayerSoulVariable::BowSoulColor;
-					break;
+			case fq::client::ESoulType::Sword:
+				info.BaseColor = PlayerSoulVariable::SwordSoulColor;
+				break;
+			case fq::client::ESoulType::Staff:
+				info.BaseColor = PlayerSoulVariable::StaffSoulColor;
+				break;
+			case fq::client::ESoulType::Axe:
+				info.BaseColor = PlayerSoulVariable::AxeSoulColor;
+				break;
+			case fq::client::ESoulType::Bow:
+				info.BaseColor = PlayerSoulVariable::BowSoulColor;
+				break;
 			}
 
 			decal->SetDecalMaterialInfo(info);
@@ -663,18 +695,18 @@ void fq::client::Player::linkSoulTypeHead()
 
 			switch (mSoulType)
 			{
-				case fq::client::ESoulType::Sword:
-					res = mSwordHaed;
-					break;
-				case fq::client::ESoulType::Staff:
-					res = mStaffHaed;
-					break;
-				case fq::client::ESoulType::Axe:
-					res = mAxeHaed;
-					break;
-				case fq::client::ESoulType::Bow:
-					res = mBowHaed;
-					break;
+			case fq::client::ESoulType::Sword:
+				res = mSwordHaed;
+				break;
+			case fq::client::ESoulType::Staff:
+				res = mStaffHaed;
+				break;
+			case fq::client::ESoulType::Axe:
+				res = mAxeHaed;
+				break;
+			case fq::client::ESoulType::Bow:
+				res = mBowHaed;
+				break;
 			}
 
 			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(res);
@@ -708,20 +740,20 @@ void fq::client::Player::playBowSoulSound()
 
 	switch (random)
 	{
-		case 0:
-			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_1", false , fq::sound::EChannel::SE });
-			break;
-		case 1:
-			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_2", false , fq::sound::EChannel::SE });
-			break;
-		case 2:
-			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_3", false , fq::sound::EChannel::SE });
-			break;
-		case 3:
-			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_4", false , fq::sound::EChannel::SE });
-			break;
-		default:
-			break;
+	case 0:
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_1", false , fq::sound::EChannel::SE });
+		break;
+	case 1:
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_2", false , fq::sound::EChannel::SE });
+		break;
+	case 2:
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_3", false , fq::sound::EChannel::SE });
+		break;
+	case 3:
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_4", false , fq::sound::EChannel::SE });
+		break;
+	default:
+		break;
 	}
 }
 

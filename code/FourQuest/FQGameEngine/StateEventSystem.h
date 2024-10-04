@@ -22,23 +22,40 @@ namespace fq::game_engine
 		StateEventSystem();
 		~StateEventSystem();
 
-		void OnLoadScene();
-		void OnAnimationStateEvent(const fq::event::OnCreateStateEvent& data);
-
 		void Initialize(GameProcess* gameProcess);
 		void Update(float dt);
 
-	private:
-		DirectX::SimpleMath::Vector3 genarateRenderVector(const DirectX::SimpleMath::Vector3& random);
+		void OnLoadScene();
+		void OnCreateStateEvent(const fq::event::OnCreateStateEvent& data);
+		void OnDeleteStateEvent(const fq::event::OnDeleteStateEvent& data);
 
 	private:
-		struct InstantiatePrefabLifeTimeInfo
+		struct EventDependObjectKey
 		{
-			fq::game_module::GameObject* OnwerGameObject;
+			size_t NameKey;
+			size_t ObjectKey;
+
+			bool operator<(const EventDependObjectKey& other) const
+			{
+				if (this->NameKey == other.NameKey)
+				{
+					return this->ObjectKey < other.ObjectKey;
+				}
+
+				return this->NameKey < other.NameKey;
+			}
+		};
+
+		struct LifeTimeDependObject
+		{
 			std::shared_ptr<fq::game_module::GameObject> InstantiatePrefabObject;
 			float LifeTime;
-			bool bUseDeleteStateEnd;
 			float PlaybackSpeed;
+		};
+
+		struct EventDependObject
+		{
+			std::shared_ptr<fq::game_module::GameObject> InstantiatePrefabObject;
 		};
 
 		struct PlaySoundLifeTimeInfo
@@ -50,6 +67,11 @@ namespace fq::game_engine
 		};
 
 	private:
+		DirectX::SimpleMath::Vector3 genarateRenderVector(const DirectX::SimpleMath::Vector3& random);
+		EventDependObjectKey generateKey(const std::string& keyName, const fq::game_module::GameObject* ownerObject);
+
+
+	private:
 		enum { RESERVE_SIZE = 512 };
 
 		GameProcess* mGameProcess;
@@ -59,8 +81,10 @@ namespace fq::game_engine
 
 		fq::game_module::StateEvent* mStateEvent;
 
-		std::vector<InstantiatePrefabLifeTimeInfo> mInstantiatePrefabLifeTimeInfos;
 		std::vector<PlaySoundLifeTimeInfo> mPlaySoundLifeTimeInfos;
+
+		std::vector<LifeTimeDependObject> mLifeTimeDependObjects;
+		std::map<EventDependObjectKey, EventDependObject> mEventDependObjects;
 
 		std::random_device mRandomDevice;  // ·£´ý ÀåÄ¡
 		std::mt19937 mGenerarator;

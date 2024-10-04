@@ -47,7 +47,8 @@ namespace fq::graphics
 		unsigned int UVIndex;
 		int bUseLightmap;
 		int bUseDirection;
-		float unused[1];
+		int bUseOnlyLightmapData;
+		float unused[0];
 	};
 
 	struct CBTweenBuffer
@@ -387,7 +388,7 @@ namespace fq::graphics
 			unsigned int HeightCount;
 			unsigned int FrameCount;
 			float FrameSecond;
-			
+
 			int bIsLooping;
 			int bIsUsed;
 			float unused[2];

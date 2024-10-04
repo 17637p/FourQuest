@@ -216,11 +216,7 @@ namespace fq::client
 		{
 			mAnimator->SetParameterTrigger("OnRushCharging");
 			mRushElapsedTime = mPlayer->IsFeverTime() ? mRushCoolTime - mRushCoolTimeReduction : mRushCoolTime;
-		}
-		else
-		{
-			mAnimator->SetParameterOffTrigger("OnRushCharging");
-		}
+		}                                                           
 	}
 
 	void BerserkerArmour::setName()

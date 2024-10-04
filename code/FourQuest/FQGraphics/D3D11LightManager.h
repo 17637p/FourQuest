@@ -80,6 +80,9 @@ namespace fq::graphics
 		void CreateLightMapDirectionTextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& paths);
 		const std::shared_ptr<D3D11TextureArray>& GetLightMapDirectionTextureArray() const { return mLightMapDirectionTextureArray; }
 
+		bool GetIsLightmapOnly() const { return mbUseLightmapOnly; }
+		void SetIsLightmapOnly(bool bUseLightmapOnly) { mbUseLightmapOnly = bUseLightmapOnly; }
+
 	private:
 		std::vector<float> calculateCascadeEnds(std::vector<float> ratios, float nearZ, float farZ);
 		std::vector<DirectX::SimpleMath::Matrix> calculateCascadeShadowTransform(std::vector<float> cascadeEnds, DirectX::SimpleMath::Matrix cameraView, DirectX::SimpleMath::Matrix cameraProj, DirectX::SimpleMath::Vector3 lightDirection);
@@ -104,6 +107,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
 		std::shared_ptr<D3D11TextureArray> mLightMapTextureArray;
 		std::shared_ptr<D3D11TextureArray> mLightMapDirectionTextureArray;
+		bool mbUseLightmapOnly;
 	};
 
 	inline std::shared_ptr<D3D11ConstantBuffer<LightData>> D3D11LightManager::GetLightConstnatBuffer()

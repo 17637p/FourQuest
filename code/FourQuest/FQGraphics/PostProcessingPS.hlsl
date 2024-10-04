@@ -103,6 +103,8 @@ cbuffer cColorAdjustment : register(b0)
     int bUseToneMapping;
     int bUseHueVsSatCurve;
     int bUseFog;
+    
+    int bUseGrayScale;
 };
 
 cbuffer cFog : register(b1)
@@ -184,8 +186,14 @@ float4 main(float2 uv : Texcoord) : SV_TARGET
         float depth = gDepth.Sample(gSamplerPoint, uv);
         color = AdjustFog(color, cNearPlane, cFarPlane, depth, cVisibleArea, cFogColor);
     }
-
+    
     float3 retColor = pow(color, 1 / gGamma);
     
+    if (bUseGrayScale)
+    {
+        float grayscale = dot(retColor.rgb, float3(0.299, 0.587, 0.114));
+        retColor = float3(grayscale, grayscale, grayscale);
+    }
+
     return float4(retColor, 1.0);
 }

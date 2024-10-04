@@ -2,9 +2,12 @@
 
 #include "../FQReflect/FQReflect.h"
 
+// Manager
 #include "GameManager.h"
 #include "MaterialManager.h"
 #include "MonsterManager.h"
+#include "EffectColorManager.h"
+#include "EffectColorTransmitter.h"
 
 // Player 
 #include "PlayerDefine.h"
@@ -260,7 +263,41 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Buff")
 		.base<game_module::Component>();
 
+	entt::meta<EffectColorManager>()
+		.type("EffectColorManager"_hs)
+		.prop(reflect::prop::Name, "EffectColorManager")
+		.data<&EffectColorManager::mKnightBaseColor>("KnightBaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "KnightBaseColor")
+		.prop(reflect::prop::Comment, u8"검 영혼 베이스 컬러")
+		.data<&EffectColorManager::mKnightEmissiveColor>("KnightEmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "KnightEmissiveColor")
+		.prop(reflect::prop::Comment, u8"검 영혼 베이스 컬러")
+		.data<&EffectColorManager::mBerserkerBaseColor>("BerserkerBaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "BerserkerBaseColor")
+		.prop(reflect::prop::Comment, u8"광전사 영혼 베이스 컬러")
+		.data<&EffectColorManager::mBerserkerEmissiveColor>("BerserkerEmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "BerserkerEmissiveColor")
+		.prop(reflect::prop::Comment, u8"광전사 영혼 베이스 컬러")
+		.data<&EffectColorManager::mArcherBaseColor>("ArcherBaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "ArcherBaseColor")
+		.prop(reflect::prop::Comment, u8"궁수 영혼 베이스 컬러")
+		.data<&EffectColorManager::mArcherEmissiveColor>("ArcherEmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "ArcherEmissiveColor")
+		.prop(reflect::prop::Comment, u8"궁수 영혼 베이스 컬러")
+		.data<&EffectColorManager::mMagicBaseColor>("MagicBaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "MagicBaseColor")
+		.prop(reflect::prop::Comment, u8"마법 영혼 베이스 컬러")
+		.data<&EffectColorManager::mMagicEmissiveColor>("MagicEmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "MagicEmissiveColor")
+		.prop(reflect::prop::Comment, u8"마법 영혼 베이스 컬러")
+		.base<game_module::Component>();
 
+	entt::meta<EffectColorTransmitter>()
+		.type("EffectColorTransmitter"_hs)
+		.prop(reflect::prop::Name, "EffectColorTransmitter")
+		.data<&EffectColorTransmitter::mSoulType>("SoulType"_hs)
+		.prop(fq::reflect::prop::Name, "SoulType")
+		.base<game_module::Component>();
 	//////////////////////////////////////////////////////////////////////////
 	//                             플레이어 관련								//
 	//////////////////////////////////////////////////////////////////////////

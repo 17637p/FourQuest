@@ -307,10 +307,18 @@ namespace fq::event
 		fq::game_module::GameObject* gameObject;
 	};
 
+	struct OnGeneratePrefabInstance
+	{
+		fq::game_module::GameObject* EventSendObject;
+		std::shared_ptr<fq::game_module::GameObject> PrefabGameObject;
+	};
+
 	struct OnDeleteStateEvent
 	{
+		std::string RegisterKeyName;
 		fq::game_module::GameObject* gameObject;
 	};
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//							Sequence Event								// 

@@ -36,15 +36,6 @@ namespace fq::client
 		controller->SetPadInputRotation();
 		controller->SetDashInput(true);
 
-		// 공격 시 발생하는 전진량
-		auto transform = animator.GetComponent<game_module::Transform>();
-		auto rigid = animator.GetComponent<game_module::RigidBody>();
-		auto foward = transform->GetWorldMatrix().Forward();
-		foward.Normalize();
-		foward.x *= mAttackMovement;
-		foward.z *= mAttackMovement;
-		rigid->SetLinearVelocity(foward);
-
 		// 몬스터 충돌에 의한 밀림 무시
 		animator.GetGameObject()->SetTag(game_module::ETag::PlayerMonsterIgnore);
 
@@ -66,6 +57,15 @@ namespace fq::client
 			if (berserkerArmour != nullptr)
 			{
 				berserkerArmour->EmitAttackIntend(mAttackType, mColliderOffset, mColliderScale, mKnocBackPower, mDestroyTime);
+			
+				// 공격 시 발생하는 전진량
+				auto transform = animator.GetComponent<game_module::Transform>();
+				auto rigid = animator.GetComponent<game_module::RigidBody>();
+				auto foward = transform->GetWorldMatrix().Forward();
+				foward.Normalize();
+				foward.x *= mAttackMovement;
+				foward.z *= mAttackMovement;
+				rigid->SetLinearVelocity(foward);
 			}
 		}
 	}

@@ -176,6 +176,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetIsRenderDebug(bool bIsRenderDebug) abstract;
 			virtual FQ_GRAPHICS void SetIsRenderObjects(bool isRenderObjects) abstract;
 			virtual FQ_GRAPHICS void SetIsRenderUI(bool bIsRenderUI) abstract;
+			virtual FQ_GRAPHICS void SetIsUseLightmapOnly(bool bIsUseLightmapOnly) abstract;
 
 			/// UI
 			// text

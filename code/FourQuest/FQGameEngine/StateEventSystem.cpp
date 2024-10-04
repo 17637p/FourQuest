@@ -13,17 +13,89 @@
 fq::game_engine::StateEventSystem::StateEventSystem()
 	: mGameProcess(nullptr)
 	, mStateEvent(nullptr)
-	, mInstantiatePrefabLifeTimeInfos{}
+	, mLifeTimeDependObjects{}
 	, mPlaySoundLifeTimeInfos{}
 	, mRandomDevice()
 	, mGenerarator(mRandomDevice())
 {
-	mInstantiatePrefabLifeTimeInfos.reserve(RESERVE_SIZE);
+	mLifeTimeDependObjects.reserve(RESERVE_SIZE);
 	mPlaySoundLifeTimeInfos.reserve(RESERVE_SIZE);
 }
 
 fq::game_engine::StateEventSystem::~StateEventSystem()
 {
+}
+
+void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
+{
+	mGameProcess = gameProcess;
+
+	// EventHandle 등록
+	auto& eventMgr = mGameProcess->mEventManager;
+
+	mOnLoadSceneHandler = eventMgr->
+		RegisterHandle<fq::event::OnLoadScene>(this, &StateEventSystem::OnLoadScene);
+
+	mOnProcessStateEvent = eventMgr->
+		RegisterHandle<fq::event::OnCreateStateEvent>(this, &StateEventSystem::OnCreateStateEvent);
+
+	mOnProcessStateExitEvent = eventMgr->
+		RegisterHandle<fq::event::OnDeleteStateEvent>(this, &StateEventSystem::OnDeleteStateEvent);
+}
+
+void fq::game_engine::StateEventSystem::Update(float dt)
+{
+	using namespace fq::game_module;
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+	for (auto iter = mLifeTimeDependObjects.begin(); iter != mLifeTimeDependObjects.end();)
+	{
+		LifeTimeDependObject& InstantiatePrefabLifeTimeInfo = *iter;
+
+		InstantiatePrefabLifeTimeInfo.LifeTime -= dt * InstantiatePrefabLifeTimeInfo.PlaybackSpeed;
+
+		if (InstantiatePrefabLifeTimeInfo.LifeTime < 0
+			|| InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject->IsDestroyed())
+		{
+			scene->DestroyGameObject(InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject.get());
+			iter = mLifeTimeDependObjects.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+
+	for (auto iter = mEventDependObjects.begin(); iter != mEventDependObjects.end();)
+	{
+		EventDependObject& InstantiatePrefabLifeTimeInfo = iter->second;
+
+		if (InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject->IsDestroyed())
+		{
+			iter = mEventDependObjects.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+
+	for (auto iter = mPlaySoundLifeTimeInfos.begin(); iter != mPlaySoundLifeTimeInfos.end();)
+	{
+		PlaySoundLifeTimeInfo& playSoundLifeTimeInfo = *iter;
+
+		playSoundLifeTimeInfo.LifeTime -= dt;
+
+		if (playSoundLifeTimeInfo.LifeTime < 0)
+		{
+			mGameProcess->mSoundManager->StopChannel(playSoundLifeTimeInfo.Channel);
+			iter = mPlaySoundLifeTimeInfos.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
 }
 
 void fq::game_engine::StateEventSystem::OnLoadScene()
@@ -50,7 +122,48 @@ void fq::game_engine::StateEventSystem::OnLoadScene()
 	);
 }
 
-void fq::game_engine::StateEventSystem::OnAnimationStateEvent(const fq::event::OnCreateStateEvent& data)
+void fq::game_engine::StateEventSystem::OnDeleteStateEvent(const fq::event::OnDeleteStateEvent& data)
+{
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+	const auto key = generateKey(data.RegisterKeyName, data.gameObject);
+	auto find = mEventDependObjects.find(key);
+
+	if (find != mEventDependObjects.end())
+	{
+		scene->DestroyGameObject(find->second.InstantiatePrefabObject.get());
+		mEventDependObjects.erase(find);
+	}
+
+	for (auto iter = mPlaySoundLifeTimeInfos.begin(); iter != mPlaySoundLifeTimeInfos.end();)
+	{
+		const PlaySoundLifeTimeInfo& playSoundLifeTimeInfo = *iter;
+
+		if (playSoundLifeTimeInfo.bUseDeleteStateEnd)
+		{
+			mGameProcess->mSoundManager->StopChannel(playSoundLifeTimeInfo.Channel);
+			iter = mPlaySoundLifeTimeInfos.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+}
+
+fq::game_engine::StateEventSystem::EventDependObjectKey fq::game_engine::StateEventSystem::generateKey(const std::string& keyName, const fq::game_module::GameObject* ownerObject)
+{
+	using namespace fq::game_engine;
+
+	StateEventSystem::EventDependObjectKey key;
+
+	key.NameKey = std::hash<std::string>{}(keyName);
+	key.ObjectKey = reinterpret_cast<size_t>(ownerObject);
+
+	return key;
+}
+
+void fq::game_engine::StateEventSystem::OnCreateStateEvent(const fq::event::OnCreateStateEvent& data)
 {
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
@@ -87,13 +200,6 @@ void fq::game_engine::StateEventSystem::OnAnimationStateEvent(const fq::event::O
 
 					auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 					scene->AddGameObject(effectObject);
-
-					InstantiatePrefabLifeTimeInfo InstantiatePrefabLifeTimeInfo;
-					InstantiatePrefabLifeTimeInfo.OnwerGameObject = data.gameObject;
-					InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject = effectObject;
-					InstantiatePrefabLifeTimeInfo.LifeTime = instantiatePrefab.DeleteTime;
-					InstantiatePrefabLifeTimeInfo.bUseDeleteStateEnd = instantiatePrefab.bUseDeleteByStateEnd;
-					InstantiatePrefabLifeTimeInfo.PlaybackSpeed = instantiatePrefab.PlayBackSpeed;
 
 					// 아마 자식 계층까지 파고 들어가야 할거 같음
 					if (!instantiatePrefab.bIsPlaybackSppedHandleChildHierarchy)
@@ -135,7 +241,32 @@ void fq::game_engine::StateEventSystem::OnAnimationStateEvent(const fq::event::O
 						setPlayBackSpeedRecursive(effectObject.get(), instantiatePrefab.PlayBackSpeed);
 					}
 
-					mInstantiatePrefabLifeTimeInfos.push_back(InstantiatePrefabLifeTimeInfo);
+					// 자료구조 추가
+					if (instantiatePrefab.bUseAutoDelete)
+					{
+						LifeTimeDependObject objectData;
+						objectData.InstantiatePrefabObject = effectObject;
+						objectData.LifeTime = instantiatePrefab.DeleteTime;
+						objectData.PlaybackSpeed = instantiatePrefab.PlayBackSpeed;
+
+						mLifeTimeDependObjects.push_back(objectData);
+					}
+					if (instantiatePrefab.bUseDeleteByStateEnd)
+					{
+						EventDependObject objectData;
+						objectData.InstantiatePrefabObject = effectObject;
+
+						mEventDependObjects.insert({ generateKey(instantiatePrefab.FunctionName, data.gameObject), objectData });
+					}
+
+					if (instantiatePrefab.bIsGenerateEvent)
+					{
+						fq::event::OnGeneratePrefabInstance generateData;
+						generateData.EventSendObject = data.gameObject;
+						generateData.PrefabGameObject = effectObject;
+
+						mGameProcess->mEventManager->FireEvent<fq::event::OnGeneratePrefabInstance>(std::move(generateData));
+					}
 				}
 			}
 
@@ -165,101 +296,6 @@ void fq::game_engine::StateEventSystem::OnAnimationStateEvent(const fq::event::O
 			}
 		}
 	);
-}
-
-void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
-{
-	mGameProcess = gameProcess;
-
-	// EventHandle 등록
-	auto& eventMgr = mGameProcess->mEventManager;
-
-	mOnLoadSceneHandler = eventMgr->
-		RegisterHandle<fq::event::OnLoadScene>(this, &StateEventSystem::OnLoadScene);
-
-	mOnProcessStateEvent = eventMgr->
-		RegisterHandle<fq::event::OnCreateStateEvent>(this, &StateEventSystem::OnAnimationStateEvent);
-
-	mOnProcessStateExitEvent = eventMgr->
-		RegisterHandle<fq::event::OnDeleteStateEvent>(
-			[this](const fq::event::OnDeleteStateEvent& data)
-			{
-				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
-
-				for (auto iter = mInstantiatePrefabLifeTimeInfos.begin(); iter != mInstantiatePrefabLifeTimeInfos.end();)
-				{
-					const InstantiatePrefabLifeTimeInfo& InstantiatePrefabLifeTimeInfo = *iter;
-
-					if (InstantiatePrefabLifeTimeInfo.bUseDeleteStateEnd
-						&& data.gameObject == InstantiatePrefabLifeTimeInfo.OnwerGameObject)
-					{
-						scene->DestroyGameObject(InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject.get());
-						iter = mInstantiatePrefabLifeTimeInfos.erase(iter);
-
-						break;
-					}
-					else
-					{
-						++iter;
-					}
-				}
-
-				for (auto iter = mPlaySoundLifeTimeInfos.begin(); iter != mPlaySoundLifeTimeInfos.end();)
-				{
-					const PlaySoundLifeTimeInfo& playSoundLifeTimeInfo = *iter;
-
-					if (playSoundLifeTimeInfo.bUseDeleteStateEnd)
-					{
-						mGameProcess->mSoundManager->StopChannel(playSoundLifeTimeInfo.Channel);
-						iter = mPlaySoundLifeTimeInfos.erase(iter);
-					}
-					else
-					{
-						++iter;
-					}
-				}
-			});
-}
-
-void fq::game_engine::StateEventSystem::Update(float dt)
-{
-	using namespace fq::game_module;
-	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
-
-	for (auto iter = mInstantiatePrefabLifeTimeInfos.begin(); iter != mInstantiatePrefabLifeTimeInfos.end();)
-	{
-		InstantiatePrefabLifeTimeInfo& InstantiatePrefabLifeTimeInfo = *iter;
-
-		InstantiatePrefabLifeTimeInfo.LifeTime -= dt * InstantiatePrefabLifeTimeInfo.PlaybackSpeed;
-
-		if (InstantiatePrefabLifeTimeInfo.LifeTime < 0
-			|| InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject->IsDestroyed())
-		{
-			scene->DestroyGameObject(InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject.get());
-			iter = mInstantiatePrefabLifeTimeInfos.erase(iter);
-		}
-		else
-		{
-			++iter;
-		}
-	}
-
-	for (auto iter = mPlaySoundLifeTimeInfos.begin(); iter != mPlaySoundLifeTimeInfos.end();)
-	{
-		PlaySoundLifeTimeInfo& playSoundLifeTimeInfo = *iter;
-
-		playSoundLifeTimeInfo.LifeTime -= dt;
-
-		if (playSoundLifeTimeInfo.LifeTime < 0)
-		{
-			mGameProcess->mSoundManager->StopChannel(playSoundLifeTimeInfo.Channel);
-			iter = mPlaySoundLifeTimeInfos.erase(iter);
-		}
-		else
-		{
-			++iter;
-		}
-	}
 }
 
 DirectX::SimpleMath::Vector3 fq::game_engine::StateEventSystem::genarateRenderVector(const DirectX::SimpleMath::Vector3& random)

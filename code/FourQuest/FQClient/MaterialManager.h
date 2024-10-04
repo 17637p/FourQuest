@@ -28,8 +28,6 @@ namespace fq::client
 		void OnStart() override;
 
 	private:
-		game_module::EventHandler mRegisterPlayerHandler;
-		
 		class GameManager* mGameManager;
 
 		std::vector<std::shared_ptr<game_module::GameObject>> mStaticMeshObjects;

@@ -38,6 +38,7 @@ FQGraphics::FQGraphics()
 	, mIsOnPostProcessing(true)
 	, mIsRenderObjects(true)
 	, mbIsRenderUI(true)
+	, mbIsUseLightmapOnly(false)
 {
 }
 
@@ -983,6 +984,11 @@ void FQGraphics::SetIsRenderObjects(bool isRenderObjects)
 void fq::graphics::FQGraphics::SetIsRenderUI(bool bIsRenderUI)
 {
 	mbIsRenderUI = bIsRenderUI;
+}
+
+void fq::graphics::FQGraphics::SetIsUseLightmapOnly(bool bIsUseLightmapOnly)
+{
+	mLightManager->SetIsLightmapOnly(bIsUseLightmapOnly);
 }
 
 void FQGraphics::DeleteText(fq::graphics::ITextObject* textObject)
