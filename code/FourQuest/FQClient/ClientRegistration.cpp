@@ -1740,6 +1740,13 @@ void fq::client::RegisterMetaData()
 		.data<&ObjectInteraction::tag>("Tag"_hs)
 		.prop(fq::reflect::prop::Name, "Tag");
 
+	entt::meta<ClearGoddessStatue>()
+		.type("ClearGoddessStatue"_hs)
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatue")
+		.prop(fq::reflect::prop::POD)
+		.data<&ClearGoddessStatue::goddessStatueName>("GoddessStatueName"_hs)
+		.prop(fq::reflect::prop::Name, "GoddessStatueName");
+
 	entt::meta<QuestJoinCondition>()
 		.type("QuestJoinCondition"_hs)
 		.prop(fq::reflect::prop::Name, "QuestJoinCondition")
@@ -1763,8 +1770,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ClearQuestList")
 		.data<&QuestClearCondition::colliderTriggerList>("ColliderTriggerList"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
-		.data<&QuestClearCondition::objectInteration>("ObjectInteration"_hs)
-		.prop(fq::reflect::prop::Name, "ObjectInteration");
+		.data<&QuestClearCondition::clearGoddessStatueList>("ClearGoddessStatueList"_hs)
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatueList");
 
 	entt::meta<RewardPortal>()
 		.type("RewardPortal"_hs)

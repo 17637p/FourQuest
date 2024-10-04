@@ -4,6 +4,7 @@
 #include "ArmourSpawner.h"
 #include "Soul.h"
 #include "HpBar.h"
+#include "ClientEvent.h"
 
 #include "../FQGameModule/Transform.h"
 
@@ -188,6 +189,10 @@ void fq::client::GoddessStatue::cleanUpGoddessState(float dt)
 				GetScene()->AddGameObject(effectObj);
 				mBuffEffects[player] = effectObj;
 			}
+
+			// 퀘스트 클리어를 위한 이벤트 발생
+			GetScene()->GetEventManager()->FireEvent<client::event::ClearGoddessStatue>(
+				{ GetGameObject()->GetName() });
 		}
 	}
 	else

@@ -123,6 +123,7 @@ void fq::client::QuestManager::OnStart()
 	EventProcessClearQuest();
 	EventProcessAllColliderTrigger();
 	EventProcessObjectInteraction();
+	EventProcessClearGoddessStatue();
 
 	mScreenManager = GetScene()->GetScreenManager();
 
@@ -167,6 +168,7 @@ void fq::client::QuestManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mClearQuestHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mAllCollideTriggerHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mObjectInteractionHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mClearGoddessStatueHandler);
 }
 
 void fq::client::QuestManager::EventProcessKillMonster()
@@ -556,7 +558,7 @@ void fq::client::QuestManager::EventProcessObjectInteraction()
 	mObjectInteractionHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ObjectInteractionEvent>(
 		[this](const client::event::ObjectInteractionEvent& event)
 		{
-			std::vector<ObjectInteraction>& objectInteractionList = mCurMainQuest.mclearConditionList.objectInteration;
+			std::vector<ObjectInteraction>& objectInteractionList = mCurMainQuest.mclearConditionList.objectInterationList;
 			if (objectInteractionList.size() > 0)
 			{
 				if (objectInteractionList[0].tag == event.tag)
@@ -569,7 +571,7 @@ void fq::client::QuestManager::EventProcessObjectInteraction()
 
 			for (int i = 0; i < mCurSubQuest.size(); i++)
 			{
-				std::vector<ObjectInteraction>& objectInteractionList = mCurSubQuest[i].mclearConditionList.objectInteration;
+				std::vector<ObjectInteraction>& objectInteractionList = mCurSubQuest[i].mclearConditionList.objectInterationList;
 				if (objectInteractionList.size() > 0)
 				{
 					if (objectInteractionList[0].tag == event.tag)
@@ -732,5 +734,37 @@ void fq::client::QuestManager::SpawnArmour(fq::game_module::PrefabResource armou
 		nearPos.y += 1.0f;
 		armourObject->GetComponent<game_module::Transform>()->SetLocalPosition(nearPos);
 	}
+}
+
+void fq::client::QuestManager::EventProcessClearGoddessStatue()
+{
+	mClearGoddessStatueHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ClearGoddessStatue>(
+		[this](const client::event::ClearGoddessStatue& event)
+		{
+			std::vector<ClearGoddessStatue>& clearGoddessStatueList = mCurMainQuest.mclearConditionList.clearGoddessStatueList;
+			if (clearGoddessStatueList.size() > 0)
+			{
+				if (clearGoddessStatueList[0].goddessStatueName == event.goddessStatueName)
+				{
+					GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+						{ mCurMainQuest, 0 });
+					spdlog::trace("Complete Clear Goddess Statue");
+				}
+			}
+
+			for (int i = 0; i < mCurSubQuest.size(); i++)
+			{
+				std::vector<ClearGoddessStatue>& clearGoddessStatueList = mCurSubQuest[i].mclearConditionList.clearGoddessStatueList;
+				if (clearGoddessStatueList.size() > 0)
+				{
+					if (clearGoddessStatueList[0].goddessStatueName == event.goddessStatueName)
+					{
+						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+							{ mCurSubQuest[i], i });
+						spdlog::trace("Complete Clear Goddess Statue");
+					}
+				}
+			}
+		});
 }
 
