@@ -13,6 +13,7 @@
 #include "Portal.h"
 #include "ArmourSet.h"
 #include "CameraMoving.h"
+#include "LevelHepler.h"
 
 #include <spdlog/spdlog.h>
 
@@ -185,9 +186,9 @@ void fq::client::QuestManager::EventProcessKillMonster()
 					if (monsterKillList[i].monsterType == event.monsterType)
 					{
 						monsterKillList[i].curNumber++;
-						spdlog::trace("curNumber: {}, requestNumber: {}", monsterKillList[i].curNumber, monsterKillList[i].requestsNumber);
+						spdlog::trace("curNumber: {}, requestNumber: {}", monsterKillList[i].curNumber, monsterKillList[i].requestsNumber * LevelHepler::GetSpawnRatio());
 
-						if (monsterKillList[i].curNumber == monsterKillList[i].requestsNumber)
+						if (monsterKillList[i].curNumber == monsterKillList[i].requestsNumber * LevelHepler::GetSpawnRatio())
 						{
 							monsterKillList[i].isClear = true;
 						}
@@ -224,9 +225,9 @@ void fq::client::QuestManager::EventProcessKillMonster()
 						if (monsterKillList[i].monsterType == event.monsterType)
 						{
 							monsterKillList[i].curNumber++;
-							spdlog::trace("curNumber: {}, requestNumber: {}", monsterKillList[i].curNumber, monsterKillList[i].requestsNumber);
+							spdlog::trace("curNumber: {}, requestNumber: {}", monsterKillList[i].curNumber, monsterKillList[i].requestsNumber * LevelHepler::GetSpawnRatio());
 
-							if (monsterKillList[i].curNumber == monsterKillList[i].requestsNumber)
+							if (monsterKillList[i].curNumber == monsterKillList[i].requestsNumber * LevelHepler::GetSpawnRatio())
 							{
 								monsterKillList[i].isClear = true;
 							}
@@ -509,7 +510,7 @@ void fq::client::QuestManager::EventProcessClearQuest()
 						preQuestList[0].preIsMain == event.clearQuest.mIsMain)
 					{
 						mCurSubQuest.push_back(mSubQuests[i]);
-						RenderOnSubQuest(i, true);
+						RenderOnSubQuest(mCurSubQuest.size() - 1, true);
 						spdlog::trace("Complete PreQuest!");
 					}
 				}
@@ -599,7 +600,7 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 	std::vector<MonsterKill>& monsterKillList = quest.mclearConditionList.monsterKillList;
 	if (monsterKillList.size() > 0)
 	{
-		text.Text = std::to_string(monsterKillList[0].curNumber) + " / " + std::to_string(monsterKillList[0].requestsNumber);
+		text.Text = std::to_string(monsterKillList[0].curNumber) + " / " + std::to_string(monsterKillList[0].requestsNumber * LevelHepler::GetSpawnRatio() );
 		text.IsRender = true;
 		monsterKillText->SetTextInfo(text);
 	}
@@ -630,6 +631,7 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 void fq::client::QuestManager::RenderOnSubQuest(int i, bool isOn)
 {
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren()[3]->GetChildren();
+	spdlog::trace("{}, ison: {}", i, (int)isOn);
 
 	auto subQuest = children[i]->GetChildren();
 

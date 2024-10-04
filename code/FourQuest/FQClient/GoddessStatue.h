@@ -29,9 +29,11 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void DealingPlayer(float dt);
-		void CleanUpGoddessState(float dt);
-		void SpawnArmour();
+		void dealingPlayer(float dt);
+		void cleanUpGoddessState(float dt);
+		void spawnArmour();
+		void buffPlayer(Player* player);
+		void releaseBuffPlayer(Player* player);
 
 	private:
 		bool mIsCorrupt; // 오염된 여신상인지
@@ -51,6 +53,11 @@ namespace fq::client
 		float mMaxGauge; // 채워야 하는 게이지
 		float mFillGaugeSpeed; // 1초에 채워지는 양
 		float mDecreaseSpeed; // 영혼 이탈 시, 감소하는 양
+
+		// Buff
+		float mGodDamageBuff;
+		float mGodCoolTimeBuff;
+		float mGodMoveBuff;
 
 		// Effect
 		game_module::PrefabResource mPlayerDebuff;

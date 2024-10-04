@@ -54,6 +54,8 @@ void fq::client::GoddessStatue::OnTriggerEnter(const game_module::Collision& col
 
 			GetScene()->AddGameObject(effectObj);
 			mBuffEffects[player] = effectObj;
+
+			buffPlayer(player);
 		}
 	}
 }
@@ -76,6 +78,8 @@ void fq::client::GoddessStatue::OnTriggerExit(const game_module::Collision& coll
 			// 디버프 이펙트 삭제
 			GetScene()->DestroyGameObject(mBuffEffects[collisionPlayer].get());
 			mBuffEffects.erase(collisionPlayer);
+
+			releaseBuffPlayer(collisionPlayer);
 		}
 
 		// 범위 안 플레이어 목록에서 삭제
@@ -95,7 +99,10 @@ fq::client::GoddessStatue::GoddessStatue()
 	mDealingDamage(0),
 	mMaxGauge(10),
 	mFillGaugeSpeed(1),
-	mDecreaseSpeed(0.5f)
+	mDecreaseSpeed(0.5f),
+	mGodDamageBuff(0.5),
+	mGodCoolTimeBuff(0.7),
+	mGodMoveBuff(0.5)
 {
 }
 
@@ -107,6 +114,8 @@ void fq::client::GoddessStatue::OnStart()
 {
 	mIsCorrupt = true;
 	mCurGauge = 0;
+
+	GetComponent<HpBar>()->SetVisible(false);
 }
 
 void fq::client::GoddessStatue::OnUpdate(float dt)
@@ -114,12 +123,12 @@ void fq::client::GoddessStatue::OnUpdate(float dt)
 	// 오염된 여신상
 	if (mIsCorrupt)
 	{
-		DealingPlayer(dt);
-		CleanUpGoddessState(dt);
+		dealingPlayer(dt);
+		cleanUpGoddessState(dt);
 	}
 }
 
-void fq::client::GoddessStatue::DealingPlayer(float dt)
+void fq::client::GoddessStatue::dealingPlayer(float dt)
 {
 	mDealingCoolTime += dt;
 	if (mDealingCoolTime > mDealingTime)
@@ -134,18 +143,22 @@ void fq::client::GoddessStatue::DealingPlayer(float dt)
 	}
 }
 
-void fq::client::GoddessStatue::CleanUpGoddessState(float dt)
+void fq::client::GoddessStatue::cleanUpGoddessState(float dt)
 {
 	if (mIsOverlayedSoul)
 	{
 		mCurGauge += dt * mFillGaugeSpeed;
-		GetComponent<HpBar>()->SetHp(mCurGauge / mMaxGauge);
+		HpBar* hpBar = GetComponent<HpBar>();
+		hpBar->SetVisible(true);
+		hpBar->SetHp(mCurGauge / mMaxGauge);
 		spdlog::trace("{}", mCurGauge / mMaxGauge);
 		if (mCurGauge > mMaxGauge)
 		{
+			hpBar->SetVisible(false);
+
 			// 정화 완료
 			mIsCorrupt = false;
-			SpawnArmour();
+			spawnArmour();
 			mCurOverlaySoul->ReleaseGoddessStatue();
 
 			// 오염 이펙트 삭제하고 정화 이펙트 재생
@@ -187,7 +200,7 @@ void fq::client::GoddessStatue::CleanUpGoddessState(float dt)
 	}
 }
 
-void fq::client::GoddessStatue::SpawnArmour()
+void fq::client::GoddessStatue::spawnArmour()
 {
 	GetComponent<ArmourSpawner>()->SpawnArmourAll();
 }
@@ -217,6 +230,30 @@ bool fq::client::GoddessStatue::SetOverlaySoul(bool isOverlay, Soul* soul)
 bool fq::client::GoddessStatue::GetIsCorrupt()
 {
 	return mIsCorrupt;
+}
+
+void fq::client::GoddessStatue::buffPlayer(Player* player)
+{
+	// 쿨타임 감소 
+	player->SetGBDecreaseCooltime(mGodCoolTimeBuff);
+	// 내구도 감소
+	player->SetGBDecreaseDurability(true);
+	// 공격력 증가
+	player->SetGBIncreaseAttackPower(mGodDamageBuff);
+	// 이동속도 증가
+	player->SetGBIncreaseSpeed(mGodMoveBuff);
+}
+
+void fq::client::GoddessStatue::releaseBuffPlayer(Player* player)
+{
+	// 쿨타임 감소 
+	player->SetGBDecreaseCooltime(1);
+	// 내구도 감소
+	player->SetGBDecreaseDurability(false);
+	// 공격력 증가
+	player->SetGBIncreaseAttackPower(0);
+	// 이동속도 증가
+	player->SetGBIncreaseSpeed(0);
 }
 
 // 영혼 빙의 처리 (1명만 빙의 가능)
