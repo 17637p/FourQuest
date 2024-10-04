@@ -31,7 +31,8 @@ namespace fq::client
 		for (auto& object : view)
 		{
 			auto camera = object.GetComponent<game_module::Camera>();
-			if (camera->IsMain())
+
+			if (object.GetName() == "MainCamera")
 			{
 				mMainCamera = camera;
 			}
@@ -57,6 +58,9 @@ namespace fq::client
 
 	void BGaugeUI::setUIInfo()
 	{
+		if (GetGameObject()->IsDestroyed())
+			return;
+
 		using namespace DirectX::SimpleMath;
 
 		Vector3 pos = mTransform->GetWorldPosition();

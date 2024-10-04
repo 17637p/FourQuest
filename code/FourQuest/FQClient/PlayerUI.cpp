@@ -226,6 +226,10 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 		float localY = mPlayerState->GetGameObject()->GetComponent<fq::game_module::Transform>()->GetLocalPosition().y;
 
 		mPlayerState->SetUIPosition(i, myTransform->GetWorldPosition().x + localX, myTransform->GetWorldPosition().y + localY);
+
+		UINT screenWidth = mScreenManager->GetFixScreenWidth();
+		UINT screenHeight = mScreenManager->GetFixScreenHeight();
+		mPlayerState->SetUIScale(i, screenWidth / (float)1920, screenHeight / (float)1080);
 	}
 
 	bool isRetire = false;

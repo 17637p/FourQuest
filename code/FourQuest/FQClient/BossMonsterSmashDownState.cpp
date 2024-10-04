@@ -37,17 +37,17 @@ void fq::client::BossMonsterSmashDownState::OnStateUpdate(game_module::Animator&
 	}
 
 	// effect 
-	if (mEffectElapsedTime != mEffectEmitTime)
-	{
-		mEffectElapsedTime += dt * state.GetPlayBackSpeed();
-
-		if (mEffectElapsedTime >= mEffectEmitTime)
-		{
-			mEffectElapsedTime = mEffectEmitTime;
-
-			mEffect = boss->EmitSmashDownEffect();
-		}
-	}
+	// if (mEffectElapsedTime != mEffectEmitTime)
+	// {
+	// 	mEffectElapsedTime += dt * state.GetPlayBackSpeed();
+	// 
+	// 	if (mEffectElapsedTime >= mEffectEmitTime)
+	// 	{
+	// 		mEffectElapsedTime = mEffectEmitTime;
+	// 
+	// 		mEffect = boss->EmitSmashDownEffect();
+	// 	}
+	// }
 
 	// attack
 	if (mAttackEmitTime != mAttackElapsedTime)
@@ -73,11 +73,11 @@ void fq::client::BossMonsterSmashDownState::OnStateEnter(game_module::Animator& 
 
 void fq::client::BossMonsterSmashDownState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	if (mEffect)
-	{
-		animator.GetScene()->DestroyGameObject(mEffect.get());
-		mEffect = nullptr;
-	}
+	// if (mEffect)
+	// {
+	// 	animator.GetScene()->DestroyGameObject(mEffect.get());
+	// 	mEffect = nullptr;
+	// }
 
 	animator.GetComponent<BossMonster>()->EndPattern();
 }

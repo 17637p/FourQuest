@@ -109,7 +109,7 @@ void fq::client::GameManager::OnUpdate(float dt)
 	// ¸ðµç ¿µÈ¥ÀÌ ÆÄ±«µÇ¾úÀ» ¶§, GameOver ¾ÀÀ¸·Î ÀÌµ¿
 	if (mSoulManagerModule->CheckGameOver())
 	{
-		GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({"GameOver", true});
+		GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({"TitleUI", true});
 	}
 }
 

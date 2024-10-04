@@ -475,6 +475,10 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			, object->shared_from_this()
 			, articulation, false} });
 
+
+		if (!client::MonsterVariable::OnRagdoll)
+			return;
+
 		if (object->GetComponent<fq::game_module::Animator>() == nullptr)
 			return;
 
@@ -735,6 +739,9 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID )
 		{
+			if (!client::MonsterVariable::OnRagdoll)
+				continue;
+
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 			auto data = mPhysicsEngine->GetArticulationData(id);
 
@@ -844,6 +851,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 {
 	using namespace DirectX::SimpleMath;
+	mOneFrameRagdollCreateCount = 0;
 
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
@@ -942,6 +950,9 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID)
 		{
+			if (!client::MonsterVariable::OnRagdoll)
+				continue;
+
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 
 			if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
@@ -962,11 +973,10 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.worldTransform = transform->GetWorldMatrix();
 
 			// 새로 생성되는 레그돌만 프레임 갯수 제한, 씬에 레그돌 최대 갯수 제한, 한 프레임에 레그돌 생성 갯수 제한, 레그돌 On/Off
-			if (mPhysicsEngine->GetArticulationData(id).bIsRagdollSimulation == false
-				&& mGameProcess->mTimeManager->GetFPS() <= client::MonsterVariable::MinFrameCountForRagdoll
-				&& client::MonsterVariable::MaxRagdollsPerScene <= mPhysicsEngine->GetArticulationCount()
-				&& client::MonsterVariable::MaxOneFrameCreateRagdollCount >= mOneFrameRagdollCreateCount
-				&& client::MonsterVariable::OnRagdoll)
+			if ((mGameProcess->mTimeManager->GetFPS() <= client::MonsterVariable::MinFrameCountForRagdoll
+				|| client::MonsterVariable::MaxRagdollsPerScene <= mPhysicsEngine->GetArticulationCount()
+				|| client::MonsterVariable::MaxOneFrameCreateRagdollCount <= mOneFrameRagdollCreateCount)
+				&& !mPhysicsEngine->GetArticulationData(id).bIsRagdollSimulation)
 			{
 				articulation->SetIsRagdoll(false);
 				data.bIsRagdollSimulation = false;

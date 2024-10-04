@@ -40,9 +40,7 @@ namespace fq::client
 		GetComponent<Attack>()->SetDestroyTime(mDestroyTime + mMaxArrivalTime);
 
 		// 거리 값 계산해서 도착 시간 계산
-		mYPosition = mStartPosition.y;
-		mTargetPosition.y = 0.f;
-		mStartPosition.y = 0.f;
+		mYPosition = mStartPosition.y + 0.1f;
 		DirectX::SimpleMath::Vector3 Vector = mTargetPosition - mStartPosition;
 		float targetLength = Vector.Length();
 		targetLength = targetLength / mMaxRange;
@@ -84,6 +82,7 @@ namespace fq::client
 
 			auto transform = GetComponent<fq::game_module::Transform>();
 
+			mTargetPosition.y = mYPosition;
 			transform->SetWorldPosition(mTargetPosition);
 
 			// 폭발하는 공격 이펙트 오브젝트 생성
