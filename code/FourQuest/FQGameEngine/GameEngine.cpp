@@ -166,7 +166,7 @@ void fq::game_engine::GameEngine::Process()
 			//////////////////////////////////////////////////////////////////////////
 
 			float deltaTime = mGameProcess->mTimeManager->Update();
-			mGameProcess->mInputManager->Update();
+			mGameProcess->mInputManager->Update(deltaTime);
 			mGameProcess->mSoundManager->Update();
 
 			//////////////////////////////////////////////////////////////////////////

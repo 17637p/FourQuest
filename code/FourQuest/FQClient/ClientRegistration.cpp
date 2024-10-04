@@ -268,9 +268,34 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Buff")
 		.base<game_module::Component>();
 
+	entt::meta<EVibrationMode>()
+		.type("VibrationMode"_hs)
+		.prop(reflect::prop::Name, "VibrationState")
+		.data<EVibrationMode::Both>("Both"_hs)
+		.prop(fq::reflect::prop::Name, "Both")
+		.data<EVibrationMode::Left>("Left"_hs)
+		.prop(fq::reflect::prop::Name, "Left")
+		.data<EVibrationMode::Right>("Right"_hs)
+		.prop(fq::reflect::prop::Name, "Right");
+
+
 	entt::meta<VibrationState>()
 		.type("VibrationState"_hs)
 		.prop(reflect::prop::Name, "VibrationState")
+		.data<&VibrationState::mbUseAllController>("UseAllController"_hs)
+		.prop(fq::reflect::prop::Name, "mbUseAllController")
+		.prop(fq::reflect::prop::Comment, u8"모든 컨트롤러 진동 여부")
+		.data<&VibrationState::mMode>("Mode"_hs)
+		.prop(fq::reflect::prop::Name, "Mode")
+		.prop(fq::reflect::prop::Comment, u8"진동 모드")
+		.data<&VibrationState::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.data<&VibrationState::mIntensity>("Intensity"_hs)
+		.prop(fq::reflect::prop::Name, "Intensity")
+		.prop(fq::reflect::prop::Comment, u"진동강도0 ~65535")
+		.data<&VibrationState::mVibrationTime>("VibrationTime"_hs)
+		.prop(fq::reflect::prop::Name, "VibrationTime")
+		.prop(fq::reflect::prop::Comment, u"진동 발동 시간 ")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

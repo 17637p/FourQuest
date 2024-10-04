@@ -24,7 +24,7 @@ namespace fq::client
 		bool mbUseAllController; 
 		EVibrationMode mMode;
 		float mDuration;
-		float mIntensity;
+		int mIntensity;
 		float mElapsedTime;
 		float mVibrationTime;
 		unsigned int mControllerID;

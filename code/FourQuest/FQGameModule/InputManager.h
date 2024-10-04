@@ -60,7 +60,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 마우스, 키입력, 게임패드에 대한 입력처리
 		/// </summary>
-		void Update();
+		void Update(float dt);
 
 		/// <summary>
 		/// 현재 프레임 마우스 위치 반환
