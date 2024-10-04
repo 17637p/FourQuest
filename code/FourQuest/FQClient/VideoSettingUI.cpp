@@ -195,6 +195,10 @@ void fq::client::VideoSettingUI::setScaleScreen()
 	{
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
+
+	auto myPos = myTransform->GetLocalPosition();
+	myPos.y = 120 * scaleY;
+	myTransform->SetLocalPosition(myPos);
 }
 
 void fq::client::VideoSettingUI::setResolutionTextUI()
