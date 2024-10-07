@@ -15,6 +15,7 @@
 #include "EditorProcess.h"
 #include "RenderingSystem.h"
 #include "CameraSystem.h"
+#include "ResourceSystem.h"
 
 namespace fq::game_engine
 {
@@ -107,10 +108,12 @@ namespace fq::game_engine
 				auto staticMeshRenderer = mGameObject->GetComponent<fq::game_module::StaticMeshRenderer>();
 				auto meshName = staticMeshRenderer->GetMeshName();
 				auto modelPath = staticMeshRenderer->GetModelPath();
-				auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath);
 
-				const auto& model = mGameProcess->mGraphics->GetModel(key);
-				const auto& mesh = fq::game_engine::ModelSystem::GetMesh(model, meshName);
+				bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
+				assert(check);
+
+				const auto& model = mGameProcess->mResourceSystem->GetModel(modelPath);
+				const auto& mesh = ModelSystem::GetMesh(model, meshName);
 
 				vertices.resize(mesh.Vertices.size());
 				triangleMeshInfo.vertexSize = mesh.Vertices.size();
