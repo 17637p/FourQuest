@@ -309,6 +309,7 @@
     <ClInclude Include="Trail.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="UVAnimator.h" />
+    <ClInclude Include="VibrationTrack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CameraShakeTrack.cpp" />
@@ -389,6 +390,7 @@
     <ClCompile Include="Trail.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="UVAnimator.cpp" />
+    <ClCompile Include="VibrationTrack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">

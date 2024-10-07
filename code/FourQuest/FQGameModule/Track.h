@@ -16,6 +16,7 @@ namespace fq::game_module
 		EFFECT,				// 이펙트
 		SOUND,				// 사운드
 		CAMERA_SHAKE,		// 카메라 진동
+		VIBRATION,			// 컨트롤러 진동
 
 		END
 	};
