@@ -45,6 +45,7 @@ namespace fq::client
 			infomations[i].Width = mGaugeSize.x;
 			infomations[i].Height = mGaugeSize.y;
 		}
+
 		mImageUI->SetUIInfomations(infomations);
 	}
 

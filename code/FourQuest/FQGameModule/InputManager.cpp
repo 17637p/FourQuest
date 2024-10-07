@@ -83,10 +83,8 @@ fq::game_module::InputManager::~InputManager()
 
 }
 
-void fq::game_module::InputManager::Update()
+void fq::game_module::InputManager::Update(float dt)
 {
-	float dt = 0.f;
-
 	updateMouse();
 	updateKeybord();
 	updateGamePad(dt);
