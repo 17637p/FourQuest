@@ -192,11 +192,13 @@ namespace fq::physics
 
 	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)> func)
 	{
+		// 충돌 콜백 등록
 		mMyEventCallback->SetCallbackFunction(func);
 	}
 
 	void FQPhysics::SetPhysicsInfo(PhysicsEngineInfo& info)
 	{
+		// 물리 엔진 세팅 ( 중력, 충돌 매트릭스 )
 		mScene->setGravity(physx::PxVec3(info.gravity.x, info.gravity.y, -info.gravity.z));
 		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * COLLISION_MATRIX_SIZE);
 		mRigidBodyManager->UpdateCollisionMatrix(mCollisionMatrix);
@@ -269,7 +271,6 @@ namespace fq::physics
 		}
 
 		return output;
-
 	}
 
 #pragma region RigidBodyManager
