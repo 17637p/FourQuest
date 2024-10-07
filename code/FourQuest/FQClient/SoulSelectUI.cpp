@@ -130,7 +130,7 @@ void fq::client::SoulSelectUI::OnStart()
 	mLevelSelectBackground = GetGameObject()->GetChildren()[6];
 
 	auto levelButtons = mLevelSelectBackground->GetChildren()[1]->GetChildren();
-	for (int i = 1; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		mButtons.push_back(levelButtons[i]);
 	}
@@ -141,7 +141,7 @@ void fq::client::SoulSelectUI::OnStart()
 	mExplanationTexts.push_back(wstringToString(L"신중하게 플레이해야 하는 도전적인 난이도입니다."));
 	setSelectLevelPopup(false);
 
-	mSelectBackground = mLevelSelectBackground->GetChildren()[1]->GetChildren()[4];
+	mSelectBackground = mLevelSelectBackground->GetChildren()[1]->GetChildren()[3];
 }
 
 void fq::client::SoulSelectUI::OnUpdate(float dt)
@@ -154,6 +154,8 @@ void fq::client::SoulSelectUI::OnUpdate(float dt)
 	CheckAllReady(dt);
 
 	MoveSoulDown(dt);
+
+	mCurStickDelay += dt;
 }
 
 fq::client::SoulSelectUI::SoulSelectUI()
@@ -676,17 +678,15 @@ void fq::client::SoulSelectUI::setSelectLevelPopup(bool isOn)
 
 	mLevelSelectBackground->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
 	mLevelSelectBackground->GetChildren()[0]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
-	mLevelSelectBackground->GetChildren()[1]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	auto levelBackground = mLevelSelectBackground->GetChildren()[1];
+	levelBackground->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
 
-	mLevelSelectBackground->GetChildren()[1]->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isOn);
-	mLevelSelectBackground->GetChildren()[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
-	mLevelSelectBackground->GetChildren()[1]->GetChildren()[1]->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isOn);
-	mLevelSelectBackground->GetChildren()[1]->GetChildren()[2]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
-	mLevelSelectBackground->GetChildren()[1]->GetChildren()[2]->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isOn);
-	mLevelSelectBackground->GetChildren()[1]->GetChildren()[3]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
-	mLevelSelectBackground->GetChildren()[1]->GetChildren()[3]->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isOn);
-	mLevelSelectBackground->GetChildren()[1]->GetChildren()[4]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
-	mLevelSelectBackground->GetChildren()[1]->GetChildren()[4]->GetChildren()[0]->GetComponent<game_module::SpriteAnimationUI>()->SetIsRender(isOn);
+	auto levelBackgroundChildren = levelBackground->GetChildren();
+	levelBackgroundChildren[0]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	levelBackgroundChildren[1]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	levelBackgroundChildren[2]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	levelBackgroundChildren[3]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
+	levelBackgroundChildren[3]->GetChildren()[0]->GetComponent<game_module::SpriteAnimationUI>()->SetIsRender(isOn);
 
 	mLevelSelectBackground->GetChildren()[2]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isOn);
 	mLevelSelectBackground->GetChildren()[2]->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isOn);

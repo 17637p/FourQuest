@@ -1,9 +1,11 @@
+#define NOMINMAX
 #include "PlayerUI.h"
 
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/ScreenManager.h"
+#include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/CharacterController.h"
 
 #include "GameManager.h"
@@ -11,6 +13,7 @@
 #include "Soul.h"
 #include "SoulVariable.h"
 #include "GameManager.h"
+#include "ClientEvent.h"
 
 fq::client::PlayerUI::PlayerUI()
 	:mPlayerID(0),
@@ -26,13 +29,40 @@ fq::client::PlayerUI::PlayerUI()
 	mSkillIconRs(),
 	mPlayerState(),
 	mScreenManager(nullptr)
+	, mDecreaseOffset(0.1f)
+	, mDeceraseTime(0.f)
+	, mDecreaseSpeed(3.f)
+	, mDecreaseRatio(0.f)
 {
 
 }
 
+fq::client::PlayerUI::PlayerUI(const PlayerUI& other)
+	:mDecreaseOffset(other.mDecreaseOffset)
+	, mDeceraseTime(other.mDeceraseTime)
+	, mDecreaseSpeed(other.mDecreaseSpeed)
+	, mDecreaseRatio(other.mDecreaseRatio)
+{
+}
+
+fq::client::PlayerUI& fq::client::PlayerUI::operator=(const PlayerUI& other)
+{
+	mDecreaseOffset = other.mDecreaseOffset;
+	mDeceraseTime = other.mDeceraseTime;
+	mDecreaseSpeed = other.mDecreaseSpeed;
+	mDecreaseRatio = other.mDecreaseRatio;
+
+	mWeaponIcons.clear();
+	mSkillIconXs.clear();
+	mSkillIconAs.clear();
+	mSkillIconRs.clear();
+	mSoulSkillIcons.clear();
+
+	return *this;
+}
+
 fq::client::PlayerUI::~PlayerUI()
 {
-
 }
 
 std::shared_ptr<fq::game_module::Component> fq::client::PlayerUI::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
@@ -119,6 +149,9 @@ void fq::client::PlayerUI::OnStart()
 
 	mScreenManager = GetScene()->GetScreenManager();
 	setSoulSkillIcon();
+
+	// 이벤트 등록
+	eventProcessDecreaseHPRatio();
 }
 
 void fq::client::PlayerUI::OnUpdate(float dt)
@@ -135,6 +168,13 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 	UINT screenHeight = mScreenManager->GetFixScreenHeight();
 	{
 		myTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
+	}
+
+	// 체력 감소 연출
+	mDeceraseTime += dt;
+	if (mDeceraseTime >= mDecreaseOffset)
+	{
+		mDecreaseRatio = std::max(mDecreaseRatio - mDecreaseSpeed * dt, 0.f);
 	}
 
 	// 플레이어한테 HP 받아와서 Ratio 조절하기
@@ -198,7 +238,7 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 	}
 
 	// 플레이어 상태 UI 위치조정 및 렌더러
-	SetPlayerStateUpdate();
+	setPlayerStateUpdate();
 }
 
 void fq::client::PlayerUI::setWeaponAndSkillIcons(int index, bool isRender)
@@ -209,7 +249,7 @@ void fq::client::PlayerUI::setWeaponAndSkillIcons(int index, bool isRender)
 	mSkillIconRs[index]->SetIsRender(0, isRender);
 }
 
-void fq::client::PlayerUI::SetPlayerStateUpdate()
+void fq::client::PlayerUI::setPlayerStateUpdate()
 {
 	if (mPlayerState == nullptr)
 		return;
@@ -399,10 +439,16 @@ void fq::client::PlayerUI::SetSoulGauge(float ratio)
 void fq::client::PlayerUI::SetHPBar(float ratio)
 {
 	float hpRatio = ratio;
-	std::vector<fq::graphics::UIInfo> uiInfos = mHPBarGauge->GetUIInfomations();
-	uiInfos[0].XRatio = hpRatio;
-	uiInfos[0].Width = mHPWidth * hpRatio;
-	mHPBarGauge->SetUIInfomations(uiInfos);
+	auto uiInfo = mHPBarGauge->GetUIInfomation(0);
+	//uiInfo.XRatio = hpRatio;
+	uiInfo.Width = mHPWidth * hpRatio;
+	mHPBarGauge->SetUIInfomation(0, uiInfo);
+
+	auto HPBack = mHPBarGauge->GetGameObject()->GetChildren()[0]->GetComponent<game_module::ImageUI>();
+	auto hpBackUIInfo = HPBack->GetUIInfomation(0);
+	//hpBackUIInfo.XRatio = mDecreaseRatio;
+	hpBackUIInfo.Width = mHPWidth * (mDecreaseRatio + hpRatio);
+	HPBack->SetUIInfomation(0, hpBackUIInfo);
 }
 
 void fq::client::PlayerUI::setSkillCoolTime()
@@ -476,5 +522,25 @@ void fq::client::PlayerUI::setSoulSkillIcon()
 	{
 		mSoulSkillIcons[soulType]->SetIsRender(0, true);
 	}
+}
+
+void fq::client::PlayerUI::eventProcessDecreaseHPRatio()
+{
+	mDecreaseHPRatioHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::DecreaseHPRatio>
+		(
+			[this](const client::event::DecreaseHPRatio& event)
+			{
+				if (event.playerID == mPlayerID)
+				{
+					mDecreaseRatio = event.ratio;
+					mDeceraseTime = 0.f;
+				}
+			}
+		);
+}
+
+void fq::client::PlayerUI::OnDestroy()
+{
+	GetScene()->GetEventManager()->RemoveHandle(mDecreaseHPRatioHandler);
 }
 

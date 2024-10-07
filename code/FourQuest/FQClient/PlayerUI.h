@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../FQGameModule/Component.h"
+#include "../FQGameModule/EventHandler.h"
 #include "PlayerDefine.h"
 
 namespace fq::game_module
@@ -21,8 +22,12 @@ namespace fq::client
 		PlayerUI();
 		~PlayerUI();
 
+		PlayerUI(const PlayerUI& other);
+		PlayerUI& operator=(const PlayerUI& other);
+
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
+		virtual void OnDestroy() override;
 
 		int GetPlayerID() const { return mPlayerID; }
 		void SetPlayerID(int val) { mPlayerID = val; }
@@ -40,7 +45,9 @@ namespace fq::client
 		void setSoulSkillIcon();
 		void setSkillCoolTime();
 		void resetSkillCoolTime();
-		void SetPlayerStateUpdate();
+		void setPlayerStateUpdate();
+
+		void eventProcessDecreaseHPRatio();
 
 	private:
 		int mPlayerID;
@@ -70,6 +77,14 @@ namespace fq::client
 		game_module::ImageUI* mPlayerState;				 // 플레이어 상태
 
 		game_module::ScreenManager* mScreenManager;
+
+		// 체력 감소 연출
+		float mDecreaseOffset;
+		float mDeceraseTime;
+		float mDecreaseSpeed;
+		float mDecreaseRatio;
+
+		game_module::EventHandler mDecreaseHPRatioHandler;
 
 		friend void RegisterMetaData();
 	};

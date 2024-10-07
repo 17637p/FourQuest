@@ -159,4 +159,13 @@ namespace fq::client::event
 	{
 		bool isSave;
 	};
+
+	/// <summary>
+	/// Player HUD 체력 감소 연출을 위한 DecreaseHPRatio 값 전달 
+	/// </summary>
+	struct DecreaseHPRatio
+	{
+		int playerID;
+		float ratio;
+	};
 }

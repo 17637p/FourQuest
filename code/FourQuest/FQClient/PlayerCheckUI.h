@@ -1,5 +1,5 @@
 #pragma once
-#include "C:\Users\user\Desktop\Project\code\FourQuest\FQGameModule\Component.h"
+#include "../FQGameModule/Component.h"
 
 namespace fq::game_module
 {

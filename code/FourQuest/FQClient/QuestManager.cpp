@@ -598,11 +598,18 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 	game_module::ImageUI* gaugeBar = textUI->GetGameObject()->GetParent()->GetChildren()[3]->GetComponent<game_module::ImageUI>();
 	gaugeBar->SetIsRender(0, false);
 
+	game_module::ImageUI* gaugeBarBack = nullptr;
+	if (gaugeBar->GetGameObject()->GetChildren().size() > 0)
+	{
+		gaugeBarBack = gaugeBar->GetGameObject()->GetChildren()[0]->GetComponent<game_module::ImageUI>();
+		gaugeBarBack->SetIsRender(0, false);
+	}
+
 	// Monster Kill Setting
 	std::vector<MonsterKill>& monsterKillList = quest.mclearConditionList.monsterKillList;
 	if (monsterKillList.size() > 0)
 	{
-		text.Text = std::to_string(monsterKillList[0].curNumber) + " / " + std::to_string(monsterKillList[0].requestsNumber * LevelHepler::GetSpawnRatio() );
+		text.Text = std::to_string(monsterKillList[0].curNumber) + " / " + std::to_string(int(monsterKillList[0].requestsNumber * LevelHepler::GetSpawnRatio()));
 		text.IsRender = true;
 		monsterKillText->SetTextInfo(text);
 	}
@@ -627,6 +634,10 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		gaugeBar->SetUIInfomation(0, imageInfo);
 
 		gaugeBar->SetIsRender(0, true);
+		if (gaugeBarBack != nullptr)
+		{
+			gaugeBarBack->SetIsRender(0, true);
+		}
 	}
 }
 
