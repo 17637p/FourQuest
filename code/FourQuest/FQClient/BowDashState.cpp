@@ -29,6 +29,8 @@ namespace fq::client
 
 		auto archerArmour = animator.GetComponent<ArcherArmour>();
 		auto controller = animator.GetComponent<game_module::CharacterController>();
+		auto archer = animator.GetComponent<ArcherArmour>();
+		archer->SetLookAtLStickInput(0.01f, FLT_MAX);
 
 		mDashEffect = archerArmour->EmitDash();
 
@@ -44,7 +46,7 @@ namespace fq::client
 
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 		auto transform = animator.GetComponent<game_module::Transform>();
-		auto rigidBody = animator.GetComponent<game_module::RigidBody>();
+		auto rigidBody = animator.GetComponent<game_module::RigidBody>(); 
 		auto archer = animator.GetComponent<ArcherArmour>();
 		archer->SetLookAtLStickInput(dt, mRotationSpeed);
 
