@@ -12,6 +12,8 @@
 #include "EffectTrack.h"
 #include "SoundTrack.h"
 #include "ObjectAnimationTrack.h"
+#include "VibrationTrack.h"
+
 #include "EventManager.h"
 #include "Event.h"
 #include "TimeManager.h"
@@ -156,6 +158,21 @@ namespace fq::game_module
 		for (const auto& trackInfo : mCameraShakeTrackInfo)
 		{
 			std::shared_ptr<CameraShakeTrack> track = std::make_shared<CameraShakeTrack>();
+			check = track->Initialize(trackInfo, scene);
+
+			if (check)
+			{
+				mTracks.push_back(track);
+
+				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
+
+				if (mTotalPlayTime < trackTotalTime)
+					mTotalPlayTime = trackTotalTime;
+			}
+		}
+		for (const auto& trackInfo : mVibrationTrackInfo)
+		{
+			std::shared_ptr<VibrationTrack> track = std::make_shared<VibrationTrack>();
 			check = track->Initialize(trackInfo, scene);
 
 			if (check)

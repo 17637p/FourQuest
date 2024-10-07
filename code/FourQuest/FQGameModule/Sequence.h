@@ -6,6 +6,7 @@
 
 #include "Component.h"
 #include "../FQCommon/IFQRenderResource.h"
+#include "InputEnum.h"
 
 namespace fq::game_module
 {
@@ -111,6 +112,15 @@ namespace fq::game_module
 		int originInitSpacing = 5;
 	};
 
+	struct VibrationTrackInfo
+	{
+		float startTime = 0.f;
+		float totalPlayTime = 1.f;
+
+		EVibrationMode mode = EVibrationMode::Left;
+		float Intensity = 0.f;
+	};
+
 	class Sequence : public Component
 	{
 	public:
@@ -158,6 +168,8 @@ namespace fq::game_module
 		void SetObjectAnimationInfo(const std::vector<ObjectAnimationInfo>& info) { mObjectAnimationInfo = info; }
 		const std::vector<CameraShakeTrackInfo>& GetCameraShakeTrackInfo() const { return mCameraShakeTrackInfo; }
 		void SetCameraShakeTrackInfo(const std::vector<CameraShakeTrackInfo>& info) { mCameraShakeTrackInfo = info; }
+		const std::vector<VibrationTrackInfo>& GetVibrationTrackInfo() const { return mVibrationTrackInfo; }
+		void SetVibrationTrackInfo(const std::vector<VibrationTrackInfo>& info) { mVibrationTrackInfo = info; }
 
 		std::vector<std::shared_ptr<Track>>& GetTrackContainer() { return mTracks; }
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>>& GetAnimationContainer() { return mAnimationContainer; }
@@ -191,6 +203,7 @@ namespace fq::game_module
 		std::vector<SoundTrackInfo>				mSoundTrackInfo;
 		std::vector<TextPrintTrackInfo>			mTextPrintTrackInfo;
 		std::vector<CameraShakeTrackInfo>		mCameraShakeTrackInfo;
+		std::vector<VibrationTrackInfo>			mVibrationTrackInfo;
 
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>> mAnimationContainer;
 	};

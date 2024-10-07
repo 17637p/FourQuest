@@ -380,6 +380,9 @@
     <ClInclude Include="StateEventEmitter.h">
       <Filter>include\04.Event</Filter>
     </ClInclude>
+    <ClInclude Include="VibrationTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -615,6 +618,9 @@
     </ClCompile>
     <ClCompile Include="StateEventEmitter.cpp">
       <Filter>src\04.Event</Filter>
+    </ClCompile>
+    <ClCompile Include="VibrationTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

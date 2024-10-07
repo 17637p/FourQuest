@@ -1060,6 +1060,23 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "textFontSize")
 		.prop(fq::reflect::prop::Comment, u8"대사 폰트 사이즈");
 
+	entt::meta<VibrationTrackInfo>()
+		.type("VibrationTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "VibrationTrackInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::game_module::VibrationTrackInfo::startTime>("StartTime"_hs)
+		.prop(fq::reflect::prop::Name, "StartTime")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 시작되고 난 뒤에 시작할 시간")
+		.data<&fq::game_module::VibrationTrackInfo::totalPlayTime>("TotalPlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "TotalPlayTime")
+		.prop(fq::reflect::prop::Comment, u8"해당 트랙이 실행되고 난 뒤에 실행할 총 시간")
+		.data<&fq::game_module::VibrationTrackInfo::mode>("Mode"_hs)
+		.prop(fq::reflect::prop::Name, "Mode")
+		.prop(fq::reflect::prop::Comment, u8"진동 모드 종류")
+		.data<&fq::game_module::VibrationTrackInfo::Intensity>("Intensity"_hs)
+		.prop(fq::reflect::prop::Name, "Intensity")
+		.prop(fq::reflect::prop::Comment, u8"진동 세기 ( 0 ~ 100 )");
+
 	entt::meta<Sequence>()
 		.type("Sequence"_hs)
 		.prop(fq::reflect::prop::Name, "Sequence")
@@ -1109,6 +1126,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&Sequence::SetTextPrintTrackInfo, &Sequence::GetTextPrintTrackInfo>("TextPrintTrackInfo"_hs)
 		.prop(fq::reflect::prop::Name, "TextPrintTrackInfo")
 		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 텍스트 스크립트가 있다면 추가하면 됩니다.")
+		.data<&Sequence::SetVibrationTrackInfo, &Sequence::GetVibrationTrackInfo>("VibrationTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "VibrationTrackInfo")
+		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 컨트롤러 진동 트랙이 있다면 추가하면 됩니다.")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
