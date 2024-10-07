@@ -1,6 +1,9 @@
 #pragma once
 
+#include <array>
+
 #include "../FQCommon/FQCommonGraphics.h"
+#include "../FQGameModule/GameModuleEnum.h"
 
 namespace fq::game_module
 {
@@ -59,6 +62,8 @@ namespace fq::game_engine
 		bool& GetOnTerrainCollider() { return mbOnTerrainCollider; }
 		bool& GetOnUseRenderDebug() { return mbUseRenderDebug; }
 
+		std::array<bool, static_cast<int>(game_module::ETag::End)>& GetColliderTag() { return mbUseColliderTag; }
+
 	private:
 		void renderGrid();
 		void renderSphereCollider();
@@ -68,7 +73,6 @@ namespace fq::game_engine
 		void renderTerrainCollider();
 		void renderCharaterController();
 		void renderNavigationMesh();
-		void renderLightProbe();
 
 	private:
 		GameProcess* mGameProcess;
@@ -84,6 +88,8 @@ namespace fq::game_engine
 		bool mbOnTerrainCollider;
 		bool mbOnNavigationMesh;
 		bool mbUseRenderDebug;
+
+		std::array<bool, static_cast<int>(game_module::ETag::End)> mbUseColliderTag;
 
 		fq::graphics::debug::GridInfo mGridInfo;
 	};

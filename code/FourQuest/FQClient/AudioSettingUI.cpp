@@ -209,6 +209,10 @@ void fq::client::AudioSettingUI::setScaleScreen()
 	{
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
+
+	auto myPos = myTransform->GetLocalPosition();
+	myPos.y = 120 * scaleY;
+	myTransform->SetLocalPosition(myPos);
 }
 
 std::string fq::client::AudioSettingUI::wstringToString(std::wstring wStr)
@@ -405,14 +409,14 @@ void fq::client::AudioSettingUI::setSelectBoxPosition(float dt)
 
 	// 선택UI 위치로 SelectBox 옮기기 
 	game_module::Transform* selectTransform = mButtons[mSelectButtonID]->GetComponent<game_module::Transform>();
-	DirectX::SimpleMath::Vector3 selectPosition = selectTransform->GetLocalPosition();
+	DirectX::SimpleMath::Vector3 selectPosition = selectTransform->GetWorldPosition();
 
-	DirectX::SimpleMath::Vector3 curPosition = mSelectBackground->GetComponent<game_module::Transform>()->GetLocalPosition();
+	DirectX::SimpleMath::Vector3 curPosition = mSelectBackground->GetComponent<game_module::Transform>()->GetWorldPosition();
 
 	float dist = selectPosition.y - curPosition.y;
 	if (std::abs(dist) < mUIAnimSpeed * dt)
 	{
-		curPosition = selectPosition;
+		curPosition.y = selectPosition.y;
 	}
 	else if (dist > 0)
 	{
@@ -423,7 +427,7 @@ void fq::client::AudioSettingUI::setSelectBoxPosition(float dt)
 		curPosition.y -= mUIAnimSpeed * dt;
 	}
 
-	mSelectBackground->GetComponent<game_module::Transform>()->SetLocalPosition(curPosition);
+	mSelectBackground->GetComponent<game_module::Transform>()->SetWorldPosition(curPosition);
 }
 
 void fq::client::AudioSettingUI::setMute(int index)
@@ -441,7 +445,7 @@ void fq::client::AudioSettingUI::setSoundBar(int index)
 
 	// SoulIcon 옮기기
 	DirectX::SimpleMath::Vector3 soulIconT = mSoundBarIcons[index]->GetLocalPosition();
-	mSoundBarIcons[index]->SetLocalPosition({ uiInfo.Width - 25, soulIconT.y, soulIconT.z });
+	mSoundBarIcons[index]->SetLocalPosition({ uiInfo.Width, soulIconT.y, soulIconT.z });
 
 	// Set Soul Percent Text
 	int percent = mSoundRatio[index] * 100;

@@ -162,7 +162,7 @@ void fq::game_engine::EditorEngine::Process()
 			//////////////////////////////////////////////////////////////////////////
 
 			float deltaTime = mGameProcess->mTimeManager->Update();
-			mGameProcess->mInputManager->Update();
+			mGameProcess->mInputManager->Update(deltaTime);
 			mGameProcess->mSoundManager->Update();
 
 			if (mode == EditorMode::Play)
@@ -332,6 +332,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mGameVariableWindow->Render();
 	mEditor->mRenderingDebugWindow->Render();
 	mEditor->mClothEditorWindow->Render();
+	mEditor->mChangeWindow->Render();
 
 	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
 	mEditor->mGamePlayWindow->Render();
@@ -373,6 +374,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mGameVariableWindow->Initialize();
 	mEditor->mRenderingDebugWindow->Initialize(mGameProcess.get());
 	mEditor->mClothEditorWindow->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mChangeWindow->Initialize(mGameProcess.get(), mEditor.get());
 
 	// Editor Setting
 	EditorHelper::LoadEditorSetting(mEditor.get());
@@ -380,7 +382,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)
 {
-	mEditor->mInputManager->Update();
+	mEditor->mInputManager->Update(dt);
 
 	mEditor->mGamePlayWindow->UpdateCamera(dt);
 	mEditor->mGamePlayWindow->UpdateParticle(dt);

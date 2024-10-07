@@ -3,6 +3,8 @@
 #include "EngineDataConverter.h"
 #include "CharacterJoint.h"
 
+#include "spdlog\spdlog.h"
+
 namespace fq::physics
 {
 	CharacterLink::CharacterLink()
@@ -10,16 +12,17 @@ namespace fq::physics
 		, mDensity()
 		, mLocalTransform(DirectX::SimpleMath::Matrix::Identity)
 		, mWorldTransform(DirectX::SimpleMath::Matrix::Identity)
+		, mPxLocalTransform()
 		, mMyJoint(std::make_shared<CharacterJoint>())
 		, mParentLink()
-		, mMyChildrenLink()
+		, mMyChildrenLink{}
 		, mPxLink(nullptr)
+		, mScene(nullptr)
 	{
 	}
 
 	CharacterLink::~CharacterLink()
 	{
-
 	}
 
 	bool CharacterLink::Initialize(const LinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation, physx::PxScene* scene)

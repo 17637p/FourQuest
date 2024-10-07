@@ -30,7 +30,9 @@ fq::game_engine::DebugSystem::DebugSystem()
 	, mbOnNavigationMesh(false)
 	, mbOnTerrainCollider(false)
 	, mbUseRenderDebug(true)
-{}
+{
+	mbUseColliderTag.fill(true);
+}
 
 fq::game_engine::DebugSystem::~DebugSystem()
 {}
@@ -160,7 +162,8 @@ void fq::game_engine::DebugSystem::renderBoxCollider()
 	mScene->ViewComponents< Transform, BoxCollider>(
 		[this](GameObject& object, Transform& transform, BoxCollider& box)
 		{
-			RenderBoxCollier(transform, box);
+			if (mbUseColliderTag[static_cast<int>(object.GetTag())] )
+				RenderBoxCollier(transform, box);
 		});
 }
 
@@ -194,7 +197,8 @@ void fq::game_engine::DebugSystem::renderSphereCollider()
 	mScene->ViewComponents< Transform, SphereCollider>(
 		[this](GameObject& object, Transform& transform, SphereCollider& sphere)
 		{
-			RenderSphereCollier(transform, sphere);
+			if (mbUseColliderTag[static_cast<int>(object.GetTag())])
+				RenderSphereCollier(transform, sphere);
 		});
 }
 
@@ -366,7 +370,8 @@ void fq::game_engine::DebugSystem::renderCapsuleCollider()
 	mScene->ViewComponents< Transform, CapsuleCollider>(
 		[this](GameObject& object, Transform& transform, CapsuleCollider& capsule)
 		{
-			RenderCapsuleCollier(transform, capsule);
+			if (mbUseColliderTag[static_cast<int>(object.GetTag())])
+				RenderCapsuleCollier(transform, capsule);
 		});
 }
 
@@ -409,7 +414,8 @@ void fq::game_engine::DebugSystem::renderCharaterController()
 	mScene->ViewComponents<Transform, CharacterController>
 		([this](GameObject& object, Transform& transform, CharacterController& cotroller)
 			{
-				RenderCharaterController(transform, cotroller);
+				if (mbUseColliderTag[static_cast<int>(object.GetTag())])
+					RenderCharaterController(transform, cotroller);
 			});
 }
 
@@ -421,7 +427,7 @@ void fq::game_engine::DebugSystem::renderNavigationMesh()
 		return;
 	}
 
-	std::vector<DirectX::SimpleMath::Vector3> navMeshVertices = 
+	std::vector<DirectX::SimpleMath::Vector3> navMeshVertices =
 		mGameProcess->mPathFindgingSystem->GetNavMeshVertices();
 
 	if (navMeshVertices.size() == 0)
@@ -455,5 +461,4 @@ void fq::game_engine::DebugSystem::renderNavigationMesh()
 		mGameProcess->mGraphics->DrawSphere(info);
 	}
 }
-
 

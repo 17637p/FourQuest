@@ -25,6 +25,11 @@ fq::client::SpawnerDeadState::~SpawnerDeadState()
 
 void fq::client::SpawnerDeadState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
+	// 몬스터 죽음 이벤트 
+	auto scene = animator.GetScene();
+	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
+		{ EMonsterType::Spawner });
+
 	// RimLight 끄기
 	for (auto child : animator.GetGameObject()->GetChildren())
 	{
@@ -43,11 +48,6 @@ void fq::client::SpawnerDeadState::OnStateEnter(game_module::Animator& animator,
 void fq::client::SpawnerDeadState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	animator.GetComponent<MonsterSpawner>()->Destroy();
-
-	// 몬스터 죽음 이벤트 
-	auto scene = animator.GetScene();
-	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
-		{ EMonsterType::Spawner });
 
 	// 죽었는데 ArmourSpawner 컴포넌트가 있을 경우 갑옷 소환
 	auto armourSpawner = animator.GetComponent<ArmourSpawner>();

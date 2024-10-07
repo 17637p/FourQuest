@@ -357,6 +357,12 @@ void fq::game_engine::MainMenuBar::beginMenu_DebugOption()
 		bool& onGrid = debug->GetOnGrid();
 		ImGui::Checkbox("Grid", &onGrid);
 
+		// ColliderTag ¼³Á¤
+		ImGui::DragInt("Collider Tag", &mColliderTagIndex, 0, static_cast<int>(game_module::ETag::End));
+		ImGui::SameLine();
+		auto& colliderTagInfo = mEditorProcess->mDebugSystem->GetColliderTag();
+		ImGui::Checkbox("On/Off", &colliderTagInfo[mColliderTagIndex]);
+
 		bool& onBox = debug->GetOnBoxCollider();
 		ImGui::Checkbox("BoxCollider", &onBox);
 

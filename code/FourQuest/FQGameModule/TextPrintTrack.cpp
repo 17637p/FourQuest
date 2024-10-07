@@ -61,6 +61,9 @@ namespace fq::game_module
 		mScene->AddGameObject(mNameObject);
 		mScene->AddGameObject(mTextObject);
 
+		mTrackObjectName.push_back(mNameObject->GetName());
+		mTrackObjectName.push_back(mTextObject->GetName());
+
 		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mNameFontCenterY, 0.f));
 		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mTextFontCenterY, 0.f));
 
@@ -94,6 +97,7 @@ namespace fq::game_module
 		textInfo.CenterX = 960.f;
 		textInfo.CenterY = 1080.f - mTextFontCenterY;
 		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
+		textInfo.FontPath = "던파 연단된 칼날";
 		name->SetTextInfo(textInfo);
 
 		textInfo.Text = mText;

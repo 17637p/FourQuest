@@ -6,6 +6,7 @@
 
 #include "Component.h"
 #include "../FQCommon/IFQRenderResource.h"
+#include "InputEnum.h"
 
 namespace fq::game_module
 {
@@ -37,6 +38,7 @@ namespace fq::game_module
 
 	struct ObjectMoveTrackInfo
 	{
+		bool isObjectReturnToStartTransform = true;
 		float startTime = 0.f;
 		float totalPlayTime = 1.f;
 
@@ -46,6 +48,7 @@ namespace fq::game_module
 
 	struct ObjectTeleportTrackInfo
 	{
+		bool isObjectReturnToStartTransform = true;
 		float startTime = 0.f;
 		float totalPlayTime = 1.f;
 
@@ -83,6 +86,7 @@ namespace fq::game_module
 	
 	struct TextPrintTrackInfo
 	{
+		std::string fontPath = {};// "던파 연단된 칼날";
 		float startTime = 0.f;
 		float totalPlayTime = 1.f;
 
@@ -108,6 +112,15 @@ namespace fq::game_module
 		int originInitSpacing = 5;
 	};
 
+	struct VibrationTrackInfo
+	{
+		float startTime = 0.f;
+		float totalPlayTime = 1.f;
+
+		EVibrationMode mode = EVibrationMode::Left;
+		float Intensity = 0.f;
+	};
+
 	class Sequence : public Component
 	{
 	public:
@@ -116,18 +129,28 @@ namespace fq::game_module
 
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
+		virtual void OnDestroy() override;
 		virtual void OnTriggerEnter(const Collision& collision) override;
 
 		bool GetIsPlay() const { return mbIsPlay; }
 		void SetIsPlay(bool isPlay) { mbIsPlay = isPlay; }
 		bool GetIsLoop() const { return mbIsLoop; }
 		void SetIsLoop(bool isLoop) { mbIsLoop = isLoop; }
+		bool GetIsOnce() const { return mbIsOnce; }
+		void SetIsOnce(bool isOnce) { mbIsOnce = isOnce; }
+		bool GetIsTimeStop() const { return mbIsTimeStop; }
+		void SetIsTimeStop(bool isTimeStop) { mbIsTimeStop = isTimeStop; }
+		bool GetIsOtherSequenceStop() const { return mbIsStopOtherSequence; }
+		void SetIsOtherSequenceStop(bool isStopOtherSequence) { mbIsStopOtherSequence = isStopOtherSequence; }
+		bool GetIsOffUIRender() const { return mbIsOffUIRender; }
+		void SetIsOffUIRender(bool isOffUIRender) { mbIsOffUIRender = isOffUIRender; }
 
 		/// <summary>
 		/// 인스펙터 창에서 해당 시간에 정지되어 있는 화면을 확인할 수 있도록 만든 함수입니다.
 		/// </summary>
 		float GetDurationTime() const { return mDurationTime; }
 		void SetDurationTime(float durationTime);
+		void StopSequnce();
 
 		const std::vector<CameraChangeTrackInfo>& GetCameraChangeTrackInfo() const { return mCameraChangeTrackInfo; }
 		void SetCameraChangeTrackInfo(const std::vector<CameraChangeTrackInfo>& info) { mCameraChangeTrackInfo = info; }
@@ -145,11 +168,18 @@ namespace fq::game_module
 		void SetObjectAnimationInfo(const std::vector<ObjectAnimationInfo>& info) { mObjectAnimationInfo = info; }
 		const std::vector<CameraShakeTrackInfo>& GetCameraShakeTrackInfo() const { return mCameraShakeTrackInfo; }
 		void SetCameraShakeTrackInfo(const std::vector<CameraShakeTrackInfo>& info) { mCameraShakeTrackInfo = info; }
+		const std::vector<VibrationTrackInfo>& GetVibrationTrackInfo() const { return mVibrationTrackInfo; }
+		void SetVibrationTrackInfo(const std::vector<VibrationTrackInfo>& info) { mVibrationTrackInfo = info; }
 
 		std::vector<std::shared_ptr<Track>>& GetTrackContainer() { return mTracks; }
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>>& GetAnimationContainer() { return mAnimationContainer; }
 		  
 	private:
+		void checkSeqeunce();
+		void playTrack(float dt);
+		void updateUI();
+		void updateSequenceObject(float dt);
+
 		virtual entt::meta_handle GetHandle() override;
 		virtual std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 
@@ -157,6 +187,10 @@ namespace fq::game_module
 		std::vector<std::shared_ptr<Track>> mTracks;
 		bool mbIsPlay;
 		bool mbIsLoop;
+		bool mbIsOnce;
+		bool mbIsTimeStop;
+		bool mbIsOffUIRender;
+		bool mbIsStopOtherSequence;
 
 		float mTotalPlayTime;
 		float mDurationTime;
@@ -169,6 +203,7 @@ namespace fq::game_module
 		std::vector<SoundTrackInfo>				mSoundTrackInfo;
 		std::vector<TextPrintTrackInfo>			mTextPrintTrackInfo;
 		std::vector<CameraShakeTrackInfo>		mCameraShakeTrackInfo;
+		std::vector<VibrationTrackInfo>			mVibrationTrackInfo;
 
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>> mAnimationContainer;
 	};

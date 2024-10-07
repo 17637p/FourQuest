@@ -16,6 +16,7 @@
 #include "PostProcessing.h"
 #include "Sequence.h"
 #include "StateEvent.h"
+#include "StateEventEmitter.h"
 
 // UI
 #include "ImageUI.h"
@@ -42,6 +43,7 @@
 #include "UVAnimator.h"
 #include "MaterialAnimator.h"
 #include "LogStateBehaviour.h"
+#include "SoundEmitter.h"
 
 // PathFinding
 #include "NavigationAgent.h"
@@ -932,6 +934,9 @@ void fq::game_module::RegisterMetaData()
 		.type("ObjectMoveTrackInfo"_hs)
 		.prop(fq::reflect::prop::Name, "ObjectMoveTrackInfo")
 		.prop(fq::reflect::prop::POD)
+		.data<&fq::game_module::ObjectMoveTrackInfo::isObjectReturnToStartTransform>("isObjectReturnToStartTransform"_hs)
+		.prop(fq::reflect::prop::Name, "isObjectReturnToStartTransform")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 종료된 이후 해당 오브젝트를 원위치로 되돌릴지 여부")
 		.data<&fq::game_module::ObjectMoveTrackInfo::startTime>("StartTime"_hs)
 		.prop(fq::reflect::prop::Name, "StartTime")
 		.prop(fq::reflect::prop::Comment, u8"시퀀스가 시작되고 난 뒤에 시작할 시간")
@@ -948,6 +953,9 @@ void fq::game_module::RegisterMetaData()
 		.type("ObjectTeleportTrackInfo"_hs)
 		.prop(fq::reflect::prop::Name, "ObjectTeleportTrackInfo")
 		.prop(fq::reflect::prop::POD)
+		.data<&fq::game_module::ObjectTeleportTrackInfo::isObjectReturnToStartTransform>("isObjectReturnToStartTransform"_hs)
+		.prop(fq::reflect::prop::Name, "isObjectReturnToStartTransform")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 종료된 이후 해당 오브젝트를 원위치로 되돌릴지 여부")
 		.data<&fq::game_module::ObjectTeleportTrackInfo::startTime>("StartTime"_hs)
 		.prop(fq::reflect::prop::Name, "StartTime")
 		.prop(fq::reflect::prop::Comment, u8"시퀀스가 시작되고 난 뒤에 시작할 시간")
@@ -1024,6 +1032,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::game_module::TextPrintTrackInfo::totalPlayTime>("TotalPlayTime"_hs)
 		.prop(fq::reflect::prop::Name, "TotalPlayTime")
 		.prop(fq::reflect::prop::Comment, u8"해당 트랙이 실행되고 난 뒤에 실행할 총 시간")
+		.data<&fq::game_module::TextPrintTrackInfo::fontPath>("FontPath"_hs)
+		.prop(fq::reflect::prop::Name, "FontPath")
+		.prop(fq::reflect::prop::Comment, u8"폰트 이름")
 		.data<&fq::game_module::TextPrintTrackInfo::name>("Name"_hs)
 		.prop(fq::reflect::prop::Name, "Name")
 		.prop(fq::reflect::prop::Comment, u8"텍스트로 표시할 이름")
@@ -1049,6 +1060,23 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "textFontSize")
 		.prop(fq::reflect::prop::Comment, u8"대사 폰트 사이즈");
 
+	entt::meta<VibrationTrackInfo>()
+		.type("VibrationTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "VibrationTrackInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::game_module::VibrationTrackInfo::startTime>("StartTime"_hs)
+		.prop(fq::reflect::prop::Name, "StartTime")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 시작되고 난 뒤에 시작할 시간")
+		.data<&fq::game_module::VibrationTrackInfo::totalPlayTime>("TotalPlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "TotalPlayTime")
+		.prop(fq::reflect::prop::Comment, u8"해당 트랙이 실행되고 난 뒤에 실행할 총 시간")
+		.data<&fq::game_module::VibrationTrackInfo::mode>("Mode"_hs)
+		.prop(fq::reflect::prop::Name, "Mode")
+		.prop(fq::reflect::prop::Comment, u8"진동 모드 종류")
+		.data<&fq::game_module::VibrationTrackInfo::Intensity>("Intensity"_hs)
+		.prop(fq::reflect::prop::Name, "Intensity")
+		.prop(fq::reflect::prop::Comment, u8"진동 세기 ( 0 ~ 100 )");
+
 	entt::meta<Sequence>()
 		.type("Sequence"_hs)
 		.prop(fq::reflect::prop::Name, "Sequence")
@@ -1059,9 +1087,21 @@ void fq::game_module::RegisterMetaData()
 		.data<&Sequence::SetIsPlay, &Sequence::GetIsPlay>("bIsPlay"_hs)
 		.prop(fq::reflect::prop::Name, "bIsPlay")
 		.prop(fq::reflect::prop::Comment, u8"시작할 지 설정합니다.")
+		.data<&Sequence::SetIsOnce, &Sequence::GetIsOnce>("bIsOnce"_hs)
+		.prop(fq::reflect::prop::Name, "bIsOnce")
+		.prop(fq::reflect::prop::Comment, u8"해당 시퀀스를 한 번만 재생할지 여부입니다.")
 		.data<&Sequence::SetIsLoop, &Sequence::GetIsLoop>("bIsLoop"_hs)
 		.prop(fq::reflect::prop::Name, "bIsLoop")
-		.prop(fq::reflect::prop::Comment, u8"루프를 설정합니다.")
+		.prop(fq::reflect::prop::Comment, u8"해당 시퀀스를 무한 재생할 시에 여부입니다.")
+		.data<&Sequence::SetIsTimeStop, &Sequence::GetIsTimeStop>("IsTimeStop"_hs)
+		.prop(fq::reflect::prop::Name, "IsTimeStop")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스 재생할 시에 시간을 멈추는 지 여부입니다.")
+		.data<&Sequence::SetIsOffUIRender, &Sequence::GetIsOffUIRender>("bIsOffUIRender"_hs)
+		.prop(fq::reflect::prop::Name, "bIsOffUIRender")
+		.prop(fq::reflect::prop::Comment, u8"화면의 UI를 제거할 지 여부입니다.")
+		.data<&Sequence::SetIsOtherSequenceStop, &Sequence::GetIsOtherSequenceStop>("IsStopOtherSequence"_hs)
+		.prop(fq::reflect::prop::Name, "IsStopOtherSequence")
+		.prop(fq::reflect::prop::Comment, u8"다른 시퀀스를 강제 종료 시킬 지 여부입니다.")
 		.data<&Sequence::SetCameraChangeTrackInfo, &Sequence::GetCameraChangeTrackInfo>("CameraChangeTrackInfo"_hs)
 		.prop(fq::reflect::prop::Name, "CameraChangeTrackInfo")
 		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 카메라 변경 트랙이 있다면 추가하면 됩니다.")
@@ -1086,6 +1126,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&Sequence::SetTextPrintTrackInfo, &Sequence::GetTextPrintTrackInfo>("TextPrintTrackInfo"_hs)
 		.prop(fq::reflect::prop::Name, "TextPrintTrackInfo")
 		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 텍스트 스크립트가 있다면 추가하면 됩니다.")
+		.data<&Sequence::SetVibrationTrackInfo, &Sequence::GetVibrationTrackInfo>("VibrationTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "VibrationTrackInfo")
+		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 컨트롤러 진동 트랙이 있다면 추가하면 됩니다.")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1110,6 +1153,27 @@ void fq::game_module::RegisterMetaData()
 		.data<&SoundClip::SetSounds, &SoundClip::GetSounds>("Sounds"_hs)
 		.prop(fq::reflect::prop::Name, "Sounds")
 		.prop(fq::reflect::prop::Comment, u8"로드하는 사운드를 드래그드랍으로 추가합니다")
+		.base<Component>();
+
+	entt::meta<SoundEmitter>()
+		.type("SoundEmitter"_hs)
+		.prop(fq::reflect::prop::Name, "SoundEmitter")
+		.prop(fq::reflect::prop::Label, "Audio")
+		.data<&SoundEmitter::mbIsPlayLoop>("IsPlayLoop"_hs)
+		.prop(reflect::prop::Name, "IsPlayLoop")
+		.prop(reflect::prop::Comment, u8"반복 재생 여부")
+		.data<&SoundEmitter::mbIsPlayStateEnter>("IsPlayStateEnter"_hs)
+		.prop(reflect::prop::Name, "IsPlayStateEnter")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
+		.data<&SoundEmitter::mSoundTurm>("SoundTurm"_hs)
+		.prop(reflect::prop::Name, "SoundTurm")
+		.prop(reflect::prop::Comment, u8"반복 재생 시간")
+		.data<&SoundEmitter::mbUseRandomPlay>("mbUseRandomIndex"_hs)
+		.prop(reflect::prop::Name, "UseRandomPlay")
+		.prop(reflect::prop::Comment, u8"랜덤 재생 여부, off 시 순차적으로 사운드 재생")
+		.data<&SoundEmitter::mSoundNames>("mSoundNames"_hs)
+		.prop(reflect::prop::Name, "mSoundNames")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
 		.base<Component>();
 
 
@@ -2132,4 +2196,25 @@ void fq::game_module::RegisterMetaData()
 		.data<&StateEvent::mPlaySoundInfos>("PlaySoundInfos"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerSoundInfos")
 		.base<fq::game_module::Component>();
+
+	entt::meta<StateEventEmitter>()
+		.type("StateEventEmitter"_hs)
+		.prop(fq::reflect::prop::Name, "StateEventEmitter")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&StateEventEmitter::mbIsPlayLoop>("IsPlayLoop"_hs)
+		.prop(reflect::prop::Name, "IsPlayLoop")
+		.prop(reflect::prop::Comment, u8"반복 재생 여부")
+		.data<&StateEventEmitter::mbIsPlayStateEnter>("IsPlayStateEnter"_hs)
+		.prop(reflect::prop::Name, "IsPlayStateEnter")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 방출 여부")
+		.data<&StateEventEmitter::mTurm>("Turm"_hs)
+		.prop(reflect::prop::Name, "Turm")
+		.prop(reflect::prop::Comment, u8"반복 재생 시간")
+		.data<&StateEventEmitter::mbUseRandomIndex>("UseRandomIndex"_hs)
+		.prop(reflect::prop::Name, "UseRandomIndex")
+		.prop(reflect::prop::Comment, u8"랜덤 재생 여부, off 시 순차적으로 사운드 재생")
+		.data<&StateEventEmitter::mNames>("Names"_hs)
+		.prop(reflect::prop::Name, "Names")
+		.prop(reflect::prop::Comment, u8"사용할 State 이름들")
+		.base<Component>();
 }

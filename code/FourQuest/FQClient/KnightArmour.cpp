@@ -10,6 +10,8 @@
 #include "DamageCalculation.h"
 #include "PlayerSoulVariable.h"
 #include "GaugeBar.h"
+#include "SpeechBubbleUI.h"
+#include "PlayerInfoVariable.h"
 
 fq::client::KnightArmour::KnightArmour()
 	:mDashCoolTime(1.f)
@@ -56,6 +58,38 @@ std::shared_ptr<fq::game_module::Component> fq::client::KnightArmour::Clone(std:
 	return cloneArmour;
 }
 
+void fq::client::KnightArmour::EmitSound(EKnightSound soundType)
+{
+	std::string soundName;
+
+	switch (soundType)
+	{
+	case fq::client::EKnightSound::Swing1:
+		soundName = "K_Swing1";
+		break;
+	case fq::client::EKnightSound::Swing2:
+		soundName = "K_Swing2";
+		break;
+	case fq::client::EKnightSound::Swing3:
+		soundName = "K_Swing3";
+		break;
+	case fq::client::EKnightSound::ShieldStart:
+		soundName = "K_Shield_Start";
+		break;
+	case fq::client::EKnightSound::ShieldLoop:
+		soundName = "K_Shield_Loop";
+		break;
+	case fq::client::EKnightSound::Bash:
+		soundName = "K_Bash";
+		break;
+	default:
+		assert(false);
+		break;
+	}
+
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ soundName, false , fq::sound::EChannel::SE });
+}
+
 void fq::client::KnightArmour::EmitSwordAttack()
 {
 	// 공격 생성
@@ -98,7 +132,15 @@ void fq::client::KnightArmour::EmitSwordAttack()
 	attackT->GenerateWorld(pos, rotation, attackT->GetWorldScale());
 
 	// Sword 소리
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ isSwing1 ? "K_Swing1" : "K_Swing2", false , fq::sound::EChannel::SE });
+	if (isSwing1)
+	{
+		EmitSound(EKnightSound::Swing1);
+	}
+	else
+	{
+		EmitSound(EKnightSound::Swing2);
+	}
+
 
 	// 공격시 체력 감소 
 	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
@@ -159,7 +201,8 @@ void fq::client::KnightArmour::EmitShieldAttack()
 	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 
 	// ShieldAttack 소리
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Swing3", false , fq::sound::EChannel::SE });
+	EmitSound(EKnightSound::Swing3);
+
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -190,13 +233,14 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 				isIncrease = true;
 			}
 		};
+	attackInfo.hitSound = "K_Bash_Hit";
 	attackInfo.HitEffectName = "W_Hit_blunt";
 	attackComponent->Set(attackInfo);
 
 	// 공격시 체력 감소 
 	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Bash", false , fq::sound::EChannel::SE });
+	EmitSound(EKnightSound::Bash);
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -282,6 +326,8 @@ void fq::client::KnightArmour::OnStart()
 	mTransform = GetComponent<game_module::Transform>();
 	mPlayer = GetComponent<Player>();
 	mGaugeBar = GetComponent<GaugeBar>();
+
+	setName();
 }
 
 void fq::client::KnightArmour::checkSkillCoolTime(float dt)
@@ -332,6 +378,9 @@ void fq::client::KnightArmour::ExitShieldState()
 
 	mbOnShield = false;
 	mOnShieldElapsedTime = 0.f;
+
+	// 이펙트 삭제
+	GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnDeleteStateEvent>({ GetGameObject() });
 }
 
 void fq::client::KnightArmour::EnterShieldState()
@@ -381,6 +430,52 @@ void fq::client::KnightArmour::EnterShieldState()
 		};
 	attackComponent->Set(attackInfo);
 
+	// 사운드 생성
+	EmitSound(EKnightSound::ShieldStart);
+
+	// 이펙트 생성
+	fq::event::OnCreateStateEvent stateEvent;
+	stateEvent.gameObject = GetGameObject();
+	stateEvent.RegisterKeyName = "K_Shield_Stay";
+	if (!stateEvent.RegisterKeyName.empty())
+	{
+		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+	}
+
 	GetScene()->AddGameObject(shieldObj);
 	mShieldObject = shieldObj;
+}
+
+void fq::client::KnightArmour::setName()
+{
+	int soulType = static_cast<int>(mPlayer->GetSoulType());
+	SpeechBubbleUI* speechBubble = nullptr;
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<SpeechBubbleUI>())
+		{
+			speechBubble = child->GetComponent<SpeechBubbleUI>();
+		}
+	}
+
+	if (speechBubble != nullptr)
+	{
+		switch (soulType)
+		{
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
+		}
+	}
 }

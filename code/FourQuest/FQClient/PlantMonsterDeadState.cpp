@@ -5,10 +5,12 @@
 #include "../FQGameModule/MaterialAnimator.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/ImageUI.h"
-
-#include "ClientEvent.h"
+#include "../FQGameModule/RigidBody.h"
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/Event.h"
+#include "HpBar.h"
+
+#include "ClientEvent.h"
 
 #include "ArmourSpawner.h"
 
@@ -38,6 +40,7 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	auto gameObject = animator.GetGameObject();
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 	gameObject->RemoveComponent<game_module::ImageUI>();
+	gameObject->RemoveComponent<HpBar>();
 
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Death", false , fq::sound::EChannel::SE });
 
@@ -52,8 +55,10 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	if (animator.GetGameObject()->HasComponent<game_module::Articulation>())
 	{
 		auto articulation = animator.GetComponent<game_module::Articulation>();
+		auto ragdoll = animator.GetComponent<game_module::RigidBody>();
 
 		articulation->SetIsRagdoll(true);
+		ragdoll->SetBodyType(game_module::RigidBody::EBodyType::Dynamic);
 	}
 
 	// BurnEffect

@@ -16,12 +16,26 @@ namespace fq::client
 {
 	class Player;
 
+	enum class EBerserkerSoundType
+	{
+		Left,
+		Right,
+		StrikeDown,
+		SwingAround,
+		Rush,
+		RushReady,
+	};
+
 	class BerserkerArmour : public fq::game_module::Component
 	{
 		using Vector3 = DirectX::SimpleMath::Vector3;
 
 	public:
+		BerserkerArmour() = default;
+		~BerserkerArmour() = default;
+
 		std::shared_ptr<fq::game_module::GameObject> EmitAttackIntend(EBerserkerAttackType attackType, const Vector3& offset, const Vector3& scale, float knocBackPower, float destroyTime);
+		void EmitSound(EBerserkerSoundType soundType);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -32,6 +46,8 @@ namespace fq::client
 		void checkSkillCoolTime(float dt);
 		void checkInput();
 
+		void setName();
+
 	private:
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
@@ -41,6 +57,13 @@ namespace fq::client
 		// 인스펙터 변수
 		game_module::PrefabResource mBoxAttackPrefab;
 		game_module::PrefabResource mCircleAttackPrefab;
+
+		std::string mLeftAttackSound;
+		std::string mRightAttackSound;
+		std::string mStrikeDownAttackSound;
+		std::string mSwingAroundSound;
+		std::string mAttackRushSound;
+		std::string mAttackRushReadySound;
 
 		std::string mLeftAttackHitSound;
 		std::string mRightAttackHitSound;

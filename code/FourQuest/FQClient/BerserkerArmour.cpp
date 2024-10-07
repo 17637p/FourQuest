@@ -6,6 +6,8 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Animator.h"
+#include "SpeechBubbleUI.h"
+#include "PlayerInfoVariable.h"
 
 namespace fq::client
 {
@@ -22,44 +24,49 @@ namespace fq::client
 
 		switch (attackType)
 		{
-			case EBerserkerAttackType::Left:
-				hitSoundName = mLeftAttackHitSound;
-				knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
-				direction = -right;
-				damage = dc::GetBluntFirstConsecutiveAttackDamage(mPlayer->GetAttackPower());
-				attackPrefabResource = mBoxAttackPrefab;
-				break;
-			case EBerserkerAttackType::Right:
-				hitSoundName = mRightAttackHitSound;
-				knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
-				direction = right;
-				damage = dc::GetBluntSecondConsecutiveAttackDamage(mPlayer->GetAttackPower());
-				attackPrefabResource = mBoxAttackPrefab;
-				break;
-			case EBerserkerAttackType::StrikeDown:
-				hitSoundName = mStrikeDownAttackHitSound;
-				knockBackType = EKnockBackType::TargetPosition;
-				direction = foward;
-				damage = dc::GetBluntThirdConsecutiveAttackDamage(mPlayer->GetAttackPower());
-				attackPrefabResource = mBoxAttackPrefab;
-				break;
-			case EBerserkerAttackType::SwingAround:
-				hitSoundName = mSwingAroundHitSound;
-				knockBackType = EKnockBackType::TargetPositionAndKnockDown;
-				direction = foward;
-				damage = dc::GetBluntSwingAroundDamage(mPlayer->GetAttackPower());
-				attackPrefabResource = mCircleAttackPrefab;
-				break;
-			case EBerserkerAttackType::Rush:
-				hitSoundName = mAttackRushHitSound;
-				knockBackType = EKnockBackType::TargetPosition;
-				direction = foward;
-				damage = dc::GetBluntRsuhDamage(mPlayer->GetAttackPower());
-				attackPrefabResource = mCircleAttackPrefab;
-				break;
-			default:
-				assert(false);
-				break;
+		case EBerserkerAttackType::Left:
+			EmitSound(EBerserkerSoundType::Left);
+			hitSoundName = mLeftAttackHitSound;
+			knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
+			direction = -right;
+			damage = dc::GetBluntFirstConsecutiveAttackDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mBoxAttackPrefab;
+			break;
+		case EBerserkerAttackType::Right:
+			EmitSound(EBerserkerSoundType::Right);
+			hitSoundName = mRightAttackHitSound;
+			knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
+			direction = right;
+			damage = dc::GetBluntSecondConsecutiveAttackDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mBoxAttackPrefab;
+			break;
+		case EBerserkerAttackType::StrikeDown:
+			EmitSound(EBerserkerSoundType::StrikeDown);
+			hitSoundName = mStrikeDownAttackHitSound;
+			knockBackType = EKnockBackType::TargetPosition;
+			direction = foward;
+			damage = dc::GetBluntThirdConsecutiveAttackDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mBoxAttackPrefab;
+			break;
+		case EBerserkerAttackType::SwingAround:
+			EmitSound(EBerserkerSoundType::SwingAround);
+			hitSoundName = mSwingAroundHitSound;
+			knockBackType = EKnockBackType::TargetPositionAndKnockDown;
+			direction = foward;
+			damage = dc::GetBluntSwingAroundDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mCircleAttackPrefab;
+			break;
+		case EBerserkerAttackType::Rush:
+			EmitSound(EBerserkerSoundType::Rush);
+			hitSoundName = mAttackRushHitSound;
+			knockBackType = EKnockBackType::TargetPosition;
+			direction = foward;
+			damage = dc::GetBluntRsuhDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mCircleAttackPrefab;
+			break;
+		default:
+			assert(false);
+			break;
 		}
 
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(attackPrefabResource);
@@ -103,6 +110,38 @@ namespace fq::client
 		return attackObj;
 	}
 
+	void BerserkerArmour::EmitSound(EBerserkerSoundType soundType)
+	{
+		std::string soundName;
+
+		switch (soundType)
+		{
+		case fq::client::EBerserkerSoundType::Left:
+			soundName = mLeftAttackSound;
+			break;
+		case fq::client::EBerserkerSoundType::Right:
+			soundName = mRightAttackSound;
+			break;
+		case fq::client::EBerserkerSoundType::StrikeDown:
+			soundName = mStrikeDownAttackSound;
+			break;
+		case fq::client::EBerserkerSoundType::SwingAround:
+			soundName = mSwingAroundSound;
+			break;
+		case fq::client::EBerserkerSoundType::Rush:
+			soundName = mAttackRushSound;
+			break;
+		case fq::client::EBerserkerSoundType::RushReady:
+			soundName = mAttackRushReadySound;
+			break;
+		default:
+			assert(false);
+			break;
+		}
+
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ soundName, false , fq::sound::EChannel::SE });
+	}
+
 	std::shared_ptr<fq::game_module::Component> BerserkerArmour::Clone(std::shared_ptr<Component> clone) const
 	{
 		auto cloneArmour = std::dynamic_pointer_cast<BerserkerArmour>(clone);
@@ -132,6 +171,8 @@ namespace fq::client
 		mController = GetComponent<game_module::CharacterController>();
 		mTransform = GetComponent<game_module::Transform>();
 		mPlayer = GetComponent<Player>();
+
+		setName();
 	}
 
 	void BerserkerArmour::checkSkillCoolTime(float dt)
@@ -181,4 +222,39 @@ namespace fq::client
 			mAnimator->SetParameterOffTrigger("OnRushCharging");
 		}
 	}
+
+	void BerserkerArmour::setName()
+	{
+		int soulType = static_cast<int>(mPlayer->GetSoulType());
+		SpeechBubbleUI* speechBubble = nullptr;
+		for (auto& child : GetGameObject()->GetChildren())
+		{
+			if (child->HasComponent<SpeechBubbleUI>())
+			{
+				speechBubble = child->GetComponent<SpeechBubbleUI>();
+			}
+		}
+
+		if (speechBubble != nullptr)
+		{
+			switch (soulType)
+			{
+				case 0:
+					speechBubble->SetName(PlayerInfoVariable::KnightName);
+					break;
+				case 1:
+					speechBubble->SetName(PlayerInfoVariable::MagicName);
+					break;
+				case 2:
+					speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+					break;
+				case 3:
+					speechBubble->SetName(PlayerInfoVariable::ArcherName);
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
 }

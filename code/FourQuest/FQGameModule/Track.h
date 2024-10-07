@@ -16,6 +16,7 @@ namespace fq::game_module
 		EFFECT,				// 이펙트
 		SOUND,				// 사운드
 		CAMERA_SHAKE,		// 카메라 진동
+		VIBRATION,			// 컨트롤러 진동
 
 		END
 	};
@@ -42,6 +43,7 @@ namespace fq::game_module
 		virtual void End() abstract;
 		void WakeUp();
 
+		const std::vector<std::string>& GetTrackObjectName() { return mTrackObjectName; }
 		const ETrackType& GetType() { return mType; }
 		const ETrackState& GetCurrentState() { return mCurrentState; }
 		const float& GetStartTime() { return mStartTime; }
@@ -62,6 +64,7 @@ namespace fq::game_module
 		void nodeUpdate();
 
 	protected:
+		std::vector<std::string> mTrackObjectName;
 		ETrackType mType;
 		ETrackState mCurrentState;
 

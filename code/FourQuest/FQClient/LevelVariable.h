@@ -11,6 +11,7 @@ namespace fq::client
 	{
 	public:
 		static inline bool OnLevelSystem = true;
+		
 		// Level
 		static inline float EasyDamage = 0.f;
 		static inline float EasyHp = 0.f;

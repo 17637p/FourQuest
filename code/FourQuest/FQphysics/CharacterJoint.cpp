@@ -11,7 +11,10 @@ namespace fq::physics
 	CharacterJoint::CharacterJoint()
 		: mOwnerLink()
 		, mParentLink()
-		, mLocalTransform()
+		, mSimulationOffsetTransform{}
+		, mSimulationLocalTransform{}
+		, mSimulationWorldTransform{}
+		, mLocalTransform{}
 		, mPxJoint(nullptr)
 		, mDrive()
 		, mSwing1Limit()

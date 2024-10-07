@@ -13,6 +13,9 @@ namespace fq::client
 		void OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt) override;
 
 	private:
+		void playSound(fq::game_module::Animator& animator);
+
+	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<IStateBehaviour> Clone() override;
 

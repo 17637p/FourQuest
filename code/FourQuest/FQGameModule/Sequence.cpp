@@ -2,6 +2,7 @@
 
 #include "..\FQClient\Player.h"
 
+#include "Scene.h"
 #include "Track.h"
 #include "CameraChangeTrack.h"
 #include "CameraShakeTrack.h"
@@ -11,6 +12,13 @@
 #include "EffectTrack.h"
 #include "SoundTrack.h"
 #include "ObjectAnimationTrack.h"
+#include "VibrationTrack.h"
+
+#include "EventManager.h"
+#include "Event.h"
+#include "TimeManager.h"
+#include "InputManager.h"
+#include "TextUI.h"
 
 namespace fq::game_module
 {
@@ -18,6 +26,9 @@ namespace fq::game_module
 		: mTracks()
 		, mbIsPlay(false)
 		, mbIsLoop(false)
+		, mbIsOnce(true)
+		, mbIsTimeStop(false)
+		, mbIsOffUIRender(false)
 		, mTotalPlayTime(0.f)
 		, mDurationTime(0.f)
 		, mAnimationContainer{}
@@ -33,6 +44,7 @@ namespace fq::game_module
 
 	Sequence::~Sequence()
 	{
+
 	}
 
 	void Sequence::OnStart()
@@ -160,35 +172,49 @@ namespace fq::game_module
 					mTotalPlayTime = trackTotalTime;
 			}
 		}
+		for (const auto& trackInfo : mVibrationTrackInfo)
+		{
+			std::shared_ptr<VibrationTrack> track = std::make_shared<VibrationTrack>();
+			check = track->Initialize(trackInfo, scene);
+
+			if (check)
+			{
+				mTracks.push_back(track);
+
+				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
+
+				if (mTotalPlayTime < trackTotalTime)
+					mTotalPlayTime = trackTotalTime;
+			}
+		}
 	}
 
 	void Sequence::OnUpdate(float dt)
 	{
 		if (mbIsPlay)
 		{
-			mDurationTime += dt;
+			checkSeqeunce();
 
-			for (const auto& track : mTracks)
-			{
-				if (dt == 0.f && track->GetType() == ETrackType::TEXT_PRINT)
-					continue;
+			float deltaTime = GetScene()->GetTimeManager()->GetDeltaTime();
+			mDurationTime += deltaTime;
 
-				track->Play(mDurationTime);
-			}
+			playTrack(deltaTime);
+			updateUI();
+			updateSequenceObject(deltaTime);
 
 			if (mDurationTime >= mTotalPlayTime)
 			{
 				mDurationTime = 0;
 
-				for (const auto& track : mTracks)
-				{
-					track->WakeUp();
-					track->End();
-				}
-
 				if (!mbIsLoop)
 				{
 					mbIsPlay = false;
+				}
+
+				// 한 번만 재생되는 거라면 한 번 재생이 끝난 후 시퀀스 제거
+				if (mbIsOnce)
+				{
+					GetScene()->DestroyGameObject(GetGameObject());
 				}
 			}
 		}
@@ -198,15 +224,107 @@ namespace fq::game_module
 		}
 	}
 
+	void Sequence::OnDestroy()
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
+
+		auto input = GetScene()->GetInputManager();
+
+		for (int i = 0; i < XUSER_MAX_COUNT; ++i)
+		{
+			input->SetVibration(i, EVibrationMode::Both, 0.f, mTotalPlayTime);
+		}
+	}
+
 	void Sequence::OnTriggerEnter(const Collision& collision)
 	{
-		//if (collision.object->HasComponent<fq::client::Player>())
+		if (collision.object->HasComponent<fq::client::Player>())
 		{
 			mbIsPlay = true;
 
 			for (const auto& track : mTracks)
 				track->WakeUp();
 		}
+	}
+
+	void Sequence::checkSeqeunce()
+	{
+		// 다른 시퀀스가 플레이 중일 때, 강제 종료
+		if (mDurationTime == 0.f && mbIsStopOtherSequence)
+		{
+			for (auto& sequenceObject : GetScene()->GetComponentView<Sequence>())
+			{
+				auto sequence = sequenceObject.GetComponent<Sequence>();
+
+				if (sequence != this && sequence->GetIsPlay())
+					sequence->StopSequnce();
+			}
+		}
+	}
+
+	void Sequence::playTrack(float dt)
+	{
+		for (const auto& track : mTracks)
+		{
+			if (dt == 0.f && track->GetType() == ETrackType::TEXT_PRINT)
+				continue;
+
+			track->Play(mDurationTime);
+		}
+
+		if (mDurationTime >= mTotalPlayTime)
+		{
+			for (const auto& track : mTracks)
+			{
+				track->WakeUp();
+				track->End();
+			}
+		}
+	}
+
+	void Sequence::updateUI()
+	{
+		// UI 끄기
+		if (mbIsOffUIRender)
+			GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
+
+		// UI 켜기
+		if (mDurationTime >= mTotalPlayTime)
+			GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
+	}
+
+	void Sequence::updateSequenceObject(float dt)
+	{
+		if (!mbIsTimeStop)
+			return;
+
+		GetScene()->GetTimeManager()->SetTimeScale(0.01f);
+
+		for (const auto& track : mTracks)
+		{
+			for (auto& objectName : track->GetTrackObjectName())
+			{
+				auto object = GetScene()->GetObjectByName(objectName);
+
+				if (!object)
+					continue;
+
+				if (!object->HasComponent<TextUI>())
+					object->OnUpdate(dt);
+
+				for (auto child : object->GetChildren())
+				{
+					if (!child)
+						continue;
+
+					if (!child->HasComponent<TextUI>())
+						object->OnUpdate(dt);
+				}
+			}
+		}
+
+		if (mDurationTime >= mTotalPlayTime)
+			GetScene()->GetTimeManager()->SetTimeScale(1.f);
 	}
 
 	entt::meta_handle Sequence::GetHandle()
@@ -245,5 +363,10 @@ namespace fq::game_module
 			OnFixedUpdate(0.0f);
 			mbIsPlay = false;
 		}
+	}
+
+	void Sequence::StopSequnce()
+	{
+		mDurationTime = FLT_MAX - 10.f;
 	}
 }

@@ -7,6 +7,7 @@ namespace fq::game_module
 {
 	ObjectTeleportTrack::ObjectTeleportTrack()
 		: Track(ETrackType::OBJECT_TELEPORT)
+		, mbIsObjectReturnToStartTransform()
 		, mTargetObject()
 		, mKeys{}
 		, mPrevPosition{}
@@ -20,8 +21,10 @@ namespace fq::game_module
 
 	bool ObjectTeleportTrack::Initialize(const ObjectTeleportTrackInfo& info, Scene* scene)
 	{
+		mTrackObjectName.push_back(info.targetObjectName);
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
+		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;
 
 		mTargetObject = scene->GetObjectByName(info.targetObjectName);
 
@@ -78,7 +81,7 @@ namespace fq::game_module
 	}
 	void ObjectTeleportTrack::End()
 	{
-		if (!mTargetObject.expired())
+		if (!mTargetObject.expired() && mbIsObjectReturnToStartTransform)
 		{
 			if (!mTargetObject.lock()->HasComponent<Transform>()) return;
 

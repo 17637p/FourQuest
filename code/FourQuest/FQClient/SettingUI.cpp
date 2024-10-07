@@ -95,6 +95,10 @@ void fq::client::SettingUI::setScaleScreen()
 	{
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
+
+	auto myPos = myTransform->GetLocalPosition();
+	myPos.y = 120 * scaleY;
+	myTransform->SetLocalPosition(myPos);
 }
 
 void fq::client::SettingUI::setSelectBoxPosition(float dt)

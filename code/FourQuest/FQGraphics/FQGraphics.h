@@ -144,6 +144,7 @@ namespace fq::graphics
 		virtual void SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe) override;
 		virtual void SetIsRenderDebug(bool bIsRenderDebug) override;
 		virtual void SetIsRenderObjects(bool isRenderObjects) override;
+		virtual void SetIsRenderUI(bool bIsRenderUI) override;
 
 		/// UI
 		virtual void SetDefaultFontSize(const unsigned short fontSize) override;
@@ -239,6 +240,7 @@ namespace fq::graphics
 
 		// temp
 		bool mIsOnPostProcessing;
+		bool mbIsRenderUI;
 	};
 }
 

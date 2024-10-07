@@ -6,6 +6,7 @@
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
 
 #include "Attack.h"
 #include "CameraMoving.h"
@@ -85,6 +86,8 @@ void fq::client::Player::OnUpdate(float dt)
 	processFeverTime(dt);
 	processCoolTime(dt);
 	processDebuff(dt);
+
+	checkPoisonDuration(dt);
 }
 
 void fq::client::Player::OnLateUpdate(float dt)
@@ -138,6 +141,14 @@ void fq::client::Player::OnStart()
 
 	// 머리 설정
 	linkSoulTypeHead();
+
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
+		{
+			mSkinnedMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
+		}
+	}
 }
 
 void fq::client::Player::processInput(float dt)
@@ -252,6 +263,9 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 					return;
 				}
 			}
+			// 체력 감소
+			float attackPower = monsterAtk->GetAttackPower();
+			DecreaseHp(attackPower);
 
 			// Hit 애니메이션 
 			if (mbIsActiveOnHit)
@@ -261,9 +275,6 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 				mInvincibleElapsedTime = mInvincibleTime;
 			}
 
-			// 체력 감소
-			float attackPower = monsterAtk->GetAttackPower();
-			DecreaseHp(attackPower);
 		}
 	}
 
@@ -395,6 +406,9 @@ void fq::client::Player::EmitBowSoulAttack()
 	attackInfo.remainingAttackCount = 1;
 	attackComponent->Set(attackInfo);
 
+	// 사운드 실행
+	playBowSoulSound();
+
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -426,7 +440,6 @@ void fq::client::Player::EmitSwordSoulAttack()
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
 	attackInfo.HitEffectName = "K_Swing_Hit_blood";
 	attackComponent->Set(attackInfo);
-
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -586,7 +599,6 @@ void fq::client::Player::setFeverBuff(bool isFever)
 	assert(isFever != mbIsFeverTime);
 
 	mFeverElapsedTime = 0.f;
-
 	mbIsFeverTime = isFever;
 }
 
@@ -595,7 +607,7 @@ void fq::client::Player::processBuff()
 	// 피버 버프 + 영혼 버프 합산된 최종 버프 계산 함수
 	if (mbIsFeverTime)
 	{
-		mAttackPower *= mBaseAttackPower * PlayerVariable::FeverAttackIncreaseRatio;
+		mAttackPower = mBaseAttackPower * PlayerVariable::FeverAttackIncreaseRatio;
 		mController->AddFinalSpeedMultiplier(PlayerVariable::FeverSpeedIncreaseRatio - 1.f);
 	}
 
@@ -620,16 +632,16 @@ void fq::client::Player::setDecalColor()
 			switch (mSoulType)
 			{
 				case fq::client::ESoulType::Sword:
-					info.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
+					info.BaseColor = PlayerSoulVariable::SwordSoulColor;
 					break;
 				case fq::client::ESoulType::Staff:
-					info.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
+					info.BaseColor = PlayerSoulVariable::StaffSoulColor;
 					break;
 				case fq::client::ESoulType::Axe:
-					info.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
+					info.BaseColor = PlayerSoulVariable::AxeSoulColor;
 					break;
 				case fq::client::ESoulType::Bow:
-					info.EmissiveColor = PlayerSoulVariable::BowSoulColor;
+					info.BaseColor = PlayerSoulVariable::BowSoulColor;
 					break;
 			}
 
@@ -687,6 +699,29 @@ void fq::client::Player::OnTriggerStay(const game_module::Collision& collision)
 	{
 		GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideStayTrigger>(
 			{ (int)GetPlayerID(), collision.other->GetName() });
+	}
+}
+
+void fq::client::Player::playBowSoulSound()
+{
+	int random = std::rand() % 4;
+
+	switch (random)
+	{
+		case 0:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_1", false , fq::sound::EChannel::SE });
+			break;
+		case 1:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_2", false , fq::sound::EChannel::SE });
+			break;
+		case 2:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_3", false , fq::sound::EChannel::SE });
+			break;
+		case 3:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_4", false , fq::sound::EChannel::SE });
+			break;
+		default:
+			break;
 	}
 }
 
@@ -792,5 +827,27 @@ float fq::client::Player::GetXSkillCoolTimeRatio() const
 void fq::client::Player::SetXSkillCoolTimeRatio(float ratio)
 {
 	mXSkillCoolTimeRatio = std::clamp(ratio, 0.f, 1.f);
+}
+
+void fq::client::Player::SetPoisonRimLight(float duration)
+{
+	mDuration = duration;
+	mCurTime = 0;
+	auto matInfo = mSkinnedMesh->GetMaterialInstanceInfo();
+	matInfo.bUseRimLight = true;
+	matInfo.RimPow = 0.4f;
+	matInfo.RimLightColor = { 6 / (float)255, 97 / (float)255, 0, 1 };
+	mSkinnedMesh->SetMaterialInstanceInfo(matInfo);
+}
+
+void fq::client::Player::checkPoisonDuration(float dt)
+{
+	mCurTime += dt;
+	if (mCurTime > mDuration)
+	{
+		auto matInfo = mSkinnedMesh->GetMaterialInstanceInfo();
+		matInfo.bUseRimLight = false;
+		mSkinnedMesh->SetMaterialInstanceInfo(matInfo);
+	}
 }
 

@@ -7,6 +7,8 @@
 #include "../FQGameModule/Transform.h"
 
 #include "UILayerDefine.h"
+#include "ClientEvent.h"
+#include "Player.h"
 
 fq::client::HpBar::~HpBar()
 {
@@ -85,7 +87,7 @@ void fq::client::HpBar::OnStart()
 	{
 		auto camera = object.GetComponent<game_module::Camera>();
 
-		if (camera->IsMain())
+		if (object.GetName() == "MainCamera")
 		{
 			mMainCamera = camera;
 		}
@@ -123,8 +125,11 @@ void fq::client::HpBar::DecreaseHp(float ratio)
 		SetVisible(true);
 	}
 
+	// ratio는 줄어들 HP 비율 (받은 데미지 양)
+	// mHPRatio는 기존 비율, 따라서 - 한 것이 줄어든 비율 
 	float decreaseHpRatio = mHpRatio - ratio;
 
+	// 줄어든 비율이 0보다 크면 == 체력이 줄었다면 
 	if (decreaseHpRatio >= 0.f)
 	{
 		mDecreaseRatio += ratio;
@@ -136,12 +141,21 @@ void fq::client::HpBar::DecreaseHp(float ratio)
 		mHpRatio = 0.f;
 	}
 
+	if (GetGameObject()->HasComponent<Player>())
+	{
+		int playerID = GetComponent<Player>()->GetPlayerID();
+		GetScene()->GetEventManager()->FireEvent<event::DecreaseHPRatio>({ playerID, mDecreaseRatio });
+	}
+
 	mDeceraseTime = 0.f;
 }
 
 
 void fq::client::HpBar::setUIInfo()
 {
+	if (GetGameObject()->IsDestroyed())
+		return;
+
 	using namespace DirectX::SimpleMath;
 
 	Vector3 pos = mTransform->GetWorldPosition();

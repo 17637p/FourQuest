@@ -15,6 +15,18 @@ namespace fq::client
 	class Player;
 	class AimAssist;
 
+	enum class EArcherSound
+	{
+		ShootStart,
+		Charge1,
+		Charge2,
+		Shoot,
+		Fastshoot1,
+		Fastshoot2,
+		Fastshoot3,
+		Rolling,
+	};
+
 	class ArcherArmour : public game_module::Component
 	{
 	public:
@@ -23,6 +35,7 @@ namespace fq::client
 
 		void EmitmWeakAttack();
 		void EmitStrongAttack(int chargeLevel);
+		void EmitSound(EArcherSound archerSound);
 		std::shared_ptr<game_module::GameObject> EmitChargingEffect();
 		std::shared_ptr<game_module::GameObject> EmitStrongAttackEffect();
 		std::shared_ptr<game_module::GameObject> EmitDash();
@@ -44,6 +57,8 @@ namespace fq::client
 
 		void checkSkillCoolTime(float dt);
 		void checkInput(float dt);
+
+		void setName();
 
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;

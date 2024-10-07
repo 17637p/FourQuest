@@ -5,13 +5,16 @@
 #include "../FQGameModule/GameModule.h"
 
 #include "PhysicsCollisionDataManager.h"
+#include "spdlog\spdlog.h"
 
 namespace fq::physics
 {
 	CharacterPhysics::CharacterPhysics()
 		: mPxArticulation(nullptr)
+		, mScene(nullptr)
 		, mMaterial(nullptr)
 		, mRootLink(nullptr)
+		, mCollisionData(nullptr)
 		, mModelPath()
 		, mID()
 		, mLayerNumber()
@@ -24,6 +27,9 @@ namespace fq::physics
 	CharacterPhysics::~CharacterPhysics()
 	{
 		mCollisionData->isDead = true;
+		PX_RELEASE(mMaterial);
+
+		spdlog::trace("[Destructor] Physics ID : {}", mID);
 	}
 
 	bool CharacterPhysics::Initialize(const ArticulationInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData, physx::PxScene* scene)
@@ -49,7 +55,10 @@ namespace fq::physics
 	{
 		for (auto& [name, link] : mLinkContainer)
 		{
-			if (!link->Update()) return false;
+			if (mbIsRagdoll)
+			{
+				if (!link->Update()) return false;
+			}
 		}
 
 		return true;

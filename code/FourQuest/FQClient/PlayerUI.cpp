@@ -1,13 +1,19 @@
+#define NOMINMAX
 #include "PlayerUI.h"
 
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/ScreenManager.h"
+#include "../FQGameModule/EventManager.h"
+#include "../FQGameModule/CharacterController.h"
 
+#include "GameManager.h"
 #include "Player.h"
+#include "Soul.h"
 #include "SoulVariable.h"
 #include "GameManager.h"
+#include "ClientEvent.h"
 
 fq::client::PlayerUI::PlayerUI()
 	:mPlayerID(0),
@@ -23,13 +29,40 @@ fq::client::PlayerUI::PlayerUI()
 	mSkillIconRs(),
 	mPlayerState(),
 	mScreenManager(nullptr)
+	, mDecreaseOffset(0.1f)
+	, mDeceraseTime(0.f)
+	, mDecreaseSpeed(3.f)
+	, mDecreaseRatio(0.f)
 {
 
 }
 
+fq::client::PlayerUI::PlayerUI(const PlayerUI& other)
+	:mDecreaseOffset(other.mDecreaseOffset)
+	, mDeceraseTime(other.mDeceraseTime)
+	, mDecreaseSpeed(other.mDecreaseSpeed)
+	, mDecreaseRatio(other.mDecreaseRatio)
+{
+}
+
+fq::client::PlayerUI& fq::client::PlayerUI::operator=(const PlayerUI& other)
+{
+	mDecreaseOffset = other.mDecreaseOffset;
+	mDeceraseTime = other.mDeceraseTime;
+	mDecreaseSpeed = other.mDecreaseSpeed;
+	mDecreaseRatio = other.mDecreaseRatio;
+
+	mWeaponIcons.clear();
+	mSkillIconXs.clear();
+	mSkillIconAs.clear();
+	mSkillIconRs.clear();
+	mSoulSkillIcons.clear();
+
+	return *this;
+}
+
 fq::client::PlayerUI::~PlayerUI()
 {
-
 }
 
 std::shared_ptr<fq::game_module::Component> fq::client::PlayerUI::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
@@ -51,6 +84,12 @@ std::shared_ptr<fq::game_module::Component> fq::client::PlayerUI::Clone(std::sha
 
 void fq::client::PlayerUI::OnStart()
 {
+	mWeaponIcons.clear();
+	mSkillIconXs.clear();
+	mSkillIconAs.clear();
+	mSkillIconRs.clear();
+	mSoulSkillIcons.clear();
+
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren();
 
 	fq::game_module::GameObject* staminaGauge = GetGameObject()->GetChildren()[3]->GetChildren()[0];
@@ -87,6 +126,13 @@ void fq::client::PlayerUI::OnStart()
 	mSkillIconRs.push_back(skillRs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[3]->GetComponent<fq::game_module::ImageUI>());
+
+	std::vector<fq::game_module::GameObject*> soulIcons = children[1]->GetChildren()[0]->GetChildren();
+	mSoulSkillIcons.push_back(soulIcons[0]->GetComponent<fq::game_module::ImageUI>());
+	mSoulSkillIcons.push_back(soulIcons[1]->GetComponent<fq::game_module::ImageUI>());
+	mSoulSkillIcons.push_back(soulIcons[2]->GetComponent<fq::game_module::ImageUI>());
+	mSoulSkillIcons.push_back(soulIcons[3]->GetComponent<fq::game_module::ImageUI>());
+
 	mRCoolTimeImage = skillRs[4]->GetComponent<fq::game_module::ImageUI>();
 	mCoolTimeHeight = mRCoolTimeImage->GetUIInfomation(0).Height;
 
@@ -96,15 +142,16 @@ void fq::client::PlayerUI::OnStart()
 		mPlayerState = playerState->GetComponent<fq::game_module::ImageUI>();
 	}
 
-	fq::game_module::Scene* scene = GetScene();
-	SetPlayer();
-
 	for (int i = 0; i < 4; i++)
 	{
 		setWeaponAndSkillIcons(i, false);
 	}
 
 	mScreenManager = GetScene()->GetScreenManager();
+	setSoulSkillIcon();
+
+	// 이벤트 등록
+	eventProcessDecreaseHPRatio();
 }
 
 void fq::client::PlayerUI::OnUpdate(float dt)
@@ -123,6 +170,13 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 		myTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
 	}
 
+	// 체력 감소 연출
+	mDeceraseTime += dt;
+	if (mDeceraseTime >= mDecreaseOffset)
+	{
+		mDecreaseRatio = std::max(mDecreaseRatio - mDecreaseSpeed * dt, 0.f);
+	}
+
 	// 플레이어한테 HP 받아와서 Ratio 조절하기
 	if (mPlayer != nullptr)
 	{
@@ -135,7 +189,7 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 		{
 			// HP 바 조정
 			SetHPBar(mPlayer->GetHPRatio());
-			
+
 			// 갑옷 타입 받아오기 
 			// 무기 아이콘, 스킬 아이콘 변화
 			fq::client::EArmourType armourType = mPlayer->GetArmourType();
@@ -161,16 +215,30 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 			setWeaponAndSkillIcons(armourTypeIndex, true);
 			SetSoulGauge(mPlayer->GetSoultGaugeRatio());
 			setSkillCoolTime();
+		}
 	}
+	else if (mSoul) // 소울 상태 설정 
+	{
+		if (mSoul->GetGameObject()->IsDestroyed())
+		{
+			mSoul = nullptr;
+		}
+		else
+		{
+			SetHPBar(mSoul->GetSoulHpRatio());
+			SetSoulGauge(0);
+			resetSkillCoolTime();
+		}
 	}
 	else
 	{
 		SetSoulGauge(0);
 		SetHPBar(0);
+		resetSkillCoolTime();
 	}
 
 	// 플레이어 상태 UI 위치조정 및 렌더러
-	SetPlayerStateUpdate();
+	setPlayerStateUpdate();
 }
 
 void fq::client::PlayerUI::setWeaponAndSkillIcons(int index, bool isRender)
@@ -181,7 +249,7 @@ void fq::client::PlayerUI::setWeaponAndSkillIcons(int index, bool isRender)
 	mSkillIconRs[index]->SetIsRender(0, isRender);
 }
 
-void fq::client::PlayerUI::SetPlayerStateUpdate()
+void fq::client::PlayerUI::setPlayerStateUpdate()
 {
 	if (mPlayerState == nullptr)
 		return;
@@ -198,6 +266,10 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 		float localY = mPlayerState->GetGameObject()->GetComponent<fq::game_module::Transform>()->GetLocalPosition().y;
 
 		mPlayerState->SetUIPosition(i, myTransform->GetWorldPosition().x + localX, myTransform->GetWorldPosition().y + localY);
+
+		UINT screenWidth = mScreenManager->GetFixScreenWidth();
+		UINT screenHeight = mScreenManager->GetFixScreenHeight();
+		mPlayerState->SetUIScale(i, screenWidth / (float)1920, screenHeight / (float)1080);
 	}
 
 	bool isRetire = false;
@@ -311,9 +383,9 @@ void fq::client::PlayerUI::SetPlayerStateUpdate()
 	}
 }
 
-void fq::client::PlayerUI::SetPlayer()
+void fq::client::PlayerUI::SetPlayer(fq::client::GameManager* gameMgr)
 {
-	fq::game_module::Scene* scene = GetScene();
+	/*fq::game_module::Scene* scene = GetScene();
 	for (auto& object : scene->GetComponentView<fq::client::Player>())
 	{
 		auto player = object.GetComponent<fq::client::Player>();
@@ -321,6 +393,26 @@ void fq::client::PlayerUI::SetPlayer()
 		if (GetPlayerID() == player->GetPlayerID())
 		{
 			mPlayer = player;
+		}
+	}*/
+
+	// 플레이어 연결 로직 수정 
+	for (auto& playerObject : gameMgr->GetPlayers())
+	{
+		auto id = playerObject->GetComponent<game_module::CharacterController>()->GetControllerID();
+
+		if (GetPlayerID() == id)
+		{
+			if (playerObject->HasComponent<Soul>())
+			{
+				mPlayer = nullptr;
+				mSoul = playerObject->GetComponent<Soul>();
+			}
+			else if (playerObject->HasComponent<Player>())
+			{
+				mPlayer = playerObject->GetComponent<Player>();
+				mSoul = nullptr;
+			}
 		}
 	}
 }
@@ -347,10 +439,16 @@ void fq::client::PlayerUI::SetSoulGauge(float ratio)
 void fq::client::PlayerUI::SetHPBar(float ratio)
 {
 	float hpRatio = ratio;
-	std::vector<fq::graphics::UIInfo> uiInfos = mHPBarGauge->GetUIInfomations();
-	uiInfos[0].XRatio = hpRatio;
-	uiInfos[0].Width = mHPWidth * hpRatio;
-	mHPBarGauge->SetUIInfomations(uiInfos);
+	auto uiInfo = mHPBarGauge->GetUIInfomation(0);
+	uiInfo.XRatio = hpRatio;
+	uiInfo.Width = mHPWidth * hpRatio;
+	mHPBarGauge->SetUIInfomation(0, uiInfo);
+
+	auto HPBack = mHPBarGauge->GetGameObject()->GetChildren()[0]->GetComponent<game_module::ImageUI>();
+	auto hpBackUIInfo = HPBack->GetUIInfomation(0);
+	hpBackUIInfo.XRatio = mDecreaseRatio + hpRatio;
+	hpBackUIInfo.Width = mHPWidth * (mDecreaseRatio + hpRatio);
+	HPBack->SetUIInfomation(0, hpBackUIInfo);
 }
 
 void fq::client::PlayerUI::setSkillCoolTime()
@@ -365,7 +463,7 @@ void fq::client::PlayerUI::setSkillCoolTime()
 	auto uiInfo = mACoolTimeImage->GetUIInfomation(0);
 	uiInfo.Height = mCoolTimeHeight * aCool;
 	mACoolTimeImage->SetUIInfomation(0, uiInfo);
-	mACoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0});
+	mACoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
 
 	uiInfo = mRCoolTimeImage->GetUIInfomation(0);
 	uiInfo.Height = mCoolTimeHeight * rCool;
@@ -376,5 +474,73 @@ void fq::client::PlayerUI::setSkillCoolTime()
 	uiInfo.Height = mCoolTimeHeight * xCool;
 	mXCoolTimeImage->SetUIInfomation(0, uiInfo);
 	mXCoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
+}
+
+void fq::client::PlayerUI::resetSkillCoolTime()
+{
+	float aCool = 0.f;
+	float rCool = 0.f;
+	float xCool = 0.f;
+
+	float coolX = -25;
+	float coolY = -25;
+
+	auto uiInfo = mACoolTimeImage->GetUIInfomation(0);
+	uiInfo.Height = mCoolTimeHeight * aCool;
+	mACoolTimeImage->SetUIInfomation(0, uiInfo);
+	mACoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
+
+	uiInfo = mRCoolTimeImage->GetUIInfomation(0);
+	uiInfo.Height = mCoolTimeHeight * rCool;
+	mRCoolTimeImage->SetUIInfomation(0, uiInfo);
+	mRCoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
+
+	uiInfo = mXCoolTimeImage->GetUIInfomation(0);
+	uiInfo.Height = mCoolTimeHeight * xCool;
+	mXCoolTimeImage->SetUIInfomation(0, uiInfo);
+	mXCoolTimeImage->GetTransform()->SetLocalPosition({ coolX, coolY + (50 - uiInfo.Height) , 0 });
+}
+
+void fq::client::PlayerUI::setSoulSkillIcon()
+{
+	int soulType = -1;
+	if (mPlayer != nullptr)
+	{
+		soulType = static_cast<int>(mPlayer->GetSoulType());
+	}
+	if (mSoul != nullptr)
+	{
+		soulType = static_cast<int>(mSoul->GetSoulType());
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		mSoulSkillIcons[i]->SetIsRender(0, false);
+	}
+
+	if (soulType != -1)
+	{
+		mSoulSkillIcons[soulType]->SetIsRender(0, true);
+	}
+}
+
+void fq::client::PlayerUI::eventProcessDecreaseHPRatio()
+{
+	mDecreaseHPRatioHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::DecreaseHPRatio>
+		(
+			[this](const client::event::DecreaseHPRatio& event)
+			{
+				if (event.playerID == mPlayerID)
+				{
+					mDecreaseRatio = event.ratio;
+					mDeceraseTime = 0.f;
+				}
+			}
+		);
+}
+
+void fq::client::PlayerUI::OnDestroy()
+{
+	GetScene()->GetEventManager()->RemoveHandle(mDecreaseHPRatioHandler);
 }
 

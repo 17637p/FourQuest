@@ -54,6 +54,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::MeleeMonster::Clone(std:
 		*cloneMonster = *this;
 	}
 
+
+
 	return cloneMonster;
 }
 
@@ -261,7 +263,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 			// HP 설정
 			mHp -= attackPower;
 			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
-
+			
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
 
@@ -272,8 +274,6 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 			if (!stateEvent.RegisterKeyName.empty())
 			{
 				GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
-
-
 			}
 
 			// 사망처리 

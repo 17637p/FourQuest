@@ -28,6 +28,7 @@
 #include "ClothEditorWindow.h"
 #include "GameVariableWindow.h"
 #include "RenderingDebugWindow.h"
+#include "ChangeWindow.h"
 
 // system
 #include "ImGuiSystem.h"
@@ -72,6 +73,7 @@ namespace fq::game_engine
 		std::unique_ptr<GameVariableWindow> mGameVariableWindow;
 		std::unique_ptr<RenderingDebugWindow> mRenderingDebugWindow;
 		std::unique_ptr<ClothEditorWindow> mClothEditorWindow;
+		std::unique_ptr<ChangeWindow> mChangeWindow;
 
 		// System
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;

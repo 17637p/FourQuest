@@ -8,11 +8,14 @@
 #include "..\FQGameModule\BoxCollider.h"
 
 #include "DeadArmour.h"
+#include "GoddessStatue.h"
 #include "CameraMoving.h"
 #include "ClientEvent.h"
 #include "PlayerSoulVariable.h"
 #include "Player.h"
 #include "HpBar.h"
+#include "SpeechBubbleUI.h"
+#include "PlayerInfoVariable.h"
 
 #include "SoulVariable.h"
 
@@ -23,6 +26,10 @@ fq::client::Soul::Soul()
 	, mSelectArmours{}
 	, mbIsDistanceInPlayer(false)
 	, mHP()
+	, mSelectGoddessStatue(nullptr)
+	, mNeedHoldB(2)
+	, mCurHoldB(0)
+	, mIsOverlayGoddessStatue(false)
 {}
 
 fq::client::Soul::~Soul()
@@ -69,9 +76,11 @@ void fq::client::Soul::OnStart()
 		if (ui)
 			mBGaugeUI = ui;
 	}
-	
+
 	SetSoulColor();		// 소울 색깔 지정 
 	SetSoulHP();		// 소울 HP
+
+	setName();
 }
 
 void fq::client::Soul::DestorySoul()
@@ -88,31 +97,47 @@ void fq::client::Soul::DestorySoul()
 
 void fq::client::Soul::OnTriggerEnter(const fq::game_module::Collision& collision)
 {
+	// deadArmour 처리
 	auto deadArmour = collision.other->GetComponent<fq::client::DeadArmour>();
+	if (deadArmour != nullptr)
+	{
+		mSelectArmours.push_back(deadArmour);
+	}
 
-	if (deadArmour == nullptr)
-		return;
-
-	mSelectArmours.push_back(deadArmour);
+	// GoddessStatue 처리
+	auto goddessStatue = collision.other->GetComponent<fq::client::GoddessStatue>();
+	if (goddessStatue != nullptr)
+	{
+		mSelectGoddessStatue = goddessStatue;
+	}
 }
 
 void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision)
 {
+	// deadArmour 처리
 	auto deadArmour = collision.other->GetComponent<fq::client::DeadArmour>();
+	if (deadArmour != nullptr)
+	{
+		mSelectArmours.erase(std::remove(mSelectArmours.begin(), mSelectArmours.end(), deadArmour)
+			, mSelectArmours.end()
+		);
+	}
 
-	if (deadArmour == nullptr)
-		return;
-
-	mSelectArmours.erase(std::remove(mSelectArmours.begin(), mSelectArmours.end(), deadArmour)
-		, mSelectArmours.end()
-	);
+	// GoddessStatue 처리
+	auto goddessStatue = collision.other->GetComponent<fq::client::GoddessStatue>();
+	if (goddessStatue != nullptr)
+	{
+		mSelectGoddessStatue = nullptr;
+	}
 }
 
 void fq::client::Soul::OnUpdate(float dt)
 {
+	selectGoddessStatue(dt);
 	selectArmour();
 	checkOtherPlayer();
 	updateSoulHP(dt);
+	checkReleaseGoddessStatue();
 }
 
 void fq::client::Soul::OnLateUpdate(float dt)
@@ -167,7 +192,8 @@ void fq::client::Soul::selectArmour()
 			}
 		}
 
-		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold))
+		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold)
+			&& !mIsOverlayGoddessStatue) // 여신상 위치 근처에 갑옷 있을 때 여신상으로 이동하고 갑옷 먹어져서 막음
 		{
 			PlayerInfo info{ mController->GetControllerID(), mSoulType };
 
@@ -179,7 +205,7 @@ void fq::client::Soul::selectArmour()
 			}
 		}
 	}
-	else
+	else if(mBGaugeUI)
 	{
 		mBGaugeUI->SetVisible(false);
 	}
@@ -271,6 +297,12 @@ void fq::client::Soul::updateSoulHP(float dt)
 		return;
 	}
 
+	// 여신상에 빙의 중이라면
+	if (mIsOverlayGoddessStatue)
+	{
+		return;
+	}
+
 	// 영혼 주변에 갑옷 플레이어가 있는지 체크 여부에 따라 HP 감소량 감소
 	if (mbIsDistanceInPlayer)
 	{
@@ -320,5 +352,108 @@ void fq::client::Soul::SetSoulType(fq::client::ESoulType type)
 	mSoulType = type;
 
 	SetSoulColor();
+}
+
+void fq::client::Soul::selectGoddessStatue(float dt)
+{
+	auto input = GetScene()->GetInputManager();
+	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold))
+	{
+		mCurHoldB += dt;
+		if (mCurHoldB > mNeedHoldB)
+		{
+			mCurHoldB = 0;
+			if (mSelectGoddessStatue != nullptr && mSelectGoddessStatue->GetIsCorrupt())
+			{
+				bool isSuccessOverlay = mSelectGoddessStatue->SetOverlaySoul(true, this);
+
+				if (isSuccessOverlay)
+				{
+					mIsOverlayGoddessStatue = true;
+					// 빙의하면 못 움직이게 처리 
+					GetComponent<game_module::CharacterController>()->SetCanMoveCharater(false);
+					GetComponent<HpBar>()->SetVisible(false);
+
+					// 소울 위치를 여신상 위치로 해서 숨기기 
+					auto soulT = GetComponent<game_module::Transform>();
+					auto goddessStatuePos = mSelectGoddessStatue->GetComponent<game_module::Transform>()->GetWorldPosition();
+
+					goddessStatuePos.y += 2.0f;
+					soulT->SetWorldPosition(goddessStatuePos);
+				}
+			}
+		}
+	}
+	else
+	{
+		mCurHoldB = 0;
+	}
+}
+
+void fq::client::Soul::ReleaseGoddessStatue()
+{
+	mIsOverlayGoddessStatue = false;
+	GetComponent<game_module::CharacterController>()->SetCanMoveCharater(true);
+
+	// 여신상 살짝 앞으로 소환
+	auto soulT = GetTransform();
+	DirectX::SimpleMath::Vector3 forwardPos = soulT->GetWorldPosition();
+	forwardPos.z -= 1.0f;
+	soulT->SetWorldPosition(forwardPos);
+
+	SetSoulHP();
+}
+
+void fq::client::Soul::checkReleaseGoddessStatue()
+{
+	if (mIsOverlayGoddessStatue)
+	{
+		auto input = GetScene()->GetInputManager();
+		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
+		{
+			// 영혼 최대 체력으로 
+			SetSoulHP();
+			ReleaseGoddessStatue();
+		}
+	}
+}
+
+float fq::client::Soul::GetSoulHpRatio() const
+{
+	return mHP / static_cast<float>(SoulVariable::SoulMaxHp);
+}
+
+void fq::client::Soul::setName()
+{
+	int soulType = static_cast<int>(GetSoulType());
+	SpeechBubbleUI* speechBubble = nullptr;
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<SpeechBubbleUI>())
+		{
+			speechBubble = child->GetComponent<SpeechBubbleUI>();
+		}
+	}
+
+	if (speechBubble != nullptr)
+	{
+		switch (soulType)
+		{
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
+		}
+	}
 }
 

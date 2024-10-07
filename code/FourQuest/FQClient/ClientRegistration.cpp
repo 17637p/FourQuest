@@ -13,6 +13,7 @@
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
 #include "PlayerMovementSoundState.h"
+#include "PlayerSoundState.h"
 #include "DeadArmour.h"
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
@@ -124,6 +125,7 @@
 #include "VideoSettingUI.h"
 #include "SpeechBubbleUI.h"
 #include "BGaugeUI.h"
+#include "PlayerCheckUI.h"
 
 #include "CameraMoving.h"
 
@@ -148,6 +150,7 @@
 #include "PlayerVariable.h"
 #include "SoulVariable.h"
 #include "LevelVariable.h"
+#include "MonsterVariable.h"
 
 // Box
 #include "Box.h"
@@ -155,6 +158,8 @@
 // etc
 #include "BGM.h"
 #include "Portal.h"
+#include "GoddessStatue.h"
+#include "VibrationState.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -236,6 +241,62 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Comment, u8"디버깅 정보 사용 여부")
 		.base<game_module::Component>();
 
+	entt::meta<GoddessStatue>()
+		.type("GoddessStatue"_hs)
+		.prop(reflect::prop::Name, "GoddessStatue")
+		.data<&GoddessStatue::mDealingTime>("DealingTime"_hs)
+		.prop(fq::reflect::prop::Name, "DealingTime")
+		.data<&GoddessStatue::mDealingDamage>("DealingDamage"_hs)
+		.prop(fq::reflect::prop::Name, "DealingDamage")
+		.data<&GoddessStatue::mMaxGauge>("MaxGauge"_hs)
+		.prop(fq::reflect::prop::Name, "MaxGauge")
+		.data<&GoddessStatue::mFillGaugeSpeed>("FillGaugeSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "FillGaugeSpeed")
+		.data<&GoddessStatue::mDecreaseSpeed>("DecreaseSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "DecreaseSpeed")
+		.data<&GoddessStatue::mGodDamageBuff>("GodDamageBuff"_hs)
+		.prop(fq::reflect::prop::Name, "GodDamageBuff")
+		.data<&GoddessStatue::mGodCoolTimeBuff>("GodCoolTimeBuff"_hs)
+		.prop(fq::reflect::prop::Name, "GodCoolTimeBuff")
+		.data<&GoddessStatue::mGodMoveBuff>("GodMoveBuff"_hs)
+		.prop(fq::reflect::prop::Name, "GodMoveBuff")
+		.data<&GoddessStatue::mPlayerDebuff>("PlayerDebuff"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerDebuff")
+		.data<&GoddessStatue::mPlayerBuff>("PlayerBuff"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerBuff")
+		.data<&GoddessStatue::mBuff>("Buff"_hs)
+		.prop(fq::reflect::prop::Name, "Buff")
+		.base<game_module::Component>();
+
+	entt::meta<EVibrationMode>()
+		.type("VibrationMode"_hs)
+		.prop(reflect::prop::Name, "VibrationState")
+		.data<EVibrationMode::Both>("Both"_hs)
+		.prop(fq::reflect::prop::Name, "Both")
+		.data<EVibrationMode::Left>("Left"_hs)
+		.prop(fq::reflect::prop::Name, "Left")
+		.data<EVibrationMode::Right>("Right"_hs)
+		.prop(fq::reflect::prop::Name, "Right");
+
+
+	entt::meta<VibrationState>()
+		.type("VibrationState"_hs)
+		.prop(reflect::prop::Name, "VibrationState")
+		.data<&VibrationState::mbUseAllController>("UseAllController"_hs)
+		.prop(fq::reflect::prop::Name, "mbUseAllController")
+		.prop(fq::reflect::prop::Comment, u8"모든 컨트롤러 진동 여부")
+		.data<&VibrationState::mMode>("Mode"_hs)
+		.prop(fq::reflect::prop::Name, "Mode")
+		.prop(fq::reflect::prop::Comment, u8"진동 모드")
+		.data<&VibrationState::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.data<&VibrationState::mIntensity>("Intensity"_hs)
+		.prop(fq::reflect::prop::Name, "Intensity")
+		.prop(fq::reflect::prop::Comment, u"진동강도0 ~65535")
+		.data<&VibrationState::mVibrationTime>("VibrationTime"_hs)
+		.prop(fq::reflect::prop::Name, "VibrationTime")
+		.prop(fq::reflect::prop::Comment, u"진동 발동 시간 ")
+		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             플레이어 관련								//
@@ -466,6 +527,26 @@ void fq::client::RegisterMetaData()
 		.data<&BerserkerArmour::mCircleAttackPrefab>("CircleAttackPrefab"_hs)
 		.prop(reflect::prop::Name, "CircleAttackPrefab")
 		.prop(reflect::prop::Comment, u8"공격 시 생성되는 기본 콜라이더(원형)")
+
+		.data<&BerserkerArmour::mLeftAttackSound>("LeftAttackSound"_hs)
+		.prop(reflect::prop::Name, "LeftAttackSound")
+		.prop(reflect::prop::Comment, u8"기본공격(1타) 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mRightAttackSound>("RightAttackSound"_hs)
+		.prop(reflect::prop::Name, "RightAttackSound")
+		.prop(reflect::prop::Comment, u8"기본공격(2타) 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mStrikeDownAttackSound>("StrikeDownAttackSound"_hs)
+		.prop(reflect::prop::Name, "StrikeDownAttackSound")
+		.prop(reflect::prop::Comment, u8"기본공격(3타) 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mSwingAroundSound>("SwingAroundSound"_hs)
+		.prop(reflect::prop::Name, "SwingAroundSound")
+		.prop(reflect::prop::Comment, u8"휩쓸기 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mAttackRushSound>("AttackRushSound"_hs)
+		.prop(reflect::prop::Name, "AttackRushSound")
+		.prop(reflect::prop::Comment, u8"돌진 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mAttackRushReadySound>("AttackRushReadySound"_hs)
+		.prop(reflect::prop::Name, "AttackRushReadySound")
+		.prop(reflect::prop::Comment, u8"돌진 사운드(사운드 클립키)")
+
 		.data<&BerserkerArmour::mLeftAttackHitSound>("LeftAttackHitSound"_hs)
 		.prop(reflect::prop::Name, "LeftAttackHitSound")
 		.prop(reflect::prop::Comment, u8"기본공격(1타)로 피해 입을 시 사운드(사운드 클립키)")
@@ -551,6 +632,26 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "PlayerMovementSoundState")
 		.data<&PlayerMovementSoundState::mWalkSoundTurm>("WalkSoundTurm"_hs)
 		.prop(reflect::prop::Name, "WalkSoundTurm")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<PlayerSoundState>()
+		.type("PlayerSoundState"_hs)
+		.prop(reflect::prop::Name, "PlayerSoundState")
+		.data<&PlayerSoundState::mbIsPlayLoop>("IsPlayLoop"_hs)
+		.prop(reflect::prop::Name, "IsPlayLoop")
+		.prop(reflect::prop::Comment, u8"반복 재생 여부")
+		.data<&PlayerSoundState::mbIsPlayStateEnter>("IsPlayStateEnter"_hs)
+		.prop(reflect::prop::Name, "IsPlayStateEnter")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
+		.data<&PlayerSoundState::mSoundTurm>("SoundTurm"_hs)
+		.prop(reflect::prop::Name, "SoundTurm")
+		.prop(reflect::prop::Comment, u8"반복 재생 시간")
+		.data<&PlayerSoundState::mbUseRandomPlay>("UseRandomPlay"_hs)
+		.prop(reflect::prop::Name, "UseRandomPlay")
+		.prop(reflect::prop::Comment, u8"랜덤 재생 여부, off 시 순차적으로 사운드 재생")
+		.data<&PlayerSoundState::mSoundNames>("mSoundNames"_hs)
+		.prop(reflect::prop::Name, "mSoundNames")
+		.prop(reflect::prop::Comment, u8"상태 진입 시 사운드 재생 여부")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<MagicBallAttackState>()
@@ -1471,6 +1572,8 @@ void fq::client::RegisterMetaData()
 		.data<&SoulSelectUI::mSoulMoveSpeed>("SoulMoveSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "SoulMoveSpeed")
 		.prop(fq::reflect::prop::Comment, u8"레디 때 소환된 영혼 이동 속도")
+		.data<&SoulSelectUI::mNextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SettingUI>()
@@ -1583,6 +1686,16 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "GaugeRatio")
 		.base<fq::game_module::Component>();
 
+	entt::meta<PlayerCheckUI>()
+		.type("PlayerCheckUI"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerCheckUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&PlayerCheckUI::mOffset>("mOffset"_hs)
+		.prop(fq::reflect::prop::Name, "mOffset")
+		.data<&PlayerCheckUI::mWorldOffset>("mWorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "mWorldOffset")
+		.base<fq::game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             Monster Type								//
 	//////////////////////////////////////////////////////////////////////////
@@ -1668,6 +1781,13 @@ void fq::client::RegisterMetaData()
 		.data<&ObjectInteraction::tag>("Tag"_hs)
 		.prop(fq::reflect::prop::Name, "Tag");
 
+	entt::meta<ClearGoddessStatue>()
+		.type("ClearGoddessStatue"_hs)
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatue")
+		.prop(fq::reflect::prop::POD)
+		.data<&ClearGoddessStatue::goddessStatueName>("GoddessStatueName"_hs)
+		.prop(fq::reflect::prop::Name, "GoddessStatueName");
+
 	entt::meta<QuestJoinCondition>()
 		.type("QuestJoinCondition"_hs)
 		.prop(fq::reflect::prop::Name, "QuestJoinCondition")
@@ -1691,8 +1811,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ClearQuestList")
 		.data<&QuestClearCondition::colliderTriggerList>("ColliderTriggerList"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
-		.data<&QuestClearCondition::objectInteration>("ObjectInteration"_hs)
-		.prop(fq::reflect::prop::Name, "ObjectInteration");
+		.data<&QuestClearCondition::clearGoddessStatueList>("ClearGoddessStatueList"_hs)
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatueList");
 
 	entt::meta<RewardPortal>()
 		.type("RewardPortal"_hs)
@@ -2147,6 +2267,19 @@ void fq::client::RegisterMetaData()
 		.data<&LevelVariable::Player4Hp>("Player4Hp"_hs)
 		.prop(fq::reflect::prop::Name, "Player4Hp")
 
+		.base<IGameVariable>();
+
+	entt::meta<MonsterVariable>()
+		.type("MonsterVariable"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterVariable")
+		.data<&MonsterVariable::OnRagdoll>("OnRagdoll"_hs)
+		.prop(fq::reflect::prop::Name, "OnRagdoll")
+		.data<&MonsterVariable::MaxRagdollsPerScene>("MaxRagdollsPerScene"_hs)
+		.prop(fq::reflect::prop::Name, "MaxRagdollsPerScene")
+		.data<&MonsterVariable::MinFrameCountForRagdoll>("MinFrameCountForRagdoll"_hs)
+		.prop(fq::reflect::prop::Name, "MinFrameCountForRagdoll")
+		.data<&MonsterVariable::MaxOneFrameCreateRagdollCount>("MaxOneFrameCreateRagdollCount"_hs)
+		.prop(fq::reflect::prop::Name, "MaxOneFrameCreateRagdollCount")
 		.base<IGameVariable>();
 	//////////////////////////////////////////////////////////////////////////
 	//								  Box									//

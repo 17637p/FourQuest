@@ -12,6 +12,8 @@
 #include "ArrowAttack.h"
 #include "DamageCalculation.h"
 #include "LinearAttack.h"
+#include "SpeechBubbleUI.h"
+#include "PlayerInfoVariable.h"
 
 namespace fq::client
 {
@@ -55,13 +57,15 @@ namespace fq::client
 			{
 				auto transform = child->GetComponent<game_module::Transform>();
 				position = transform->GetWorldPosition();
+
 				break;
 			}
 		}
 
 		// 공격 트랜스폼 설정
 		DirectX::SimpleMath::Quaternion rotation = mTransform->GetWorldRotation();
-		attackT->GenerateWorld(position, rotation, attackT->GetWorldScale());
+		const auto& localOffset = DirectX::SimpleMath::Vector3::TransformNormal(attackT->GetWorldPosition(), mTransform->GetWorldMatrix());
+		attackT->GenerateWorld(position + localOffset, rotation, attackT->GetWorldScale());
 
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};
@@ -73,7 +77,7 @@ namespace fq::client
 		attackInfo.attackDirection = foward;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = false;
-		attackInfo.hitSound = "A_WeakAttack_Hit";
+		attackInfo.hitSound = "A_Fastshoot_Hit";
 		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
 		attackComponent->Set(attackInfo);
 
@@ -106,13 +110,15 @@ namespace fq::client
 			{
 				auto transform = child->GetComponent<game_module::Transform>();
 				position = transform->GetWorldPosition();
+
 				break;
 			}
 		}
 
 		// 공격 트랜스폼 설정
 		DirectX::SimpleMath::Quaternion rotation = mTransform->GetWorldRotation();
-		attackT->GenerateWorld(position, rotation, attackT->GetWorldScale());
+		const auto& localOffset = DirectX::SimpleMath::Vector3::TransformNormal(attackT->GetWorldPosition(), mTransform->GetWorldMatrix());
+		attackT->GenerateWorld(position + localOffset, rotation, attackT->GetWorldScale());
 
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};
@@ -127,36 +133,36 @@ namespace fq::client
 
 		switch (chargeLevel)
 		{
-			case 1:
-			{
-				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 1.f;
-				attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 1.5f;
-				attackInfo.remainingAttackCount = 1;
-			}
+		case 1:
+		{
+			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 1.f;
+			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 1.5f;
+			attackInfo.remainingAttackCount = 1;
+		}
+		break;
+		case 2:
+		{
+			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 2.f;
+			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 2.f;
+			attackInfo.remainingAttackCount = 3;
+		}
+		break;
+		case 3:
+		{
+			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 3.f;
+			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 3.f;
+			attackInfo.remainingAttackCount = 5;
+		}
+		break;
+		case 4:
+		{
+			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 5.f;
+			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 5.f;
+			attackInfo.remainingAttackCount = 0b11111111;
+		}
+		break;
+		default:
 			break;
-			case 2:
-			{
-				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 2.f;
-				attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 2.f;
-				attackInfo.remainingAttackCount = 3;
-			}
-			break;
-			case 3:
-			{
-				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 3.f;
-				attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 3.f;
-				attackInfo.remainingAttackCount = 5;
-			}
-			break;
-			case 4:
-			{
-				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 5.f;
-				attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 5.f;
-				attackInfo.remainingAttackCount = 0b11111111;
-			}
-			break;
-			default:
-				break;
 		}
 
 		attackComponent->Set(attackInfo);
@@ -166,6 +172,43 @@ namespace fq::client
 
 		// 공격 체력 감소
 		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+	}
+
+	void ArcherArmour::EmitSound(EArcherSound archerSound)
+	{
+		std::string soundName;
+
+		switch (archerSound)
+		{
+		case fq::client::EArcherSound::ShootStart:
+			soundName = "A_Shoot_start";
+			break;
+		case fq::client::EArcherSound::Charge1:
+			soundName = "A_Charge_1";
+			break;
+		case fq::client::EArcherSound::Charge2:
+			soundName = "A_Charge_2";
+			break;
+		case fq::client::EArcherSound::Shoot:
+			soundName = "A_Fastshoot_end";
+			break;
+		case fq::client::EArcherSound::Fastshoot1:
+			soundName = "A_Fastshoot_1";
+			break;
+		case fq::client::EArcherSound::Fastshoot2:
+			soundName = "A_Fastshoot_2";
+			break;
+		case fq::client::EArcherSound::Fastshoot3:
+			soundName = "A_Fastshoot_3";
+			break;
+		case fq::client::EArcherSound::Rolling:
+			soundName = "A_Rolling";
+			break;
+		default:
+			break;
+		}
+
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ soundName, false , fq::sound::EChannel::SE });
 	}
 
 	std::shared_ptr<game_module::GameObject> ArcherArmour::EmitChargingEffect()
@@ -225,6 +268,8 @@ namespace fq::client
 				break;
 			}
 		}
+
+		setName();
 	}
 
 	void ArcherArmour::OnUpdate(float dt)
@@ -391,4 +436,39 @@ namespace fq::client
 
 		return cloneArmour;
 	}
+
+	void ArcherArmour::setName()
+	{
+		int soulType = static_cast<int>(mPlayer->GetSoulType());
+		SpeechBubbleUI* speechBubble = nullptr;
+		for (auto& child : GetGameObject()->GetChildren())
+		{
+			if (child->HasComponent<SpeechBubbleUI>())
+			{
+				speechBubble = child->GetComponent<SpeechBubbleUI>();
+			}
+		}
+
+		if (speechBubble != nullptr)
+		{
+			switch (soulType)
+			{
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
 }

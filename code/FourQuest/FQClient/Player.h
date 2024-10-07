@@ -10,6 +10,7 @@ namespace fq::game_module
 	class CharacterController;
 	class Transform;
 	class StaticMeshRenderer;
+	class SkinnedMeshRenderer;
 }
 
 namespace fq::client
@@ -131,6 +132,27 @@ namespace fq::client
 		float GetRSkillCoolTimeRatio()const;
 		void SetRSkillCoolTimeRatio(float ratio);
 
+		/// <summary>
+		/// 초록색 림라이트 활성화
+		/// </summary>
+		void SetPoisonRimLight(float duration);
+
+		/// <summary>
+		/// Goddess Buff 
+		/// </summary>
+		/// <returns></returns>
+		bool GetGBDecreaseDurability() const { return mGBDecreaseDurability; } // 내구도 감소  
+		void SetGBDecreaseDurability(bool val) { mGBDecreaseDurability = val; } 
+
+		float GetGBIncreaseAttackPower() const { return mGBIncreaseAttackPower; } // 공격력 강화
+		void SetGBIncreaseAttackPower(float val) { mGBIncreaseAttackPower = val; } // 버프 없을 때 0
+
+		float GetGBDecreaseCooltime() const { return mGBDecreaseCooltime; } // 쿨타임 감소
+		void SetGBDecreaseCooltime(float val) { mGBDecreaseCooltime = val; } // 버프 없을 때 1
+
+		float GetGBIncreaseSpeed() const { return mGBIncreaseSpeed; } // 이동속도 증가 
+		void SetGBIncreaseSpeed(float val) { mGBIncreaseSpeed = val; } // 버프 없을 때 0
+
 	private:
 		void processInput(float dt);
 		void processCoolTime(float dt);
@@ -142,6 +164,7 @@ namespace fq::client
 		void setFeverBuff(bool isFever);
 		void setDecalColor();
 		void linkSoulTypeHead();
+		void checkPoisonDuration(float dt); // 독 림라이트 지속시간 체크해서 off
 
 		void OnStart() override;
 		void OnDestroy() override;
@@ -149,6 +172,8 @@ namespace fq::client
 		void OnLateUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 		void OnTriggerStay(const game_module::Collision& collision) override;
+
+		void playBowSoulSound();
 
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -204,6 +229,18 @@ namespace fq::client
 
 		bool mbOnShieldBlock;
 		bool mbIsActiveOnHit; // 워리어 갑옷 차징과 돌진 시 OnHit로 전이가 불가능하여 추가
+
+		// 독 림라이트
+		float mDuration;
+		float mCurTime;
+
+		// Goddess Buff
+		bool mGBDecreaseDurability; // 갑옷 내구도 감소 여부
+		float mGBIncreaseAttackPower; // 공격력 증가
+		float mGBDecreaseCooltime; // 쿨타임 감소
+		float mGBIncreaseSpeed; // 이동속도 증가 
+
+		game_module::SkinnedMeshRenderer* mSkinnedMesh;
 
 		std::array<game_module::StaticMeshRenderer*, static_cast<int>(EWeaponeMesh::End)> mWeaponeMeshes;
 		friend void RegisterMetaData();

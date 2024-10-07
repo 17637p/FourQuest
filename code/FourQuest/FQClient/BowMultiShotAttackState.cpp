@@ -36,6 +36,9 @@ namespace fq::client
 			mShotElapsedTime -= mShotDelay;
 
 			archer->EmitmWeakAttack();
+
+			size_t index = (size_t)EArcherSound::Fastshoot1 + rand() % 3;
+			archer->EmitSound((EArcherSound)index);
 		}
 	}
 	void BowMultiShotAttackState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)

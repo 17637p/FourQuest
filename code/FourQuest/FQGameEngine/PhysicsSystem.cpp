@@ -19,6 +19,7 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQClient/MonsterVariable.h"
 
 #include "ResourceSystem.h"
 #include "GameProcess.h"
@@ -43,7 +44,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mRaycastHandler{}
 	, mArticulationTypeID(0)
 	, mAddInputMoveHandler{}
-	, mMaxRagdollNumber(15)
+	, mOneFrameRagdollCreateCount(0)
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -168,11 +169,6 @@ void fq::game_engine::PhysicsSystem::SetCollisionMatrix(fq::physics::CollisionMa
 {
 	mCollisionMatrix = matrix;
 	setPhysicsEngineinfo();
-}
-
-void fq::game_engine::PhysicsSystem::SetMaxRagdollNumber(int maxRagdollNumber)
-{
-	mMaxRagdollNumber = maxRagdollNumber;
 }
 
 void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObject* object)
@@ -479,6 +475,10 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			, object->shared_from_this()
 			, articulation, false} });
 
+
+		if (!client::MonsterVariable::OnRagdoll)
+			return;
+
 		if (object->GetComponent<fq::game_module::Animator>() == nullptr)
 			return;
 
@@ -739,7 +739,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID )
 		{
-			if (mGameProcess->mTimeManager->GetFPS() <= 60 && mMaxRagdollNumber <= mPhysicsEngine->GetArticulationCount())
+			if (!client::MonsterVariable::OnRagdoll)
 				continue;
 
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
@@ -811,8 +811,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				transform->SetWorldPosition(position);
 				transform->SetWorldRotation(rotation);
 
-				//nodeHierarchy.UpdateByLocalTransform();
-				//nodeHierarchy.Update(currentAnimationTime + durationTime, currentAnimation);
 				nodeHierarchy.UpdateByLocalTransform(currentAnimationTime + blendTime, currentAnimation, std::max<float>(1 - blendTime, 0));
 			}
 			else
@@ -853,6 +851,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 {
 	using namespace DirectX::SimpleMath;
+	mOneFrameRagdollCreateCount = 0;
 
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
@@ -951,7 +950,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID)
 		{
-			if (mGameProcess->mTimeManager->GetFPS() <= 60)
+			if (!client::MonsterVariable::OnRagdoll)
 				continue;
 
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
@@ -973,27 +972,20 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
 			data.worldTransform = transform->GetWorldMatrix();
 
-			//std::function<void(std::shared_ptr<fq::game_module::LinkData>)> linkDataUpdate = [&](std::shared_ptr<fq::game_module::LinkData> link)
-			//	{
-			//		fq::physics::ArticulationLinkSetData linkData;
+			// 새로 생성되는 레그돌만 프레임 갯수 제한, 씬에 레그돌 최대 갯수 제한, 한 프레임에 레그돌 생성 갯수 제한, 레그돌 On/Off
+			if ((mGameProcess->mTimeManager->GetFPS() <= client::MonsterVariable::MinFrameCountForRagdoll
+				|| client::MonsterVariable::MaxRagdollsPerScene <= mPhysicsEngine->GetArticulationCount()
+				|| client::MonsterVariable::MaxOneFrameCreateRagdollCount <= mOneFrameRagdollCreateCount)
+				&& !mPhysicsEngine->GetArticulationData(id).bIsRagdollSimulation)
+			{
+				articulation->SetIsRagdoll(false);
+				data.bIsRagdollSimulation = false;
+			}
 
-			//		linkData.name = link->GetBoneName();
-			//		linkData.boneWorldTransform = nodeHierarchy.GetRootTransform(boneHierarchy.GetBoneIndex(link->GetBoneName()));
-			//		data.linkData.push_back(linkData);
-
-			//		for (const auto& [name, childLink] : link->GetChildrenLinkData())
-			//		{
-			//			linkDataUpdate(childLink);
-			//		}
-			//	};
-
-			//for (auto& [name, link] : articulation->GetArticulationData()->GetRootLinkData().lock()->GetChildrenLinkData())
-			//{
-			//	linkDataUpdate(link);
-			//}
-
-			if (mMaxRagdollNumber <= mPhysicsEngine->GetArticulationCount())
-				continue;
+			if (data.bIsRagdollSimulation)
+			{
+				mOneFrameRagdollCreateCount++;
+			}
 
 			mPhysicsEngine->SetArticulationData(id, data);
 		}

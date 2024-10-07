@@ -19,6 +19,7 @@ namespace fq::game_module
 
 	bool CameraChangeTrack::Initialize(const CameraChangeTrackInfo& info, Scene* scene)
 	{
+		mTrackObjectName.push_back(info.targetCameraName);
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
 		mKeys = info.keys;

@@ -30,6 +30,7 @@ fq::game_engine::EditorProcess::EditorProcess()
 	, mGameVariableWindow(std::make_unique<GameVariableWindow>())
 	, mRenderingDebugWindow(std::make_unique<RenderingDebugWindow>())
 	, mClothEditorWindow(std::make_unique<ClothEditorWindow>())
+	, mChangeWindow(std::make_unique<ChangeWindow>())
 {}
 
 fq::game_engine::EditorProcess::~EditorProcess()

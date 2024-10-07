@@ -166,7 +166,7 @@ void fq::game_engine::GameEngine::Process()
 			//////////////////////////////////////////////////////////////////////////
 
 			float deltaTime = mGameProcess->mTimeManager->Update();
-			mGameProcess->mInputManager->Update();
+			mGameProcess->mInputManager->Update(deltaTime);
 			mGameProcess->mSoundManager->Update();
 
 			//////////////////////////////////////////////////////////////////////////
@@ -214,12 +214,12 @@ void fq::game_engine::GameEngine::Process()
 			//////////////////////////////////////////////////////////////////////////
 
 			// mGameProcess->mParticleSystem->Update(deltaTime);
+			mGameProcess->mUISystem->Update(deltaTime);
 			mGameProcess->mDecalSystem->Update(deltaTime);
 			mGameProcess->mTrailSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
-			mGameProcess->mUISystem->Update(deltaTime);
 			mGameProcess->mStateEventSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////

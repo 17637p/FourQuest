@@ -20,6 +20,7 @@ namespace fq::game_module
 		virtual void End() override;
 
 	private:
+		std::string mFontPath;
 		float mNameFontCenterY;
 		float mNameFontSize;
 		DirectX::SimpleMath::Color mNameFontColor;
