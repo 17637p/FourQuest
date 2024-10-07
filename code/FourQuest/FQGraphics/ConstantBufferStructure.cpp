@@ -152,6 +152,16 @@ namespace fq::graphics
 
 		if (!materialInstanceInfo.bUseInstanceing)
 		{
+			if (materialInstanceInfo.bUseBaseColor)
+			{
+				CBMaterialData.BaseColor = materialInstanceInfo.BaseColor;
+			}
+
+			if (materialInstanceInfo.bUseEmissiveColor)
+			{
+				CBMaterialData.EmissiveColor = materialInstanceInfo.EmissiveColor;
+			}
+
 			if (materialInstanceInfo.bUseInstanceAlpha)
 			{
 				CBMaterialData.BaseColor.w = materialInstanceInfo.Alpha;

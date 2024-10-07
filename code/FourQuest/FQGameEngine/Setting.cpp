@@ -110,6 +110,8 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 
 					material->SetInfo(materialInfo);
 				}
+
+				mGameProcess->mGraphics->SetIsUseLightmapOnly(mbUseGrayScale);
 			}
 
 			std::string materialDirectory = mExtractedPrefabPath.string();

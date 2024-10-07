@@ -554,7 +554,13 @@
     <ClInclude Include="MonsterVariable.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
-    <ClInclude Include="VibrationState.h">
+    <ClInclude Include="EffectColorManager.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectColorTransmitter.h">
+      <Filter>include\06.ETC</Filter>
+	</ClInclude>
+	<ClInclude Include="VibrationState.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
     <ClInclude Include="PlayerCheckUI.h">
@@ -952,7 +958,13 @@
     <ClCompile Include="PlayerSoundState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
-    <ClCompile Include="VibrationState.cpp">
+    <ClCompile Include="EffectColorManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectColorTransmitter.cpp">
+      <Filter>src</Filter>
+	</ClCompile>
+	<ClCompile Include="VibrationState.cpp">
       <Filter>src\06.ETC</Filter>
     </ClCompile>
     <ClCompile Include="PlayerCheckUI.cpp">

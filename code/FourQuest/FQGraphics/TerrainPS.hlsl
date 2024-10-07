@@ -60,6 +60,7 @@ cbuffer cbLightmapInformation : register(b3)
     uint cUVIndex;
     bool bUseLightmap;
     bool bUseDirectMap;
+    bool bUseLightmapOnly;
 };
 
 float gTexelCellSpaceU;
@@ -232,7 +233,16 @@ PixelOut main(DomainOut pin)
     
 #ifdef DEFERRED
     pout.Normal.xyz = resultNormal;
-    pout.Albedo.xyz = resultAlbedo;
+    
+    if (bUseLightmapOnly)
+    {
+        pout.Albedo.xyz = float3(1, 1, 1);
+    }
+    else
+    {
+        pout.Albedo.xyz = resultAlbedo;
+    }
+    
     pout.Albedo.w = 1.f;
     pout.MetalnessRoughness.x = resultMetalic;
     pout.MetalnessRoughness.y = resultRoughness;

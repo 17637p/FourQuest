@@ -9,7 +9,8 @@
 fq::graphics::D3D11LightManager::D3D11LightManager()
 	:mDirectionalLights{},
 	mPointLights{},
-	mSpotLight{}
+	mSpotLight{},
+	mbUseLightmapOnly{false}
 {
 }
 

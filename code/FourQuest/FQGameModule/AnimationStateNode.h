@@ -32,7 +32,7 @@ namespace fq::game_module
 		{
 			std::string FunctionName;
 			float Time; // 해당시간이 넘은 경우 이펙트 이벤트를 발생시킴
-			bool bIsProcessed; // 이펙트 이벤트 발생 여부
+			bool bIsFiredReady; // 이펙트 이벤트 발생 여부
 			bool bIsFired; // 이펙트 이벤트 발생 여부
 		};
 

@@ -290,6 +290,8 @@ namespace fq::graphics
 				lightmapInfo.bUseDirection = lightmapDirectionTexture != nullptr;
 				lightmapInfo.UVIndex = job.TerrainMeshObject->GetLightmapIndex();
 				lightmapInfo.UVScaleOffset = job.TerrainMeshObject->GetLightmapUVScaleOffset();
+				lightmapInfo.bUseOnlyLightmapData = mLightManager->GetIsLightmapOnly();
+
 				mLightMapInfomationCB->Update(mDevice, lightmapInfo);
 
 				job.TerrainMesh->Draw(mDevice, job.SubsetIndex);

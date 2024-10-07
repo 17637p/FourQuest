@@ -1,4 +1,5 @@
 #include "AOEAttackState.h"
+#include "EffectColorTransmitter.h"
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/Animator.h"
@@ -47,6 +48,15 @@ void fq::client::AOEAttackState::OnStateEnter(game_module::Animator& animator, g
 
 	// 시작 사운드 재생
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Explosion_Start", false , fq::sound::EChannel::SE});
+
+
+	// 이펙트 색상 설정
+	auto player = animator.GetComponent<Player>();
+	auto effectColorTransmitter = attackUI->GetComponent<EffectColorTransmitter>();
+	if (effectColorTransmitter != nullptr && player != nullptr)
+	{
+		effectColorTransmitter->SetSoulType(player->GetSoulType());
+	}
 }
 
 void fq::client::AOEAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

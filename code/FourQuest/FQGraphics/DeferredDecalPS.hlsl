@@ -51,7 +51,7 @@ PixelOut main(VertexOut pin) : SV_Target
     
     if (gUseAlbedoMap)
     {
-        pout.Albedo *= gAlbedoMap.Sample(gSamplerAnisotropic, uv);
+        pout.Albedo *= gAlbedoMap.SampleLevel(gSamplerAnisotropic, uv, 0);
     }
   
     clip(pout.Albedo.a - gAlphaCutoff);
@@ -80,7 +80,7 @@ PixelOut main(VertexOut pin) : SV_Target
     
     if (gUseEmissiveMap)
     {
-        pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, uv).rgb;
+        pout.Emissive.rgb *= gEmissiveMap.SampleLevel(gSamplerAnisotropic, uv, 0).rgb;
     }
     else
     {

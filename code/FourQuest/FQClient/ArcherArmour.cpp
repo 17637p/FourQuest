@@ -14,6 +14,7 @@
 #include "LinearAttack.h"
 #include "SpeechBubbleUI.h"
 #include "PlayerInfoVariable.h"
+#include "EffectColorTransmitter.h"
 
 namespace fq::client
 {
@@ -88,6 +89,13 @@ namespace fq::client
 
 		// 공격 체력 감소
 		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
+		// 이펙트 색상 설정
+		auto effectColorTransmitter = attackObj->GetComponent<EffectColorTransmitter>();
+		if (effectColorTransmitter != nullptr && mPlayer != nullptr)
+		{
+			effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
+		}
 	}
 
 	void ArcherArmour::EmitStrongAttack(int chargeLevel)
@@ -172,6 +180,13 @@ namespace fq::client
 
 		// 공격 체력 감소
 		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
+		// 이펙트 색상 설정
+		auto effectColorTransmitter = attackObj->GetComponent<EffectColorTransmitter>();
+		if (effectColorTransmitter != nullptr && mPlayer != nullptr)
+		{
+			effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
+		}
 	}
 
 	void ArcherArmour::EmitSound(EArcherSound archerSound)

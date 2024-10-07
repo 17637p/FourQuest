@@ -86,6 +86,12 @@ namespace fq::graphics
 		bool bUseUVScaleOffset = false;
 		DirectX::SimpleMath::Vector2 UVScale = { 1, 1 };
 		DirectX::SimpleMath::Vector2 UVOffset = { 0, 0 };
+
+		bool bUseBaseColor = false;
+		DirectX::SimpleMath::Color BaseColor;
+
+		bool bUseEmissiveColor = false;
+		DirectX::SimpleMath::Color EmissiveColor;
 	};
 
 	struct UIInfo
@@ -663,7 +669,7 @@ namespace fq::graphics
 
 		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
 		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
-		
+
 		float EmissiveIntensity = 1.f;
 
 		std::wstring BaseColorFileName;
@@ -749,6 +755,8 @@ namespace fq::graphics
 		bool bUseSSR = false;
 		float max_iteration = 160;
 		float max_thickness = 0.00001;
+
+		bool bUseGrayScale = false;
 	};
 
 	struct DebugInfo

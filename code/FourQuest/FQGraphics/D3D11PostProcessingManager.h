@@ -68,6 +68,9 @@ namespace fq::graphics
 			int bUseToneMapping;
 			int bUseHueVsSatCurve;
 			int bUseFog;
+
+			int bUseGrayScale;
+			float unused[3];
 		};
 
 		struct BloomParams
