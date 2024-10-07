@@ -49,6 +49,7 @@
     <ClInclude Include="GameSettingUI.h" />
     <ClInclude Include="GoddessStatue.h" />
     <ClInclude Include="LevelHepler.h" />
+    <ClInclude Include="LookingObjectHelper.h" />
     <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="PlantAOEAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
@@ -199,6 +200,7 @@
     <ClCompile Include="GameSettingUI.cpp" />
     <ClCompile Include="GoddessStatue.cpp" />
     <ClCompile Include="LevelHepler.cpp" />
+    <ClCompile Include="LookingObjectHelper.cpp" />
     <ClCompile Include="PlantAOEAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />

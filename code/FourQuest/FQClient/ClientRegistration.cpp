@@ -163,6 +163,7 @@
 #include "Portal.h"
 #include "GoddessStatue.h"
 #include "VibrationState.h"
+#include "LookingObjectHelper.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -335,6 +336,15 @@ void fq::client::RegisterMetaData()
 		.data<&EffectColorTransmitter::mSoulType>("SoulType"_hs)
 		.prop(fq::reflect::prop::Name, "SoulType")
 		.base<game_module::Component>();
+
+	entt::meta<LookingObjectHelper>()
+		.type("LookingObjectHelper"_hs)
+		.prop(reflect::prop::Name, "LookingObjectHelper")
+		.data<&LookingObjectHelper::mLookingObjectName>("LookingObjectName"_hs)
+		.prop(fq::reflect::prop::Name, "LookingObjectName")
+		.prop(fq::reflect::prop::Comment, u"바라볼 오브젝트")
+		.base<game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             플레이어 관련								//
 	//////////////////////////////////////////////////////////////////////////

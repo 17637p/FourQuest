@@ -559,12 +559,15 @@
     </ClInclude>
     <ClInclude Include="EffectColorTransmitter.h">
       <Filter>include\06.ETC</Filter>
-	</ClInclude>
-	<ClInclude Include="VibrationState.h">
+    </ClInclude>
+    <ClInclude Include="VibrationState.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
     <ClInclude Include="PlayerCheckUI.h">
       <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="LookingObjectHelper.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -958,17 +961,20 @@
     <ClCompile Include="PlayerSoundState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
-    <ClCompile Include="EffectColorManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="EffectColorTransmitter.cpp">
-      <Filter>src</Filter>
-	</ClCompile>
-	<ClCompile Include="VibrationState.cpp">
+    <ClCompile Include="VibrationState.cpp">
       <Filter>src\06.ETC</Filter>
     </ClCompile>
     <ClCompile Include="PlayerCheckUI.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectColorTransmitter.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectColorManager.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="LookingObjectHelper.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
