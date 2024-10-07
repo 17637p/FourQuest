@@ -440,13 +440,13 @@ void fq::client::PlayerUI::SetHPBar(float ratio)
 {
 	float hpRatio = ratio;
 	auto uiInfo = mHPBarGauge->GetUIInfomation(0);
-	//uiInfo.XRatio = hpRatio;
+	uiInfo.XRatio = hpRatio;
 	uiInfo.Width = mHPWidth * hpRatio;
 	mHPBarGauge->SetUIInfomation(0, uiInfo);
 
 	auto HPBack = mHPBarGauge->GetGameObject()->GetChildren()[0]->GetComponent<game_module::ImageUI>();
 	auto hpBackUIInfo = HPBack->GetUIInfomation(0);
-	//hpBackUIInfo.XRatio = mDecreaseRatio;
+	hpBackUIInfo.XRatio = mDecreaseRatio + hpRatio;
 	hpBackUIInfo.Width = mHPWidth * (mDecreaseRatio + hpRatio);
 	HPBack->SetUIInfomation(0, hpBackUIInfo);
 }
