@@ -5,6 +5,8 @@
 #include "CharacterLink.h"
 #include "CharacterJoint.h"
 
+#include "spdlog/spdlog.h"
+
 namespace fq::physics
 {
 	PhysicsCharacterPhysicsManager::PhysicsCharacterPhysicsManager()
@@ -12,6 +14,7 @@ namespace fq::physics
 		, mScene(nullptr)
 		, mCharacterPhysicsContainer()
 		, mCollisionDataManager()
+		, mSimulationCharacterPhysicsContainer{}
 	{
 	}
 
@@ -53,6 +56,8 @@ namespace fq::physics
 		characterPhysics->Initialize(info, mPhysics, collisionData, mScene);
 		mCharacterPhysicsContainer.insert(std::make_pair(info.id, characterPhysics));
 
+		spdlog::trace("[Create] Articulation id : {}, ContainerSize : {}", info.id, mCharacterPhysicsContainer.size());
+
 		return true;
 	}
 
@@ -67,24 +72,18 @@ namespace fq::physics
 		auto pxArticulation = articulationIter->second->GetPxArticulation();
 		
 		if (articulationIter->second->GetIsRagdoll() == true)
-		{
-			// Articulation의 모든 링크를 가져옵니다.
-			//physx::PxU32 linkCount = pxArticulation->getNbLinks();
-			//std::vector<physx::PxArticulationLink*> links(linkCount);
-			//pxArticulation->getLinks(links.data(), linkCount);
-
-			//for (int i = 0; i < linkCount; i++)
-			//{
-			//	links[i]->release();
-			//}
-
+		{ 
 			// 모든 링크가 제거된 후 Articulation을 Scene에서 제거합니다.
 			mScene->removeArticulation(*pxArticulation);
 			PX_RELEASE(pxArticulation);
+
+			spdlog::trace("[PxScene Remove] PxScene's Articulation Current Count : {}", mScene->getNbArticulations());
 		}
 
 		// 컨테이너에서 해당 Articulation을 삭제합니다.
 		mCharacterPhysicsContainer.erase(articulationIter);
+
+		spdlog::trace("[Remove] Articulation id : {}, ContainerSize : {}", id, mCharacterPhysicsContainer.size());
 
 		return true;
 	}
@@ -130,13 +129,11 @@ namespace fq::physics
 				{
 					articulation->SetLinkTransformUpdate(linkData.name, linkData.boneWorldTransform);
 				}
+				auto pxArticulation = articulation->GetPxArticulation();
+				bool isCheck = mScene->addArticulation(*pxArticulation);
 
-				bool isCheck = mScene->addArticulation(*articulation->GetPxArticulation());
+				spdlog::trace("[Simulation] Articulation ID : {}, Count : {}", id, mScene->getNbArticulations());
 				assert(isCheck);
-			}
-			else
-			{
-				mScene->removeArticulation(*articulation->GetPxArticulation());
 			}
 		}
 	}
