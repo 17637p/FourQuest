@@ -1,5 +1,14 @@
 #include "DecalCommon.hlsli"
 
+
+static const matrix gTexTransform =
+{
+    0.5f, 0.0f, 0.0f, 0.0f,
+	0.0f, -0.5f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.5f, 0.5f, 0.0f, 1.0f
+};
+
 VertexOut main(float3 position : POSITION, float2 UV : UV)
 {
     VertexOut vout;
@@ -7,10 +16,7 @@ VertexOut main(float3 position : POSITION, float2 UV : UV)
     vout.PosH = mul(float4(position, 1), gWorldMatrix);
     vout.PosH = mul(vout.PosH, gViewMatrix);
     vout.PosH = mul(vout.PosH, gProjMatrix);
-    
-    vout.PosClip = mul(float4(position, 1), gWorldMatrix);
-    vout.PosClip = mul(vout.PosClip, gViewMatrix);
-    vout.PosClip = mul(vout.PosClip, gProjMatrix);
+    vout.PosTemp = mul(vout.PosH, gTexTransform);
     
     vout.UV = mul(float4(UV, 0, 1), gTexMatrix);
     

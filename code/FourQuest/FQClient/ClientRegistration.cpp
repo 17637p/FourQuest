@@ -299,6 +299,7 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MagicEmissiveColor")
 		.prop(reflect::prop::Comment, u8"마법 영혼 베이스 컬러")
 		.base<game_module::Component>();
+
 	entt::meta<EVibrationMode>()
 		.type("VibrationMode"_hs)
 		.prop(reflect::prop::Name, "VibrationState")
@@ -308,7 +309,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Left")
 		.data<EVibrationMode::Right>("Right"_hs)
 		.prop(fq::reflect::prop::Name, "Right");
-
 
 	entt::meta<VibrationState>()
 		.type("VibrationState"_hs)

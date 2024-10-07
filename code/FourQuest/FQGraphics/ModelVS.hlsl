@@ -79,7 +79,7 @@ VertexOut main(VertexIn vin)
     worldMat = mul(worldMat, cWorld);
 #elif defined STATIC
     worldMat = vin.World;
-    
+
     vin.UV1.y = 1 - vin.UV1.y; 
     vout.UV1 = vin.UV1 * vin.UVScaleOffset.xy + vin.UVScaleOffset.zw;
     vout.UV1.y = 1 - vout.UV1.y; 

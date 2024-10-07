@@ -246,11 +246,10 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix World;
 		DirectX::SimpleMath::Matrix View;
 		DirectX::SimpleMath::Matrix Proj;
-		DirectX::SimpleMath::Matrix InvWV;
+		DirectX::SimpleMath::Matrix InvWorld;
 
-		DirectX::SimpleMath::Vector2 Deproject;
 		float NormalThresholdInRadian;
-		float unused[1];
+		float unused[3];
 	};
 
 	struct CBDecalMaterial
