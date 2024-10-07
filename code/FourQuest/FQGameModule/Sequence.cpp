@@ -174,6 +174,8 @@ namespace fq::game_module
 	{
 		if (mbIsPlay)
 		{
+			checkSeqeunce();
+
 			float deltaTime = GetScene()->GetTimeManager()->GetDeltaTime();
 			mDurationTime += deltaTime;
 
@@ -216,6 +218,21 @@ namespace fq::game_module
 
 			for (const auto& track : mTracks)
 				track->WakeUp();
+		}
+	}
+
+	void Sequence::checkSeqeunce()
+	{
+		// 다른 시퀀스가 플레이 중일 때, 강제 종료
+		if (mDurationTime == 0.f && mbIsStopOtherSequence)
+		{
+			for (auto& sequenceObject : GetScene()->GetComponentView<Sequence>())
+			{
+				auto sequence = sequenceObject.GetComponent<Sequence>();
+
+				if (sequence != this && sequence->GetIsPlay())
+					sequence->StopSequnce();
+			}
 		}
 	}
 
@@ -320,5 +337,10 @@ namespace fq::game_module
 			OnFixedUpdate(0.0f);
 			mbIsPlay = false;
 		}
+	}
+
+	void Sequence::StopSequnce()
+	{
+		mDurationTime = FLT_MAX - 10.f;
 	}
 }

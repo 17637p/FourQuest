@@ -130,6 +130,8 @@ namespace fq::game_module
 		void SetIsOnce(bool isOnce) { mbIsOnce = isOnce; }
 		bool GetIsTimeStop() const { return mbIsTimeStop; }
 		void SetIsTimeStop(bool isTimeStop) { mbIsTimeStop = isTimeStop; }
+		bool GetIsOtherSequenceStop() const { return mbIsStopOtherSequence; }
+		void SetIsOtherSequenceStop(bool isStopOtherSequence) { mbIsStopOtherSequence = isStopOtherSequence; }
 		bool GetIsOffUIRender() const { return mbIsOffUIRender; }
 		void SetIsOffUIRender(bool isOffUIRender) { mbIsOffUIRender = isOffUIRender; }
 
@@ -138,6 +140,7 @@ namespace fq::game_module
 		/// </summary>
 		float GetDurationTime() const { return mDurationTime; }
 		void SetDurationTime(float durationTime);
+		void StopSequnce();
 
 		const std::vector<CameraChangeTrackInfo>& GetCameraChangeTrackInfo() const { return mCameraChangeTrackInfo; }
 		void SetCameraChangeTrackInfo(const std::vector<CameraChangeTrackInfo>& info) { mCameraChangeTrackInfo = info; }
@@ -160,6 +163,7 @@ namespace fq::game_module
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>>& GetAnimationContainer() { return mAnimationContainer; }
 		  
 	private:
+		void checkSeqeunce();
 		void playTrack(float dt);
 		void updateUI();
 		void updateSequenceObject(float dt);
@@ -174,6 +178,7 @@ namespace fq::game_module
 		bool mbIsOnce;
 		bool mbIsTimeStop;
 		bool mbIsOffUIRender;
+		bool mbIsStopOtherSequence;
 
 		float mTotalPlayTime;
 		float mDurationTime;
