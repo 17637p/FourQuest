@@ -38,6 +38,10 @@ float fq::game_module::TimeManager::Update()
 		mUpdateCount = 0;
 	}
 
+	// 1프레임에 1.f / 30.f 초를 넘어 간다면 최대 1.f / 30.f로 고정
+	if (mDeltaTime >= 1.f / 30.f)
+		mDeltaTime = 1.f / 30.f;
+
 	return static_cast<float>(mDeltaTime * mTimeScale);
 }
 
