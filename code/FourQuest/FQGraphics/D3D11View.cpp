@@ -92,8 +92,6 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 		// intentional fall through
 	case ED3D11RenderTargetViewType::Normal:
 		// intentional fall through
-	case ED3D11RenderTargetViewType::PositionWClipZ:
-		// intentional fall through
 	case ED3D11RenderTargetViewType::SourceNormal:
 		// intentional fall through
 	case ED3D11RenderTargetViewType::SourceTangent:
@@ -111,7 +109,33 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 		textureDesc.Height = height;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
-		textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = 0;
+
+		ComPtr<ID3D11Texture2D> pTexture;
+		HR(d3d11Device->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &pTexture));
+
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = textureDesc.Format;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
+		HR(d3d11Device->GetDevice()->CreateRenderTargetView(pTexture.Get(), &rtvDesc, mRTV.GetAddressOf()));
+
+		break;
+	}
+	case ED3D11RenderTargetViewType::PositionWClipZ:
+	{
+		D3D11_TEXTURE2D_DESC textureDesc = {};
+		textureDesc.Width = width;
+		textureDesc.Height = height;
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;

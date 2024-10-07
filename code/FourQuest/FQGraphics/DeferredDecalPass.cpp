@@ -174,22 +174,18 @@ namespace fq::graphics
 				DirectX::SimpleMath::Quaternion rotation;
 				transform.Decompose(scale, rotation, translation);
 
-				auto calcTransform =
-					DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Width, decalInfo.Depth, decalInfo.Height)
-					* DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Pivot.x, decalInfo.Pivot.z, decalInfo.Pivot.y)
-					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
-					* DirectX::SimpleMath::Matrix::CreateTranslation(translation);
+				auto calcTransform = DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Width, decalInfo.Depth, decalInfo.Height)
+					 * DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
+					 * DirectX::SimpleMath::Matrix::CreateTranslation(translation);
 
 				material->Bind(mDevice);
 
 				CBDecalObject decalObjectCB;
-				decalObjectCB.Deproject.x = mCameraManager->GetProjectionMatrix(ECameraType::Player)._11;
-				decalObjectCB.Deproject.y = mCameraManager->GetProjectionMatrix(ECameraType::Player)._22;
 				decalObjectCB.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Tiling.x, decalInfo.Tiling.y, 1) * DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Offset.x, decalInfo.Offset.y, 0)).Transpose();
 				decalObjectCB.World = calcTransform.Transpose();
 				decalObjectCB.View = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
 				decalObjectCB.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
-				decalObjectCB.InvWV = (calcTransform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
+				decalObjectCB.InvWorld = calcTransform.Invert().Transpose();
 				decalObjectCB.NormalThresholdInRadian = decalInfo.NormalThresholdInDegree * 3.14f / 180.f;
 				mDecalObjectCB->Update(mDevice, decalObjectCB);
 

@@ -4,7 +4,7 @@
 struct VertexOut
 {
     float4 PosH : SV_POSITION;
-    float4 PosClip : POSITION;
+    float4 PosTemp : POSITION;
     float2 UV : TEXCOORD0;
     float3 Orientation : TEXCOORD1;
 };
@@ -15,9 +15,8 @@ cbuffer cbDecalObject : register(b0)
     matrix gWorldMatrix;
     matrix gViewMatrix;
     matrix gProjMatrix;
-    matrix gInvWVMatrix;
+    matrix gInvWorldMatrix;
     
-    float2 gDeproject;
     float gNormalThresholdInRadian;
 }
 

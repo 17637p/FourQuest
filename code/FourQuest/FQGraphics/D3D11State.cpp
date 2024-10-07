@@ -599,7 +599,7 @@ void PipelineState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 	{
 		d3d11Device->GetDeviceContext()->OMSetDepthStencilState(NULL, 0);
 	}
-
+	  
 	if (mBlendStateOrNull != nullptr)
 	{
 		mBlendStateOrNull->Bind(d3d11Device);

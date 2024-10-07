@@ -271,7 +271,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Buff")
 		.base<game_module::Component>();
 
-<<<<<<< HEAD
 	entt::meta<EffectColorManager>()
 		.type("EffectColorManager"_hs)
 		.prop(reflect::prop::Name, "EffectColorManager")
@@ -300,7 +299,7 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MagicEmissiveColor")
 		.prop(reflect::prop::Comment, u8"마법 영혼 베이스 컬러")
 		.base<game_module::Component>();
-=======
+
 	entt::meta<EVibrationMode>()
 		.type("VibrationMode"_hs)
 		.prop(reflect::prop::Name, "VibrationState")
@@ -310,7 +309,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Left")
 		.data<EVibrationMode::Right>("Right"_hs)
 		.prop(fq::reflect::prop::Name, "Right");
-
 
 	entt::meta<VibrationState>()
 		.type("VibrationState"_hs)
@@ -330,7 +328,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "VibrationTime")
 		.prop(fq::reflect::prop::Comment, u"진동 발동 시간 ")
 		.base<game_module::IStateBehaviour>();
->>>>>>> main
 
 	entt::meta<EffectColorTransmitter>()
 		.type("EffectColorTransmitter"_hs)

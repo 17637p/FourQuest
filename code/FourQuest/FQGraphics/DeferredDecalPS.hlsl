@@ -24,52 +24,38 @@ struct PixelOut
 PixelOut main(VertexOut pin) : SV_Target
 {
     PixelOut pout = (PixelOut) 0;
-  
-    float2 screenPosition = pin.PosClip.xy / pin.PosClip.w;
-    float2 depthUV = screenPosition * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
     
-    float3 normal = gSourceNormalTexture.Sample(gSamplerAnisotropic, depthUV).xyz;
+    // 기하구조의 텍스처 좌표
+    float2 posTex = pin.PosTemp.xy / pin.PosTemp.w;
+    
+    // 각도가 벗어낫는지 확인
+    float3 normal = gSourceNormalTexture.Sample(gPointClmap, posTex).xyz;
     clip(dot(normalize(normal), pin.Orientation) - cos(gNormalThresholdInRadian));
     
-    float3 posW = gPositionWTexture.Sample(gSamplerAnisotropic, depthUV);
-    float3 posV = mul(float4(posW, 1.f), gViewMatrix);
-
-    if (posV.z == 0.f)
-    {
-        clip(-1);
-    }
+    // 그려질 범위가 벗어나는지 확인
+    float3 sampledPosW = gPositionWTexture.Sample(gPointClmap, posTex);
+    float4 sampledPosL = mul(float4(sampledPosW, 1.f), gInvWorldMatrix);
+    clip(0.5f - abs(sampledPosL.xyz));
     
-    float4 posLocalInTex = mul(float4(posV, 1.f), gInvWVMatrix);
-    clip(0.5f - abs(posLocalInTex.xyz));
-    
-    float2 uv = posLocalInTex.xz;
-    uv += 0.5f;
-    
-    uv = mul(float4(uv, 0, 1), gTexMatrix);
+    float2 sampledPosTex = sampledPosL.xz + 0.5f;
     
     pout.Albedo = gBaseColor;
     
     if (gUseAlbedoMap)
     {
-        pout.Albedo *= gAlbedoMap.SampleLevel(gSamplerAnisotropic, uv, 0);
+        pout.Albedo *= gAlbedoMap.Sample(gSamplerAnisotropic, sampledPosTex, 0);
     }
   
     clip(pout.Albedo.a - gAlphaCutoff);
     
     if (gUseNormalMap)
     {
-        float4 normalInTex = gNormalMap.Sample(gSamplerAnisotropic, uv);
-        float4 sourceNormal = gSourceNormalTexture.Sample(gSamplerAnisotropic, depthUV);
+        float4 normalInTex = gNormalMap.Sample(gSamplerAnisotropic, sampledPosTex);
+        float4 sourceNormal = gSourceNormalTexture.Sample(gSamplerAnisotropic, posTex);
+        float4 sourceTangent = gSourceTangentTexture.Sample(gSamplerAnisotropic, posTex);
         
-        if (sourceNormal.x > 100.f)
-        {
-            clip(-1.f);
-        }
-        
-        float4 sourceTangent = normalize(gSourceTangentTexture.Sample(gSamplerAnisotropic, depthUV) * 2 - 1);
         pout.Normal.xyz = normalize(NormalSampleToWorldSpace(normalInTex.xyz, sourceNormal.xyz, sourceTangent.xyz));
         pout.Normal.w = gNormalBlend;
-
     }
     else
     {
@@ -80,11 +66,7 @@ PixelOut main(VertexOut pin) : SV_Target
     
     if (gUseEmissiveMap)
     {
-        pout.Emissive.rgb *= gEmissiveMap.SampleLevel(gSamplerAnisotropic, uv, 0).rgb;
-    }
-    else
-    {
-        pout.Emissive = float4(0, 0, 0, 0);
+        pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, sampledPosTex, 0).rgb;
     }
     
     return pout;
