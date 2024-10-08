@@ -22,7 +22,7 @@ namespace fq::game_engine
 		void ProcessLoading();
 	private:
 		void loadUI();
-		void updateUI();
+		void updateUI(float dt);
 		void setRenderUI(bool isRender);
 
 	private:
