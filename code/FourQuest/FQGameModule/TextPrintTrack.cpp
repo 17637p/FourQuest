@@ -9,6 +9,8 @@
 #include "Event.h"
 #include "EventManager.h"
 
+#include <boost/locale.hpp>
+
 namespace fq::game_module
 {
 	TextPrintTrack::TextPrintTrack()
@@ -97,7 +99,8 @@ namespace fq::game_module
 		textInfo.CenterX = 960.f;
 		textInfo.CenterY = 1080.f - mTextFontCenterY;
 		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
-		textInfo.FontPath = "던파 연단된 칼날";
+		std::string font = boost::locale::conv::from_utf(L"던파 연단된 칼날", "UTF-8");
+		textInfo.FontPath = font;
 		name->SetTextInfo(textInfo);
 
 		textInfo.Text = mText;
