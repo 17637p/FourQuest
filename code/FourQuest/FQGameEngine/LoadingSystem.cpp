@@ -65,7 +65,7 @@ void fq::game_engine::LoadingSystem::ProcessLoading()
 		});
 
 	// ·£´õ¸µ 
-	while (check.wait_for(std::chrono::milliseconds(10)) == std::future_status::timeout)
+	while (check.wait_for(std::chrono::milliseconds(0)) == std::future_status::timeout)
 	{
 		MSG msg;
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
