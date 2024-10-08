@@ -39,6 +39,11 @@ namespace fq::game_engine
 		bool& IsWindowOpen() { return mbIsOpen; }
 
 	private:
+		void beginPrintText_GameObjectName();
+		void beginCheckBox_IsDeleteBrush();
+		void beginInputFloat_BrushRadian();
+
+
 		/// <summary>
 		/// 링크 데이터를 드래그 드랍하여 계층구조를 고치는 함수
 		/// </summary>
@@ -65,6 +70,7 @@ namespace fq::game_engine
 		fq::game_module::EventManager* mEventManager;
 		fq::game_module::Scene* mScene;
 		std::shared_ptr<fq::game_module::GameObject> mGameObject;
+		std::string mModelPath;
 
 		bool mbIsOpen;
 		bool mbIsDeleteBrush;

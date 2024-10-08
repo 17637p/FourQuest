@@ -132,6 +132,7 @@ namespace fq::physics
 
 		// PhysX Physics에서 GPU로 작동하는 Scene을 생성합니다 ( Cloth 입자를 위한 )
 		sceneDesc.cudaContextManager = mCudaContextManager;
+		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
 		mGpuScene = physics->createScene(sceneDesc);
 		assert(mScene);
@@ -205,9 +206,9 @@ namespace fq::physics
 		mCCTManager->UpdateCollisionMatrix(mCollisionMatrix);
 	}
 
-	RayCastOutput FQPhysics::RayCast(const RayCastInput& info)
+	RayCastOutput FQPhysics::RayCast(const RayCastInput& info, bool isGPUScene)
 	{
-		// 기본 설정 
+		// 기본 설정
 		physx::PxVec3 pxOrigin;
 		physx::PxVec3 pxDirection;
 		CopyDxVec3ToPxVec3(info.origin, pxOrigin);
@@ -222,20 +223,34 @@ namespace fq::physics
 		physx::PxQueryFilterData qfd;
 		qfd.data.word0 = info.layerNumber;
 		qfd.data.word1 = mCollisionMatrix[info.layerNumber];
-		qfd.flags = physx::PxQueryFlag::eDYNAMIC //| physx::PxQueryFlag::eSTATIC
+		qfd.flags = physx::PxQueryFlag::eDYNAMIC  //| physx::PxQueryFlag::eSTATIC
 			| physx::PxQueryFlag::ePREFILTER
 			| physx::PxQueryFlag::eNO_BLOCK
 			| physx::PxQueryFlag::eDISABLE_HARDCODED_FILTER; // Physx 핕터형식 적용 X
 
 		RaycastQueryFileter queryfilter;
+		bool isAnyHit;
 
-		bool isAnyHit = mScene->raycast(pxOrigin
-			, pxDirection
-			, info.distance
-			, hitBufferStruct
-			, physx::PxHitFlag::eDEFAULT
-			, qfd
-			, &queryfilter);
+		if (isGPUScene)
+		{
+			isAnyHit = mGpuScene->raycast(pxOrigin
+				, pxDirection
+				, info.distance
+				, hitBufferStruct
+				, physx::PxHitFlag::eDEFAULT
+				, qfd
+				, &queryfilter);
+		}
+		else
+		{
+			isAnyHit = mScene->raycast(pxOrigin
+				, pxDirection
+				, info.distance
+				, hitBufferStruct
+				, physx::PxHitFlag::eDEFAULT
+				, qfd
+				, &queryfilter);
+		}
 
 		RayCastOutput output;
 

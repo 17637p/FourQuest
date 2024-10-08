@@ -84,9 +84,9 @@ namespace fq::physics
 		
 	bool PhysicsRigidBodyManager::FinalUpdate()
 	{
-#ifdef _DEBUG
+//#ifdef _DEBUG
 		ExtractDebugData();
-#endif
+//#endif
 
 		return true;
 	}
@@ -301,6 +301,7 @@ namespace fq::physics
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh, physx::PxMeshScale(), physx::PxMeshGeometryFlag::eDOUBLE_SIDED), *pxMaterial);
 
+		shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true); // RayCast와 상호작용 가능
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix, true);
 
 		shape->release();
@@ -423,6 +424,7 @@ namespace fq::physics
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh, physx::PxMeshScale(), physx::PxMeshGeometryFlag::eDOUBLE_SIDED), *pxMaterial);
 
+		shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true); // RayCast와 상호작용 가능
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic, true);
 
 		shape->release();

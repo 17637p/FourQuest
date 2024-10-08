@@ -26,7 +26,7 @@ namespace fq::game_engine
 		, mScene()
 		, mGameObject()
 		, mbIsOpen(false)
-		, mBrushRadian(1.f)
+		, mBrushRadian(0.1f)
 	{
 	}
 
@@ -54,7 +54,11 @@ namespace fq::game_engine
 		{
 			ImGui::BeginChild("Cloth Editor");
 
-
+			beginPrintText_GameObjectName();
+			ImGui::Separator();
+			beginCheckBox_IsDeleteBrush();
+			ImGui::Separator();
+			beginInputFloat_BrushRadian();
 
 			ImGui::EndChild();
 		
@@ -63,6 +67,27 @@ namespace fq::game_engine
 			debugDrawTriangle();
 		}
 		ImGui::End();
+	}
+
+	void ClothEditorWindow::beginPrintText_GameObjectName()
+	{
+		if (!mGameObject) return;
+
+		std::string text = "Model Path : " + mModelPath;
+		ImGui::Text(text.c_str());
+
+		text = "Object Name : " + mGameObject->GetName();
+		ImGui::Text(text.c_str());
+	}
+
+	void ClothEditorWindow::beginCheckBox_IsDeleteBrush()
+	{
+		ImGui::Checkbox("Delete Brush", &mbIsDeleteBrush);
+	}
+
+	void ClothEditorWindow::beginInputFloat_BrushRadian()
+	{
+		ImGui::InputFloat("Brush Size", &mBrushRadian);
 	}
 
 	void ClothEditorWindow::dragDropGameObject()
@@ -90,7 +115,6 @@ namespace fq::game_engine
 		bool hasStaticMesh = mGameObject->HasComponent<fq::game_module::StaticMeshRenderer>();
 		bool hasSkinnedMesh = mGameObject->HasComponent<fq::game_module::SkinnedMeshRenderer>();
 
-		// 5. Mesh Collider
 		if ((hasStaticMesh || hasSkinnedMesh))
 		{
 			auto transform = mGameObject->GetComponent<fq::game_module::Transform>();
@@ -107,12 +131,12 @@ namespace fq::game_engine
 			{
 				auto staticMeshRenderer = mGameObject->GetComponent<fq::game_module::StaticMeshRenderer>();
 				auto meshName = staticMeshRenderer->GetMeshName();
-				auto modelPath = staticMeshRenderer->GetModelPath();
+				mModelPath = staticMeshRenderer->GetModelPath();
 
-				bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
+				bool check = mGameProcess->mResourceSystem->HasModel(mModelPath);
 				assert(check);
 
-				const auto& model = mGameProcess->mResourceSystem->GetModel(modelPath);
+				const auto& model = mGameProcess->mResourceSystem->GetModel(mModelPath);
 				const auto& mesh = ModelSystem::GetMesh(model, meshName);
 
 				vertices.resize(mesh.Vertices.size());
@@ -150,8 +174,8 @@ namespace fq::game_engine
 		for (int i = 0; i < mObjectModelVertices.size(); i++)
 		{
 			info.Sphere.Center = DirectX::SimpleMath::Vector3::Transform(mObjectModelVertices[i], mGameObject->GetTransform()->GetWorldMatrix());
-			info.Sphere.Radius = 0.01f;
-			info.bUseDepthTest = false;
+			info.Sphere.Radius = 0.005f;
+			info.bUseDepthTest = true;
 			
 			if (mObjectDisableIndiecs.find(i) != mObjectDisableIndiecs.end())
 			{
@@ -168,61 +192,83 @@ namespace fq::game_engine
 
 	void ClothEditorWindow::createBrush()
 	{
-		if (!(mGameProcess->mInputManager->GetKeyState(EKey::LMouse) == EKeyState::Hold)) return;
-
-		// 월드 상의 마우스 포인트 좌표를 구해서 레이(Ray) 구하기
-		fq::game_module::Camera* editorCamera = mGameProcess->mCameraSystem->GetEditorCamera();
-
-		editorCamera->GetViewProjection();
-
-		float mousePosX = mGameProcess->mInputManager->GetMousePosition().x;
-		float mousePosY = mGameProcess->mInputManager->GetMousePosition().y;
-
-		float mouseX = (2.f * mousePosX) / mGameProcess->mScreenManager->GetScreenWidth();
-		float mouseY = (2.f * mousePosY) / mGameProcess->mScreenManager->GetScreenHeight();
-		float mouseZ = 1.f; // For the far plane
-		DirectX::SimpleMath::Vector3 rayOrigin = DirectX::XMVectorSet(mouseX, mouseY, 0.f, 1.f);
-		DirectX::SimpleMath::Vector3 rayDirection = DirectX::XMVectorSet(mouseX, mouseY, mouseZ, 0.f);
-
-		DirectX::SimpleMath::Matrix viewProjection = editorCamera->GetViewProjection();
-
-		DirectX::SimpleMath::Vector3 rayOriginWS = DirectX::SimpleMath::Vector3::Transform(rayOrigin, viewProjection);
-		DirectX::SimpleMath::Vector3 rayDirectionWS = DirectX::SimpleMath::Vector3::Transform(rayDirection, viewProjection);
-		rayDirectionWS.Normalize();
-
-		// 물리 엔진에 RayCast 실행하기
-		fq::physics::RayCastInput info;
-		info.origin = rayOriginWS;
-		info.direction = rayDirectionWS;
-		info.distance = 100.f;
-		info.layerNumber = 0;
-
-		fq::physics::RayCastOutput raycastOutput = mGameProcess->mPhysics->RayCast(info);
-
-		DirectX::SimpleMath::Vector3 radiusPos = raycastOutput.blockPosition;
-
-		// RayCast에 부딪힌 지점에 원(Circle)을 생성하여 해당 원 안에 포함되는 vertex들 모두 찾아서 브러쉬 타입에 따라
-		// 비활성화 버텍스, 활성화 버텍스 지정하기
-		for (int i = 0; i < mObjectModelVertices.size(); i++)
+		if (mGameProcess->mInputManager->GetKeyState(EKey::T) == EKeyState::Hold
+			&& mGameProcess->mInputManager->GetKeyState(EKey::LMouse) == EKeyState::Hold)
 		{
-			float x = mObjectModelVertices[i].x - radiusPos.x;
-			float y = mObjectModelVertices[i].y - radiusPos.y;
-			float z = mObjectModelVertices[i].z - radiusPos.z;
+			// 월드 상의 마우스 포인트 좌표를 구해서 레이(Ray) 구하기
+			fq::game_module::Camera* editorCamera = mGameProcess->mCameraSystem->GetEditorCamera();
 
-			float total = std::abs(x) + std::abs(y) + std::abs(z);
+			DirectX::SimpleMath::Matrix viewProjection = editorCamera->GetViewProjection();
+			DirectX::SimpleMath::Matrix invViewProjection = viewProjection.Invert();
 
-			if (total <= mBrushRadian)
+			float mousePosX = mGameProcess->mInputManager->GetMousePosition().x;
+			float mousePosY = mGameProcess->mInputManager->GetMousePosition().y;
+
+			float mouseX = (2.f * mousePosX) / mGameProcess->mScreenManager->GetFixScreenWidth() - 1.f;
+			float mouseY = 1.f - (2.f * mousePosY) / mGameProcess->mScreenManager->GetFixScreenHeight();
+			float mouseZ = 1.f; // For the far plane
+
+			DirectX::SimpleMath::Vector3 rayOrigin(mouseX, mouseY, 0.f);
+			DirectX::SimpleMath::Vector3 rayDirection(mouseX, mouseY, mouseZ);
+
+			DirectX::SimpleMath::Vector3 rayOriginWS = DirectX::SimpleMath::Vector3::Transform(rayOrigin, invViewProjection);
+			DirectX::SimpleMath::Vector3 rayDirectionWS = DirectX::SimpleMath::Vector3::Transform(rayDirection, invViewProjection);
+
+			// Debug
+			fq::graphics::debug::RayInfo rayInfo;
+			rayInfo.bUseDepthTest = true;
+			rayInfo.Color = DirectX::SimpleMath::Color{ 1.f, 0.f, 0.f, 1.f };
+			rayInfo.Origin = rayOriginWS;
+			rayInfo.Direction = rayDirectionWS;
+			rayInfo.Normalize = false;
+			mGameProcess->mGraphics->DrawRay(rayInfo);
+
+			rayDirectionWS.Normalize();
+			// 물리 엔진에 RayCast 실행하기
+			fq::physics::RayCastInput info;
+			info.origin = rayOriginWS;
+			info.direction = rayDirectionWS;
+			info.distance = 100.f;
+			info.layerNumber = 0;
+
+			fq::physics::RayCastOutput raycastOutput = mGameProcess->mPhysics->RayCast(info, true);
+
+			for (int i = 0; i < raycastOutput.hitSize; i++)
 			{
-				if (mbIsDeleteBrush)
+				DirectX::SimpleMath::Vector3 radiusPos = raycastOutput.contectPoints[i];
+
+				fq::graphics::debug::SphereInfo sphereInfo;
+				sphereInfo.bUseDepthTest = false;
+				sphereInfo.Color = DirectX::SimpleMath::Color{ 1.f, 0.f, 0.f, 1.f };
+				sphereInfo.Sphere.Center = radiusPos;
+				sphereInfo.Sphere.Radius = mBrushRadian;
+				mGameProcess->mGraphics->DrawSphere(sphereInfo);
+
+				// RayCast에 부딪힌 지점에 원(Circle)을 생성하여 해당 원 안에 포함되는 vertex들 모두 찾아서 브러쉬 타입에 따라
+				// 비활성화 버텍스, 활성화 버텍스 지정하기
+				for (int j = 0; j < mObjectModelVertices.size(); j++)
 				{
-					if (mObjectDisableIndiecs.find(i) != mObjectDisableIndiecs.end())
+					float x = mObjectModelVertices[j].x - radiusPos.x;
+					float y = mObjectModelVertices[j].y - radiusPos.y;
+					float z = mObjectModelVertices[j].z - radiusPos.z;
+
+					float distanceSquared = (x * x) + (y * y) + (z * z);
+
+					if (distanceSquared <= mBrushRadian * mBrushRadian)
 					{
-						mObjectDisableIndiecs.erase(mObjectDisableIndiecs.find(i));
+						if (mbIsDeleteBrush)
+						{
+							auto it = mObjectDisableIndiecs.find(j);
+							if (it != mObjectDisableIndiecs.end())
+							{
+								mObjectDisableIndiecs.erase(it);
+							}
+						}
+						else
+						{
+							mObjectDisableIndiecs.insert(j);
+						}
 					}
-				}
-				else
-				{
-					mObjectDisableIndiecs.insert(i);
 				}
 			}
 		}
