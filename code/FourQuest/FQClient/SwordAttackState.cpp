@@ -39,15 +39,15 @@ void fq::client::SwordAttackState::OnStateEnter(game_module::Animator& animator,
 
 	mElapsedTime = 0.f;
 
-	// 검 공격 이펙트 생성
-	auto knightArmour = animator.GetComponent<KnightArmour>();
-	mEffect = knightArmour->EmitSwordEffect();
-	auto uvAnimator = mEffect->GetComponent<game_module::UVAnimator>();
-
-	// UV 재생속도 
-	float statePlayebackSpeed = state.GetPlayBackSpeed();
-	float defaultSpeed = animator.GetPlaySpeed();
-  	uvAnimator->SetPlaySpeed(statePlayebackSpeed * defaultSpeed);
+	// // 검 공격 이펙트 생성
+	// auto knightArmour = animator.GetComponent<KnightArmour>();
+	// mEffect = knightArmour->EmitSwordEffect();
+	// auto uvAnimator = mEffect->GetComponent<game_module::UVAnimator>();
+	// 
+	// // UV 재생속도 
+	// float statePlayebackSpeed = state.GetPlayBackSpeed();
+	// float defaultSpeed = animator.GetPlaySpeed();
+  	// uvAnimator->SetPlaySpeed(statePlayebackSpeed * defaultSpeed);
 }
 
 void fq::client::SwordAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
@@ -68,8 +68,8 @@ void fq::client::SwordAttackState::OnStateUpdate(game_module::Animator& animator
 
 void fq::client::SwordAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	mEffect->GetScene()->DestroyGameObject(mEffect.get());
-	mEffect = nullptr;
+	// mEffect->GetScene()->DestroyGameObject(mEffect.get());
+	// mEffect = nullptr;
 
 	auto controller = animator.GetComponent<game_module::CharacterController>();
 	controller->SetDashInput(false);

@@ -439,7 +439,7 @@ void fq::client::PlayerUI::SetSoulGauge(float ratio)
 void fq::client::PlayerUI::SetHPBar(float ratio)
 {
 	float hpRatio = ratio;
-	auto uiInfo = mHPBarGauge->GetUIInfomation(0);
+	auto uiInfo = mHPBarGauge->GetUIInfomation(0); 
 	uiInfo.XRatio = hpRatio;
 	uiInfo.Width = mHPWidth * hpRatio;
 	mHPBarGauge->SetUIInfomation(0, uiInfo);

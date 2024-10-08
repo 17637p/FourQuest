@@ -49,7 +49,7 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 	// auto animInterface = mTestGraphics->CreateAnimation("anim", animation);
 	// mStaticMeshObjects.back()->GetNodeHierarchyInstance()->GetNodeHierarchy()->RegisterAnimation(animInterface);
 
-	createModel("./resource/Graphics/EffectDemo/aaaaaa.model", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::CreateScale(10) * DirectX::SimpleMath::Matrix::CreateRotationX(-3.14 * 0.5f), false);
+	createModel("./resource/Graphics/EffectDemo/Plane.model", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::CreateScale(10) * DirectX::SimpleMath::Matrix::CreateRotationX(-3.14 * 0.5f), false);
 
 	auto materialInfo = mTestGraphics->GetMaterials()[0]->GetInfo();
 	fq::loader::MaterialLoader::Write("./material.material", materialInfo);
@@ -80,9 +80,9 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 	// mMeshEffectObjects.push_back(mTestGraphics->CreateMeshEffectObject("./resource/Graphics/EffectDemo/Sprite.model", "./resource/Graphics/EffectDemo/uv_animation_data.txt", "./resource/Graphics/EffectDemo/transform_data.txt", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::CreateScale(100)));
 
 	materialInit();
-	particleInit();
+	// particleInit();
 	decalInit();
-	trailInit();
+	// trailInit();
 
 	/// camera √ ±‚»≠
 	AddDefaultCamera(mTestGraphics);
@@ -102,7 +102,7 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1, 1, 1 };
-	directionalLightInfo.intensity = 20;
+	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 0, -0.7, -0.7 };
 	directionalLightInfo.direction.Normalize();
 
@@ -110,7 +110,7 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1, 1, 1 };
-	directionalLightInfo.intensity = 20;
+	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 0, 0.7, -0.7 };
 	directionalLightInfo.direction.Normalize();
 
@@ -118,7 +118,7 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1, 1, 1 };
-	directionalLightInfo.intensity = 20;
+	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 0, -0.7, 0.7 };
 	directionalLightInfo.direction.Normalize();
 
@@ -653,31 +653,34 @@ void EffectDemo::decalInit()
 {
 	using namespace fq::graphics;
 	using namespace DirectX::SimpleMath;
+	
+	createModel("./resource/Graphics/EffectDemo/Plane.model", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::CreateScale(100) * DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5));
 
 	DecalMaterialInfo decalMaterialInfo;
 	decalMaterialInfo.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
 	decalMaterialInfo.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
+	decalMaterialInfo.bIsUsedEmissive = false;
 	std::shared_ptr<IDecalMaterial> decalMaterial = mTestGraphics->GetDecalMaterialOrNull("Decal01");
 
-	for (size_t i = 0; i < 10; ++i)
+	for (size_t i = 0; i < 1; ++i)
 	{
-		for (size_t j = 0; j < 10; ++j)
+		for (size_t j = 0; j < 1; ++j)
 		{
 			DecalInfo decalInfo;
 			decalInfo.Width = 100;
 			decalInfo.Height = 100;
 			decalInfo.Depth = 100;
-			decalInfo.bIsRenderDebug = false;
-			auto transform = Matrix::CreateRotationX(3.14 * 0.45f) * Matrix::CreateTranslation({ i * 100.f - 500.f, 0, j * 100.f - 500.f });
+			decalInfo.bIsRenderDebug = true;
+			auto transform = DirectX::SimpleMath::Matrix::Identity;// Matrix::CreateRotationX(3.14 * 0.45f)* Matrix::CreateTranslation({ i * 100.f - 500.f, 0, j * 100.f - 500.f });
 			IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalMaterial, decalInfo, transform);
 			mDecalObjects.push_back(decalObject);
 		}
 	}
 
-	//const std::string fbxPath = "./resource/Graphics/EffectDemo/untitled.fbx";
-	//const std::string modelPath = "./resource/Graphics/EffectDemo/untitled.model";
-	//mTestGraphics->WriteModel(modelPath, mTestGraphics->ConvertModel(fbxPath));
-	//createModel(modelPath, "", DirectX::SimpleMath::Matrix::CreateScale(1));
+	const std::string fbxPath = "./resource/Graphics/EffectDemo/untitled.fbx";
+	const std::string modelPath = "./resource/Graphics/EffectDemo/untitled.model";
+	mTestGraphics->WriteModel(modelPath, mTestGraphics->ConvertModel(fbxPath));
+	createModel(modelPath, "", DirectX::SimpleMath::Matrix::CreateScale(1));
 }
 
 void EffectDemo::trailInit()

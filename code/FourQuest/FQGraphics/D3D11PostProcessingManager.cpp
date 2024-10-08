@@ -192,6 +192,7 @@ namespace fq::graphics
 		postProcessingBuffer.bUseVignett = mPostProcessingInfo.bUseVignett;
 		postProcessingBuffer.bUseToneMapping = mPostProcessingInfo.bUseToneMapping;
 		postProcessingBuffer.bUseFog = mPostProcessingInfo.bUseFog;
+		postProcessingBuffer.bUseGrayScale = mPostProcessingInfo.bUseGrayScale;
 
 		// Fog
 		Fog fog;

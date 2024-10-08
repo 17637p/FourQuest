@@ -47,7 +47,8 @@ namespace fq::graphics
 		unsigned int UVIndex;
 		int bUseLightmap;
 		int bUseDirection;
-		float unused[1];
+		int bUseOnlyLightmapData;
+		float unused[0];
 	};
 
 	struct CBTweenBuffer
@@ -245,11 +246,10 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix World;
 		DirectX::SimpleMath::Matrix View;
 		DirectX::SimpleMath::Matrix Proj;
-		DirectX::SimpleMath::Matrix InvWV;
+		DirectX::SimpleMath::Matrix InvWorld;
 
-		DirectX::SimpleMath::Vector2 Deproject;
 		float NormalThresholdInRadian;
-		float unused[1];
+		float unused[3];
 	};
 
 	struct CBDecalMaterial
@@ -387,7 +387,7 @@ namespace fq::graphics
 			unsigned int HeightCount;
 			unsigned int FrameCount;
 			float FrameSecond;
-			
+
 			int bIsLooping;
 			int bIsUsed;
 			float unused[2];

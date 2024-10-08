@@ -338,6 +338,7 @@ namespace fq::graphics
 					lightmapInfo.UVIndex = job.StaticMeshObject->GetLightmapIndex();
 					lightmapInfo.bUseLightmap = mLightManager->GetLightMapTextureArray() != nullptr;
 					lightmapInfo.bUseDirection = mLightManager->GetLightMapDirectionTextureArray() != nullptr;
+					lightmapInfo.bUseOnlyLightmapData = mLightManager->GetIsLightmapOnly();
 					mLightMapInformationCB->Update(mDevice, lightmapInfo);
 
 					// static 타입은 언제나 데칼 적용

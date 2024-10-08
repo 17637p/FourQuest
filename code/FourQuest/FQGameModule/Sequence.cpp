@@ -17,6 +17,7 @@
 #include "EventManager.h"
 #include "Event.h"
 #include "TimeManager.h"
+#include "InputManager.h"
 #include "TextUI.h"
 
 namespace fq::game_module
@@ -43,6 +44,7 @@ namespace fq::game_module
 
 	Sequence::~Sequence()
 	{
+
 	}
 
 	void Sequence::OnStart()
@@ -225,6 +227,13 @@ namespace fq::game_module
 	void Sequence::OnDestroy()
 	{
 		GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
+
+		auto input = GetScene()->GetInputManager();
+
+		for (int i = 0; i < XUSER_MAX_COUNT; ++i)
+		{
+			input->SetVibration(i, EVibrationMode::Both, 0.f, mTotalPlayTime);
+		}
 	}
 
 	void Sequence::OnTriggerEnter(const Collision& collision)

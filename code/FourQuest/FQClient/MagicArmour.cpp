@@ -13,6 +13,7 @@
 #include "AimAssist.h"
 #include "SpeechBubbleUI.h"
 #include "PlayerInfoVariable.h"
+#include "EffectColorTransmitter.h"
 
 fq::client::MagicArmour::MagicArmour()
 	:mPlayer(nullptr)
@@ -108,6 +109,13 @@ void fq::client::MagicArmour::EmitMagicBall()
 
 	// 공격시 체력 감소 
 	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
+	// 이펙트 색상 설정
+	auto effectColorTransmitter = attackObj->GetComponent<EffectColorTransmitter>();
+	if (effectColorTransmitter != nullptr && mPlayer != nullptr)
+	{
+		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
+	}
 }
 
 void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
@@ -152,6 +160,13 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 
 	// 공격시 체력 감소 
 	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
+	// 이펙트 색상 설정
+	auto effectColorTransmitter = attackObj->GetComponent<EffectColorTransmitter>();
+	if (effectColorTransmitter != nullptr && mPlayer != nullptr)
+	{
+		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
+	}
 }
 
 void fq::client::MagicArmour::EmitLaser()
@@ -224,6 +239,13 @@ void fq::client::MagicArmour::EmitLaser()
 		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Lazer_Attack", false , fq::sound::EChannel::SE });
 
 		mLaserHitElapsedTime = mLaserHiTick;
+
+		// 이펙트 색상 설정
+		auto effectColorTransmitter = attackObj->GetComponent<EffectColorTransmitter>();
+		if (effectColorTransmitter != nullptr && mPlayer != nullptr)
+		{
+			effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
+		}
 	}
 
 	// 레이저 몸통 이펙트 설정
@@ -393,6 +415,13 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserG
 	// 레이저 시작 사운드 재생
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Lazer_Start", false , fq::sound::EChannel::SE });
 
+	// 이펙트 색상 설정
+	auto effectColorTransmitter = attackObj->GetComponent<EffectColorTransmitter>();
+	if (effectColorTransmitter != nullptr && mPlayer != nullptr)
+	{
+		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
+	}
+
 	return attackObj;
 }
 
@@ -407,6 +436,14 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserH
 	GetScene()->AddGameObject(effectObj);
 
 	mLaserHeadEffect = effectObj;
+
+	// 이펙트 색상 설정
+	auto effectColorTransmitter = effectObj->GetComponent<EffectColorTransmitter>();
+	if (effectColorTransmitter != nullptr && mPlayer != nullptr)
+	{
+		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
+	}
+
 	return effectObj;
 }
 
@@ -430,6 +467,13 @@ void fq::client::MagicArmour::EmitLaserLineEffect()
 	auto& effect = *(instance.begin());
 	mLaserLineEffect = effect;
 	GetScene()->AddGameObject(effect);
+
+	// 이펙트 색상 설정
+	auto effectColorTransmitter = effect->GetComponent<EffectColorTransmitter>();
+	if (effectColorTransmitter != nullptr && mPlayer != nullptr)
+	{
+		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
+	}
 }
 
 void fq::client::MagicArmour::OnDestroy()

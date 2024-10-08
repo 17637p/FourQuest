@@ -380,7 +380,7 @@ void fq::client::KnightArmour::ExitShieldState()
 	mOnShieldElapsedTime = 0.f;
 
 	// ÀÌÆåÆ® »èÁ¦
-	GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnDeleteStateEvent>({ GetGameObject() });
+	GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnDeleteStateEvent>({ "K_Shield_Stay", GetGameObject() });
 }
 
 void fq::client::KnightArmour::EnterShieldState()
@@ -462,20 +462,20 @@ void fq::client::KnightArmour::setName()
 	{
 		switch (soulType)
 		{
-			case 0:
-				speechBubble->SetName(PlayerInfoVariable::KnightName);
-				break;
-			case 1:
-				speechBubble->SetName(PlayerInfoVariable::MagicName);
-				break;
-			case 2:
-				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-				break;
-			case 3:
-				speechBubble->SetName(PlayerInfoVariable::ArcherName);
-				break;
-			default:
-				break;
+		case 0:
+			speechBubble->SetName(PlayerInfoVariable::KnightName);
+			break;
+		case 1:
+			speechBubble->SetName(PlayerInfoVariable::MagicName);
+			break;
+		case 2:
+			speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+			break;
+		case 3:
+			speechBubble->SetName(PlayerInfoVariable::ArcherName);
+			break;
+		default:
+			break;
 		}
 	}
 }

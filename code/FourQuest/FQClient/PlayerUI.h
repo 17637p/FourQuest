@@ -53,7 +53,7 @@ namespace fq::client
 		int mPlayerID;
 		fq::client::Player* mPlayer;
 		fq::client::Soul* mSoul;
-
+		 
 		float mHPWidth;
 		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 
 

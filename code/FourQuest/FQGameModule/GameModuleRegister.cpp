@@ -188,7 +188,15 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::MaterialInstanceInfo::UVScale>("UVScale"_hs)
 		.prop(fq::reflect::prop::Name, "UVScale")
 		.data<&fq::graphics::MaterialInstanceInfo::UVOffset>("UVOffset"_hs)
-		.prop(fq::reflect::prop::Name, "UVOffset");
+		.prop(fq::reflect::prop::Name, "UVOffset")
+		.data<&fq::graphics::MaterialInstanceInfo::bUseBaseColor>("bUseBaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "bUseBaseColor")
+		.data<&fq::graphics::MaterialInstanceInfo::BaseColor>("BaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "BaseColor")
+		.data<&fq::graphics::MaterialInstanceInfo::bUseBaseColor>("bUseEmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "bUseEmissiveColor")
+		.data<&fq::graphics::MaterialInstanceInfo::BaseColor>("EmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "EmissiveColor");
 
 	entt::meta<fq::graphics::MeshObjectInfo>()
 		.type("MeshObjectInfo"_hs)
@@ -2110,7 +2118,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::PostProcessingInfo::fogColor>("FogColor"_hs)
 		.prop(fq::reflect::prop::Name, "FogColor")
 		.data<&fq::graphics::PostProcessingInfo::bUseFog>("bUseFog"_hs)
-		.prop(fq::reflect::prop::Name, "bUseFog");;
+		.prop(fq::reflect::prop::Name, "bUseFog")
+		.data<&fq::graphics::PostProcessingInfo::bUseGrayScale>("bUseGrayScale"_hs)
+		.prop(fq::reflect::prop::Name, "bUseGrayScale");
 
 	entt::meta<PostProcessing>()
 		.type("PostProcessing"_hs)
@@ -2159,7 +2169,10 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"재생 속도")
 		.data<&StateEvent::InstantiatePrefab::bIsPlaybackSppedHandleChildHierarchy>("IsPlaybackSppedHandleChildHierarchy"_hs)
 		.prop(fq::reflect::prop::Name, "IsPlaybackSppedHandleChildHierarchy")
-		.prop(fq::reflect::prop::Comment, u8"재생 속도 자식 계층 구조도 탐색할지 여부, 활성화 시 자식 탐색 시간이 소요됨");
+		.prop(fq::reflect::prop::Comment, u8"재생 속도 자식 계층 구조도 탐색할지 여부, 활성화 시 자식 탐색 시간이 소요됨")
+		.data<&StateEvent::InstantiatePrefab::bIsGenerateEvent>("bIsGenerateEvent"_hs)
+		.prop(fq::reflect::prop::Name, "bIsGenerateEvent")
+		.prop(fq::reflect::prop::Comment, u8"생성된 오브젝트로 이벤트를 생성할지 여부, 소울 색상 영향을 주기 위해서 On 해야함");
 
 	entt::meta<StateEvent::PlaySoundInfo>()
 		.type("PlaySoundInfo"_hs)

@@ -244,5 +244,7 @@ namespace fq::client
 
 		std::array<game_module::StaticMeshRenderer*, static_cast<int>(EWeaponeMesh::End)> mWeaponeMeshes;
 		friend void RegisterMetaData();
+
+		bool mbIsEmitFeverEffect;
 	};
 }

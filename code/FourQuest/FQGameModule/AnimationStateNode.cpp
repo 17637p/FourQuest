@@ -32,9 +32,9 @@ void fq::game_module::AnimationStateNode::OnStateUpdate(float dt)
 
 	for (auto& effectEvent : mEvents)
 	{
-		if (effectEvent.Time < mAccumulationTime && !effectEvent.bIsProcessed)
+		if (effectEvent.Time < mAccumulationTime && !effectEvent.bIsFiredReady)
 		{
-			effectEvent.bIsProcessed = true;
+			effectEvent.bIsFiredReady = true;
 		}
 	}
 
@@ -50,7 +50,7 @@ void fq::game_module::AnimationStateNode::ProcessAnimationEvent(class GameObject
 
 	for (auto& currentEvent : mEvents)
 	{
-		if (currentEvent.bIsProcessed && !currentEvent.bIsFired)
+		if (currentEvent.bIsFiredReady && !currentEvent.bIsFired)
 		{
 			eventManager->FireEvent<fq::event::OnCreateStateEvent>({ currentEvent.FunctionName, gameObject });
 			currentEvent.bIsFired = true;
@@ -68,9 +68,12 @@ void fq::game_module::AnimationStateNode::OnStateExit()
 	auto eventManager = mController->GetAnimator()->GetScene()->GetEventManager();
 	auto gameObject = mController->GetAnimator()->GetGameObject();
 
-	if (!mEvents.empty())
+	for (auto& currentEvent : mEvents)
 	{
-		eventManager->FireEvent<fq::event::OnDeleteStateEvent>({ gameObject });
+		if (currentEvent.bIsFired)
+		{
+			eventManager->FireEvent<fq::event::OnDeleteStateEvent>({ currentEvent.FunctionName, gameObject });
+		}
 	}
 }
 
@@ -83,7 +86,7 @@ void fq::game_module::AnimationStateNode::OnStateEnter()
 
 	for (auto& effectEvent : mEvents)
 	{
-		effectEvent.bIsProcessed = false;
+		effectEvent.bIsFiredReady = false;
 		effectEvent.bIsFired = false;
 	}
 
