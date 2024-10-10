@@ -133,7 +133,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
         }
 
         pout.Albedo.rgb += outlineColor;
-        pout.Emissive.rgb += outlineEmissive.rgb;
+        pout.Emissive.rgb += outlineEmissive.rgb * gModelMaterial.EmissiveIntensity;
     }
 
     if (gModelMaterial.UseMetalnessMap)

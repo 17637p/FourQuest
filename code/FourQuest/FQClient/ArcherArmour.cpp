@@ -434,6 +434,39 @@ namespace fq::client
 		}
 	}
 
+	void ArcherArmour::SetLookAtLStickInput()
+	{
+		using namespace DirectX::SimpleMath;
+
+		auto inputMgr = GetScene()->GetInputManager();
+		Vector3 input = Vector3::Zero;
+
+		// 컨트롤러 입력
+		input.x = inputMgr->GetStickInfomation(mController->GetControllerID(), EPadStick::leftX);
+		input.z = inputMgr->GetStickInfomation(mController->GetControllerID(), EPadStick::leftY);
+
+		float lengthSq = input.LengthSquared();
+
+		// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
+		constexpr float rotationOffsetSq = 0.5f * 0.5f;
+
+		// 캐릭터 컨트롤러 회전 처리
+		if (lengthSq >= rotationOffsetSq)
+		{
+			// 바라보는 방향 설정 
+			input.Normalize();
+
+			if (input == Vector3::Backward)
+			{
+				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
+			}
+			else if (input != Vector3::Zero)
+			{
+				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
+			}
+		}
+	}
+
 	void ArcherArmour::AimToNearMonster()
 	{
 		if (mAimAssist)

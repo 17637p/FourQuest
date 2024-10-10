@@ -98,7 +98,7 @@ void fq::game_module::SoundManager::StopChannel(ChannelIndex index)
 {
 	assert(MaxChannel > index);
 
-	if (mChannel[index])
+	if (mChannel[index] && index != NoneStopChannel)
 	{
 		mChannel[index]->stop();
 	}

@@ -4,6 +4,7 @@
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/PrefabManager.h"
 #include "../FQGameModule/NavigationAgent.h"
+#include "../FQGameModule/MaterialAnimator.h"
 
 #include "SettingVariable.h"
 
@@ -140,5 +141,20 @@ void fq::client::ArmourSpawner::SpawnArmourAll()
 		}
 		nearPos.y += 1.0f;
 		armourObject->GetComponent<game_module::Transform>()->SetLocalPosition(nearPos);
+
+		// 번이펙트 재생
+		for (auto child : armourObject->GetChildren())
+		{
+			auto materialAnimator = child->GetComponent<fq::game_module::MaterialAnimator>();
+
+			if (materialAnimator == nullptr)
+			{
+				continue;
+			}
+
+			auto info = materialAnimator->GetDissolveAnimatorInfo();
+			info.bIsUsed = true;
+			materialAnimator->SetDissolveAnimatorInfo(info);
+		}
 	}
 }

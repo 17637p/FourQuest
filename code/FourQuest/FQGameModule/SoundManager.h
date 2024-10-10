@@ -77,8 +77,12 @@ namespace fq::game_module
 		/// </summary>
 		float GetChannelVoulme(fq::sound::EChannel channel)const;
 
-	private:
+
+	public:
 		static constexpr ChannelIndex MaxChannel = 32;
+		static constexpr ChannelIndex NoneStopChannel = 31;
+
+	private:
 
 		FMOD_RESULT mFmodResult;
 		SoundSystem* mSoundSystem;
