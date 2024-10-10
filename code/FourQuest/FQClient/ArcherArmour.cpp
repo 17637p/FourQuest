@@ -28,7 +28,6 @@ namespace fq::client
 		, mStrongAttack()
 		, mDashCoolTime()
 		, mDashElapsedTime()
-		, mArrowPower()
 		, mDashCoolTimeReduction(0.f)
 		, mStrongAttackCoolTime(0.f)
 		, mStrongAttackCoolTimeReduction(0.f)
@@ -144,28 +143,28 @@ namespace fq::client
 		case 1:
 		{
 			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 1.f;
-			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 1.5f;
+			attackInfo.strongDamage = dc::GetArcherCA_1_Damage(mPlayer->GetAttackPower());
 			attackInfo.remainingAttackCount = 1;
 		}
 		break;
 		case 2:
 		{
 			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 2.f;
-			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 2.f;
+			attackInfo.strongDamage = dc::GetArcherCA_2_Damage(mPlayer->GetAttackPower());
 			attackInfo.remainingAttackCount = 3;
 		}
 		break;
 		case 3:
 		{
 			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 3.f;
-			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 3.f;
+			attackInfo.strongDamage = dc::GetArcherCA_3_Damage(mPlayer->GetAttackPower());
 			attackInfo.remainingAttackCount = 5;
 		}
 		break;
 		case 4:
 		{
 			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 5.f;
-			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 5.f;
+			attackInfo.strongDamage = dc::GetArcherCA_4_Damage(mPlayer->GetAttackPower());
 			attackInfo.remainingAttackCount = 0b11111111;
 		}
 		break;
