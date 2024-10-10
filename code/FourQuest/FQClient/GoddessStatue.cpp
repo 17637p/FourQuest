@@ -202,8 +202,14 @@ void fq::client::GoddessStatue::cleanUpGoddessState(float dt)
 	else
 	{
 		mCurGauge -= dt * mDecreaseSpeed;
-		if (mCurGauge < 0)
+
+		HpBar* hpBar = GetComponent<HpBar>();
+		hpBar->SetVisible(true);
+		hpBar->SetHp(mCurGauge / mMaxGauge);
+
+		if (mCurGauge <= 0)
 		{
+			hpBar->SetVisible(false);
 			mCurGauge = 0;
 		}
 	}

@@ -402,6 +402,13 @@ void fq::client::Soul::ReleaseGoddessStatue()
 	forwardPos.z -= 1.0f;
 	soulT->SetWorldPosition(forwardPos);
 
+	mSelectGoddessStatue->SetOverlaySoul(false, this);
+
+	if (GetGameObject()->HasComponent<HpBar>())
+	{
+		GetComponent<HpBar>()->SetHp(1);
+	}
+
 	SetSoulHP();
 }
 
@@ -413,7 +420,6 @@ void fq::client::Soul::checkReleaseGoddessStatue()
 		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
 		{
 			// 영혼 최대 체력으로 
-			SetSoulHP();
 			ReleaseGoddessStatue();
 		}
 	}

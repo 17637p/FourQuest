@@ -164,6 +164,7 @@
 #include "GoddessStatue.h"
 #include "VibrationState.h"
 #include "LookingObjectHelper.h"
+#include "MultiPlayerObjectCreator.h"
 #include "DynamicLightHelper.h"
 
 void fq::client::RegisterMetaData()
@@ -346,6 +347,14 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u"바라볼 오브젝트")
 		.base<game_module::Component>();
 
+	entt::meta<MultiPlayerObjectCreator>()
+		.type("MultiPlayerObjectCreator"_hs)
+		.prop(reflect::prop::Name, "MultiPlayerObjectCreator")
+		.data<&MultiPlayerObjectCreator::mNum>("Num"_hs)
+		.prop(fq::reflect::prop::Name, "Num")
+		.data<&MultiPlayerObjectCreator::mSpawnObjectPrefab>("SpawnObject"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnObject")
+		.base<game_module::Component>();
 	entt::meta<DynamicLightHelper>()
 		.type("DynamicLightHelper"_hs)
 		.prop(reflect::prop::Name, "DynamicLightHelper")

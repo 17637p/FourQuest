@@ -861,7 +861,7 @@ void fq::client::Player::DecreaseHp(float hp, bool bUseMinHp /*= false*/, bool b
 	if (!isHitAble && !bIgnoreInvincible) return;
 
 	// 피버타임에는 공격 
-	if (bUseMinHp && bIgnoreInvincible && mbIsFeverTime)
+	if (bUseMinHp && bIgnoreInvincible && (mbIsFeverTime || !mGBDecreaseDurability))
 		return;
 
 	if (bUseMinHp)

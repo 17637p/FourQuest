@@ -77,6 +77,7 @@ namespace fq::physics
 	private:
 		std::weak_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
 		std::unordered_map<unsigned int, std::shared_ptr<CharacterController>>	mCCTmap;
+		std::vector<std::shared_ptr<CharacterController>> mRemoveCCT;
 
 		physx::PxPhysics*				mPhysics;
 		physx::PxMaterial*				mMaterial;
