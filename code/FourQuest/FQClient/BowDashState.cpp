@@ -30,7 +30,7 @@ namespace fq::client
 		auto archerArmour = animator.GetComponent<ArcherArmour>();
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 		auto archer = animator.GetComponent<ArcherArmour>();
-		archer->SetLookAtLStickInput(0.01f, FLT_MAX);
+		archer->SetLookAtLStickInput();
 
 		mDashEffect = archerArmour->EmitDash();
 

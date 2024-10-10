@@ -45,6 +45,7 @@ namespace fq::client
 		/// </summary>
 		void SetLookAtRStickInput();
 		void SetLookAtLStickInput(float dt, float rotationSpeed);
+		void SetLookAtLStickInput();
 
 		/// <summary>
 		/// 가까운 몬스터에게 에임을 보정합니다.
