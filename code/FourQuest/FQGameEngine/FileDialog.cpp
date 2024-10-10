@@ -711,7 +711,6 @@ void fq::game_engine::FileDialog::setIconSize()
 			mIconSize.x = std::max(mIconSize.x - 2.f, minSize);
 			mIconSize.y = std::max(mIconSize.y - 2.f, minSize);
 		}
-
 	}
 }
 

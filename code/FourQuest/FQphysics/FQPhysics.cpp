@@ -121,17 +121,22 @@ namespace fq::physics
 		sceneDesc.cpuDispatcher = mPhysics->GetDispatcher();
 		sceneDesc.filterShader = CustomSimulationFilterShader;
 		sceneDesc.simulationEventCallback = mMyEventCallback.get();
-		//sceneDesc.cudaContextManager = mCudaContextManager;
 		sceneDesc.staticStructure = physx::PxPruningStructureType::eDYNAMIC_AABB_TREE;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
-		//sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::ePABP;
 		sceneDesc.solverType = physx::PxSolverType::ePGS;
 
-		// PhysX Phsics에서 PhysX의 Scene을 생성합니다.
+		// PhysX Physics에서 PhysX의 Scene을 생성합니다.
 		mScene = physics->createScene(sceneDesc);
+
+		// PhysX Physics에서 GPU로 작동하는 Scene을 생성합니다 ( Cloth 입자를 위한 )
+		sceneDesc.cudaContextManager = mCudaContextManager;
+		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
+		mGpuScene = physics->createScene(sceneDesc);
 		assert(mScene);
+		assert(mGpuScene);
 
 		// PVD 클라이언트에 PhysX Scene 연결 ( Debug )
 #ifdef _DEBUG
@@ -143,7 +148,7 @@ namespace fq::physics
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager)) return false;
 		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager)) return false;
 		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene, mCollisionDataManager)) return false;
-		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mScene, mCudaContextManager)) return false;
+		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mGpuScene, mCudaContextManager)) return false;
 		mMyEventCallback->Initialize(mCollisionDataManager);
 
 		return true;
@@ -153,7 +158,7 @@ namespace fq::physics
 	{
 		RemoveActors();
 
-		if (!mRigidBodyManager->Update(mScene))
+		if (!mRigidBodyManager->Update(mScene, mGpuScene))
 			return false;
 		if (!mCCTManager->Update(deltaTime))
 			return false;
@@ -163,7 +168,11 @@ namespace fq::physics
 			return false;
 		if (!mScene->simulate(deltaTime))
 			return false;
+		if (!mGpuScene->simulate(deltaTime))
+			return false;
 		if (!mScene->fetchResults(true))
+			return false;
+		if (!mGpuScene->fetchResults(true))
 			return false;
 		mMyEventCallback->OnTrigger();
 
@@ -184,20 +193,22 @@ namespace fq::physics
 
 	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)> func)
 	{
+		// 충돌 콜백 등록
 		mMyEventCallback->SetCallbackFunction(func);
 	}
 
 	void FQPhysics::SetPhysicsInfo(PhysicsEngineInfo& info)
 	{
+		// 물리 엔진 세팅 ( 중력, 충돌 매트릭스 )
 		mScene->setGravity(physx::PxVec3(info.gravity.x, info.gravity.y, -info.gravity.z));
 		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * COLLISION_MATRIX_SIZE);
 		mRigidBodyManager->UpdateCollisionMatrix(mCollisionMatrix);
 		mCCTManager->UpdateCollisionMatrix(mCollisionMatrix);
 	}
 
-	RayCastOutput FQPhysics::RayCast(const RayCastInput& info)
+	RayCastOutput FQPhysics::RayCast(const RayCastInput& info, bool isGPUScene)
 	{
-		// 기본 설정 
+		// 기본 설정
 		physx::PxVec3 pxOrigin;
 		physx::PxVec3 pxDirection;
 		CopyDxVec3ToPxVec3(info.origin, pxOrigin);
@@ -212,20 +223,34 @@ namespace fq::physics
 		physx::PxQueryFilterData qfd;
 		qfd.data.word0 = info.layerNumber;
 		qfd.data.word1 = mCollisionMatrix[info.layerNumber];
-		qfd.flags = physx::PxQueryFlag::eDYNAMIC //| physx::PxQueryFlag::eSTATIC
+		qfd.flags = physx::PxQueryFlag::eDYNAMIC  //| physx::PxQueryFlag::eSTATIC
 			| physx::PxQueryFlag::ePREFILTER
 			| physx::PxQueryFlag::eNO_BLOCK
 			| physx::PxQueryFlag::eDISABLE_HARDCODED_FILTER; // Physx 핕터형식 적용 X
 
 		RaycastQueryFileter queryfilter;
+		bool isAnyHit;
 
-		bool isAnyHit = mScene->raycast(pxOrigin
-			, pxDirection
-			, info.distance
-			, hitBufferStruct
-			, physx::PxHitFlag::eDEFAULT
-			, qfd
-			, &queryfilter);
+		if (isGPUScene)
+		{
+			isAnyHit = mGpuScene->raycast(pxOrigin
+				, pxDirection
+				, info.distance
+				, hitBufferStruct
+				, physx::PxHitFlag::eDEFAULT
+				, qfd
+				, &queryfilter);
+		}
+		else
+		{
+			isAnyHit = mScene->raycast(pxOrigin
+				, pxDirection
+				, info.distance
+				, hitBufferStruct
+				, physx::PxHitFlag::eDEFAULT
+				, qfd
+				, &queryfilter);
+		}
 
 		RayCastOutput output;
 
@@ -261,7 +286,6 @@ namespace fq::physics
 		}
 
 		return output;
-
 	}
 
 #pragma region RigidBodyManager

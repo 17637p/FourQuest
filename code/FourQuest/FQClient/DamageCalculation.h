@@ -43,6 +43,26 @@ namespace fq::client::dc
 		return attackPower * DamageVariable::ArcherWACoefficient;
 	}
 
+	inline float GetArcherCA_1_Damage(float attackPower)
+	{
+		return attackPower * DamageVariable::ArcherCA_1_Coefficient;
+	}
+
+	inline float GetArcherCA_2_Damage(float attackPower)
+	{
+		return attackPower * DamageVariable::ArcherCA_2_Coefficient;
+	}
+
+	inline float GetArcherCA_3_Damage(float attackPower)
+	{
+		return attackPower * DamageVariable::ArcherCA_3_Coefficient;
+	}
+
+	inline float GetArcherCA_4_Damage(float attackPower)
+	{
+		return attackPower * DamageVariable::ArcherCA_4_Coefficient;
+	}
+
 	inline float GetBluntFirstConsecutiveAttackDamage(float attackPower)
 	{
 		return attackPower * DamageVariable::BluntFirstConsecutiveAttack;
