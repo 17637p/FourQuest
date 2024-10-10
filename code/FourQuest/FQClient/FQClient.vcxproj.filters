@@ -416,15 +416,6 @@
     <ClInclude Include="IMonster.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="Spawner.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="SpawnerGroup.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="SpawnStruct.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="MaterialManager.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
@@ -568,6 +559,18 @@
     </ClInclude>
     <ClInclude Include="LookingObjectHelper.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiPlayerObjectCreator.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="Spawner.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerGroup.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnStruct.h">
+      <Filter>include\06.ETC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -829,16 +832,7 @@
     <ClCompile Include="PlantMonsterHitState.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Spawner.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="MonsterManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="SpawnerGroup.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="SpawnStruct.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="MaterialManager.cpp">
@@ -975,6 +969,18 @@
     </ClCompile>
     <ClCompile Include="LookingObjectHelper.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiPlayerObjectCreator.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnStruct.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerGroup.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="Spawner.cpp">
+      <Filter>src\06.ETC</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
