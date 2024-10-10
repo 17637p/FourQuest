@@ -73,6 +73,7 @@ namespace fq::physics
 			}
 
 			/// END_OVERLAP 충돌 이벤트 실행
+
 			if (pairs[i].status == physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
 			{
 				SettingTriggerData(&pairs[i], ECollisionEventType::END_OVERLAP);

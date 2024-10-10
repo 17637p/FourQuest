@@ -130,9 +130,9 @@ namespace fq::physics
 			for (int j = 0; j < vertexTotalNumber; j++)
 			{
 				Vector3 vertex;
-				vertex.x = -convexMeshVertices[convexMeshIndices[startIndexNumber + j]].x;
-				vertex.y = -convexMeshVertices[convexMeshIndices[startIndexNumber + j]].y;
-				vertex.z = -convexMeshVertices[convexMeshIndices[startIndexNumber + j]].z;
+				vertex.x = convexMeshVertices[convexMeshIndices[startIndexNumber + j]].x;
+				vertex.y = convexMeshVertices[convexMeshIndices[startIndexNumber + j]].y;
+				vertex.z = convexMeshVertices[convexMeshIndices[startIndexNumber + j]].z;
 
 				vertex = Vector3::Transform(vertex, dxMatrix);
 
@@ -191,9 +191,9 @@ namespace fq::physics
 		for (int i = 0; i < triangleGeometry.triangleMesh->getNbVertices(); i++)
 		{
 			DirectX::SimpleMath::Vector3 vertex;
-			vertex.x = -meshVertices[i].x;
-			vertex.y = -meshVertices[i].y;
-			vertex.z = -meshVertices[i].z;
+			vertex.x = meshVertices[i].x;
+			vertex.y = meshVertices[i].y;
+			vertex.z = meshVertices[i].z;
 
 			vertices.push_back(vertex);
 		}
@@ -226,11 +226,11 @@ namespace fq::physics
 
 					line1.x = transform.p.x + heightFieldGeometry.columnScale * i;
 					line1.y = transform.p.y + heightFieldGeometry.heightField->getHeight(i, j) * heightFieldGeometry.heightScale;
-					line1.z = - transform.p.z - heightFieldGeometry.rowScale * j;
+					line1.z = transform.p.z + heightFieldGeometry.rowScale * j;
 
 					line2.x = transform.p.x + heightFieldGeometry.columnScale * (i);
 					line2.y = transform.p.y + heightFieldGeometry.heightField->getHeight(i, j + 1) * heightFieldGeometry.heightScale;
-					line2.z = - transform.p.z - heightFieldGeometry.rowScale * (j + 1);
+					line2.z = transform.p.z + heightFieldGeometry.rowScale * (j + 1);
 
 					line.push_back(std::make_pair(line1, line2));
 				}
@@ -241,11 +241,11 @@ namespace fq::physics
 
 					line1.x = transform.p.x + heightFieldGeometry.columnScale * i;
 					line1.y = transform.p.y + heightFieldGeometry.heightField->getHeight(i, j) * heightFieldGeometry.heightScale;
-					line1.z = -transform.p.z - heightFieldGeometry.rowScale * j;
+					line1.z = transform.p.z + heightFieldGeometry.rowScale * j;
 
 					line2.x = transform.p.x + heightFieldGeometry.columnScale * (i + 1);
 					line2.y = transform.p.y + heightFieldGeometry.heightField->getHeight(i + 1, j) * heightFieldGeometry.heightScale;
-					line2.z = -transform.p.z - heightFieldGeometry.rowScale * (j);
+					line2.z = transform.p.z + heightFieldGeometry.rowScale * (j);
 
 					line.push_back(std::make_pair(line1, line2));
 				}

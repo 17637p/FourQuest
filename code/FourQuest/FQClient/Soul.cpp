@@ -213,6 +213,7 @@ void fq::client::Soul::selectArmour()
 
 void fq::client::Soul::checkOtherPlayer()
 {
+	// 거리 내에 갑옷을 입은 다른 플레이어를 탐색 후 일정 거리 내에 있으면 영혼 버프
 	for (auto& object : GetScene()->GetComponentView<Player>())
 	{
 		auto myTransform = GetComponent<fq::game_module::Transform>();

@@ -292,6 +292,7 @@ void fq::game_engine::EditorEngine::Finalize()
 	mEditor->mImGuiSystem->Finalize();
 	mEditor->mAnimatorWindow->Finalize();
 	mEditor->mArticulationHierarchy->Finalize();
+	mEditor->mClothEditorWindow->Finalize();
 
 	// SystemFinalize
 	mGameProcess->mGraphics->Finalize();
@@ -330,6 +331,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mLightmapWindow->Render();
 	mEditor->mGameVariableWindow->Render();
 	mEditor->mRenderingDebugWindow->Render();
+	mEditor->mClothEditorWindow->Render();
 	mEditor->mChangeWindow->Render();
 
 	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
@@ -371,6 +373,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mLightmapWindow->Initialize(mGameProcess.get());
 	mEditor->mGameVariableWindow->Initialize();
 	mEditor->mRenderingDebugWindow->Initialize(mGameProcess.get());
+	mEditor->mClothEditorWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mChangeWindow->Initialize(mGameProcess.get(), mEditor.get());
 
 	// Editor Setting

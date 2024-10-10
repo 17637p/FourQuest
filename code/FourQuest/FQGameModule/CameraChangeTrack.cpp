@@ -49,6 +49,8 @@ namespace fq::game_module
 
 		auto transform = mTargetCameraObject.lock()->GetComponent<Transform>();
 
+
+		transform->SetLocalPosition(mKeys[0].position);
 		mOriginTransform = transform->GetLocalMatrix();
 	}
 

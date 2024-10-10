@@ -61,6 +61,12 @@ namespace fq::game_engine
 		void SetEditorCamera(fq::game_module::Camera* camera);
 
 		/// <summary>
+		/// 에디터 카메라를 반환합니다.
+		/// </summary>
+		/// <returns></returns>
+		fq::game_module::Camera* GetEditorCamera() { return mEditorCamera; }
+
+		/// <summary>
 		/// 현재 사용하는 카메라 타입을 반환합니다
 		/// </summary>
 		/// <returns>카메라 타입</returns>
