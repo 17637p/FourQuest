@@ -299,13 +299,17 @@ namespace fq::client
 
 		if (mPlayer->IsFeverTime())
 		{
-			mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / (mDashCoolTime - mDashCoolTimeReduction));
-			mPlayer->SetXSkillCoolTimeRatio(mStrongAttackElapsedTime / (mStrongAttackCoolTime - mStrongAttackCoolTimeReduction));
+			float dashCoolTime = (mDashCoolTime - mDashCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
+			float strongAttackCoolTime = (mStrongAttackCoolTime - mStrongAttackCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
+			mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / dashCoolTime);
+			mPlayer->SetXSkillCoolTimeRatio(mStrongAttackElapsedTime / strongAttackCoolTime);
 		}
 		else
 		{
-			mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / mDashCoolTime);
-			mPlayer->SetXSkillCoolTimeRatio(mStrongAttackElapsedTime / mStrongAttackCoolTime);
+			float dashCoolTime = mDashCoolTime * mPlayer->GetGBDecreaseCooltime();
+			float strongAttackCoolTime = mStrongAttackCoolTime * mPlayer->GetGBDecreaseCooltime();
+			mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / dashCoolTime);
+			mPlayer->SetXSkillCoolTimeRatio(mStrongAttackElapsedTime / strongAttackCoolTime);
 		}
 	}
 
@@ -322,6 +326,7 @@ namespace fq::client
 		{
 			mAnimator->SetParameterTrigger("OnDash");
 			mDashElapsedTime = mPlayer->IsFeverTime() ? mDashCoolTime - mDashCoolTimeReduction : mDashCoolTime;
+			mDashElapsedTime *= mPlayer->GetGBDecreaseCooltime();
 		}
 		// StrongAttack
 		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::X, EKeyState::Tap)
@@ -329,6 +334,7 @@ namespace fq::client
 		{
 			mAnimator->SetParameterTrigger("OnStrongAttack");
 			mStrongAttackElapsedTime = mPlayer->IsFeverTime() ? mStrongAttackCoolTime - mStrongAttackCoolTimeReduction : mStrongAttackCoolTime;
+			mStrongAttackElapsedTime *= mPlayer->GetGBDecreaseCooltime();
 		}
 
 		// MultiShot R Stick ¡∂¿€

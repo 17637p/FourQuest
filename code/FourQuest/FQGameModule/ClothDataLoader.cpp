@@ -37,6 +37,6 @@ namespace fq::game_module
 
 
 
-		return std::shared_ptr<ClothData>();
+		return clothData;
 	}
 }

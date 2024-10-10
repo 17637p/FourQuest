@@ -165,6 +165,7 @@
 #include "VibrationState.h"
 #include "LookingObjectHelper.h"
 #include "MultiPlayerObjectCreator.h"
+#include "DynamicLightHelper.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -353,6 +354,19 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Num")
 		.data<&MultiPlayerObjectCreator::mSpawnObjectPrefab>("SpawnObject"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnObject")
+		.base<game_module::Component>();
+	entt::meta<DynamicLightHelper>()
+		.type("DynamicLightHelper"_hs)
+		.prop(reflect::prop::Name, "DynamicLightHelper")
+		.data<&DynamicLightHelper::mMinIntensity>("MinIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "MinIntensity")
+		.prop(fq::reflect::prop::Comment, u"최소 조명 세기")
+		.data<&DynamicLightHelper::mMaxIntensity>("MaxIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "MaxIntensity")
+		.prop(fq::reflect::prop::Comment, u"최대 조명 세기")
+		.data<&DynamicLightHelper::mSpeed>("Speed"_hs)
+		.prop(fq::reflect::prop::Name, "Speed")
+		.prop(fq::reflect::prop::Comment, u"시간 * Speed // 기본은 1초를 기준으로 반복함")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

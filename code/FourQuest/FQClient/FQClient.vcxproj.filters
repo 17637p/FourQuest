@@ -571,6 +571,9 @@
     </ClInclude>
     <ClInclude Include="SpawnStruct.h">
       <Filter>include\06.ETC</Filter>
+	</ClInclude>
+    <ClInclude Include="DynamicLightHelper.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -981,6 +984,9 @@
     </ClCompile>
     <ClCompile Include="Spawner.cpp">
       <Filter>src\06.ETC</Filter>
+	</ClCompile>
+    <ClCompile Include="DynamicLightHelper.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

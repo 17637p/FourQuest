@@ -49,6 +49,8 @@ namespace fq::physics
 
 	bool PhysicsCharactorControllerManager::FinalUpdate()
 	{
+		mRemoveCCT.clear();
+
 		return true;
 	}
 
@@ -93,6 +95,7 @@ namespace fq::physics
 		auto controller = mCCTmap.find(id);
 		if (controller != mCCTmap.end())
 		{
+			mRemoveCCT.push_back(controller->second);
 			mCCTmap.erase(controller);
 			return true;
 		}

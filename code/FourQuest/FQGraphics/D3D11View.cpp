@@ -391,7 +391,9 @@ fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared
 	{
 	case DXGI_FORMAT_R32_TYPELESS:
 		shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
-
+		break;
+	case DXGI_FORMAT_R24G8_TYPELESS:
+		shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 		break;
 	default:
 		assert(false);
