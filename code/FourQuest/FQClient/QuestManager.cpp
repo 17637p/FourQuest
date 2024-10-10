@@ -464,6 +464,8 @@ void fq::client::QuestManager::eventProcessClearQuest()
 	mClearQuestHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ClearQuestEvent>(
 		[this](const client::event::ClearQuestEvent& event)
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Quest_complete", false , fq::sound::EChannel::SE });
+
 			// 방금 깬 퀘스트가 클리어 조건으로 있는 퀘스트가 있다면 클리어 하기 
 			std::vector<ClearQuest>& clearQuestList = mCurMainQuest.mclearConditionList.clearQuestList;
 			if (clearQuestList.size() > 0)

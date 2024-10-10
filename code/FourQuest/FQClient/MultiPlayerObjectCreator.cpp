@@ -28,7 +28,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::MultiPlayerObjectCreator
 }
 
 fq::client::MultiPlayerObjectCreator::MultiPlayerObjectCreator()
-	:mNum(0),
+	:mNum(4),
 	mSpawnObjectPrefab()
 {
 }
