@@ -35,7 +35,7 @@ namespace fq::physics
 		/// <summary>
 		/// 생성된 리지드 바디들을 한 번에 물리 공간에 생성합니다.
 		/// </summary>
-		bool Update(physx::PxScene* scene);
+		bool Update(physx::PxScene* scene, physx::PxScene* gpuScene);
 
 		/// <summary>
 		/// 디버그 데이터 등 물리 엔진 데이터 클리어용 업데이트
@@ -60,8 +60,8 @@ namespace fq::physics
 		bool CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic);
 		bool CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic);
 
-		StaticRigidBody* SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
-		DynamicRigidBody* SettingDynamicBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic);
+		StaticRigidBody* SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isGpuScene = false);
+		DynamicRigidBody* SettingDynamicBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic, bool isGpuScene = false);
 
 		void GetRigidBodyData(unsigned int id, RigidBodyGetSetData& rigidBodyData);
 
@@ -110,6 +110,7 @@ namespace fq::physics
 
 		std::unordered_map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodyContainer;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;
+		std::vector<std::shared_ptr<RigidBody>> mUpcomingGpuActors;
 
 		std::shared_ptr<DebugData> mDebugData;
 	};

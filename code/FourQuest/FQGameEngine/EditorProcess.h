@@ -25,6 +25,7 @@
 #include "ImportWindow.h"
 #include "MaterialWindow.h"
 #include "LightmapWindow.h"
+#include "ClothEditorWindow.h"
 #include "GameVariableWindow.h"
 #include "RenderingDebugWindow.h"
 #include "ChangeWindow.h"
@@ -71,6 +72,7 @@ namespace fq::game_engine
 		std::unique_ptr<LightmapWindow> mLightmapWindow;
 		std::unique_ptr<GameVariableWindow> mGameVariableWindow;
 		std::unique_ptr<RenderingDebugWindow> mRenderingDebugWindow;
+		std::unique_ptr<ClothEditorWindow> mClothEditorWindow;
 		std::unique_ptr<ChangeWindow> mChangeWindow;
 
 		// System

@@ -26,6 +26,10 @@ namespace fq::client
 		//						±Ã¼ö °©¿Ê °ø°Ý ¹èÀ²								//
 		//////////////////////////////////////////////////////////////////////////
 		static inline float ArcherWACoefficient = 1.f;
+		static inline float ArcherCA_1_Coefficient = 1.f;
+		static inline float ArcherCA_2_Coefficient = 1.f;
+		static inline float ArcherCA_3_Coefficient = 1.f;
+		static inline float ArcherCA_4_Coefficient = 1.f;
 
 		//////////////////////////////////////////////////////////////////////////
 		//							¿µÈ¥ °ø°Ý ¹èÀ²								//

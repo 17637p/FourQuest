@@ -233,6 +233,7 @@
     <ClInclude Include="ArticulationHierarchy.h" />
     <ClInclude Include="ArticulationInspector.h" />
     <ClInclude Include="CameraSystem.h" />
+    <ClInclude Include="ClothEditorWindow.h" />
     <ClInclude Include="ChangeWindow.h" />
     <ClInclude Include="CollisionMatrixWindow.h" />
     <ClInclude Include="Command.h" />
@@ -296,6 +297,7 @@
     <ClCompile Include="ArticulationHierarchy.cpp" />
     <ClCompile Include="ArticulationInspector.cpp" />
     <ClCompile Include="CameraSystem.cpp" />
+    <ClCompile Include="ClothEditorWindow.cpp" />
     <ClCompile Include="ChangeWindow.cpp" />
     <ClCompile Include="CollisionMatrixWindow.cpp" />
     <ClCompile Include="Command.cpp" />

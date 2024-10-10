@@ -136,6 +136,8 @@ void fq::client::QuestManager::OnStart()
 	mNewImageCounts.clear();
 	mCompleteImages.clear();
 	mCompleteImageCounts.clear();
+	mNextSubQuests.clear();
+
 	mQuestBoxes.clear();
 
 	mNewImages.push_back(children[1]->GetChildren()[4]->GetChildren()[0]->GetComponent<game_module::ImageUI>());
@@ -277,6 +279,23 @@ void fq::client::QuestManager::eventProcessKillMonster()
 							if (monsterKillList[i].curNumber == monsterKillList[i].requestsNumber * LevelHepler::GetSpawnRatio())
 							{
 								monsterKillList[i].isClear = true;
+							}
+
+							for (int i = 0; i < mViewSubQuest.size(); i++)
+							{
+								if (mViewSubQuest[i].mIndex == mCurSubQuest[j].mIndex)
+								{
+									mViewSubQuest[i] = mCurSubQuest[j];
+								}
+							}
+						}
+						else if (monsterKillList[i].monsterType == EMonsterType::All)
+						{
+							monsterKillList[i].curNumber++;
+
+							if (mViewSubQuest[i].mIndex == mCurSubQuest[j].mIndex)
+							{
+								mViewSubQuest[i] = mCurSubQuest[j];
 							}
 						}
 
@@ -569,7 +588,38 @@ void fq::client::QuestManager::eventProcessClearQuest()
 			{
 				mCurSubQuest.erase(mCurSubQuest.begin() + event.index);
 
-				//RenderOnSubQuest(mCurSubQuest.size(), false);
+				// Complete 연출
+				if (!event.clearQuest.mIsMain)
+				{
+					for (int i = 0; i < mViewSubQuest.size(); i++)
+					{
+						if (mViewSubQuest[i].mIndex == event.clearQuest.mIndex)
+						{
+							int questUIindex = event.index + 1;
+							mCompleteImageCounts[questUIindex] = 3.0f;
+							auto uiInfo = mCompleteImages[questUIindex]->GetUIInfomation(0);
+							uiInfo.isRender = true;
+							uiInfo.Alpha = 1;
+							mCompleteImages[questUIindex]->SetUIInfomation(0, uiInfo);
+
+							uiInfo = mLeftChecks[questUIindex]->GetUIInfomation(0);
+							uiInfo.Width = 100;
+							uiInfo.Height = 100;
+							uiInfo.Alpha = 1;
+							uiInfo.isRender = true;
+							mLeftChecks[questUIindex]->SetUIInfomation(0, uiInfo);
+
+							uiInfo = mRightChecks[questUIindex]->GetUIInfomation(0);
+							uiInfo.Width = 100;
+							uiInfo.Height = 100;
+							uiInfo.Alpha = 1;
+							uiInfo.isRender = true;
+							mRightChecks[questUIindex]->SetUIInfomation(0, uiInfo);
+
+							mNewImages[questUIindex]->SetIsRender(0, false);
+						}
+					}
+				}
 			}
 
 			for (int i = 0; i < mSubQuests.size(); i++)
@@ -581,43 +631,18 @@ void fq::client::QuestManager::eventProcessClearQuest()
 						preQuestList[0].preIsMain == event.clearQuest.mIsMain)
 					{
 						mCurSubQuest.push_back(mSubQuests[i]);
-						mViewSubQuest.push_back(mSubQuests[i]);
-
-						int subQuestIndex = mCurSubQuest.size();
-						RenderOnSubQuest(subQuestIndex, true);
+						mNextSubQuests.push_back(mSubQuests[i]);
 						spdlog::trace("Complete PreQuest!");
-
-						// Complete 연출
-						int questUIindex = event.index + 1;
-						mCompleteImageCounts[questUIindex] = 3.0f;
-						auto uiInfo = mCompleteImages[questUIindex]->GetUIInfomation(0);
-						uiInfo.isRender = true;
-						uiInfo.Alpha = 1;
-						mCompleteImages[questUIindex]->SetUIInfomation(0, uiInfo);
-
-						uiInfo = mLeftChecks[questUIindex]->GetUIInfomation(0);
-						uiInfo.Width = 100;
-						uiInfo.Height = 100;
-						uiInfo.Alpha = 1;
-						uiInfo.isRender = true;
-						mLeftChecks[questUIindex]->SetUIInfomation(0, uiInfo);
-
-						uiInfo = mRightChecks[questUIindex]->GetUIInfomation(0);
-						uiInfo.Width = 100;
-						uiInfo.Height = 100;
-						uiInfo.Alpha = 1;
-						uiInfo.isRender = true;
-						mRightChecks[questUIindex]->SetUIInfomation(0, uiInfo);
-
-						mNewImages[questUIindex]->SetIsRender(0, false);
-
-						// New 연출
-						mNewImageCounts[subQuestIndex + 1] = 3.0f;
-						uiInfo = mNewImages[subQuestIndex + 1]->GetUIInfomation(0);
-						uiInfo.isRender = true;
-						uiInfo.Alpha = 1;
-						mNewImages[subQuestIndex + 1]->SetUIInfomation(0, uiInfo);
 					}
+				}
+			}
+
+			for (std::list<Quest>::iterator it = mNextSubQuests.begin(); it != mNextSubQuests.end(); ++it)
+			{
+				if (it->mIndex == event.clearQuest.mIndex &&
+					it->mIsMain == event.clearQuest.mIsMain)
+				{
+					mNextSubQuests.erase(it);
 				}
 			}
 		});
@@ -753,19 +778,22 @@ void fq::client::QuestManager::RenderOnSubQuest(int i, bool isOn)
 
 	auto text1 = subQuest[0]->GetComponent<game_module::TextUI>();
 	auto image1 = subQuest[1]->GetComponent<game_module::ImageUI>();
-	auto text2 = subQuest[2]->GetComponent<game_module::TextUI>();
-	auto image2 = subQuest[3]->GetComponent<game_module::ImageUI>();
 
 	auto textInfo = text1->GetTextInfo();
 	textInfo.IsRender = isOn;
 	text1->SetTextInfo(textInfo);
+	if (!isOn)
+	{
+		auto text2 = subQuest[2]->GetComponent<game_module::TextUI>();
+		auto image2 = subQuest[3]->GetComponent<game_module::ImageUI>();
 
-	textInfo = text2->GetTextInfo();
-	textInfo.IsRender = isOn;
-	text2->SetTextInfo(textInfo);
+		textInfo = text2->GetTextInfo();
+		textInfo.IsRender = isOn;
+		text2->SetTextInfo(textInfo);
 
-	image1->SetIsRender(0, isOn);
-	image2->SetIsRender(0, isOn);
+		image1->SetIsRender(0, isOn);
+		image2->SetIsRender(0, isOn);
+	}
 
 	auto uiInfo = mQuestBoxes[i + 1]->GetUIInfomation(0);
 	uiInfo.Alpha = 1;
@@ -900,6 +928,8 @@ void fq::client::QuestManager::playNew(float dt)
 				mNewImages[i]->SetUIInfomation(0, uiInfo);
 			}
 			mNewImageCounts[i] -= dt;
+
+			spdlog::trace("{} {}",i, mNewImageCounts[i]);
 		}
 		else
 		{
@@ -997,6 +1027,7 @@ void fq::client::QuestManager::playComplete(float dt)
 			mLeftChecks[i]->SetIsRender(0, false);
 			mRightChecks[i]->SetIsRender(0, false);
 			
+			// Main
 			if (i == 0)
 			{
 				auto textInfo = mMainQuestText->GetTextInfo();
@@ -1020,8 +1051,33 @@ void fq::client::QuestManager::playComplete(float dt)
 					mNewImages[i]->SetUIInfomation(0, uiInfo);
 
 					mIsFinishedCompleteAnimation[i] = false;
+
+					int subQuestSize = mCurSubQuest.size();
+					if (mViewSubQuest.size() != subQuestSize)
+					{
+						mViewSubQuest = mCurSubQuest;
+
+						// New 연출
+						mNewImageCounts[subQuestSize] = 3.0f;
+						auto uiInfo = mNewImages[subQuestSize]->GetUIInfomation(0);
+						uiInfo.isRender = true;
+						uiInfo.Alpha = 1;
+						mNewImages[subQuestSize]->SetUIInfomation(0, uiInfo);
+					}
+					for (int i = 0; i < 3; i++)
+					{
+						if (i < mViewSubQuest.size())
+						{
+							RenderOnSubQuest(i, true);
+						}
+						else
+						{
+							RenderOnSubQuest(i, false);
+						}
+					}
 				}
 			}
+			// Sub
 			else
 			{
 				auto textInfo = mSubQuestTexts[i-1]->GetTextInfo();
@@ -1030,9 +1086,23 @@ void fq::client::QuestManager::playComplete(float dt)
 
 				if (mIsFinishedCompleteAnimation[i])
 				{
-					mViewSubQuest.erase(mViewSubQuest.begin() + i - 1);
+					if (mViewSubQuest.size() > 0)
+					{
+						mViewSubQuest.erase(mViewSubQuest.begin() + i - 1);
+					}
+					if (mNextSubQuests.size() > 0)
+					{
+						// 다음 퀘스트 추가
+						mViewSubQuest.push_back(mNextSubQuests.front());
+						mNextSubQuests.pop_front();
 
-					mIsFinishedCompleteAnimation[i] = false;
+						// New 연출
+						mNewImageCounts[i] = 3.0f;
+						auto uiInfo = mNewImages[i]->GetUIInfomation(0);
+						uiInfo.isRender = true;
+						uiInfo.Alpha = 1;
+						mNewImages[i]->SetUIInfomation(0, uiInfo);
+					}
 
 					for (int i = 0; i < 3; i++)
 					{
@@ -1045,6 +1115,8 @@ void fq::client::QuestManager::playComplete(float dt)
 							RenderOnSubQuest(i, false);
 						}
 					}
+
+					mIsFinishedCompleteAnimation[i] = false;
 				}
 			}
 		}
