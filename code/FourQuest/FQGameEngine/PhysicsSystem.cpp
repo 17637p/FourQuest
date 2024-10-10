@@ -1139,7 +1139,7 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 	rayCastInfo.layerNumber = static_cast<int>(event.tag);
 	rayCastInfo.origin = event.origin;
 
-	auto result = mPhysicsEngine->RayCast(rayCastInfo);
+	auto result = mPhysicsEngine->RayCast(rayCastInfo, event.isStatic);
 	
 	// Block Á¤º¸
 	if (result.hasBlock)

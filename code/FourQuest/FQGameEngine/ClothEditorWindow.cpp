@@ -1,5 +1,7 @@
 #include "ClothEditorWindow.h"
+#include "imgui_stdlib.h"
 
+#include "..\FQCommon\FQPath.h"
 #include "..\FQGameModule\StaticMeshRenderer.h"
 #include "..\FQGameModule\SkinnedMeshRenderer.h"
 #include "..\FQGameModule\TriangleCollider.h"
@@ -27,6 +29,8 @@ namespace fq::game_engine
 		, mGameObject()
 		, mbIsOpen(false)
 		, mBrushRadian(0.1f)
+		, mModelPath()
+		, mFileName()
 	{
 	}
 
@@ -67,6 +71,24 @@ namespace fq::game_engine
 			debugDrawTriangle();
 		}
 		ImGui::End();
+	}
+
+	void ClothEditorWindow::beginButton_Save()
+	{
+		if (ImGui::Button("Save Cloth Data"))
+		{
+			ImGui::InputText("###", &mFileName);
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Save"))
+			{
+				std::string articulationPath = mFileName + ".articulation";
+
+				auto path = fq::path::GetResourcePath() / "Articulation" / articulationPath;
+				//mClothDataLoader.Save(m, path.c_str());
+			}
+		}
 	}
 
 	void ClothEditorWindow::beginPrintText_GameObjectName()

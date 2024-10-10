@@ -20,6 +20,7 @@
 #include "LinkData.h"
 #include "ArticulationData.h"
 #include "ArticulationLoader.h"
+#include "ClothDataLoader.h"
 #include "Articulation.h"
 #include "SkyBox.h"
 

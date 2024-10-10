@@ -571,8 +571,11 @@
     </ClInclude>
     <ClInclude Include="SpawnStruct.h">
       <Filter>include\06.ETC</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="DynamicLightHelper.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="YAxisSetter.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -984,8 +987,11 @@
     </ClCompile>
     <ClCompile Include="Spawner.cpp">
       <Filter>src\06.ETC</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="DynamicLightHelper.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="YAxisSetter.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
