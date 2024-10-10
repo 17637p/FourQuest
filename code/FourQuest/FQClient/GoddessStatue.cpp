@@ -45,7 +45,7 @@ void fq::client::GoddessStatue::OnTriggerEnter(const game_module::Collision& col
 			GetScene()->AddGameObject(effectObj);
 			mDebuffEffects[player] = effectObj;
 		}
-		else
+		else 
 		{
 			// 버프 장판 이펙트 생성
 			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPlayerBuff);
@@ -76,10 +76,9 @@ void fq::client::GoddessStatue::OnTriggerExit(const game_module::Collision& coll
 		}
 		else
 		{
-			// 디버프 이펙트 삭제
+			// 버프 이펙트 삭제
 			GetScene()->DestroyGameObject(mBuffEffects[collisionPlayer].get());
 			mBuffEffects.erase(collisionPlayer);
-
 			releaseBuffPlayer(collisionPlayer);
 		}
 
@@ -153,6 +152,11 @@ void fq::client::GoddessStatue::cleanUpGoddessState(float dt)
 		hpBar->SetVisible(true);
 		hpBar->SetHp(mCurGauge / mMaxGauge);
 		spdlog::trace("{}", mCurGauge / mMaxGauge);
+
+		auto myPos = GetTransform()->GetWorldPosition();
+		myPos.y += 2.0f;
+		mCurOverlaySoul->GetTransform()->SetWorldPosition(myPos);
+
 		if (mCurGauge > mMaxGauge)
 		{
 			hpBar->SetVisible(false);

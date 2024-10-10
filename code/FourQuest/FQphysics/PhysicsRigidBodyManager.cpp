@@ -40,7 +40,7 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::Update(physx::PxScene* scene)
+	bool PhysicsRigidBodyManager::Update(physx::PxScene* scene, physx::PxScene* gpuScene)
 	{
 		/// <summary>
 		/// 물리 공간 씬에 바디 액터 추가하기
@@ -58,16 +58,35 @@ namespace fq::physics
 				scene->addActor(*staticBody->GetPxRigidStatic());
 			}
 		}
+
+		/// <summary>
+		/// GPU 물리 공간 씬에 바디 액터 추가하기
+		/// <summary>
+		for (const std::shared_ptr<RigidBody>& body : mUpcomingGpuActors)
+		{
+			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
+			if (dynamicBody)
+			{
+				gpuScene->addActor(*dynamicBody->GetPxRigidDynamic());
+			}
+			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
+			if (staticBody)
+			{
+				gpuScene->addActor(*staticBody->GetPxRigidStatic());
+			}
+		}
+
 		mUpcomingActors.clear();
+		mUpcomingGpuActors.clear();
 
 		return true;
 	}
 		
 	bool PhysicsRigidBodyManager::FinalUpdate()
 	{
-#ifdef _DEBUG
+//#ifdef _DEBUG
 		ExtractDebugData();
-#endif
+//#endif
 
 		return true;
 	}
@@ -182,6 +201,7 @@ namespace fq::physics
 
 			CopyDirectXMatrixToPxTransform(dxTransform, pxCurrentTransform);
 
+			// 이전 Transform과 다르면 pxBody 업데이트
 			if (areTransformsDifferent(pxPrevTransform, pxCurrentTransform, 0.001f, 0.001f))
 			{
 				pxBody->setGlobalPose(pxCurrentTransform);
@@ -281,7 +301,8 @@ namespace fq::physics
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh, physx::PxMeshScale(), physx::PxMeshGeometryFlag::eDOUBLE_SIDED), *pxMaterial);
 
-		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true); // RayCast와 상호작용 가능
+		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix, true);
 
 		shape->release();
 
@@ -403,7 +424,8 @@ namespace fq::physics
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh, physx::PxMeshScale(), physx::PxMeshGeometryFlag::eDOUBLE_SIDED), *pxMaterial);
 
-		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
+		shape->setFlag(physx::PxShapeFlag::eSCENE_QUERY_SHAPE, true); // RayCast와 상호작용 가능
+		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic, true);
 
 		shape->release();
 
@@ -438,44 +460,72 @@ namespace fq::physics
 		return false;
 	}
 
-	StaticRigidBody* PhysicsRigidBodyManager::SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
+	StaticRigidBody* PhysicsRigidBodyManager::SettingStaticBody(
+		physx::PxShape* shape, 
+		const ColliderInfo& info,
+		const EColliderType& colliderType, 
+		int* collisionMatrix, 
+		bool isGpuScene)
 	{
+		// 필터 데이터 등록
 		physx::PxFilterData filterdata;
 		filterdata.word0 = info.layerNumber;
 		filterdata.word1 = collisionMatrix[info.layerNumber];
 		shape->setSimulationFilterData(filterdata);
 
+		// 충돌 데이터 생성
 		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.id, info.layerNumber);
 		std::shared_ptr<CollisionData> collisiondata = std::make_shared<CollisionData>();
 
-		if (!staticBody->Initialize(info, shape, mPhysics, collisiondata))
-		{
-			return nullptr;
-		}
+		// 스태틱 바디 초기화
+		if (!staticBody->Initialize(info, shape, mPhysics, collisiondata))	return nullptr;
 
+		// 충돌 데이터 등록, 리지드 바디 등록
 		mCollisionDataManager.lock()->Create(info.id, collisiondata);
 		mRigidBodyContainer.insert(std::make_pair(staticBody->GetID(), staticBody));
-		mUpcomingActors.push_back(staticBody);
 
+		// 천 시뮬레이션 전용 GpuScene Or 다른 리지드 바디 CpuScene 따로 등록
+		if (isGpuScene)
+			mUpcomingGpuActors.push_back(staticBody);
+		else
+			mUpcomingActors.push_back(staticBody);
+
+		// 등록된 리지드 바디 반환
 		return staticBody.get();
 	}
 
-	DynamicRigidBody* PhysicsRigidBodyManager::SettingDynamicBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic)
+	DynamicRigidBody* PhysicsRigidBodyManager::SettingDynamicBody(
+		physx::PxShape* shape
+		, const ColliderInfo& info
+		, const EColliderType& colliderType
+		, int* collisionMatrix
+		, bool isKinematic
+		, bool isGpuScene)
 	{
+		// 필터 데이터 등록
 		physx::PxFilterData filterdata;
 		filterdata.word0 = info.layerNumber;
 		filterdata.word1 = collisionMatrix[info.layerNumber];
 		shape->setSimulationFilterData(filterdata);
 
+		// 충돌 데이터 생성
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::make_shared<DynamicRigidBody>(colliderType, info.id, info.layerNumber);
 		std::shared_ptr<CollisionData> collisiondata = std::make_shared<CollisionData>();
 
+		// 다이나믹 바디 초기화
 		if (!dynamicBody->Initialize(info, shape, mPhysics, collisiondata, isKinematic)) return nullptr;
 		         
+		// 충돌 데이터 등록, 리지드 바디 등록
 		mCollisionDataManager.lock()->Create(info.id, collisiondata);
 		mRigidBodyContainer.insert(std::make_pair(dynamicBody->GetID(), dynamicBody));
-		mUpcomingActors.push_back(dynamicBody);
 
+		// 천 시뮬레이션 전용 리지드 바디 GpuScene Or 기본 리지드 바디 CpuScene 따로 등록
+		if (isGpuScene)
+			mUpcomingGpuActors.push_back(dynamicBody);
+		else
+			mUpcomingActors.push_back(dynamicBody);
+
+		// 등록된 리지드 바디 반환
 		return dynamicBody.get();
 	}
 #pragma endregion
@@ -488,6 +538,7 @@ namespace fq::physics
 
 		std::shared_ptr<RigidBody> body = mRigidBodyContainer.find(id)->second;
 
+		// 삭제할 리지드 바디 등록 ( PxActor는 다음 프레임에 삭제 )
 		if (body)
 		{
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
@@ -510,6 +561,7 @@ namespace fq::physics
 			}
 		}
 
+		// 물리 씬에 등록예정인 리지드 바디 삭제
 		auto bodyIter = mUpcomingActors.begin();
 		for (bodyIter; bodyIter != mUpcomingActors.end(); bodyIter++)
 		{
@@ -525,6 +577,7 @@ namespace fq::physics
 
 	bool PhysicsRigidBodyManager::RemoveAllRigidBody(physx::PxScene* scene, std::vector<physx::PxActor*>& removeActorList)
 	{
+		// 삭제할 리지드 바디 등록 ( 물리 씬에 등록된 상태면 다음 프레임에 삭제 )
 		for (const auto& body : mRigidBodyContainer)
 		{
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body.second);
@@ -548,6 +601,7 @@ namespace fq::physics
 		}
 		mRigidBodyContainer.clear();
 
+		// 물리 씬에 등록예정인 리지드 바디 삭제
 		for (const auto& body : mUpcomingActors)
 		{
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
@@ -578,6 +632,7 @@ namespace fq::physics
 #pragma region UpdateCollisionMatrix
 	void PhysicsRigidBodyManager::UpdateCollisionMatrix(int* collisionMatrix)
 	{
+		// 충돌 매트릭스 업데이트
 		for (const auto& body : mRigidBodyContainer)
 		{
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body.second);

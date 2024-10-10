@@ -57,7 +57,6 @@ fq::client::Player::Player()
 	, mRSkillCoolTimeRatio(0.f)
 	, mASkillCoolTimeRatio(0.f)
 	, mXSkillCoolTimeRatio(0.f)
-	, mbIsEmitFeverEffect(false)
 	, mbIsEmitEnhanceEffect(false)
 {}
 
@@ -655,13 +654,14 @@ void fq::client::Player::setFeverBuff(bool isFever)
 
 void fq::client::Player::processBuff()
 {
-	// 피버 버프 + 영혼 버프 합산된 최종 버프 계산 함수
+	// 피버 버프
 	if (mbIsFeverTime)
 	{
 		mAttackPower = mBaseAttackPower * PlayerVariable::FeverAttackIncreaseRatio;
 		mController->AddFinalSpeedMultiplier(PlayerVariable::FeverSpeedIncreaseRatio - 1.f);
 	}
 
+	// 소울 버프 
 	if (mSoulBuffNumber != 0)
 	{
 		mAttackPower += (mBaseAttackPower * ((SoulVariable::DamageUpRatio - 1.f) * mSoulBuffNumber));
@@ -669,6 +669,10 @@ void fq::client::Player::processBuff()
 	}
 
 	handleEmitEnhanceEffect();
+
+	// 여신상 버프 
+	mAttackPower *= (1.f + mGBIncreaseAttackPower);
+	mController->AddFinalSpeedMultiplier(mGBIncreaseSpeed);
 }
 
 void fq::client::Player::setDecalColor()

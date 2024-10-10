@@ -65,28 +65,41 @@ void fq::game_engine::LoadingSystem::ProcessLoading()
 		});
 
 	// ·£´õ¸µ 
-	while (check.wait_for(std::chrono::milliseconds(100)) == std::future_status::timeout)
+	while (check.wait_for(std::chrono::milliseconds(0)) == std::future_status::timeout)
 	{
-		updateUI();
-		mGameProcess->mGraphics->BeginRender();
-		mGameProcess->mGraphics->Render();
-		mGameProcess->mGraphics->EndRender();
+		MSG msg;
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			if (msg.message == WM_QUIT)
+			{
+				break;
+			}
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			float dt = mGameProcess->mTimeManager->Update();
+			updateUI(dt);
+			mGameProcess->mGraphics->BeginRender();
+			mGameProcess->mGraphics->Render();
+			mGameProcess->mGraphics->EndRender();
+		}
 	}
 
 	setRenderUI(false);
 	mGameProcess->mEventManager->FireEvent<fq::event::OnLoadScene>({ mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName() });
 }
 
-void fq::game_engine::LoadingSystem::updateUI()
+void fq::game_engine::LoadingSystem::updateUI(float dt)
 {
 	float ratio = mGameProcess->mResourceSystem->GetLoadingRatio();
-	//spdlog::debug("loading ratio {}", ratio);
 	auto loadingUI = mLoadingUIObject[0]->GetComponent<client::LoadingUI>();
 	loadingUI->SetProgressBar(ratio);
 
 	for (auto& object : mLoadingUIObject)
 	{
-		object->OnUpdate(0.1f);
+		object->OnUpdate(dt);
 	}
 }
 

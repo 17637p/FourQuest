@@ -58,7 +58,7 @@ namespace fq::physics
 		/// <summary>
 		/// 레이캐스트 : 원점, 방향, 거리값의 선을 쏴서 물리 공간의 오브젝트들을 충돌 검사
 		/// </summary>
-		virtual RayCastOutput RayCast(const RayCastInput& info) override;
+		virtual RayCastOutput RayCast(const RayCastInput& info, bool isGPUScene = false) override;
 
 #pragma region RigidBodyManager
 		/// <summary>

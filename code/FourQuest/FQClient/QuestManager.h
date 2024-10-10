@@ -5,9 +5,12 @@
 
 #include "Quest.h"
 
+#include <list>
+
 namespace fq::game_module
 {
 	class TextUI;
+	class ImageUI;
 }
 
 namespace fq::client
@@ -48,15 +51,18 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void SetScaleAndPositionScreen();
+		void setScaleAndPositionScreen();
 
-		void EventProcessKillMonster();
-		void EventProcessPlayerCollideTrigger();
-		void EventProcessCompleteDefence();
-		void EventProcessClearQuest();
-		void EventProcessAllColliderTrigger();
-		void EventProcessObjectInteraction();
-		void EventProcessClearGoddessStatue();
+		void eventProcessKillMonster();
+		void eventProcessPlayerCollideTrigger();
+		void eventProcessCompleteDefence();
+		void eventProcessClearQuest();
+		void eventProcessAllColliderTrigger();
+		void eventProcessObjectInteraction();
+		void eventProcessClearGoddessStatue();
+
+		void playNew(float dt);
+		void playComplete(float dt);
 
 	private:
 		// 인스펙터 용
@@ -69,7 +75,10 @@ namespace fq::client
 
 		// 스크립트 용
 		Quest mCurMainQuest;
+		Quest mViewMainQuest; // 연출용 UI 보여줄 이전 퀘스트 
 		std::vector<Quest> mCurSubQuest;
+		std::vector<Quest> mViewSubQuest; // 연출용 UI 보여줄 서브 퀘스트 목록 
+		std::list<Quest> mNextSubQuests;
 
 		fq::game_module::PrefabResource mPortalPrefab;
 
@@ -87,10 +96,24 @@ namespace fq::client
 		game_module::TextUI* mMainQuestText;
 		std::vector<game_module::TextUI*> mSubQuestTexts;
 
+		// 신규 퀘스트 연출
+		std::vector<game_module::ImageUI*> mNewImages;
+		std::vector<float> mNewImageCounts;
+
+		std::vector<game_module::ImageUI*> mCompleteImages;
+		std::vector<float> mCompleteImageCounts;
+		std::vector<game_module::ImageUI*> mLeftChecks;
+		std::vector<game_module::ImageUI*> mRightChecks;
+		std::vector<bool> mIsFinishedCompleteAnimation;
+		std::vector<game_module::ImageUI*> mQuestBoxes;
+
 		// Gauge Width
 		int mGaugeMaxWidth;
 		int mFontSize;
 		game_module::ScreenManager* mScreenManager;
+
+		// 
+		int mDebug;
 
 		std::vector<std::shared_ptr<game_module::GameObject>> mAddedArmourObjects;
 

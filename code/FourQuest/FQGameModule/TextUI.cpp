@@ -76,3 +76,9 @@ void fq::game_module::TextUI::SetIsRender(bool isRender)
 {
 	mTextInfo.IsRender = isRender;
 }
+
+void fq::game_module::TextUI::SetTextInfoPlay(fq::graphics::TextInfo val)
+{
+	mTextInfo = val;
+	mTextObject->SetTextInformation(mTextInfo);
+}

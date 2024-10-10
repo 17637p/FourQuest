@@ -19,7 +19,8 @@ namespace fq::game_module
 		
 		// Text Option 바꾸기
 		fq::graphics::TextInfo GetTextInfo() const { return mTextInfo; }
-		void SetTextInfo(fq::graphics::TextInfo val);
+		void SetTextInfo(fq::graphics::TextInfo val); // 에디터 용
+		void SetTextInfoPlay(fq::graphics::TextInfo val); 
 
 		void SetText(std::string text);
 		void SetIsRender(bool isRender);

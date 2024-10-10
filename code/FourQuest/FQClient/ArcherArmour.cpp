@@ -28,7 +28,6 @@ namespace fq::client
 		, mStrongAttack()
 		, mDashCoolTime()
 		, mDashElapsedTime()
-		, mArrowPower()
 		, mDashCoolTimeReduction(0.f)
 		, mStrongAttackCoolTime(0.f)
 		, mStrongAttackCoolTimeReduction(0.f)
@@ -144,28 +143,28 @@ namespace fq::client
 		case 1:
 		{
 			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 1.f;
-			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 1.5f;
+			attackInfo.strongDamage = dc::GetArcherCA_1_Damage(mPlayer->GetAttackPower());
 			attackInfo.remainingAttackCount = 1;
 		}
 		break;
 		case 2:
 		{
 			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 2.f;
-			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 2.f;
+			attackInfo.strongDamage = dc::GetArcherCA_2_Damage(mPlayer->GetAttackPower());
 			attackInfo.remainingAttackCount = 3;
 		}
 		break;
 		case 3:
 		{
 			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 3.f;
-			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 3.f;
+			attackInfo.strongDamage = dc::GetArcherCA_3_Damage(mPlayer->GetAttackPower());
 			attackInfo.remainingAttackCount = 5;
 		}
 		break;
 		case 4:
 		{
 			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 5.f;
-			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 5.f;
+			attackInfo.strongDamage = dc::GetArcherCA_4_Damage(mPlayer->GetAttackPower());
 			attackInfo.remainingAttackCount = 0b11111111;
 		}
 		break;
@@ -300,13 +299,17 @@ namespace fq::client
 
 		if (mPlayer->IsFeverTime())
 		{
-			mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / (mDashCoolTime - mDashCoolTimeReduction));
-			mPlayer->SetXSkillCoolTimeRatio(mStrongAttackElapsedTime / (mStrongAttackCoolTime - mStrongAttackCoolTimeReduction));
+			float dashCoolTime = (mDashCoolTime - mDashCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
+			float strongAttackCoolTime = (mStrongAttackCoolTime - mStrongAttackCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
+			mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / dashCoolTime);
+			mPlayer->SetXSkillCoolTimeRatio(mStrongAttackElapsedTime / strongAttackCoolTime);
 		}
 		else
 		{
-			mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / mDashCoolTime);
-			mPlayer->SetXSkillCoolTimeRatio(mStrongAttackElapsedTime / mStrongAttackCoolTime);
+			float dashCoolTime = mDashCoolTime * mPlayer->GetGBDecreaseCooltime();
+			float strongAttackCoolTime = mStrongAttackCoolTime * mPlayer->GetGBDecreaseCooltime();
+			mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / dashCoolTime);
+			mPlayer->SetXSkillCoolTimeRatio(mStrongAttackElapsedTime / strongAttackCoolTime);
 		}
 	}
 
@@ -323,6 +326,7 @@ namespace fq::client
 		{
 			mAnimator->SetParameterTrigger("OnDash");
 			mDashElapsedTime = mPlayer->IsFeverTime() ? mDashCoolTime - mDashCoolTimeReduction : mDashCoolTime;
+			mDashElapsedTime *= mPlayer->GetGBDecreaseCooltime();
 		}
 		// StrongAttack
 		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::X, EKeyState::Tap)
@@ -330,6 +334,7 @@ namespace fq::client
 		{
 			mAnimator->SetParameterTrigger("OnStrongAttack");
 			mStrongAttackElapsedTime = mPlayer->IsFeverTime() ? mStrongAttackCoolTime - mStrongAttackCoolTimeReduction : mStrongAttackCoolTime;
+			mStrongAttackElapsedTime *= mPlayer->GetGBDecreaseCooltime();
 		}
 
 		// MultiShot R Stick ¡∂¿€

@@ -53,15 +53,6 @@ namespace fq::physics
 		mRigidDynamic = physics->createRigidDynamic(transform);
 		mRigidDynamic->userData = data.get();
 
-		if (!mRigidDynamic->attachShape(*shape))
-		{
-			assert(shape->getReferenceCount() == 1);
-			return false;
-		}
-		assert(shape->getReferenceCount() == 2);
-
-		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, 1.f);
-
 		if (isKinematic)
 		{
 			mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
@@ -72,6 +63,15 @@ namespace fq::physics
 			mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, false);
 			mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
 		}
+
+		if (!mRigidDynamic->attachShape(*shape))
+		{
+			assert(shape->getReferenceCount() == 1);
+			return false;
+		}
+		assert(shape->getReferenceCount() == 2);
+
+		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, 1.f);
 
 		return true;
 	}

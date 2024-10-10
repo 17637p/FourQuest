@@ -92,8 +92,10 @@ void fq::client::QuestManager::OnStart()
 
 	// 시작 퀘스트 등록
 	mCurSubQuest.clear();
+	mViewSubQuest.clear();
 
 	mCurMainQuest = mMainQuests[mStartQuests.startMainQuestIndex];
+	mViewMainQuest = mCurMainQuest;
 	for (int i = 0; i < mStartQuests.startSubQuestIndex.size(); i++)
 	{
 		auto it = std::find_if(mSubQuests.begin(), mSubQuests.end(), [this, i](Quest quest)
@@ -102,6 +104,7 @@ void fq::client::QuestManager::OnStart()
 			});
 		mCurSubQuest.push_back(*it);
 	}
+	mViewSubQuest = mCurSubQuest;
 
 	// 
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren();
@@ -117,16 +120,57 @@ void fq::client::QuestManager::OnStart()
 	mFontSize = mMainQuestText->GetTextInfo().FontSize;
 
 	// 이벤트 핸들러 등록
-	EventProcessKillMonster();
-	EventProcessPlayerCollideTrigger();
-	EventProcessCompleteDefence();
-	EventProcessClearQuest();
-	EventProcessAllColliderTrigger();
-	EventProcessObjectInteraction();
-	EventProcessClearGoddessStatue();
+	eventProcessKillMonster();
+	eventProcessPlayerCollideTrigger();
+	eventProcessCompleteDefence();
+	eventProcessClearQuest();
+	eventProcessAllColliderTrigger();
+	eventProcessObjectInteraction();
+	eventProcessClearGoddessStatue();
 
 	mScreenManager = GetScene()->GetScreenManager();
 
+	/// 연출용 UI
+	// New, Complete
+	mNewImages.clear();
+	mNewImageCounts.clear();
+	mCompleteImages.clear();
+	mCompleteImageCounts.clear();
+	mNextSubQuests.clear();
+
+	mQuestBoxes.clear();
+
+	mNewImages.push_back(children[1]->GetChildren()[4]->GetChildren()[0]->GetComponent<game_module::ImageUI>());
+	mCompleteImages.push_back(children[1]->GetChildren()[4]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
+	mQuestBoxes.push_back(children[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
+	for (int i = 0; i < 3; i++)
+	{
+		mNewImages.push_back(children[3]->GetChildren()[i]->GetChildren()[4]->GetChildren()[0]->GetComponent<game_module::ImageUI>());
+		mCompleteImages.push_back(children[3]->GetChildren()[i]->GetChildren()[4]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
+		mQuestBoxes.push_back(children[3]->GetChildren()[i]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		mNewImageCounts.push_back(0);
+		mCompleteImageCounts.push_back(0);
+		mNewImages[i]->SetIsRender(0, false);
+		mCompleteImages[i]->SetIsRender(0, false);
+		mIsFinishedCompleteAnimation.push_back(false);
+	}
+
+	mLeftChecks.clear();
+	mRightChecks.clear();
+
+	mLeftChecks.push_back(children[1]->GetChildren()[1]->GetChildren()[0]->GetComponent<game_module::ImageUI>());
+	mRightChecks.push_back(children[1]->GetChildren()[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
+
+	for (int i = 0; i < 3; i++)
+	{
+		mLeftChecks.push_back(children[3]->GetChildren()[i]->GetChildren()[1]->GetChildren()[0]->GetComponent<game_module::ImageUI>());
+		mRightChecks.push_back(children[3]->GetChildren()[i]->GetChildren()[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
+	}
+
+	// 마지막에
 	for (int i = 0; i < 3 - mCurSubQuest.size(); i++)
 	{
 		RenderOnSubQuest(2 - i, false);
@@ -135,22 +179,22 @@ void fq::client::QuestManager::OnStart()
 
 void fq::client::QuestManager::OnUpdate(float dt)
 {
-	SetScaleAndPositionScreen();
+	setScaleAndPositionScreen();
 
 	// Main Quest Text Setting
 	auto textInfo = mMainQuestText->GetTextInfo();
-	textInfo.Text = mCurMainQuest.mName;
+	textInfo.Text = mViewMainQuest.mName;
 	mMainQuestText->SetTextInfo(textInfo);
 
-	ViewQuestInformation(mCurMainQuest, mMainQuestText);
+	ViewQuestInformation(mViewMainQuest, mMainQuestText);
 
 	// Sub Quest Text Setting
-	for (int i = 0; i < mCurSubQuest.size(); i++)
+	for (int i = 0; i < mViewSubQuest.size(); i++)
 	{
 		auto textInfo = mSubQuestTexts[i]->GetTextInfo();
-		textInfo.Text = mCurSubQuest[i].mName;
+		textInfo.Text = mViewSubQuest[i].mName;
 		mSubQuestTexts[i]->SetTextInfo(textInfo);
-		ViewQuestInformation(mCurSubQuest[i], mSubQuestTexts[i]);
+		ViewQuestInformation(mViewSubQuest[i], mSubQuestTexts[i]);
 	}
 
 	GetScene()->GetEventManager()->FireEvent<client::event::CurrentQuest>({ true, mCurMainQuest.mIndex });
@@ -158,6 +202,9 @@ void fq::client::QuestManager::OnUpdate(float dt)
 	{
 		GetScene()->GetEventManager()->FireEvent<client::event::CurrentQuest>({ false, mCurSubQuest[i].mIndex});
 	}
+
+	playNew(dt);
+	playComplete(dt);
 }
 
 void fq::client::QuestManager::OnDestroy()
@@ -171,7 +218,7 @@ void fq::client::QuestManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mClearGoddessStatueHandler);
 }
 
-void fq::client::QuestManager::EventProcessKillMonster()
+void fq::client::QuestManager::eventProcessKillMonster()
 {
 	mKillMonsterHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::KillMonster>(
 		[this](const client::event::KillMonster& event)
@@ -233,6 +280,23 @@ void fq::client::QuestManager::EventProcessKillMonster()
 							{
 								monsterKillList[i].isClear = true;
 							}
+
+							for (int i = 0; i < mViewSubQuest.size(); i++)
+							{
+								if (mViewSubQuest[i].mIndex == mCurSubQuest[j].mIndex)
+								{
+									mViewSubQuest[i] = mCurSubQuest[j];
+								}
+							}
+						}
+						else if (monsterKillList[i].monsterType == EMonsterType::All)
+						{
+							monsterKillList[i].curNumber++;
+
+							if (mViewSubQuest[i].mIndex == mCurSubQuest[j].mIndex)
+							{
+								mViewSubQuest[i] = mCurSubQuest[j];
+							}
 						}
 
 						if (!monsterKillList[i].isClear)
@@ -274,7 +338,7 @@ void fq::client::QuestManager::EventProcessKillMonster()
 		});
 }
 
-void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
+void fq::client::QuestManager::eventProcessPlayerCollideTrigger()
 {
 	mPlayerCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::PlayerCollideTrigger>(
 		[this](const client::event::PlayerCollideTrigger& event)
@@ -363,7 +427,7 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 		});
 }
 
-void fq::client::QuestManager::EventProcessCompleteDefence()
+void fq::client::QuestManager::eventProcessCompleteDefence()
 {
 	mCompleteDefenceHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::CompleteDefence>(
 		[this](const client::event::CompleteDefence& event)
@@ -395,7 +459,7 @@ void fq::client::QuestManager::EventProcessCompleteDefence()
 		});
 }
 
-void fq::client::QuestManager::EventProcessClearQuest()
+void fq::client::QuestManager::eventProcessClearQuest()
 {
 	mClearQuestHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ClearQuestEvent>(
 		[this](const client::event::ClearQuestEvent& event)
@@ -491,6 +555,30 @@ void fq::client::QuestManager::EventProcessClearQuest()
 					{
 						mCurMainQuest = mMainQuests[i];
 						spdlog::trace("Complete PreQuest!");
+
+						// Complete 연출
+						int questUIindex = 0;
+						mCompleteImageCounts[questUIindex] = 3.0f;
+						auto uiInfo = mCompleteImages[questUIindex]->GetUIInfomation(0);
+						uiInfo.isRender = true;
+						uiInfo.Alpha = 1;
+						mCompleteImages[questUIindex]->SetUIInfomation(0, uiInfo);
+
+						uiInfo = mLeftChecks[questUIindex]->GetUIInfomation(0);
+						uiInfo.Width = 100;
+						uiInfo.Height = 100;
+						uiInfo.Alpha = 1;
+						uiInfo.isRender = true;
+						mLeftChecks[questUIindex]->SetUIInfomation(0, uiInfo);
+
+						uiInfo = mRightChecks[questUIindex]->GetUIInfomation(0);
+						uiInfo.Width = 100;
+						uiInfo.Height = 100;
+						uiInfo.Alpha = 1;
+						uiInfo.isRender = true;
+						mRightChecks[questUIindex]->SetUIInfomation(0, uiInfo);
+
+						mNewImages[questUIindex]->SetIsRender(0, false);
 					}
 				}
 			}
@@ -500,7 +588,38 @@ void fq::client::QuestManager::EventProcessClearQuest()
 			{
 				mCurSubQuest.erase(mCurSubQuest.begin() + event.index);
 
-				RenderOnSubQuest(mCurSubQuest.size(), false);
+				// Complete 연출
+				if (!event.clearQuest.mIsMain)
+				{
+					for (int i = 0; i < mViewSubQuest.size(); i++)
+					{
+						if (mViewSubQuest[i].mIndex == event.clearQuest.mIndex)
+						{
+							int questUIindex = event.index + 1;
+							mCompleteImageCounts[questUIindex] = 3.0f;
+							auto uiInfo = mCompleteImages[questUIindex]->GetUIInfomation(0);
+							uiInfo.isRender = true;
+							uiInfo.Alpha = 1;
+							mCompleteImages[questUIindex]->SetUIInfomation(0, uiInfo);
+
+							uiInfo = mLeftChecks[questUIindex]->GetUIInfomation(0);
+							uiInfo.Width = 100;
+							uiInfo.Height = 100;
+							uiInfo.Alpha = 1;
+							uiInfo.isRender = true;
+							mLeftChecks[questUIindex]->SetUIInfomation(0, uiInfo);
+
+							uiInfo = mRightChecks[questUIindex]->GetUIInfomation(0);
+							uiInfo.Width = 100;
+							uiInfo.Height = 100;
+							uiInfo.Alpha = 1;
+							uiInfo.isRender = true;
+							mRightChecks[questUIindex]->SetUIInfomation(0, uiInfo);
+
+							mNewImages[questUIindex]->SetIsRender(0, false);
+						}
+					}
+				}
 			}
 
 			for (int i = 0; i < mSubQuests.size(); i++)
@@ -512,15 +631,24 @@ void fq::client::QuestManager::EventProcessClearQuest()
 						preQuestList[0].preIsMain == event.clearQuest.mIsMain)
 					{
 						mCurSubQuest.push_back(mSubQuests[i]);
-						RenderOnSubQuest(mCurSubQuest.size()-1, true);
+						mNextSubQuests.push_back(mSubQuests[i]);
 						spdlog::trace("Complete PreQuest!");
 					}
+				}
+			}
+
+			for (std::list<Quest>::iterator it = mNextSubQuests.begin(); it != mNextSubQuests.end(); ++it)
+			{
+				if (it->mIndex == event.clearQuest.mIndex &&
+					it->mIsMain == event.clearQuest.mIsMain)
+				{
+					mNextSubQuests.erase(it);
 				}
 			}
 		});
 }
 
-void fq::client::QuestManager::EventProcessAllColliderTrigger()
+void fq::client::QuestManager::eventProcessAllColliderTrigger()
 {
 	// Clear - Collider Trigger 처리
 	mAllCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::AllCollideTrigger>(
@@ -553,7 +681,7 @@ void fq::client::QuestManager::EventProcessAllColliderTrigger()
 		});
 }
 
-void fq::client::QuestManager::EventProcessObjectInteraction()
+void fq::client::QuestManager::eventProcessObjectInteraction()
 {
 	mObjectInteractionHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ObjectInteractionEvent>(
 		[this](const client::event::ObjectInteractionEvent& event)
@@ -650,22 +778,30 @@ void fq::client::QuestManager::RenderOnSubQuest(int i, bool isOn)
 
 	auto text1 = subQuest[0]->GetComponent<game_module::TextUI>();
 	auto image1 = subQuest[1]->GetComponent<game_module::ImageUI>();
-	auto text2 = subQuest[2]->GetComponent<game_module::TextUI>();
-	auto image2 = subQuest[3]->GetComponent<game_module::ImageUI>();
 
 	auto textInfo = text1->GetTextInfo();
 	textInfo.IsRender = isOn;
 	text1->SetTextInfo(textInfo);
+	if (!isOn)
+	{
+		auto text2 = subQuest[2]->GetComponent<game_module::TextUI>();
+		auto image2 = subQuest[3]->GetComponent<game_module::ImageUI>();
 
-	textInfo = text2->GetTextInfo();
-	textInfo.IsRender = isOn;
-	text2->SetTextInfo(textInfo);
+		textInfo = text2->GetTextInfo();
+		textInfo.IsRender = isOn;
+		text2->SetTextInfo(textInfo);
 
-	image1->SetIsRender(0, isOn);
-	image2->SetIsRender(0, isOn);
+		image1->SetIsRender(0, isOn);
+		image2->SetIsRender(0, isOn);
+	}
+
+	auto uiInfo = mQuestBoxes[i + 1]->GetUIInfomation(0);
+	uiInfo.Alpha = 1;
+	uiInfo.isRender = isOn;
+	mQuestBoxes[i + 1]->SetUIInfomation(0, uiInfo);
 }
 
-void fq::client::QuestManager::SetScaleAndPositionScreen()
+void fq::client::QuestManager::setScaleAndPositionScreen()
 {
 	// Scale 자동 조정 
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
@@ -747,7 +883,7 @@ void fq::client::QuestManager::SpawnArmour(fq::game_module::PrefabResource armou
 	}
 }
 
-void fq::client::QuestManager::EventProcessClearGoddessStatue()
+void fq::client::QuestManager::eventProcessClearGoddessStatue()
 {
 	mClearGoddessStatueHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ClearGoddessStatue>(
 		[this](const client::event::ClearGoddessStatue& event)
@@ -777,5 +913,213 @@ void fq::client::QuestManager::EventProcessClearGoddessStatue()
 				}
 			}
 		});
+}
+
+void fq::client::QuestManager::playNew(float dt)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (mNewImageCounts[i] > 0)
+		{
+			if (mNewImageCounts[i] < 1.0f)
+			{
+				auto uiInfo = mNewImages[i]->GetUIInfomation(0);
+				uiInfo.Alpha = mNewImageCounts[i];
+				mNewImages[i]->SetUIInfomation(0, uiInfo);
+			}
+			mNewImageCounts[i] -= dt;
+
+			spdlog::trace("{} {}",i, mNewImageCounts[i]);
+		}
+		else
+		{
+			mNewImages[i]->SetIsRender(0, false);
+		}
+	}
+}
+
+void fq::client::QuestManager::playComplete(float dt)
+{
+	// 체크 둘다 생기고 0.5 왼쪽 작아짐 0.5 오른쪽 작아짐 1초 후 페이드 아웃
+	for (int i = 0; i < 4; i++)
+	{
+		if (mCompleteImageCounts[i] > 0)
+		{
+			game_module::TextUI* textUI;
+			if (i == 0)
+			{
+				textUI = mMainQuestText;
+			}
+			else
+			{
+				textUI = mSubQuestTexts[i - 1];
+			}
+			// Gauge Bar, 몬스터 Text 지우기
+			game_module::ImageUI* gaugeBar = textUI->GetGameObject()->GetParent()->GetChildren()[3]->GetComponent<game_module::ImageUI>();
+			gaugeBar->SetIsRender(0, false);
+
+			game_module::ImageUI* gaugeBarBack = nullptr;
+			if (gaugeBar->GetGameObject()->GetChildren().size() > 0)
+			{
+				gaugeBarBack = gaugeBar->GetGameObject()->GetChildren()[0]->GetComponent<game_module::ImageUI>();
+				gaugeBarBack->SetIsRender(0, false);
+			}
+
+			game_module::TextUI* monsterKillText =
+				textUI->GetGameObject()->GetParent()->GetChildren()[2]->GetComponent<game_module::TextUI>();
+			monsterKillText->SetIsRender(false);
+
+			if (mCompleteImageCounts[i] > 2.5f)
+			{
+				auto uiInfo = mLeftChecks[i]->GetUIInfomation(0);
+				uiInfo.Width = ((mCompleteImageCounts[i] - 2.5f) / 0.5f) * 70 + 30;
+				uiInfo.Height = ((mCompleteImageCounts[i] - 2.5f) / 0.5f) * 70 + 30;
+				mLeftChecks[i]->SetUIInfomation(0, uiInfo);
+			}
+			else if (mCompleteImageCounts[i] > 2.0f)
+			{
+				auto uiInfo = mRightChecks[i]->GetUIInfomation(0);
+				uiInfo.Width = ((mCompleteImageCounts[i] - 2.0f) / 0.5f) * 70 + 30;
+				uiInfo.Height = ((mCompleteImageCounts[i] - 2.0f) / 0.5f) * 70 + 30;
+				mRightChecks[i]->SetUIInfomation(0, uiInfo);
+			}
+
+			// 페이드 아웃 처리 
+			else if (mCompleteImageCounts[i] < 1.0f)
+			{
+				auto uiInfo = mCompleteImages[i]->GetUIInfomation(0);
+				uiInfo.Alpha = mCompleteImageCounts[i];
+				mCompleteImages[i]->SetUIInfomation(0, uiInfo);
+
+				uiInfo = mLeftChecks[i]->GetUIInfomation(0);
+				uiInfo.Alpha = mCompleteImageCounts[i];
+				mLeftChecks[i]->SetUIInfomation(0, uiInfo);
+
+				uiInfo = mRightChecks[i]->GetUIInfomation(0);
+				uiInfo.Alpha = mCompleteImageCounts[i];
+				mRightChecks[i]->SetUIInfomation(0, uiInfo);
+
+				if (i == 0)
+				{
+					auto textInfo = mMainQuestText->GetTextInfo();
+					textInfo.FontColor.A(mCompleteImageCounts[i]);
+					mMainQuestText->SetTextInfoPlay(textInfo);
+				}
+				else
+				{
+					auto textInfo = mSubQuestTexts[i - 1]->GetTextInfo();
+					textInfo.FontColor.A(mCompleteImageCounts[i]);
+					mSubQuestTexts[i - 1]->SetTextInfoPlay(textInfo);
+				}
+
+				auto questBox = textUI->GetGameObject()->GetParent()->GetChildren()[1]->GetComponent<game_module::ImageUI>();
+				uiInfo = questBox->GetUIInfomation(0);
+				uiInfo.Alpha = mCompleteImageCounts[i];
+				questBox->SetUIInfomation(0, uiInfo);
+			}
+
+			mCompleteImageCounts[i] -= dt;
+			mIsFinishedCompleteAnimation[i] = true;
+		}
+		else
+		{
+			mCompleteImages[i]->SetIsRender(0, false);
+			mLeftChecks[i]->SetIsRender(0, false);
+			mRightChecks[i]->SetIsRender(0, false);
+			
+			// Main
+			if (i == 0)
+			{
+				auto textInfo = mMainQuestText->GetTextInfo();
+				textInfo.FontColor.A(1);
+				mMainQuestText->SetTextInfoPlay(textInfo);
+
+				mViewMainQuest = mCurMainQuest;
+
+				auto questBox = GetGameObject()->GetChildren()[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>();
+				auto uiInfo = questBox->GetUIInfomation(0);
+				uiInfo.Alpha = 1;
+				questBox->SetUIInfomation(0, uiInfo);
+
+				if (mIsFinishedCompleteAnimation[i])
+				{
+					// New 연출
+					mNewImageCounts[i] = 3.0f;
+					auto uiInfo = mNewImages[i]->GetUIInfomation(0);
+					uiInfo.isRender = true;
+					uiInfo.Alpha = 1;
+					mNewImages[i]->SetUIInfomation(0, uiInfo);
+
+					mIsFinishedCompleteAnimation[i] = false;
+
+					int subQuestSize = mCurSubQuest.size();
+					if (mViewSubQuest.size() != subQuestSize)
+					{
+						mViewSubQuest = mCurSubQuest;
+
+						// New 연출
+						mNewImageCounts[subQuestSize] = 3.0f;
+						auto uiInfo = mNewImages[subQuestSize]->GetUIInfomation(0);
+						uiInfo.isRender = true;
+						uiInfo.Alpha = 1;
+						mNewImages[subQuestSize]->SetUIInfomation(0, uiInfo);
+					}
+					for (int i = 0; i < 3; i++)
+					{
+						if (i < mViewSubQuest.size())
+						{
+							RenderOnSubQuest(i, true);
+						}
+						else
+						{
+							RenderOnSubQuest(i, false);
+						}
+					}
+				}
+			}
+			// Sub
+			else
+			{
+				auto textInfo = mSubQuestTexts[i-1]->GetTextInfo();
+				textInfo.FontColor.A(1);
+				mSubQuestTexts[i - 1]->SetTextInfoPlay(textInfo);
+
+				if (mIsFinishedCompleteAnimation[i])
+				{
+					if (mViewSubQuest.size() > 0)
+					{
+						mViewSubQuest.erase(mViewSubQuest.begin() + i - 1);
+					}
+					if (mNextSubQuests.size() > 0)
+					{
+						// 다음 퀘스트 추가
+						mViewSubQuest.push_back(mNextSubQuests.front());
+						mNextSubQuests.pop_front();
+
+						// New 연출
+						mNewImageCounts[i] = 3.0f;
+						auto uiInfo = mNewImages[i]->GetUIInfomation(0);
+						uiInfo.isRender = true;
+						uiInfo.Alpha = 1;
+						mNewImages[i]->SetUIInfomation(0, uiInfo);
+					}
+
+					for (int i = 0; i < 3; i++)
+					{
+						if (i < mViewSubQuest.size())
+						{
+							RenderOnSubQuest(i, true);
+						}
+						else
+						{
+							RenderOnSubQuest(i, false);
+						}
+					}
+
+					mIsFinishedCompleteAnimation[i] = false;
+				}
+			}
+		}
+	}
 }
 
