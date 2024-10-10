@@ -179,16 +179,21 @@ namespace fq::client
 	{
 		mSwingAroundElapsedTime = std::max<float>(0.f, mSwingAroundElapsedTime - dt);
 		mRushElapsedTime = std::max<float>(0.f, mRushElapsedTime - dt);
+		float decreaseCooltime = mPlayer->GetGBDecreaseCooltime();
 
 		if (mPlayer->IsFeverTime())
 		{
-			mPlayer->SetASkillCoolTimeRatio(mSwingAroundElapsedTime / (mSwingAroundCoolTime - mSwingAroundCoolTimeReduction));
-			mPlayer->SetRSkillCoolTimeRatio(mRushElapsedTime / (mRushCoolTime - mRushCoolTimeReduction));
+			float swingCoolTime = (mSwingAroundCoolTime - mSwingAroundCoolTimeReduction) * decreaseCooltime;
+			float rushCoolTime = (mRushCoolTime - mRushCoolTimeReduction) * decreaseCooltime;
+			mPlayer->SetASkillCoolTimeRatio(mSwingAroundElapsedTime / swingCoolTime);
+			mPlayer->SetRSkillCoolTimeRatio(mRushElapsedTime / rushCoolTime);
 		}
 		else
 		{
-			mPlayer->SetASkillCoolTimeRatio(mSwingAroundElapsedTime / mSwingAroundCoolTime);
-			mPlayer->SetRSkillCoolTimeRatio(mRushElapsedTime / mRushCoolTime);
+			float swingCoolTime = mSwingAroundCoolTime * decreaseCooltime;
+			float rushCoolTime = mRushCoolTime * decreaseCooltime;
+			mPlayer->SetASkillCoolTimeRatio(mSwingAroundElapsedTime / swingCoolTime);
+			mPlayer->SetRSkillCoolTimeRatio(mRushElapsedTime / rushCoolTime);
 		}
 	}
 
@@ -204,6 +209,7 @@ namespace fq::client
 		{
 			mAnimator->SetParameterTrigger("OnSwingAround");
 			mSwingAroundElapsedTime = mPlayer->IsFeverTime() ? mSwingAroundCoolTime - mSwingAroundCoolTimeReduction : mSwingAroundCoolTime;
+			mSwingAroundElapsedTime *= mPlayer->GetGBDecreaseCooltime();
 		}
 
 		DirectX::SimpleMath::Vector3 rightInput{};
@@ -216,7 +222,8 @@ namespace fq::client
 		{
 			mAnimator->SetParameterTrigger("OnRushCharging");
 			mRushElapsedTime = mPlayer->IsFeverTime() ? mRushCoolTime - mRushCoolTimeReduction : mRushCoolTime;
-		}                                                           
+			mRushElapsedTime *= mPlayer->GetGBDecreaseCooltime();
+		}
 	}
 
 	void BerserkerArmour::setName()
@@ -235,20 +242,20 @@ namespace fq::client
 		{
 			switch (soulType)
 			{
-				case 0:
-					speechBubble->SetName(PlayerInfoVariable::KnightName);
-					break;
-				case 1:
-					speechBubble->SetName(PlayerInfoVariable::MagicName);
-					break;
-				case 2:
-					speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-					break;
-				case 3:
-					speechBubble->SetName(PlayerInfoVariable::ArcherName);
-					break;
-				default:
-					break;
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
 			}
 		}
 	}

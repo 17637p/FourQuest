@@ -45,7 +45,7 @@ void fq::client::GoddessStatue::OnTriggerEnter(const game_module::Collision& col
 			GetScene()->AddGameObject(effectObj);
 			mDebuffEffects[player] = effectObj;
 		}
-		else
+		else 
 		{
 			// 버프 장판 이펙트 생성
 			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPlayerBuff);
@@ -79,7 +79,6 @@ void fq::client::GoddessStatue::OnTriggerExit(const game_module::Collision& coll
 			// 디버프 이펙트 삭제
 			GetScene()->DestroyGameObject(mBuffEffects[collisionPlayer].get());
 			mBuffEffects.erase(collisionPlayer);
-
 			releaseBuffPlayer(collisionPlayer);
 		}
 
