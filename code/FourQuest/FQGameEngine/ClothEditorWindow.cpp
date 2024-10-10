@@ -174,7 +174,7 @@ namespace fq::game_engine
 		for (int i = 0; i < mObjectModelVertices.size(); i++)
 		{
 			info.Sphere.Center = DirectX::SimpleMath::Vector3::Transform(mObjectModelVertices[i], mGameObject->GetTransform()->GetWorldMatrix());
-			info.Sphere.Radius = 0.005f;
+			info.Sphere.Radius = 0.003f;
 			info.bUseDepthTest = true;
 			
 			if (mObjectDisableIndiecs.find(i) != mObjectDisableIndiecs.end())
