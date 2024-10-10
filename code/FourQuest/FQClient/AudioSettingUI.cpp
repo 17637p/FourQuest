@@ -249,11 +249,13 @@ void fq::client::AudioSettingUI::processInput(float dt)
 			if (mSelectButtonID == 3)
 			{
 				mSelectButtonID++;
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 			if (mSelectButtonID < 3)
 			{
 				mSelectButtonID++;
 				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 
@@ -274,6 +276,7 @@ void fq::client::AudioSettingUI::processInput(float dt)
 		{
 			if (mSelectButtonID > 0)
 			{
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 				mSelectButtonID--;
 				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
 			}
@@ -312,40 +315,43 @@ void fq::client::AudioSettingUI::processInput(float dt)
 			}
 		}
 
-		// 谅肺
-		bool isDpadLeftTap = input->GetPadKeyState(i, EPadKey::DpadLeft) == EKeyState::Tap;
-		// Stick 贸府
-		bool isLeftStickLeftTap = false;
-		if (isLeftStickX < -0.9f)
+		if (mSelectButtonID < 4)
 		{
-			if (mCurStickDelay > mStickDelay)
+			// 谅肺
+			bool isDpadLeftTap = input->GetPadKeyState(i, EPadKey::DpadLeft) == EKeyState::Tap;
+			// Stick 贸府
+			bool isLeftStickLeftTap = false;
+			if (isLeftStickX < -0.9f)
 			{
-				mCurStickDelay = 0;
-				isLeftStickLeftTap = true;
+				if (mCurStickDelay > mStickDelay)
+				{
+					mCurStickDelay = 0;
+					isLeftStickLeftTap = true;
+				}
 			}
-		}
 
-		if (isDpadLeftTap || isLeftStickLeftTap)
-		{
-			setSound(mSelectButtonID, false);
-		}
-
-		// 快肺
-		bool isDpadRightTap = input->GetPadKeyState(i, EPadKey::DpadRight) == EKeyState::Tap;
-		// Stick 贸府
-		bool isLeftStickRightTap = false;
-		if (isLeftStickX > 0.9f)
-		{
-			if (mCurStickDelay > mStickDelay)
+			if (isDpadLeftTap || isLeftStickLeftTap)
 			{
-				mCurStickDelay = 0;
-				isLeftStickRightTap = true;
+				setSound(mSelectButtonID, false);
 			}
-		}
 
-		if (isDpadRightTap || isLeftStickRightTap)
-		{
-			setSound(mSelectButtonID, true);
+			// 快肺
+			bool isDpadRightTap = input->GetPadKeyState(i, EPadKey::DpadRight) == EKeyState::Tap;
+			// Stick 贸府
+			bool isLeftStickRightTap = false;
+			if (isLeftStickX > 0.9f)
+			{
+				if (mCurStickDelay > mStickDelay)
+				{
+					mCurStickDelay = 0;
+					isLeftStickRightTap = true;
+				}
+			}
+
+			if (isDpadRightTap || isLeftStickRightTap)
+			{
+				setSound(mSelectButtonID, true);
+			}
 		}
 	}
 
@@ -354,6 +360,7 @@ void fq::client::AudioSettingUI::processInput(float dt)
 		// A Button
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 			if (mSelectButtonID == 4)
 			{
 				saveSettingData();
@@ -367,6 +374,7 @@ void fq::client::AudioSettingUI::processInput(float dt)
 		// B Button
 		if (input->IsPadKeyState(i, EPadKey::B, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Cancle", false , fq::sound::EChannel::SE });
 			if (isChangeSettingData())
 			{
 				mIsActive = false;
@@ -381,6 +389,7 @@ void fq::client::AudioSettingUI::processInput(float dt)
 		// Y Button
 		if (input->IsPadKeyState(i, EPadKey::Y, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 			mIsActive = false;
 			spawnUIObject(mResetMessagePrefab);
 		}
@@ -454,6 +463,8 @@ void fq::client::AudioSettingUI::setSoundBar(int index)
 
 void fq::client::AudioSettingUI::setSound(int index, bool isUp)
 {
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Soundbar", false , fq::sound::EChannel::SE });
+
 	if (isUp && mSoundRatio[index] < 1)
 	{
 		mSoundRatio[index] += 0.01f;
@@ -543,8 +554,8 @@ void fq::client::AudioSettingUI::eventProcessOffPopupSave()
 
 void fq::client::AudioSettingUI::saveSettingData()
 {
-	mSoundManager->SetChannelVoulme(sound::BGM, mSoundRatio[1]);
-	mSoundManager->SetChannelVoulme(sound::SE, mSoundRatio[2]);
+	mSoundManager->SetChannelVoulme(sound::BGM, mSoundRatio[1] * mSoundRatio[0]);
+	mSoundManager->SetChannelVoulme(sound::SE, mSoundRatio[2] * mSoundRatio[0]);
 	//mSoundManager->SetChannelVoulme(sound::BGM, mSoundRatio[3]);
 	
 	SettingVariable::MasterVolume = mSoundRatio[0];

@@ -34,12 +34,14 @@ void fq::client::RepauseUI::OnUpdate(float dt)
 	{
 		if (input->IsPadKeyState(i, EPadKey::B, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Cancle", false , fq::sound::EChannel::SE });
 			GetScene()->GetEventManager()->FireEvent<event::OffPopupRepause>({});
 			GetScene()->DestroyGameObject(GetGameObject());
 		}
 
 		if (input->IsPadKeyState(i, EPadKey::A, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 			GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "TitleUI", true });
 		}
 	}

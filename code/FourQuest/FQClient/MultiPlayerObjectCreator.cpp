@@ -65,7 +65,7 @@ void fq::client::MultiPlayerObjectCreator::spawn()
 	// 플레이 중인 인원수 대로 갑옷 소환 
 	if (numberOfPlayer < mNum)
 	{
-		for (int i = 0; i < mNum; i++)
+		for (int i = 0; i < numberOfPlayer; i++)
 		{
 			std::shared_ptr<game_module::GameObject> spawnObject;
 			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSpawnObjectPrefab);
@@ -77,7 +77,7 @@ void fq::client::MultiPlayerObjectCreator::spawn()
 
 			unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 			std::mt19937 generator(seed);
-			std::uniform_real_distribution<float> distanceDistribution(0, SettingVariable::ArmourSpawnDistance);
+			std::uniform_real_distribution<float> distanceDistribution(0, 1.5f);
 			std::uniform_real_distribution<float> degreeDistribution(0, 360);
 
 			float randomDistance = distanceDistribution(generator);

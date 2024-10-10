@@ -154,6 +154,7 @@ void fq::client::SettingUI::processInput()
 			{
 				mSelectButtonID++;
 				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 
@@ -176,6 +177,7 @@ void fq::client::SettingUI::processInput()
 			{
 				mSelectButtonID--;
 				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 	}
@@ -185,6 +187,7 @@ void fq::client::SettingUI::processInput()
 	{
 		if (input->IsPadKeyState(i, EPadKey::B, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Cancle", false , fq::sound::EChannel::SE });
 			GetScene()->GetEventManager()->FireEvent<event::OffPopupSetting>({});
 			GetScene()->DestroyGameObject(GetGameObject());
 		}
@@ -194,6 +197,7 @@ void fq::client::SettingUI::processInput()
 	{
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 			clickButton();
 		}
 	}

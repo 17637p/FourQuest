@@ -87,10 +87,22 @@ void fq::client::GameManager::OnUpdate(float dt)
 	auto input = GetScene()->GetInputManager();
 	if (!mIsStop)
 	{
+		if (input->IsKeyState(EKey::ESC, EKeyState::Tap))
+		{
+			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPauseUI);
+			auto pauseUIObject = *(instance.begin());
+
+			GetScene()->AddGameObject(pauseUIObject);
+
+			// 肛勉 贸府
+			GetScene()->GetTimeManager()->SetTimeScale(0);
+			mIsStop = true;
+
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
+		}
 		for (int i = 0; i < 4; i++)
 		{
-			if (input->IsPadKeyState(i, EPadKey::Start, EKeyState::Tap) || 
-				input->IsKeyState(EKey::ESC, EKeyState::Tap))
+			if (input->IsPadKeyState(i, EPadKey::Start, EKeyState::Tap))
 			{
 				auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPauseUI);
 				auto pauseUIObject = *(instance.begin());
@@ -100,6 +112,8 @@ void fq::client::GameManager::OnUpdate(float dt)
 				// 肛勉 贸府
 				GetScene()->GetTimeManager()->SetTimeScale(0);
 				mIsStop = true;
+
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 			}
 		}
 	}
@@ -116,7 +130,6 @@ void fq::client::GameManager::OnUpdate(float dt)
 void fq::client::GameManager::OnStart()
 {
 	mSoulManagerModule->OnStart(GetScene());
-
 
 	EventProcessOffPopupPause();
 	EventProcessOffPopupSetting();

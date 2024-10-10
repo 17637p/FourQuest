@@ -281,6 +281,7 @@ void fq::client::SoulSelectUI::processInput()
 				{
 					mSelectButtonID++;
 					mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 				}
 			}
 
@@ -303,6 +304,7 @@ void fq::client::SoulSelectUI::processInput()
 				{
 					mSelectButtonID--;
 					mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 				}
 			}
 		}
@@ -311,6 +313,8 @@ void fq::client::SoulSelectUI::processInput()
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap
 			|| input->GetKeyState(EKey::A) == EKeyState::Tap)
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
+
 			if (mIsOnSelectLevel)
 			{
 				SettingVariable::SelectLevel = mSelectButtonID;
@@ -406,6 +410,8 @@ void fq::client::SoulSelectUI::processInput()
 		if (input->GetPadKeyState(i, EPadKey::B) == EKeyState::Tap
 			|| input->GetKeyState(EKey::B) == EKeyState::Tap)
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Cancle", false , fq::sound::EChannel::SE });
+
 			if (mIsSelectedLevel)
 			{
 				mIsSelectedLevel = false;
@@ -466,6 +472,8 @@ void fq::client::SoulSelectUI::processInput()
 			// 영혼 선택창이라면
 			if (mIsSelects[i])
 			{
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
+
 				if (mSelectSouls[i] == 0)
 				{
 					mSelectSouls[i] = 3;
@@ -495,6 +503,8 @@ void fq::client::SoulSelectUI::processInput()
 			// 영혼 선택창이라면
 			if (mIsSelects[i])
 			{
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
+
 				if (mSelectSouls[i] == 3)
 				{
 					mSelectSouls[i] = 0;

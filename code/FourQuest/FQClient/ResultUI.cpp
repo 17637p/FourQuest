@@ -4,10 +4,12 @@
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/ScreenManager.h"
 #include "../FQGameModule/InputManager.h"
+#include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/TextUI.h"
 
 #include "PlayerInfoVariable.h"
+#include "ClientEvent.h"
 
 fq::client::ResultUI::ResultUI()
 	:mScreenManager(nullptr),
@@ -73,6 +75,8 @@ void fq::client::ResultUI::OnUpdate(float dt)
 	{
 		if (input->IsPadKeyState(i, EPadKey::A, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
+
 			GetScene()->DestroyGameObject(GetGameObject());
 		}
 	}
