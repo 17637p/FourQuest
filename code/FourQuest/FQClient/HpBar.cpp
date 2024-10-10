@@ -76,6 +76,7 @@ void fq::client::HpBar::OnStart()
 {
 	mTransform = GetComponent<game_module::Transform>();
 	mImageUI = GetComponent<game_module::ImageUI>();
+	mImageUI->SetBindTransform(false);
 
 	if (!mImageUI)
 		spdlog::warn("{} has not ImageUI Component", GetGameObject()->GetName());

@@ -141,7 +141,6 @@ void fq::client::KnightArmour::EmitSwordAttack()
 		EmitSound(EKnightSound::Swing2);
 	}
 
-
 	// 공격시 체력 감소 
 	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 
@@ -263,9 +262,13 @@ void fq::client::KnightArmour::checkInput()
 		mAnimator->SetParameterTrigger("OnDash");
 
 		if (mPlayer->IsFeverTime())
-			mDashElapsedTime = mDashCoolTime - mDashCoolTimeReduction;
+		{
+			mDashElapsedTime = (mDashCoolTime - mDashCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
+		}
 		else
-			mDashElapsedTime = mDashCoolTime;
+		{
+			mDashElapsedTime = mDashCoolTime * mPlayer->GetGBDecreaseCooltime();
+		}
 	}
 
 	// Shield Input
@@ -337,13 +340,17 @@ void fq::client::KnightArmour::checkSkillCoolTime(float dt)
 
 	if (mPlayer->IsFeverTime())
 	{
-		mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / (mDashCoolTime - mDashCoolTimeReduction));
-		mPlayer->SetRSkillCoolTimeRatio(mShieldElapsedTime / (mShieldCoolTime - mShieldCoolTimeReduction));
+		float dashSkillCoolTime = (mDashCoolTime - mDashCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
+		float shieldSkiilCoolTime = (mShieldCoolTime - mShieldCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
+		mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / dashSkillCoolTime);
+		mPlayer->SetRSkillCoolTimeRatio(mShieldElapsedTime / shieldSkiilCoolTime);
 	}
 	else
 	{
-		mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / mDashCoolTime);
-		mPlayer->SetRSkillCoolTimeRatio(mShieldElapsedTime / mShieldCoolTime);
+		float dashSkillCoolTime = mDashCoolTime * mPlayer->GetGBDecreaseCooltime();
+		float shieldSkiilCoolTime = mShieldCoolTime * mPlayer->GetGBDecreaseCooltime();
+		mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / dashSkillCoolTime);
+		mPlayer->SetRSkillCoolTimeRatio(mShieldElapsedTime / shieldSkiilCoolTime);
 	}
 }
 
@@ -396,9 +403,9 @@ void fq::client::KnightArmour::EnterShieldState()
 	mGaugeBar->SetRatio(1.f);
 
 	if (mPlayer->IsFeverTime())
-		mShieldElapsedTime = mShieldCoolTime - mShieldCoolTimeReduction;
+		mShieldElapsedTime = (mShieldCoolTime - mShieldCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
 	else
-		mShieldElapsedTime = mShieldCoolTime;
+		mShieldElapsedTime = mShieldCoolTime * mPlayer->GetGBDecreaseCooltime();
 
 	mOnShieldElapsedTime = 0.f;
 

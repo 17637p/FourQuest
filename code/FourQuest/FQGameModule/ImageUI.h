@@ -32,6 +32,7 @@ namespace fq::game_module
 		void SetFillDegree(size_t index, float degree);
 
 		bool IsBindTransform() const { return mbIsBindTransform; }
+		void SetBindTransform(bool isBind) { mbIsBindTransform = isBind; }
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 

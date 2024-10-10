@@ -5,6 +5,8 @@
 
 #include "Quest.h"
 
+#include <list>
+
 namespace fq::game_module
 {
 	class TextUI;
@@ -76,7 +78,7 @@ namespace fq::client
 		Quest mViewMainQuest; // 연출용 UI 보여줄 이전 퀘스트 
 		std::vector<Quest> mCurSubQuest;
 		std::vector<Quest> mViewSubQuest; // 연출용 UI 보여줄 서브 퀘스트 목록 
-		
+		std::list<Quest> mNextSubQuests;
 
 		fq::game_module::PrefabResource mPortalPrefab;
 

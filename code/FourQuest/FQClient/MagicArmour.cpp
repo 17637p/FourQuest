@@ -151,11 +151,11 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	// CoolTime
 	if (mPlayer->IsFeverTime())
 	{
-		mAOEElapsedTime = mAOECoolTime - mAOECoolTimeReduction;
+		mAOEElapsedTime = (mAOECoolTime - mAOECoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
 	}
 	else
 	{
-		mAOEElapsedTime = mAOECoolTime;
+		mAOEElapsedTime = mAOECoolTime * mPlayer->GetGBDecreaseCooltime();
 	}
 
 	// 공격시 체력 감소 
@@ -347,22 +347,26 @@ void fq::client::MagicArmour::checkCoolTime(float dt)
 
 	if (mPlayer->IsFeverTime())
 	{
-		mPlayer->SetASkillCoolTimeRatio(mAOEElapsedTime / (mAOECoolTime - mAOECoolTimeReduction));
-		mPlayer->SetRSkillCoolTimeRatio(mLaserElapsedTime / (mLaserCoolTime - mLaserCoolTimeReduction));
+		float AOECoolTime = (mAOECoolTime - mAOECoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
+		float LaserCoolTime = (mLaserCoolTime - mLaserCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
+		mPlayer->SetASkillCoolTimeRatio(mAOEElapsedTime / AOECoolTime);
+		mPlayer->SetRSkillCoolTimeRatio(mLaserElapsedTime / LaserCoolTime);
 	}
 	else
 	{
-		mPlayer->SetASkillCoolTimeRatio(mAOEElapsedTime / mAOECoolTime);
-		mPlayer->SetRSkillCoolTimeRatio(mLaserElapsedTime / mLaserCoolTime);
+		float AOECoolTime = mAOECoolTime * mPlayer->GetGBDecreaseCooltime();
+		float LaserCoolTime = mLaserCoolTime * mPlayer->GetGBDecreaseCooltime();
+		mPlayer->SetASkillCoolTimeRatio(mAOEElapsedTime / AOECoolTime);
+		mPlayer->SetRSkillCoolTimeRatio(mLaserElapsedTime / LaserCoolTime);
 	}
 }
 
 void fq::client::MagicArmour::CountLaserCoolTime()
 {
 	if (mPlayer->IsFeverTime())
-		mLaserElapsedTime = mLaserCoolTime - mLaserCoolTimeReduction;
+		mLaserElapsedTime = (mLaserCoolTime - mLaserCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
 	else
-		mLaserElapsedTime = mLaserCoolTime;
+		mLaserElapsedTime = mLaserCoolTime * mPlayer->GetGBDecreaseCooltime();
 }
 
 
@@ -503,20 +507,20 @@ void fq::client::MagicArmour::setName()
 	{
 		switch (soulType)
 		{
-			case 0:
-				speechBubble->SetName(PlayerInfoVariable::KnightName);
-				break;
-			case 1:
-				speechBubble->SetName(PlayerInfoVariable::MagicName);
-				break;
-			case 2:
-				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-				break;
-			case 3:
-				speechBubble->SetName(PlayerInfoVariable::ArcherName);
-				break;
-			default:
-				break;
+		case 0:
+			speechBubble->SetName(PlayerInfoVariable::KnightName);
+			break;
+		case 1:
+			speechBubble->SetName(PlayerInfoVariable::MagicName);
+			break;
+		case 2:
+			speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+			break;
+		case 3:
+			speechBubble->SetName(PlayerInfoVariable::ArcherName);
+			break;
+		default:
+			break;
 		}
 	}
 }
