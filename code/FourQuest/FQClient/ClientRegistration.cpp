@@ -164,6 +164,7 @@
 #include "GoddessStatue.h"
 #include "VibrationState.h"
 #include "LookingObjectHelper.h"
+#include "DynamicLightHelper.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -343,6 +344,20 @@ void fq::client::RegisterMetaData()
 		.data<&LookingObjectHelper::mLookingObjectName>("LookingObjectName"_hs)
 		.prop(fq::reflect::prop::Name, "LookingObjectName")
 		.prop(fq::reflect::prop::Comment, u"바라볼 오브젝트")
+		.base<game_module::Component>();
+
+	entt::meta<DynamicLightHelper>()
+		.type("DynamicLightHelper"_hs)
+		.prop(reflect::prop::Name, "DynamicLightHelper")
+		.data<&DynamicLightHelper::mMinIntensity>("MinIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "MinIntensity")
+		.prop(fq::reflect::prop::Comment, u"최소 조명 세기")
+		.data<&DynamicLightHelper::mMaxIntensity>("MaxIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "MaxIntensity")
+		.prop(fq::reflect::prop::Comment, u"최대 조명 세기")
+		.data<&DynamicLightHelper::mSpeed>("Speed"_hs)
+		.prop(fq::reflect::prop::Name, "Speed")
+		.prop(fq::reflect::prop::Comment, u"시간 * Speed // 기본은 1초를 기준으로 반복함")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

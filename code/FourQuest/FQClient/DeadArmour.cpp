@@ -66,13 +66,19 @@ bool fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 
 	GetScene()->AddGameObject(livingArmour);
 
+	// 이펙트 방출 
+	fq::event::OnCreateStateEvent stateEvent;
+	stateEvent.gameObject = livingArmour.get();
+	stateEvent.RegisterKeyName = "O_ArmorSpawn";
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+
 	// 상호작용 이벤트 발생
 	GetScene()->GetEventManager()->FireEvent<client::event::ObjectInteractionEvent>(
 		{ GetGameObject()->GetTag() });
-
+	
 	// DeadArmour 삭제 
 	GetScene()->DestroyGameObject(GetGameObject());
-
+	
 	return true;
 }
 

@@ -176,7 +176,8 @@ void fq::game_engine::StateEventSystem::OnCreateStateEvent(const fq::event::OnCr
 
 				auto find = instantiatePrefabMap.find(data.RegisterKeyName);
 
-				if (find != instantiatePrefabMap.end())
+				if (find != instantiatePrefabMap.end()
+					&& !find->second.PrefabResourceData.GetPrefabPath().empty())
 				{
 					const auto& instantiatePrefab = find->second;
 

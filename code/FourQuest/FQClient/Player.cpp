@@ -58,6 +58,7 @@ fq::client::Player::Player()
 	, mASkillCoolTimeRatio(0.f)
 	, mXSkillCoolTimeRatio(0.f)
 	, mbIsEmitFeverEffect(false)
+	, mbIsEmitEnhanceEffect(false)
 {}
 
 fq::client::Player::~Player()
@@ -291,7 +292,18 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 void fq::client::Player::SummonSoul(bool isDestroyArmour)
 {
 	if (isDestroyArmour)
+	{
 		spdlog::trace("DestroyArmour");
+	}
+
+	// 이펙트 방출
+	fq::event::OnCreateStateEvent stateEvent;
+	stateEvent.gameObject = GetGameObject();
+	stateEvent.RegisterKeyName = "P_Die_Armor";
+	if (!stateEvent.RegisterKeyName.empty())
+	{
+		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+	}
 
 	// 위치 설정
 	auto worldMat = GetComponent<game_module::Transform>()->GetWorldMatrix();
@@ -319,23 +331,8 @@ void fq::client::Player::processFeverTime(float dt)
 	if (mFeverElapsedTime >= mFeverTime)
 	{
 		setFeverBuff(false);
-
-		mbIsEmitFeverEffect = false;
 	}
 
-	// 피버 타임 이펙트
-	if (mbIsEmitFeverEffect)
-	{
-		fq::event::OnCreateStateEvent stateEvent;
-		stateEvent.gameObject = GetGameObject();
-		stateEvent.RegisterKeyName = "P_Fever";
-		if (!stateEvent.RegisterKeyName.empty())
-		{
-			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
-		}
-
-		mbIsEmitFeverEffect = true;
-	}
 }
 
 void fq::client::Player::processDebuff(float dt)
@@ -632,6 +629,28 @@ void fq::client::Player::setFeverBuff(bool isFever)
 
 	mFeverElapsedTime = 0.f;
 	mbIsFeverTime = isFever;
+
+	// 피버 타임 이펙트
+	if (isFever)
+	{
+		fq::event::OnCreateStateEvent stateEvent;
+		stateEvent.gameObject = GetGameObject();
+		stateEvent.RegisterKeyName = "P_Fever";
+		if (!stateEvent.RegisterKeyName.empty())
+		{
+			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+		}
+	}
+	else
+	{
+		fq::event::OnDeleteStateEvent stateEvent;
+		stateEvent.gameObject = GetGameObject();
+		stateEvent.RegisterKeyName = "P_Fever";
+		if (!stateEvent.RegisterKeyName.empty())
+		{
+			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnDeleteStateEvent>(std::move(stateEvent));
+		}
+	}
 }
 
 void fq::client::Player::processBuff()
@@ -648,6 +667,8 @@ void fq::client::Player::processBuff()
 		mAttackPower += (mBaseAttackPower * ((SoulVariable::DamageUpRatio - 1.f) * mSoulBuffNumber));
 		mController->AddFinalSpeedMultiplier((SoulVariable::SpeedUpRatio - 1.f) * mSoulBuffNumber);
 	}
+
+	handleEmitEnhanceEffect();
 }
 
 void fq::client::Player::setDecalColor()
@@ -754,6 +775,33 @@ void fq::client::Player::playBowSoulSound()
 		break;
 	default:
 		break;
+	}
+}
+
+void fq::client::Player::handleEmitEnhanceEffect()
+{
+	if (mSoulBuffNumber != 0)
+	{
+		if (!mbIsEmitEnhanceEffect)
+		{
+			// 이펙트 생성
+			fq::event::OnCreateStateEvent stateEvent;
+			stateEvent.gameObject = GetGameObject();
+			stateEvent.RegisterKeyName = "P_Enhance";
+			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+
+			mbIsEmitEnhanceEffect = true;
+		}
+	}
+	else
+	{
+		// 이펙트 삭제
+		fq::event::OnDeleteStateEvent stateEvent;
+		stateEvent.gameObject = GetGameObject();
+		stateEvent.RegisterKeyName = "P_Enhance";
+		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnDeleteStateEvent>(std::move(stateEvent));
+
+		mbIsEmitEnhanceEffect = false;
 	}
 }
 

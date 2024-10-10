@@ -174,6 +174,7 @@ namespace fq::client
 		void OnTriggerStay(const game_module::Collision& collision) override;
 
 		void playBowSoulSound();
+		void handleEmitEnhanceEffect();
 
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -246,5 +247,8 @@ namespace fq::client
 		friend void RegisterMetaData();
 
 		bool mbIsEmitFeverEffect;
+
+		// ¿Ã∆Â∆Æ
+		bool mbIsEmitEnhanceEffect;
 	};
 }
