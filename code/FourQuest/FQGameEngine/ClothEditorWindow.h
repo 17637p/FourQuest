@@ -39,6 +39,8 @@ namespace fq::game_engine
 		bool& IsWindowOpen() { return mbIsOpen; }
 
 	private:
+		void beginButton_Save();
+
 		void beginPrintText_GameObjectName();
 		void beginCheckBox_IsDeleteBrush();
 		void beginInputFloat_BrushRadian();
@@ -70,15 +72,17 @@ namespace fq::game_engine
 		fq::game_module::EventManager* mEventManager;
 		fq::game_module::Scene* mScene;
 		std::shared_ptr<fq::game_module::GameObject> mGameObject;
-		std::string mModelPath;
 
 		bool mbIsOpen;
 		bool mbIsDeleteBrush;
-
-		std::vector<DirectX::SimpleMath::Vector3> mObjectModelVertices;
-		std::set<unsigned int> mObjectDisableIndiecs;
 		float mBrushRadian;
 
+		std::shared_ptr<fq::game_module::ClothData> mClothData;
+		std::vector<DirectX::SimpleMath::Vector3> mObjectModelVertices;
+		std::set<unsigned int> mObjectDisableIndiecs;
+		std::string mModelPath;
+		std::string mFileName;
+		fq::game_module::ClothDataLoader mClothDataLoader;
 	}; 
 
 }

@@ -189,6 +189,7 @@
     <ClInclude Include="UILayerDefine.h" />
     <ClInclude Include="VibrationState.h" />
     <ClInclude Include="VideoSettingUI.h" />
+    <ClInclude Include="YAxisSetter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
@@ -324,6 +325,7 @@
     <ClCompile Include="TitleUI.cpp" />
     <ClCompile Include="VibrationState.cpp" />
     <ClCompile Include="VideoSettingUI.cpp" />
+    <ClCompile Include="YAxisSetter.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

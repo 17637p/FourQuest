@@ -376,6 +376,11 @@ namespace fq::physics
 		float clothMass = 1.f;
 		float restOffset = 1.f;
 
+		DirectX::SimpleMath::Vector3* vertices = nullptr;	// 모델 버텍스
+		int vertexSize = 0;									// 모델 버텍스 사이즈
+		unsigned int* indices = nullptr;					// 모델 인덱스
+		int indexSize = 0;									// 모델 인덱스 사이즈
+
 		void* vertexBuffer = nullptr;							// D3D11Buffer*
 		void* indexBuffer = nullptr;							// D3D11Buffer*
 	};
