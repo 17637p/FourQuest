@@ -26,9 +26,7 @@ void fq::client::DefenceCounter::OnTriggerEnter(const game_module::Collision& co
 		collision.other->GetTag() == game_module::ETag::Dash)
 	{
 		mCollidingPlayerNum++;
-		spdlog::trace("{} Enter", mCollidingPlayerNum);
 	}
-	spdlog::trace("{} not Player", static_cast<int>(collision.other->GetTag()));
 }
 
 void fq::client::DefenceCounter::OnTriggerExit(const game_module::Collision& collision)
@@ -38,24 +36,17 @@ void fq::client::DefenceCounter::OnTriggerExit(const game_module::Collision& col
 		collision.other->GetTag() == game_module::ETag::Dash)
 	{
 		mCollidingPlayerNum--;
-		spdlog::trace("{} Exit", mCollidingPlayerNum);
 	}
 }
 
 void fq::client::DefenceCounter::OnUpdate(float dt)
 {
-	if (mCollidingPlayerNum < 0)
-	{
-		spdlog::trace("{}, why minus1!!!!!!!!!!!", mCollidingPlayerNum);
-	}
-
 	if (!mIsClear && mIsStart)
 	{
 		GetScene()->GetEventManager()->FireEvent<client::event::InProgressDefence>(
 			{ GetGameObject()->GetName(), (int)mCurCount });
 
 		mCurCount += dt * mCountSpeed * mCollidingPlayerNum;
-		//spdlog::trace("CurCount: {}, RequestCount: {}", mCurCount, mRequestCount);
 
 		if (mCurCount > mRequestCount)
 		{

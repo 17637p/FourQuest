@@ -151,7 +151,6 @@ void fq::client::GoddessStatue::cleanUpGoddessState(float dt)
 		HpBar* hpBar = GetComponent<HpBar>();
 		hpBar->SetVisible(true);
 		hpBar->SetHp(mCurGauge / mMaxGauge);
-		spdlog::trace("{}", mCurGauge / mMaxGauge);
 
 		auto myPos = GetTransform()->GetWorldPosition();
 		myPos.y += 2.0f;

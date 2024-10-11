@@ -774,7 +774,6 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 void fq::client::QuestManager::RenderOnSubQuest(int i, bool isOn)
 {
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren()[3]->GetChildren();
-	spdlog::trace("{}, ison: {}", i, (int)isOn);
 
 	auto subQuest = children[i]->GetChildren();
 
