@@ -83,10 +83,17 @@ namespace fq::game_engine
 
 			if (ImGui::Button("Save"))
 			{
-				std::string articulationPath = mFileName + ".articulation";
+				std::string articulationPath = mFileName + ".cloth";
+				auto path = fq::path::GetResourcePath() / "Cloth" / articulationPath;
 
-				auto path = fq::path::GetResourcePath() / "Articulation" / articulationPath;
-				//mClothDataLoader.Save(m, path.c_str());
+				// 고정하는 인덱스 값 업데이트 후 저장
+				mClothData->disableIndices.clear();
+				for (auto disableIndices : mObjectDisableIndiecs)
+				{
+					mClothData->disableIndices.push_back(disableIndices);
+				}
+
+				mClothDataLoader.Save(mClothData, path.c_str());
 			}
 		}
 	}
@@ -137,6 +144,7 @@ namespace fq::game_engine
 		bool hasStaticMesh = mGameObject->HasComponent<fq::game_module::StaticMeshRenderer>();
 		bool hasSkinnedMesh = mGameObject->HasComponent<fq::game_module::SkinnedMeshRenderer>();
 
+		// 해당 오브젝트가 스태틱 메쉬나 스켈레탈 메쉬를 가지고 있는 경우
 		if ((hasStaticMesh || hasSkinnedMesh))
 		{
 			auto transform = mGameObject->GetComponent<fq::game_module::Transform>();
@@ -151,16 +159,19 @@ namespace fq::game_engine
 
 			if (hasStaticMesh)
 			{
+				// 모델의 경로 찾기
 				auto staticMeshRenderer = mGameObject->GetComponent<fq::game_module::StaticMeshRenderer>();
 				auto meshName = staticMeshRenderer->GetMeshName();
 				mModelPath = staticMeshRenderer->GetModelPath();
 
+				// 모델 경로 값으로 모델의 메쉬 찾기
 				bool check = mGameProcess->mResourceSystem->HasModel(mModelPath);
 				assert(check);
 
 				const auto& model = mGameProcess->mResourceSystem->GetModel(mModelPath);
 				const auto& mesh = ModelSystem::GetMesh(model, meshName);
 
+				// 물리 엔진에 전달할 메쉬의 버텍스와 인덱스 값을 저장
 				vertices.resize(mesh.Vertices.size());
 				triangleMeshInfo.vertexSize = mesh.Vertices.size();
 				indices.resize(mesh.Indices.size());
@@ -177,6 +188,10 @@ namespace fq::game_engine
 
 				triangleMeshInfo.vertices = vertices.data();
 				triangleMeshInfo.indices = indices.data();
+
+				// 멤버 변수에 버텍스 값 저장
+				mClothData->vertices = vertices;
+				mClothData->indices = indices;
 			}
 
 			mGameProcess->mPhysics->CreateDynamicBody(triangleMeshInfo, fq::physics::EColliderType::COLLISION, true);
@@ -188,14 +203,12 @@ namespace fq::game_engine
 		if (mGameObject == nullptr)
 			return;
 
-		auto verticesMap = mGameProcess->mPhysics->GetDebugTriangleVertices();
-		mObjectModelVertices = verticesMap[mGameObject->GetID()];
 
 		fq::graphics::debug::SphereInfo info;
 
-		for (int i = 0; i < mObjectModelVertices.size(); i++)
+		for (int i = 0; i < mClothData->vertices.size(); i++)
 		{
-			info.Sphere.Center = DirectX::SimpleMath::Vector3::Transform(mObjectModelVertices[i], mGameObject->GetTransform()->GetWorldMatrix());
+			info.Sphere.Center = DirectX::SimpleMath::Vector3::Transform(mClothData->vertices[i], mGameObject->GetTransform()->GetWorldMatrix());
 			info.Sphere.Radius = 0.003f;
 			info.bUseDepthTest = true;
 			
@@ -268,11 +281,11 @@ namespace fq::game_engine
 
 				// RayCast에 부딪힌 지점에 원(Circle)을 생성하여 해당 원 안에 포함되는 vertex들 모두 찾아서 브러쉬 타입에 따라
 				// 비활성화 버텍스, 활성화 버텍스 지정하기
-				for (int j = 0; j < mObjectModelVertices.size(); j++)
+				for (int j = 0; j < mClothData->vertices.size(); j++)
 				{
-					float x = mObjectModelVertices[j].x - radiusPos.x;
-					float y = mObjectModelVertices[j].y - radiusPos.y;
-					float z = mObjectModelVertices[j].z - radiusPos.z;
+					float x = mClothData->vertices[j].x - radiusPos.x;
+					float y = mClothData->vertices[j].y - radiusPos.y;
+					float z = mClothData->vertices[j].z - radiusPos.z;
 
 					float distanceSquared = (x * x) + (y * y) + (z * z);
 

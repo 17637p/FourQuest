@@ -2,6 +2,12 @@
 
 fq::game_module::RigidBody::RigidBody()
 	:mBodyType(EBodyType::Dynamic)
+	, mbIsLockLinearX (false)
+	, mbIsLockLinearY (false)
+	, mbIsLockLinearZ (false)
+	, mbIsLockAngularX(false)
+	, mbIsLockAngularY(false)
+	, mbIsLockAngularZ(false)
 {
 }
 

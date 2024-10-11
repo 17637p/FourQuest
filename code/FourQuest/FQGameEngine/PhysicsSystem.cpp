@@ -824,6 +824,13 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			rigid->SetLinearVelocity(data.linearVelocity);
 			rigid->SetAngularVelocity(data.angularVelocity);
 
+			rigid->SetIsLockLinearX(data.isLockLinearX);
+			rigid->SetIsLockLinearY(data.isLockLinearY);
+			rigid->SetIsLockLinearZ(data.isLockLinearZ);
+			rigid->SetIsLockAngularX(data.isLockAngularX);
+			rigid->SetIsLockAngularY(data.isLockAngularY);
+			rigid->SetIsLockAngularZ(data.isLockAngularZ);
+
 			auto matrix = data.transform;
 
 			if (offset != Vector3::Zero)
@@ -995,6 +1002,12 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.transform = transform->GetWorldMatrix();
 			data.angularVelocity = rigid->GetAngularVelocity();
 			data.linearVelocity = rigid->GetLinearVelocity();
+			data.isLockLinearX = rigid->GetIsLockLinearX();
+			data.isLockLinearY = rigid->GetIsLockLinearY();
+			data.isLockLinearZ = rigid->GetIsLockLinearZ();
+			data.isLockAngularX = rigid->GetIsLockAngularX();
+			data.isLockAngularY = rigid->GetIsLockAngularY();
+			data.isLockAngularZ = rigid->GetIsLockAngularZ();
 
 			if (offset != Vector3::Zero)
 			{
