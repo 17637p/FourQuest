@@ -52,7 +52,7 @@ cbuffer cbLightmapInformation : register(b1)
 cbuffer cbLight : register(b3)
 {
     DirectionalLight directionalLights[3];
-    PointLight pointLights[10];
+    PointLight pointLights[30];
     SpotLight spotLights[5];
     
     unsigned int numOfDirectionalLight;
@@ -238,7 +238,7 @@ cbuffer cbDirectionalShadow : register(b0)
 cbuffer cbLight : register(b1)
 {
     DirectionalLight directionalLights[3];
-    PointLight pointLights[10];
+    PointLight pointLights[30];
     SpotLight spotLights[5];
     
     unsigned int numOfDirectionalLight;
