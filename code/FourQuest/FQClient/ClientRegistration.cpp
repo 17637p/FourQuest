@@ -222,6 +222,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "Portal")
 		.data<&Portal::mNextSceneName>("NextSceneName"_hs)
 		.prop(fq::reflect::prop::Name, "NextSceneName")
+		.data<&Portal::mResultUIPrefab>("ResultUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ResultUIPrefab")
 		.base<game_module::Component>();
 
 	entt::meta<BGM>()

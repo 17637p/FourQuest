@@ -9,6 +9,10 @@
 #include "Attack.h"
 #include "HpBar.h"
 #include "LevelHepler.h"
+#include "Player.h"
+
+#include "PlayerInfoVariable.h"
+#include <spdlog/spdlog.h>
 
 fq::client::PlantMonster::PlantMonster()
 	:mMaxHp(0.f)
@@ -172,6 +176,31 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 			// PlantMonster »ç¸Á Ã³¸® 
 			if (mHp <= 0.f)
 			{
+				if (playerAttack->GetAttacker() != nullptr)
+				{
+					auto attackerID = playerAttack->GetAttacker()->GetComponent<Player>()->GetPlayerID();
+					if (attackerID == 0)
+					{
+						PlayerInfoVariable::Player1Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player1Monster);
+					}
+					if (attackerID == 1)
+					{
+						PlayerInfoVariable::Player2Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player2Monster);
+					}
+					if (attackerID == 2)
+					{
+						PlayerInfoVariable::Player3Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player3Monster);
+					}
+					if (attackerID == 3)
+					{
+						PlayerInfoVariable::Player4Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player4Monster);
+					}
+				}
+
 				mAnimator->SetParameterBoolean("IsDead", true);
 			}
 

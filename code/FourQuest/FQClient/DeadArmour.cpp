@@ -12,6 +12,7 @@
 #include "Player.h"
 #include "ClientEvent.h"
 #include "SoulVariable.h"
+#include "PlayerInfoVariable.h"
 
 fq::client::DeadArmour::DeadArmour()
 	:mPlayerCount(0)
@@ -56,6 +57,8 @@ bool fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 
 	// 컨트롤러 연결
 	livingArmour->GetComponent<game_module::CharacterController>()->SetControllerID(info.ControllerID);
+
+	AddArmourCount(info.ControllerID);
 
 	// 영혼 타입 설정
 	livingArmour->GetComponent<Player>()->SetSoulType(info.SoulType);
@@ -122,8 +125,6 @@ void fq::client::DeadArmour::OnStart()
 
 	setUI(false);
 	mbIsSummonAble = true;
-
-
 }
 
 void fq::client::DeadArmour::setUI(bool isVisible)
@@ -133,7 +134,7 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 	mbIsVisible = isVisible;
 	auto imageUI = GetComponent<game_module::ImageUI>();
 	auto uiInfo = imageUI->GetUIInfomations();
-
+	uiInfo[0].Layer = 5000;
 	if (!uiInfo.empty())
 	{
 		uiInfo[0].isRender = true;
@@ -222,6 +223,93 @@ void fq::client::DeadArmour::setOutlineColor(DirectX::SimpleMath::Color color)
 			auto info = skinnedMeshRenderer->GetMeshObjectInfomation();
 			info.OutlineColor = color;
 			skinnedMeshRenderer->SetMeshObjectInfomation(info);
+		}
+	}
+}
+
+void fq::client::DeadArmour::AddArmourCount(int playerID)
+{
+	std::string prefabPath = mLivingArmourPrefab.GetPrefabPath();
+
+	std::string knightStr = "Knight";
+	std::string magicStr = "Magic";
+	std::string archerStr = "Archer";
+	std::string warriorStr = "Warrior";
+
+	if (prefabPath.find(knightStr) != std::string::npos)
+	{
+		if (playerID == 0)
+		{
+			PlayerInfoVariable::Player1Knight += 1;
+		}
+		else if (playerID == 1)
+		{
+			PlayerInfoVariable::Player2Knight += 1;
+		}
+		else if (playerID == 2)
+		{
+			PlayerInfoVariable::Player3Knight += 1;
+		}
+		else if (playerID == 3)
+		{
+			PlayerInfoVariable::Player4Knight += 1;
+		}
+	}
+	if (prefabPath.find(magicStr) != std::string::npos)
+	{
+		if (playerID == 0)
+		{
+			PlayerInfoVariable::Player1Magic += 1;
+		}
+		else if (playerID == 1)
+		{
+			PlayerInfoVariable::Player2Magic += 1;
+		}
+		else if (playerID == 2)
+		{
+			PlayerInfoVariable::Player3Magic += 1;
+		}
+		else if (playerID == 3)
+		{
+			PlayerInfoVariable::Player4Magic += 1;
+		}
+	}
+	if (prefabPath.find(archerStr) != std::string::npos)
+	{
+		if (playerID == 0)
+		{
+			PlayerInfoVariable::Player1Archer += 1;
+		}
+		else if (playerID == 1)
+		{
+			PlayerInfoVariable::Player2Archer += 1;
+		}
+		else if (playerID == 2)
+		{
+			PlayerInfoVariable::Player3Archer += 1;
+		}
+		else if (playerID == 3)
+		{
+			PlayerInfoVariable::Player4Archer += 1;
+		}
+	}
+	if (prefabPath.find(warriorStr) != std::string::npos)
+	{
+		if (playerID == 0)
+		{
+			PlayerInfoVariable::Player1Warrior += 1;
+		}
+		else if (playerID == 1)
+		{
+			PlayerInfoVariable::Player2Warrior += 1;
+		}
+		else if (playerID == 2)
+		{
+			PlayerInfoVariable::Player3Warrior += 1;
+		}
+		else if (playerID == 3)
+		{
+			PlayerInfoVariable::Player4Warrior += 1;
 		}
 	}
 }
