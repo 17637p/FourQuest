@@ -4,6 +4,14 @@
 
 namespace fq::client
 {
+	DynamicLightHelper::DynamicLightHelper()
+		: mMinIntensity(1.f)
+		, mMaxIntensity(1.f)
+		, mSpeed(1.f)
+		, mAccumulationTime(0.f)
+		, mLightOrNull(nullptr)
+	{
+	}
 	void fq::client::DynamicLightHelper::OnStart()
 	{
 		mLightOrNull = GetComponent<fq::game_module::Light>();

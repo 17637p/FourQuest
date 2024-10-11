@@ -158,6 +158,9 @@
 // Box
 #include "Box.h"
 
+// Suport
+#include "YAxisSetter.h"
+
 // etc
 #include "BGM.h"
 #include "Portal.h"
@@ -2378,6 +2381,21 @@ void fq::client::RegisterMetaData()
 		.data<&Box::SetDeadTime, &Box::GetDeadTime>("DeadTime"_hs)
 		.prop(reflect::prop::Name, "DeadTime")
 		.prop(reflect::prop::Comment, u8"깨지고 난 뒤 사라질 시간을 지정해주세요.")
+		.base<game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//								  Suport								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<YAxisSetter>()
+		.type("YAxisSetter"_hs)
+		.prop(reflect::prop::Name, "YAxisSetter")
+		.data<&YAxisSetter::SetOffsetYAxis, &YAxisSetter::GetOffsetYAxis>("OffsetYAxis"_hs)
+		.prop(reflect::prop::Name, "OffsetYAxis")
+		.prop(reflect::prop::Comment, u8"RayCast 시작할 YOffset값 입니다.")
+		.data<&YAxisSetter::SetDistance, &YAxisSetter::GetDistance>("Distance"_hs)
+		.prop(reflect::prop::Name, "Distance")
+		.prop(reflect::prop::Comment, u8"RayCast 거리 값 입니다.")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

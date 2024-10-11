@@ -247,6 +247,7 @@ namespace fq::event
 
 		ResultData* result = nullptr;
 		bool bUseDebugDraw = false;
+		bool isStatic = false;
 	};
 
 	//////////////////////////////////////////////////////////////////////////

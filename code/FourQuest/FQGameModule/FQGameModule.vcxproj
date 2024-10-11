@@ -224,8 +224,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ClothDataLoader.h" />
     <ClInclude Include="CameraShakeTrack.h" />
+    <ClInclude Include="ClothDataLoader.h" />
     <ClInclude Include="MaterialAnimator.h" />
     <ClInclude Include="AnimatorControllerLoader.h" />
     <ClInclude Include="AnimationStateNode.h" />
@@ -314,8 +314,8 @@
     <ClInclude Include="VibrationTrack.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClothDataLoader.cpp" />
     <ClCompile Include="CameraShakeTrack.cpp" />
+    <ClCompile Include="ClothDataLoader.cpp" />
     <ClCompile Include="MaterialAnimator.cpp" />
     <ClCompile Include="AnimatorControllerLoader.cpp" />
     <ClCompile Include="AnimationStateNode.cpp" />

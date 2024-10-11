@@ -14,7 +14,7 @@ namespace fq::client
 	class DynamicLightHelper : public fq::game_module::Component
 	{
 	public:
-		DynamicLightHelper() = default;
+		DynamicLightHelper();
 		DynamicLightHelper(const DynamicLightHelper& other) = default;
 		DynamicLightHelper& operator=(const DynamicLightHelper& other) = default;
 		~DynamicLightHelper() = default;
