@@ -42,21 +42,18 @@ fq::client::PlayerUI::PlayerUI(const PlayerUI& other)
 	, mDeceraseTime(other.mDeceraseTime)
 	, mDecreaseSpeed(other.mDecreaseSpeed)
 	, mDecreaseRatio(other.mDecreaseRatio)
+	, mSoulGaugeDegree(230)
 {
 }
 
 fq::client::PlayerUI& fq::client::PlayerUI::operator=(const PlayerUI& other)
 {
+	mSoulGaugeDegree = 230;
+
 	mDecreaseOffset = other.mDecreaseOffset;
 	mDeceraseTime = other.mDeceraseTime;
 	mDecreaseSpeed = other.mDecreaseSpeed;
 	mDecreaseRatio = other.mDecreaseRatio;
-
-	mWeaponIcons.clear();
-	mSkillIconXs.clear();
-	mSkillIconAs.clear();
-	mSkillIconRs.clear();
-	mSoulSkillIcons.clear();
 
 	return *this;
 }
