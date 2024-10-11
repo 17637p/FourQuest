@@ -37,6 +37,9 @@ namespace fq::client
 		/// </summary>
 		void CheckArmourCoolTime(unsigned int playerID) const;
 
+		// 결과창 용 
+		void AddArmourCount(int playerID);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnStart() override;

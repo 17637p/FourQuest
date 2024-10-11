@@ -930,8 +930,6 @@ void fq::client::QuestManager::playNew(float dt)
 				mNewImages[i]->SetUIInfomation(0, uiInfo);
 			}
 			mNewImageCounts[i] -= dt;
-
-			spdlog::trace("{} {}",i, mNewImageCounts[i]);
 		}
 		else
 		{

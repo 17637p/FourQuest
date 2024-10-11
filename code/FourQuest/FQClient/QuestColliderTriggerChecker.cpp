@@ -56,7 +56,8 @@ void fq::client::QuestColliderTriggerChecker::OnTriggerEnter(const game_module::
 	if (!mIsClear)
 	{
 		if (collision.other->GetTag() == game_module::ETag::Player ||
-			collision.other->GetTag() == game_module::ETag::Soul)
+			collision.other->GetTag() == game_module::ETag::Soul ||
+			collision.other->GetTag() == game_module::ETag::Dash)
 		{
 			mCollidingPlayerNum++;
 		}
@@ -76,7 +77,8 @@ void fq::client::QuestColliderTriggerChecker::OnTriggerExit(const game_module::C
 	if (!mIsClear)
 	{
 		if (collision.other->GetTag() == game_module::ETag::Player ||
-			collision.other->GetTag() == game_module::ETag::Soul)
+			collision.other->GetTag() == game_module::ETag::Soul ||
+			collision.other->GetTag() == game_module::ETag::Dash)
 		{
 			mCollidingPlayerNum--;
 		}

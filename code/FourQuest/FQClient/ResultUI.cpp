@@ -10,6 +10,7 @@
 
 #include "PlayerInfoVariable.h"
 #include "ClientEvent.h"
+#include "GameManager.h"
 
 fq::client::ResultUI::ResultUI()
 	:mScreenManager(nullptr),
@@ -25,21 +26,20 @@ fq::client::ResultUI::ResultUI()
 	mWarriorRatios(),
 	mArcherRatios(),
 	mBarWidth(0),
-	mTotalTexts()
+	mTotalTexts(),
+	mNextScene("")
 {
-
 }
 
 fq::client::ResultUI::~ResultUI()
 {
-
 }
 
 void fq::client::ResultUI::OnStart()
 {
 	mScreenManager = GetScene()->GetScreenManager();
 	mBarWidth = GetGameObject()->GetChildren()[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>()->GetUIInfomation(0).Width;
-	
+
 	for (int i = 0; i < 4; i++)
 	{
 		mIsPlayers.push_back(false);
@@ -61,14 +61,15 @@ void fq::client::ResultUI::OnStart()
 	{
 		mIsPlayers[3] = true;
 	}
-	InitBar();
-	SetTotal();
-	SetBar();
+	initBar();
+	OnOffBar();
+	setTotal();
+	setBar();
 }
 
 void fq::client::ResultUI::OnUpdate(float dt)
 {
-	SetScaleScreen();
+	setScaleScreen();
 
 	auto input = GetScene()->GetInputManager();
 	for (int i = 0; i < 4; i++)
@@ -77,7 +78,9 @@ void fq::client::ResultUI::OnUpdate(float dt)
 		{
 			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 
-			GetScene()->DestroyGameObject(GetGameObject());
+			GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>()->SavePlayerState();
+			GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ mNextScene, true });
+			//GetScene()->DestroyGameObject(GetGameObject());
 		}
 	}
 }
@@ -99,7 +102,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::ResultUI::Clone(std::sha
 	return resultUI;
 }
 
-void fq::client::ResultUI::SetScaleScreen()
+void fq::client::ResultUI::setScaleScreen()
 {
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
 
@@ -113,7 +116,7 @@ void fq::client::ResultUI::SetScaleScreen()
 	}
 }
 
-void fq::client::ResultUI::InitBar()
+void fq::client::ResultUI::initBar()
 {
 	auto lines = GetGameObject()->GetChildren();
 	auto bars = lines[1]->GetChildren()[1]->GetChildren();
@@ -160,57 +163,70 @@ void fq::client::ResultUI::InitBar()
 		mWarriorBars.push_back(bar);
 		bar->SetIsRender(0, false);
 	}
-
-	for (int i = 0; i < 4; i++)
-	{
-		if (mIsPlayers[i])
-		{
-			mMonsterBars[i]->SetIsRender(0, true);
-			mKnightBars[i]->SetIsRender(0, true);
-			mMagicBars[i]->SetIsRender(0, true);
-			mArcherBars[i]->SetIsRender(0, true);
-			mWarriorBars[i]->SetIsRender(0, true);
-		}
-	}
 }
 
-void fq::client::ResultUI::SetTotal()
+void fq::client::ResultUI::setTotal()
 {
-	mKillMonsterCount.push_back(PlayerInfoVariable::Player1Monster);
-	mKillMonsterCount.push_back(PlayerInfoVariable::Player2Monster);
-	mKillMonsterCount.push_back(PlayerInfoVariable::Player3Monster);
-	mKillMonsterCount.push_back(PlayerInfoVariable::Player4Monster);
+	mKillMonsterCount.push_back(0);
+	mKillMonsterCount.push_back(0);
+	mKillMonsterCount.push_back(0);
+	mKillMonsterCount.push_back(0);
 
-	mUseKnightCount.push_back(PlayerInfoVariable::Player1Knight);
-	mUseKnightCount.push_back(PlayerInfoVariable::Player2Knight);
-	mUseKnightCount.push_back(PlayerInfoVariable::Player3Knight);
-	mUseKnightCount.push_back(PlayerInfoVariable::Player4Knight);
+	mUseKnightCount.push_back(0);
+	mUseKnightCount.push_back(0);
+	mUseKnightCount.push_back(0);
+	mUseKnightCount.push_back(0);
 
-	mUseMagicCount.push_back(PlayerInfoVariable::Player1Magic);
-	mUseMagicCount.push_back(PlayerInfoVariable::Player2Magic);
-	mUseMagicCount.push_back(PlayerInfoVariable::Player3Magic);
-	mUseMagicCount.push_back(PlayerInfoVariable::Player4Magic);
+	mUseMagicCount.push_back(0);
+	mUseMagicCount.push_back(0);
+	mUseMagicCount.push_back(0);
+	mUseMagicCount.push_back(0);
 
-	mUseArcherCount.push_back(PlayerInfoVariable::Player1Archer);
-	mUseArcherCount.push_back(PlayerInfoVariable::Player2Archer);
-	mUseArcherCount.push_back(PlayerInfoVariable::Player3Archer);
-	mUseArcherCount.push_back(PlayerInfoVariable::Player4Archer);
+	mUseArcherCount.push_back(0);
+	mUseArcherCount.push_back(0);
+	mUseArcherCount.push_back(0);
+	mUseArcherCount.push_back(0);
 
-	mUseWarriorCount.push_back(PlayerInfoVariable::Player1Warrior);
-	mUseWarriorCount.push_back(PlayerInfoVariable::Player2Warrior);
-	mUseWarriorCount.push_back(PlayerInfoVariable::Player3Warrior);
-	mUseWarriorCount.push_back(PlayerInfoVariable::Player4Warrior);
+	mUseWarriorCount.push_back(0);
+	mUseWarriorCount.push_back(0);
+	mUseWarriorCount.push_back(0);
+	mUseWarriorCount.push_back(0);
+
+	int playerSoulType = PlayerInfoVariable::Player1SoulType;
+	mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player1Monster;
+	mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player1Knight;
+	mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player1Magic;
+	mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player1Archer;
+	mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player1Warrior;
+
+	playerSoulType = PlayerInfoVariable::Player2SoulType;
+	mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player2Monster;
+	mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player2Knight;
+	mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player2Magic;
+	mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player2Archer;
+	mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player2Warrior;
+
+	playerSoulType = PlayerInfoVariable::Player3SoulType;
+	mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player3Monster;
+	mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player3Knight;
+	mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player3Magic;
+	mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player3Archer;
+	mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player3Warrior;
+
+	playerSoulType = PlayerInfoVariable::Player4SoulType;
+	mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player4Monster;
+	mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player4Knight;
+	mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player4Magic;
+	mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player4Archer;
+	mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player4Warrior;
 
 	for (int i = 0; i < 4; i++)
 	{
-		if (mIsPlayers[i])
-		{
-			mTotalKillMonster += mKillMonsterCount[i];
-			mTotalUseKnight += mUseKnightCount[i];
-			mTotalUseMagic += mUseMagicCount[i];
-			mTotalUseWarrior += mUseWarriorCount[i];
-			mTotalUseArcher += mUseArcherCount[i];
-		}
+		mTotalKillMonster += mKillMonsterCount[i];
+		mTotalUseKnight += mUseKnightCount[i];
+		mTotalUseMagic += mUseMagicCount[i];
+		mTotalUseWarrior += mUseWarriorCount[i];
+		mTotalUseArcher += mUseArcherCount[i];
 	}
 
 	auto textInfo = mTotalTexts[0]->GetTextInfo();
@@ -232,9 +248,50 @@ void fq::client::ResultUI::SetTotal()
 	textInfo = mTotalTexts[4]->GetTextInfo();
 	textInfo.Text = std::to_string(mTotalUseWarrior);
 	mTotalTexts[4]->SetTextInfo(textInfo);
+
+	if (mTotalKillMonster == 0)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			mMonsterBars[i]->SetIsRender(0, false);
+			mMonsterBars[i]->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(false);
+		}
+	}
+	if (mTotalUseKnight == 0)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			mKnightBars[i]->SetIsRender(0, false);
+			mKnightBars[i]->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(false);
+		}
+	}
+	if (mTotalUseMagic == 0)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			mMagicBars[i]->SetIsRender(0, false);
+			mMagicBars[i]->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(false);
+		}
+	}
+	if (mTotalUseArcher == 0)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			mArcherBars[i]->SetIsRender(0, false);
+			mArcherBars[i]->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(false);
+		}
+	}
+	if (mTotalUseWarrior == 0)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			mWarriorBars[i]->SetIsRender(0, false);
+			mWarriorBars[i]->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(false);
+		}
+	}
 }
 
-void fq::client::ResultUI::SetBar()
+void fq::client::ResultUI::setBar()
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -392,5 +449,50 @@ void fq::client::ResultUI::SetBar()
 			}
 			mArcherBars[i]->GetTransform()->SetLocalPosition({ xPos, 0, 0 });
 		}
+	}
+}
+
+void fq::client::ResultUI::SetNextScene(std::string nextScene)
+{
+	mNextScene = nextScene;
+}
+
+void fq::client::ResultUI::OnOffBar()
+{
+	std::vector<bool> isPlayers(4, false);
+	if (PlayerInfoVariable::Player1SoulType != -1)
+	{
+		isPlayers[PlayerInfoVariable::Player1SoulType] = true;
+	}
+	if (PlayerInfoVariable::Player2SoulType != -1)
+	{
+		isPlayers[PlayerInfoVariable::Player2SoulType] = true;
+	}
+	if (PlayerInfoVariable::Player3SoulType != -1)
+	{
+		isPlayers[PlayerInfoVariable::Player3SoulType] = true;
+	}
+	if (PlayerInfoVariable::Player4SoulType != -1)
+	{
+		isPlayers[PlayerInfoVariable::Player4SoulType] = true;
+	}
+
+	for (int i = 0; i < isPlayers.size(); i++)
+	{
+		bool isPlayer = isPlayers[i];
+		mMonsterBars[i]->SetIsRender(0, isPlayer);
+		mMonsterBars[i]->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isPlayer);
+
+		mKnightBars[i]->SetIsRender(0, isPlayer);
+		mKnightBars[i]->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isPlayer);
+
+		mMagicBars[i]->SetIsRender(0, isPlayer);
+		mMagicBars[i]->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isPlayer);
+
+		mArcherBars[i]->SetIsRender(0, isPlayer);
+		mArcherBars[i]->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isPlayer);
+
+		mWarriorBars[i]->SetIsRender(0, isPlayer);
+		mWarriorBars[i]->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isPlayer);
 	}
 }

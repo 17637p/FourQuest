@@ -129,6 +129,8 @@ void fq::client::GameManager::OnUpdate(float dt)
 
 void fq::client::GameManager::OnStart()
 {
+	resetResult();
+
 	mSoulManagerModule->OnStart(GetScene());
 
 	EventProcessOffPopupPause();
@@ -615,5 +617,33 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::GameManager::SpawnPlaye
 
 	newObject->GetTransform()->SetLocalPosition(spawnPos);
 	return newObject;
+}
+
+void fq::client::GameManager::resetResult()
+{
+	PlayerInfoVariable::Player1Monster = 0;
+	PlayerInfoVariable::Player2Monster = 0;
+	PlayerInfoVariable::Player3Monster = 0;
+	PlayerInfoVariable::Player4Monster = 0;
+
+	PlayerInfoVariable::Player1Magic = 0;
+	PlayerInfoVariable::Player2Magic = 0;
+	PlayerInfoVariable::Player3Magic = 0;
+	PlayerInfoVariable::Player4Magic = 0;
+
+	PlayerInfoVariable::Player1Archer = 0;
+	PlayerInfoVariable::Player2Archer = 0;
+	PlayerInfoVariable::Player3Archer = 0;
+	PlayerInfoVariable::Player4Archer = 0;
+
+	PlayerInfoVariable::Player1Warrior = 0;
+	PlayerInfoVariable::Player2Warrior = 0;
+	PlayerInfoVariable::Player3Warrior = 0;
+	PlayerInfoVariable::Player4Warrior = 0;
+
+	PlayerInfoVariable::Player1Knight = 0;
+	PlayerInfoVariable::Player2Knight = 0;
+	PlayerInfoVariable::Player3Knight = 0;
+	PlayerInfoVariable::Player4Knight = 0;
 }
 

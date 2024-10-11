@@ -12,7 +12,7 @@ namespace fq::client
 		//////////////////////////////////////////////////////////////////////////
 
 		// 플레이어 영혼 선택 종류
-		static inline int Player1SoulType = -1;
+		static inline int Player1SoulType = -1; // Esoultype 0 검, 1 마법, 2 도끼, 3 활
 		static inline int Player2SoulType = -1;
 		static inline int Player3SoulType = -1;
 		static inline int Player4SoulType = -1;
