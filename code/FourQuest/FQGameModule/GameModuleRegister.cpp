@@ -576,6 +576,18 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "LinearVelocity")
 		.data<&RigidBody::SetAngularVelocity, &RigidBody::GetAngularVelocity>("AgularVelocity"_hs)
 		.prop(fq::reflect::prop::Name, "AgularVelocity")
+		.data<&RigidBody::SetIsLockLinearX, &RigidBody::GetIsLockLinearX>("IsLockLinearX"_hs)
+		.prop(fq::reflect::prop::Name, "IsLockLinearX")
+		.data<&RigidBody::SetIsLockLinearY, &RigidBody::GetIsLockLinearY>("IsLockLinearY"_hs)
+		.prop(fq::reflect::prop::Name, "IsLockLinearY")
+		.data<&RigidBody::SetIsLockLinearZ, &RigidBody::GetIsLockLinearZ>("IsLockLinearZ"_hs)
+		.prop(fq::reflect::prop::Name, "IsLockLinearZ")
+		.data<&RigidBody::SetIsLockAngularX, &RigidBody::GetIsLockAngularX>("IsLockAngularX"_hs)
+		.prop(fq::reflect::prop::Name, "IsLockAngularX")
+		.data<&RigidBody::SetIsLockAngularY, &RigidBody::GetIsLockAngularY>("IsLockAngularY"_hs)
+		.prop(fq::reflect::prop::Name, "IsLockAngularY")
+		.data<&RigidBody::SetIsLockAngularZ, &RigidBody::GetIsLockAngularZ>("IsLockAngularZ"_hs)
+		.prop(fq::reflect::prop::Name, "IsLockAngularZ")
 		.base<Component>();
 
 	// BoxCollider
