@@ -578,6 +578,9 @@
     <ClInclude Include="YAxisSetter.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="MaterialManagedGroup.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -992,6 +995,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="YAxisSetter.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialManagedGroup.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

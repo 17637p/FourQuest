@@ -5,6 +5,7 @@
 // Manager
 #include "GameManager.h"
 #include "MaterialManager.h"
+#include "MaterialManagedGroup.h"
 #include "MonsterManager.h"
 #include "EffectColorManager.h"
 #include "EffectColorTransmitter.h"
@@ -250,6 +251,20 @@ void fq::client::RegisterMetaData()
 		.data<&MaterialManager::mbUseDebugDraw>("UseDebugDraw"_hs)
 		.prop(fq::reflect::prop::Name, "UseDebugDraw")
 		.prop(reflect::prop::Comment, u8"디버깅 정보 사용 여부")
+		.data<&MaterialManager::mbUseAllStaticObjectCheck>("bUseAllStaticObjectCheck"_hs)
+		.prop(fq::reflect::prop::Name, "bUseAllStaticObjectCheck")
+		.prop(reflect::prop::Comment, u8"모든 스태틱 오브젝트 체크 여부")
+		.data<&MaterialManager::mbUseMaterialGroup>("bUseMaterialGroup"_hs)
+		.prop(fq::reflect::prop::Name, "bUseMaterialGroup")
+		.prop(reflect::prop::Comment, u8"모든 머터리얼 그룹 체크 여부")
+		.base<game_module::Component>();
+
+	entt::meta<MaterialManagedGroup>()
+		.type("MaterialManagedGroup"_hs)
+		.prop(reflect::prop::Name, "MaterialManagedGroup")
+		.data<&MaterialManagedGroup::mbUsed>("bUsed"_hs)
+		.prop(fq::reflect::prop::Name, "bUsed")
+		.prop(reflect::prop::Comment, u8"사용 여부")
 		.base<game_module::Component>();
 
 	entt::meta<GoddessStatue>()

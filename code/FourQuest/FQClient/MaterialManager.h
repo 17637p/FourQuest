@@ -30,8 +30,7 @@ namespace fq::client
 	private:
 		class GameManager* mGameManager;
 
-		std::vector<std::shared_ptr<game_module::GameObject>> mStaticMeshObjects;
-
+		std::set<game_module::GameObject*> mIgnoredObjects;
 		std::map<game_module::GameObject*, std::vector<std::shared_ptr<fq::graphics::IMaterial>>> mMaterialCache;
 
 		std::string mManagerMaterialPath;
@@ -41,6 +40,9 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 mLocalPointOffset;
 
 		bool mbUseDebugDraw;
+
+		bool mbUseAllStaticObjectCheck;
+		bool mbUseMaterialGroup;
 
 		friend void RegisterMetaData();
 	};
