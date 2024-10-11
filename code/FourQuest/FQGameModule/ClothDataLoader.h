@@ -15,7 +15,7 @@ namespace fq::game_module
 	
 	struct ClothData
 	{
-		std::vector<json> vertices;
+		std::vector<DirectX::SimpleMath::Vector3> vertices;
 		std::vector<unsigned int> indices;
 		std::vector<unsigned int> disableIndices;
 	};
@@ -35,7 +35,8 @@ namespace fq::game_module
 		std::shared_ptr<ClothData> LoadArticulationData(const Path& path);
 
 	private:
-
+		json Vector3ToJson(const DirectX::SimpleMath::Vector3& vec);
+		DirectX::SimpleMath::Vector3 JsonToVector3(const json& vecJson);
 	};
 }
 

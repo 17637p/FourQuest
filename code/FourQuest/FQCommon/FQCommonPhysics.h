@@ -122,6 +122,13 @@ namespace fq::physics
 		DirectX::SimpleMath::Vector3 linearVelocity = {};		// 값이 0이면 StaticBody 입니다.
 		DirectX::SimpleMath::Vector3 angularVelocity = {};		// 값이 0이면 StaticBody 입니다.
 		unsigned int myLayerNumber = UINT_MAX;
+
+		bool isLockLinearX = false;								// X축 이동 고정입니다.
+		bool isLockLinearY = false;								// Y축 이동 고정입니다.
+		bool isLockLinearZ = false;								// Z축 이동 고정입니다.
+		bool isLockAngularX = false;							// X축 각회전 고정입니다.
+		bool isLockAngularY = false;							// Y축 각회전 고정입니다.
+		bool isLockAngularZ = false;							// Z축 각회전 고정입니다.
 	};
 
 	struct CharacterControllerGetSetData

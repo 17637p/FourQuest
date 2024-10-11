@@ -105,6 +105,15 @@ namespace fq::physics
 			rigidBodyData.transform = DirectX::SimpleMath::Matrix::CreateScale(dynamicBody->GetScale()) * dxMatrix * dynamicBody->GetOffsetTranslation();
 			CopyPxVec3ToDxVec3(pxBody->getLinearVelocity(), rigidBodyData.linearVelocity);
 			CopyPxVec3ToDxVec3(pxBody->getAngularVelocity(), rigidBodyData.angularVelocity);
+
+			physx::PxRigidDynamicLockFlags flag = pxBody->getRigidDynamicLockFlags();
+
+			rigidBodyData.isLockLinearX = (flag & physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_X);
+			rigidBodyData.isLockLinearY = (flag & physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_Y);
+			rigidBodyData.isLockLinearZ = (flag & physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_Z);
+			rigidBodyData.isLockAngularX = (flag & physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X);
+			rigidBodyData.isLockAngularY = (flag & physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y);
+			rigidBodyData.isLockAngularZ = (flag & physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);
 		}
 		std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 		if (staticBody)
@@ -157,6 +166,7 @@ namespace fq::physics
 			CopyDxVec3ToPxVec3(rigidBodyData.linearVelocity, pxLinearVelocity);
 			CopyDxVec3ToPxVec3(rigidBodyData.angularVelocity, pxangularVelocity);
 
+			// DynamicBody 속도, 각속도 세팅
 			physx::PxRigidDynamic* pxBody = dynamicBody->GetPxRigidDynamic();
 			if (!(pxBody->getRigidBodyFlags() & physx::PxRigidBodyFlag::eKINEMATIC))
 			{
@@ -164,6 +174,15 @@ namespace fq::physics
 				pxBody->setAngularVelocity(pxangularVelocity);
 			}
 
+			// 모든 회전 및 이동 잠금 설정
+			pxBody->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, rigidBodyData.isLockAngularX);
+			pxBody->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, rigidBodyData.isLockAngularY);
+			pxBody->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, rigidBodyData.isLockAngularZ);
+			pxBody->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_X, rigidBodyData.isLockLinearX);
+			pxBody->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_Y, rigidBodyData.isLockLinearY);
+			pxBody->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_Z, rigidBodyData.isLockLinearZ);
+
+			// 다이나믹 바디 Transform 세팅(단, Scale 값은 Shape에 적용), LayerNumber 세팅
 			Vector3 position;
 			Vector3 scale;
 			Quaternion rotation;

@@ -58,6 +58,22 @@ namespace fq::game_module
 		/// </summary>
 		void SetBodyType(fq::game_module::RigidBody::EBodyType val) { mBodyType = val; }
 
+		/// <summary>
+		/// 모든 회전 및 이동 잠금을 설정합니다.
+		/// </summary>
+		void SetIsLockLinearX(bool isLockLinearX) { mbIsLockLinearX = isLockLinearX; }
+		void SetIsLockLinearY(bool isLockLinearY) { mbIsLockLinearY = isLockLinearY; }
+		void SetIsLockLinearZ(bool isLockLinearZ) { mbIsLockLinearZ = isLockLinearZ; }
+		void SetIsLockAngularX(bool isLockAngularX) { mbIsLockAngularX = isLockAngularX; }
+		void SetIsLockAngularY(bool isLockAngularY) { mbIsLockAngularY = isLockAngularY; }
+		void SetIsLockAngularZ(bool isLockAngularZ) { mbIsLockAngularZ = isLockAngularZ; }
+		bool GetIsLockLinearX() const { return mbIsLockLinearX; }
+		bool GetIsLockLinearY() const { return mbIsLockLinearY; }
+		bool GetIsLockLinearZ() const { return mbIsLockLinearZ; }
+		bool GetIsLockAngularX() const { return mbIsLockAngularX; }
+		bool GetIsLockAngularY() const { return mbIsLockAngularY; }
+		bool GetIsLockAngularZ() const { return mbIsLockAngularZ; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -65,6 +81,13 @@ namespace fq::game_module
 		EBodyType mBodyType;
 		Vector3 mLinearVelocity;
 		Vector3 mAngularVelocity;
+
+		bool mbIsLockLinearX;
+		bool mbIsLockLinearY;
+		bool mbIsLockLinearZ;
+		bool mbIsLockAngularX;
+		bool mbIsLockAngularY;
+		bool mbIsLockAngularZ;
 	};
 
 
