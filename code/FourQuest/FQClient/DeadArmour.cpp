@@ -125,8 +125,6 @@ void fq::client::DeadArmour::OnStart()
 
 	setUI(false);
 	mbIsSummonAble = true;
-
-
 }
 
 void fq::client::DeadArmour::setUI(bool isVisible)
@@ -136,7 +134,7 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 	mbIsVisible = isVisible;
 	auto imageUI = GetComponent<game_module::ImageUI>();
 	auto uiInfo = imageUI->GetUIInfomations();
-
+	uiInfo[0].Layer = 5000;
 	if (!uiInfo.empty())
 	{
 		uiInfo[0].isRender = true;
