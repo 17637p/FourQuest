@@ -28,9 +28,12 @@ namespace fq::game_engine
 		, mScene()
 		, mGameObject()
 		, mbIsOpen(false)
+		, mbIsDeleteBrush(false)
 		, mBrushRadian(0.1f)
 		, mModelPath()
 		, mFileName()
+		, mClothDataLoader()
+		, mClothData(nullptr)
 	{
 	}
 
@@ -44,6 +47,7 @@ namespace fq::game_engine
 		mEditorProcess = editor;
 
 		mScene = mGameProcess->mSceneManager->GetCurrentScene();
+		mClothData = std::make_shared<fq::game_module::ClothData>();
 	}
 
 	void ClothEditorWindow::Finalize()
@@ -60,6 +64,8 @@ namespace fq::game_engine
 
 			beginPrintText_GameObjectName();
 			ImGui::Separator();
+			beginButton_Save();
+			ImGui::Separator();
 			beginCheckBox_IsDeleteBrush();
 			ImGui::Separator();
 			beginInputFloat_BrushRadian();
@@ -75,26 +81,23 @@ namespace fq::game_engine
 
 	void ClothEditorWindow::beginButton_Save()
 	{
-		if (ImGui::Button("Save Cloth Data"))
+		ImGui::InputText("###", &mFileName);
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Save"))
 		{
-			ImGui::InputText("###", &mFileName);
+			std::string clothPath = mFileName + ".cloth";
+			auto path = fq::path::GetResourcePath() / "Cloth" / clothPath;
 
-			ImGui::SameLine();
-
-			if (ImGui::Button("Save"))
+			// 고정하는 인덱스 값 업데이트 후 저장
+			mClothData->disableIndices.clear();
+			for (auto disableIndices : mObjectDisableIndiecs)
 			{
-				std::string articulationPath = mFileName + ".cloth";
-				auto path = fq::path::GetResourcePath() / "Cloth" / articulationPath;
-
-				// 고정하는 인덱스 값 업데이트 후 저장
-				mClothData->disableIndices.clear();
-				for (auto disableIndices : mObjectDisableIndiecs)
-				{
-					mClothData->disableIndices.push_back(disableIndices);
-				}
-
-				mClothDataLoader.Save(mClothData, path.c_str());
+				mClothData->disableIndices.push_back(disableIndices);
 			}
+
+			mClothDataLoader.Save(mClothData, path.c_str());
 		}
 	}
 
@@ -102,8 +105,8 @@ namespace fq::game_engine
 	{
 		if (!mGameObject) return;
 
-		std::string text = "Model Path : " + mModelPath;
-		ImGui::Text(text.c_str());
+		std::string text = mModelPath;
+		ImGui::InputText("Model Path : ", &text);
 
 		text = "Object Name : " + mGameObject->GetName();
 		ImGui::Text(text.c_str());
@@ -266,7 +269,7 @@ namespace fq::game_engine
 			info.distance = 100.f;
 			info.layerNumber = 0;
 
-			fq::physics::RayCastOutput raycastOutput = mGameProcess->mPhysics->RayCast(info, true);
+			fq::physics::RayCastOutput raycastOutput = mGameProcess->mPhysics->RayCast(info, false, true);
 
 			for (int i = 0; i < raycastOutput.hitSize; i++)
 			{

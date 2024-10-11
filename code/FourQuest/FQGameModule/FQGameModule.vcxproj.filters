@@ -389,6 +389,9 @@
     <ClInclude Include="ClothDataLoader.h">
       <Filter>include\07.Physics</Filter>
     </ClInclude>
+    <ClInclude Include="ClothCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -633,6 +636,9 @@
     </ClCompile>
     <ClCompile Include="ClothDataLoader.cpp">
       <Filter>src\07.Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ClothCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

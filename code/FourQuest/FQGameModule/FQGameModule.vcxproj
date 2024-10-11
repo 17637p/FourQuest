@@ -225,6 +225,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CameraShakeTrack.h" />
+    <ClInclude Include="ClothCollider.h" />
     <ClInclude Include="ClothDataLoader.h" />
     <ClInclude Include="MaterialAnimator.h" />
     <ClInclude Include="AnimatorControllerLoader.h" />
@@ -315,6 +316,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CameraShakeTrack.cpp" />
+    <ClCompile Include="ClothCollider.cpp" />
     <ClCompile Include="ClothDataLoader.cpp" />
     <ClCompile Include="MaterialAnimator.cpp" />
     <ClCompile Include="AnimatorControllerLoader.cpp" />

@@ -17,6 +17,8 @@ namespace fq::client
 	private:
 		virtual void OnFixedUpdate(float dt) override;
 
+		virtual void OnCollisionEnter(const fq::game_module::Collision& collision) override;
+
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 		entt::meta_handle GetHandle() override;
 
