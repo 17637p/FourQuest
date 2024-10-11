@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "EAnimationMode.h"
 #include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::game_module
@@ -9,12 +10,6 @@ namespace fq::game_module
 	/// 이펙트 처리 시 에디터에서 데이터 수정할 수 있게 하기 위해 만듦
 	/// </summary>
 	/// 
-	enum class EAnimationMode
-	{
-		Increase,
-		Decrease,
-	};
-
 	struct AlphaAnimatorInfo
 	{
 		bool bIsUsed = true;

@@ -192,7 +192,7 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 	mScene->ViewComponents<UVAnimator>(
 		[dt](GameObject& object, UVAnimator& animator)
 		{
-			animator.UpdateTimePos(dt * animator.GetPlaySpeed());
+			animator.UpdateTimePos(dt);
 		});
 
 	mScene->ViewComponents<MaterialAnimator>(

@@ -5,6 +5,7 @@
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/Transform.h"
+#include "../FQGameModule/DecalUVAnimator.h"
 
 fq::game_engine::DecalSystem::DecalSystem()
 	:mGameProcess(nullptr)
@@ -54,7 +55,31 @@ void fq::game_engine::DecalSystem::Update(float dt)
 
 				if (decalObjectInterface != nullptr)
 				{
-					decalObjectInterface->SetTransform(transform.GetWorldMatrix());
+					const auto& decalInfo = decal.GetDecalInfo();
+
+					DirectX::SimpleMath::Matrix objectTransform;
+
+					if (!decalInfo.bIsIgnoreParentRotation)
+					{
+						objectTransform = transform.GetWorldMatrix();
+					}
+					else
+					{
+						objectTransform =
+							DirectX::SimpleMath::Matrix::CreateScale(transform.GetWorldScale())
+							* DirectX::SimpleMath::Matrix::CreateFromQuaternion(transform.GetLocalRotation())
+							* DirectX::SimpleMath::Matrix::CreateTranslation(transform.GetWorldPosition());
+					}
+
+					auto decalUVAnimator = object.GetComponent<DecalUVAnimator>();
+
+					if (decalUVAnimator != nullptr)
+					{
+						const auto additiveTransform = decalUVAnimator->GetAdditiveTransform();
+						objectTransform = additiveTransform * objectTransform;
+					}
+
+					decalObjectInterface->SetTransform(objectTransform);
 				}
 			});
 }
@@ -115,7 +140,16 @@ void fq::game_engine::DecalSystem::loadDecal(fq::game_module::GameObject* object
 	auto decalInfo = decal->GetDecalInfo();
 	fq::graphics::DecalMaterialInfo materialInfo = decal->GetDecalMaterialInfo();
 	auto material = mGameProcess->mGraphics->CreateDecalMaterial(materialInfo);
-	auto decalObjectInterface = mGameProcess->mGraphics->CreateDecalObject(material, decalInfo, object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
+
+	DirectX::SimpleMath::Matrix additiveTransform;
+	auto decalUVAnimator = object->GetComponent<fq::game_module::DecalUVAnimator>();
+
+	if (decalUVAnimator != nullptr)
+	{
+		additiveTransform = decalUVAnimator->GetAdditiveTransform();
+	}
+
+	auto decalObjectInterface = mGameProcess->mGraphics->CreateDecalObject(material, decalInfo, additiveTransform * object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
 	decal->SetDecalObjectInterface(decalObjectInterface);
 	decal->SetDecalMaterial(material);
 	decal->SetLayer(decal->GetLayer());
