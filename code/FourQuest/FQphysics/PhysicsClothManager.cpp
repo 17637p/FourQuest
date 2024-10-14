@@ -37,7 +37,7 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsClothManager::CreateCloth(const PhysicsClothInfo& info, int* collisionMatrix)
+	bool PhysicsClothManager::CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix)
 	{
 		std::shared_ptr<CudaPhysicsCloth> cloth = std::make_shared<CudaPhysicsCloth>(info.id, info.layerNumber);
 		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
@@ -51,7 +51,7 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsClothManager::GetClothData(unsigned int id, PhysicsClothGetData& data)
+	bool PhysicsClothManager::GetClothData(unsigned int id, Cloth::GetSetClothData& data)
 	{
 		auto clothIter = mPhysicsClothContainer.find(id);
 
@@ -64,7 +64,7 @@ namespace fq::physics
 		return false;
 	}
 
-	bool PhysicsClothManager::SetClothData(unsigned int id, const PhysicsClothSetData& data)
+	bool PhysicsClothManager::SetClothData(unsigned int id, const Cloth::GetSetClothData& data)
 	{
 		auto clothIter = mPhysicsClothContainer.find(id);
 

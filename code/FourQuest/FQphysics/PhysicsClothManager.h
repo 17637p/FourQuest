@@ -31,17 +31,17 @@ namespace fq::physics
 		/// <summary>
 		/// 천을 생성합니다.
 		/// </summary>
-		bool CreateCloth(const PhysicsClothInfo& info, int* collisionMatrix);
+		bool CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix);
 
 		/// <summary>
 		/// 천 데이터를 얻습니다.
 		/// </summary>
-		bool GetClothData(unsigned int id, PhysicsClothGetData& data);
+		bool GetClothData(unsigned int id, Cloth::GetSetClothData& data);
 
 		/// <summary>
 		/// 천 데이터를 세팅합니다.
 		/// </summary>
-		bool SetClothData(unsigned int id, const PhysicsClothSetData& data);
+		bool SetClothData(unsigned int id, const Cloth::GetSetClothData& data);
 
 		/// <summary>
 		/// 천을 삭제합니다.

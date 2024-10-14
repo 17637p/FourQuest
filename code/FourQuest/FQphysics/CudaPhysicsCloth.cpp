@@ -63,7 +63,7 @@ namespace fq::physics
 	}
 
 	bool CudaPhysicsCloth::Initialize(
-		const PhysicsClothInfo& info, 
+		const Cloth::CreateClothData& info, 
 		physx::PxPhysics* physics, 
 		physx::PxScene* scene,
 		physx::PxCudaContextManager* cudaContextManager, 
@@ -118,13 +118,13 @@ namespace fq::physics
 		return true;
 	}
 
-	void CudaPhysicsCloth::settingInfoData(const PhysicsClothInfo& info)
+	void CudaPhysicsCloth::settingInfoData(const Cloth::CreateClothData& data)
 	{
-		RegisterD3D11VertexBufferWithCUDA((ID3D11Buffer*)info.vertexBuffer);
-		RegisterD3D11IndexBufferWithCUDA((ID3D11Buffer*)info.indexBuffer);
+		RegisterD3D11VertexBufferWithCUDA((ID3D11Buffer*)data.vertexBuffer);
+		RegisterD3D11IndexBufferWithCUDA((ID3D11Buffer*)data.indexBuffer);
 
-		mWorldTransform = info.worldTransform;
-		mClothMass = info.clothMass;
+		mWorldTransform = data.worldTransform;
+		mClothMass = data.clothMass;
 
 		bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);
 		assert(isSucced);
@@ -317,12 +317,12 @@ namespace fq::physics
 		cudaContextManager->freePinnedHostBuffer(phase);
 	}
 
-	void CudaPhysicsCloth::GetPhysicsCloth(PhysicsClothGetData& data)
+	void CudaPhysicsCloth::GetPhysicsCloth(Cloth::GetSetClothData& data)
 	{
 		data.worldTransform = mWorldTransform;
 	}
 
-	bool CudaPhysicsCloth::SetPhysicsCloth(const PhysicsClothSetData& data)
+	bool CudaPhysicsCloth::SetPhysicsCloth(const Cloth::GetSetClothData& data)
 	{
 		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
 

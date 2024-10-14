@@ -59,6 +59,10 @@ fq::client::Player::Player()
 	, mASkillCoolTimeRatio(0.f)
 	, mXSkillCoolTimeRatio(0.f)
 	, mbIsEmitEnhanceEffect(false)
+	, mGBDecreaseDurability(false)
+	, mGBIncreaseAttackPower(0)
+	, mGBDecreaseCooltime(1)
+	, mGBIncreaseSpeed(0)
 {}
 
 fq::client::Player::~Player()

@@ -1,4 +1,5 @@
 #include "ClothDataLoader.h"
+#include "spdlog\spdlog.h"
 
 #include <fstream>
 #include <iostream>
@@ -31,14 +32,18 @@ namespace fq::game_module
 
 		// JSON 데이터를 파일로 저장
 		std::ofstream file(path);
+		std::string filePath = path.string();
+
 		if (file.is_open())
 		{
 			file << clothJson.dump(6);
 			file.close();
+
+			spdlog::trace("[Success] Create \'{}\' File!!", filePath);
 		}
 		else
 		{
-			assert(false);
+			spdlog::error("[Fail] Create \'{}\' File!!", filePath);
 		}
 	}
 
@@ -51,10 +56,11 @@ namespace fq::game_module
 
 		// 파일에서 JSON 데이터를 읽기
 		std::ifstream file(path);
+		std::string filePath = path.string();
+
 		if (!file.is_open())
 		{
-			std::cerr << "Failed to open file: " << path << std::endl;
-			assert(false);
+			spdlog::error("[Fail] Open \'{}\' File!!", filePath);
 			return nullptr;
 		}
 
