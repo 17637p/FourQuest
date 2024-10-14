@@ -163,6 +163,10 @@ namespace fq::client
 		float mSecondComboAttackRatio;
 		float mMinWaitAttackTime;
 		float mMaxWaitAttackTime;
+		float mRushKnockBackPower;
+		float mSmashKnockBackPower;
+		float mComboAttackKnockBackPower;
+		float mContinousKnockBackPower;
 
 		// 그로기 관련 
 		float mStartGroggyGauge;

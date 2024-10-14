@@ -156,13 +156,13 @@ void fq::client::TitleUI::clickButton()
 	{
 		case 0:
 			// 로비로 씬 이동
-			GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({ mNextSceneName, true });
 			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Start", false , 31 });
+			GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({ mNextSceneName, true });
 			break;
 		case 1:
 			// 설정
 			mIsActive = false;
-			spawnUIObject(mSettingUIPrefab);
+			spawnUIObject(mSettingUIPrefab); 
 			break;
 		case 2:
 			// 제작진

@@ -52,6 +52,10 @@ fq::client::BossMonster::BossMonster()
 	, mEatProbability(0.1f)
 	, mRushProbability(0.1f)
 	, mSmashProbability(0.2f)
+	, mRushKnockBackPower(5.f)
+	, mSmashKnockBackPower(3.f)
+	, mComboAttackKnockBackPower(3.f)
+	, mContinousKnockBackPower(3.f)
 {}
 
 fq::client::BossMonster::~BossMonster()
@@ -311,9 +315,10 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::Rush()
 	// 공격 정보 설정
 	AttackInfo attackInfo{};
 	auto attackComponent = attackObj->GetComponent<Attack>();
-
 	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = dc::GetMonsterRushDamage(mAttackPower);
+	attackInfo.type = EKnockBackType::TargetPosition;
+	attackInfo.knocBackPower = mRushKnockBackPower;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
@@ -344,6 +349,8 @@ void fq::client::BossMonster::EmitSmashDown()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = dc::GetMonsterSmashDownDamage(mAttackPower);
 	attackInfo.attackDirection = foward;
+	attackInfo.type = EKnockBackType::TargetPosition;
+	attackInfo.knocBackPower = mSmashKnockBackPower;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
@@ -445,7 +452,6 @@ void fq::client::BossMonster::EmitComboAttack(float xAxisOffset)
 	attackPos += right * xAxisOffset;
 	attackT->GenerateWorld(attackPos, rotation, scale);
 
-
 	// 공격 정보 설정
 	AttackInfo attackInfo{};
 	auto attackComponent = attackObj->GetComponent<Attack>();
@@ -453,6 +459,8 @@ void fq::client::BossMonster::EmitComboAttack(float xAxisOffset)
 	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = dc::GetMonsterComboAttackDamage(mAttackPower);
 	attackInfo.attackDirection = foward;
+	attackInfo.type = EKnockBackType::TargetPosition;
+	attackInfo.knocBackPower = mComboAttackKnockBackPower;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);

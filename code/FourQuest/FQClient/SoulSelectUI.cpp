@@ -314,7 +314,6 @@ void fq::client::SoulSelectUI::processInput()
 			|| input->GetKeyState(EKey::A) == EKeyState::Tap)
 		{
 			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
-
 			if (mIsOnSelectLevel)
 			{
 				SettingVariable::SelectLevel = mSelectButtonID;
@@ -348,6 +347,7 @@ void fq::client::SoulSelectUI::processInput()
 					}
 
 					// ทนต๐
+					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Soul", false , fq::sound::EChannel::SE });
 					mIsReadys[i] = true;
 					mIsSelects[i] = false;
 					setReadyUI(i, true);

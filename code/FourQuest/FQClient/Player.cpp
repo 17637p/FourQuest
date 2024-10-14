@@ -7,6 +7,7 @@
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/RigidBody.h"
 
 #include "Attack.h"
 #include "CameraMoving.h"
@@ -58,6 +59,10 @@ fq::client::Player::Player()
 	, mASkillCoolTimeRatio(0.f)
 	, mXSkillCoolTimeRatio(0.f)
 	, mbIsEmitEnhanceEffect(false)
+	, mGBDecreaseDurability(false)
+	, mGBIncreaseAttackPower(0)
+	, mGBDecreaseCooltime(1)
+	, mGBIncreaseSpeed(0)
 {}
 
 fq::client::Player::~Player()
@@ -230,53 +235,76 @@ void fq::client::Player::OnDestroy()
 
 void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 {
-	bool isHitAble = mInvincibleElapsedTime == 0.f;
-
 	// 플레이어 피격
-	if (isHitAble && collision.other->GetTag() == game_module::ETag::MonsterAttack)
+	if (collision.other->GetTag() == game_module::ETag::MonsterAttack)
 	{
 		auto monsterAtk = collision.other->GetComponent<client::Attack>();
+		bool isHitAble = mInvincibleElapsedTime == 0.f;
 		if (monsterAtk->ProcessAttack())
 		{
-			// 플레이어 방패 막기 처리 
-			if (mbOnShieldBlock)
+			// 플레이어 넉백 처리
+			if (monsterAtk->HasKnockBack())
 			{
-				auto attackDir = monsterAtk->GetAttackDirection();
-				auto lookAtDir = mTransform->GetLookAtVector();
+				auto type = monsterAtk->GetKnockBackType();
+				float power = monsterAtk->GetKnockBackPower();
 
-				attackDir.Normalize();
-				lookAtDir.Normalize();
-
-				float dotProduct = lookAtDir.Dot(attackDir);
-				float radian = std::acos(dotProduct);
-
-				if (radian >= DirectX::XM_PIDIV2)
+				if (type == EKnockBackType::TargetPosition)
 				{
-					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , fq::sound::EChannel::SE });
+					auto playerPos = mTransform->GetWorldPosition();
+					playerPos.y = 0.f;
+					auto monsterPos = monsterAtk->GetTransform()->GetWorldPosition();
+					monsterPos.y = 0.f;
 
-					fq::event::OnCreateStateEvent stateEvent;
-					stateEvent.gameObject = GetGameObject();
-					stateEvent.RegisterKeyName = "K_Shield_Block";
-					if (!stateEvent.RegisterKeyName.empty())
-					{
-						GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
-					}
+					auto knockBackDir = playerPos - monsterPos;
+					knockBackDir.Normalize();
+					auto rigid = GetComponent<game_module::RigidBody>();
 
-					return;
+					knockBackDir *= power;
+					rigid->AddLinearVelocity(knockBackDir);
 				}
 			}
-			// 체력 감소
-			float attackPower = monsterAtk->GetAttackPower();
-			DecreaseHp(attackPower);
 
-			// Hit 애니메이션 
-			if (mbIsActiveOnHit)
+			if (isHitAble)
 			{
-				// 무적시간 
-				mAnimator->SetParameterTrigger("OnHit");
-				mInvincibleElapsedTime = mInvincibleTime;
-			}
+				// 플레이어 방패 막기 처리 
+				if (mbOnShieldBlock)
+				{
+					auto attackDir = monsterAtk->GetAttackDirection();
+					auto lookAtDir = mTransform->GetLookAtVector();
 
+					attackDir.Normalize();
+					lookAtDir.Normalize();
+
+					float dotProduct = lookAtDir.Dot(attackDir);
+					float radian = std::acos(dotProduct);
+
+					if (radian >= DirectX::XM_PIDIV2)
+					{
+						GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , fq::sound::EChannel::SE });
+
+						fq::event::OnCreateStateEvent stateEvent;
+						stateEvent.gameObject = GetGameObject();
+						stateEvent.RegisterKeyName = "K_Shield_Block";
+						if (!stateEvent.RegisterKeyName.empty())
+						{
+							GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+						}
+
+						return;
+					}
+				}
+				// 체력 감소
+				float attackPower = monsterAtk->GetAttackPower();
+				DecreaseHp(attackPower);
+
+				// Hit 애니메이션 
+				if (mbIsActiveOnHit)
+				{
+					// 무적시간 
+					mAnimator->SetParameterTrigger("OnHit");
+					mInvincibleElapsedTime = mInvincibleTime;
+				}
+			}
 		}
 	}
 
@@ -490,27 +518,27 @@ void fq::client::Player::equipWeapone(ESoulType equipType, bool isEquip)
 {
 	switch (equipType)
 	{
-	case fq::client::ESoulType::Sword:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
-	}
-	break;
-	case fq::client::ESoulType::Staff:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
-	}
-	break;
-	case fq::client::ESoulType::Axe:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
-	}
-	break;
-	case fq::client::ESoulType::Bow:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
-	}
-	break;
+		case fq::client::ESoulType::Sword:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
+		}
+		break;
+		case fq::client::ESoulType::Staff:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
+		}
+		break;
+		case fq::client::ESoulType::Axe:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
+		}
+		break;
+		case fq::client::ESoulType::Bow:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
+		}
+		break;
 	}
 }
 
@@ -605,18 +633,18 @@ bool fq::client::Player::CanUseSoulAttack() const
 
 	switch (mSoulType)
 	{
-	case fq::client::ESoulType::Sword:
-		cost = PlayerSoulVariable::SoulSwordAttackCost;
-		break;
-	case fq::client::ESoulType::Staff:
-		cost = PlayerSoulVariable::SoulStaffAttackCost;
-		break;
-	case fq::client::ESoulType::Axe:
-		cost = PlayerSoulVariable::SoulAxeAttackCost;
-		break;
-	case fq::client::ESoulType::Bow:
-		cost = PlayerSoulVariable::SoulBowAttackCost;
-		break;
+		case fq::client::ESoulType::Sword:
+			cost = PlayerSoulVariable::SoulSwordAttackCost;
+			break;
+		case fq::client::ESoulType::Staff:
+			cost = PlayerSoulVariable::SoulStaffAttackCost;
+			break;
+		case fq::client::ESoulType::Axe:
+			cost = PlayerSoulVariable::SoulAxeAttackCost;
+			break;
+		case fq::client::ESoulType::Bow:
+			cost = PlayerSoulVariable::SoulBowAttackCost;
+			break;
 	}
 
 	return mSoulGauge >= cost;
@@ -688,18 +716,18 @@ void fq::client::Player::setDecalColor()
 			info.BaseColor = { 0.f,0.f,0.f,1.f };
 			switch (mSoulType)
 			{
-			case fq::client::ESoulType::Sword:
-				info.BaseColor = PlayerSoulVariable::SwordSoulColor;
-				break;
-			case fq::client::ESoulType::Staff:
-				info.BaseColor = PlayerSoulVariable::StaffSoulColor;
-				break;
-			case fq::client::ESoulType::Axe:
-				info.BaseColor = PlayerSoulVariable::AxeSoulColor;
-				break;
-			case fq::client::ESoulType::Bow:
-				info.BaseColor = PlayerSoulVariable::BowSoulColor;
-				break;
+				case fq::client::ESoulType::Sword:
+					info.BaseColor = PlayerSoulVariable::SwordSoulColor;
+					break;
+				case fq::client::ESoulType::Staff:
+					info.BaseColor = PlayerSoulVariable::StaffSoulColor;
+					break;
+				case fq::client::ESoulType::Axe:
+					info.BaseColor = PlayerSoulVariable::AxeSoulColor;
+					break;
+				case fq::client::ESoulType::Bow:
+					info.BaseColor = PlayerSoulVariable::BowSoulColor;
+					break;
 			}
 
 			decal->SetDecalMaterialInfo(info);
@@ -720,18 +748,18 @@ void fq::client::Player::linkSoulTypeHead()
 
 			switch (mSoulType)
 			{
-			case fq::client::ESoulType::Sword:
-				res = mSwordHaed;
-				break;
-			case fq::client::ESoulType::Staff:
-				res = mStaffHaed;
-				break;
-			case fq::client::ESoulType::Axe:
-				res = mAxeHaed;
-				break;
-			case fq::client::ESoulType::Bow:
-				res = mBowHaed;
-				break;
+				case fq::client::ESoulType::Sword:
+					res = mSwordHaed;
+					break;
+				case fq::client::ESoulType::Staff:
+					res = mStaffHaed;
+					break;
+				case fq::client::ESoulType::Axe:
+					res = mAxeHaed;
+					break;
+				case fq::client::ESoulType::Bow:
+					res = mBowHaed;
+					break;
 			}
 
 			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(res);
@@ -765,20 +793,20 @@ void fq::client::Player::playBowSoulSound()
 
 	switch (random)
 	{
-	case 0:
-		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_1", false , fq::sound::EChannel::SE });
-		break;
-	case 1:
-		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_2", false , fq::sound::EChannel::SE });
-		break;
-	case 2:
-		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_3", false , fq::sound::EChannel::SE });
-		break;
-	case 3:
-		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_4", false , fq::sound::EChannel::SE });
-		break;
-	default:
-		break;
+		case 0:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_1", false , fq::sound::EChannel::SE });
+			break;
+		case 1:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_2", false , fq::sound::EChannel::SE });
+			break;
+		case 2:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_3", false , fq::sound::EChannel::SE });
+			break;
+		case 3:
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_RapidFire_4", false , fq::sound::EChannel::SE });
+			break;
+		default:
+			break;
 	}
 }
 

@@ -605,10 +605,10 @@ void fq::game_engine::RenderingSystem::loadSequenceAnimation(fq::game_module::Ga
 
 	auto& animationInfo = sequence->GetObjectAnimationInfo();
 
-	std::vector<std::shared_ptr<fq::graphics::IAnimation>> animationContainer;
-
 	for (auto& info : animationInfo)
 	{
+		std::vector<std::shared_ptr<fq::graphics::IAnimation>> animationContainer;
+
 		for (auto& trackKey : info.animationTrackKeys)
 		{
 			auto animationInterfaceOrNull = mGameProcess->mResourceSystem->GetAnimation(trackKey.animationPath);

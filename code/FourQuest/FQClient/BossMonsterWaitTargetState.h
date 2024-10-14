@@ -14,7 +14,7 @@ namespace fq::client
 		~BossMonsterWaitTargetState();
 
 	private:
-		//void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
+		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 		void OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state , float dt) override;
 		//void OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 		std::shared_ptr<IStateBehaviour> Clone() override;
