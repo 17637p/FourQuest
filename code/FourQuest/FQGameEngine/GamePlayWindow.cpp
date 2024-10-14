@@ -299,7 +299,8 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 	mImagePos.x = windowPos.x + cursorPos.x;
 	mImagePos.y = windowPos.y + cursorPos.y;
 
-	ImGui::Image(mGameProcess->mGraphics->GetSRV(), viewportSize);
+	auto windowSize = ImGui::GetWindowSize();
+	ImGui::Image(mGameProcess->mGraphics->GetSRV(), windowSize);
 }
 
 void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
@@ -513,7 +514,7 @@ void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 	// Window 사이즈 비율 
 	//float cameraAspectRatio = camera->GetAspectRatio();
 
-	mViewportSize.x = size.x; 
+	mViewportSize.x = size.x;
 	mViewportSize.y = size.y - offsetY;
 
 	// 게임 카메라 화면 비율 조절 
@@ -612,30 +613,28 @@ void fq::game_engine::GamePlayWindow::pickObject()
 	{
 		// 창내부에 마우스가 있는지 확인
 		auto mousePos = ImGui::GetMousePos();
-		auto windowPos = ImGui::GetWindowPos();
-		auto windowSize = ImGui::GetWindowSize();
+		auto currentContext = ImGui::GetCurrentContext();
+		auto currentPos = ImVec2{ currentContext->CurrentWindow->Pos.x, currentContext->CurrentWindow->Pos.y };
+		auto currentSize = ImVec2{ currentContext->CurrentWindow->Size.x, currentContext->CurrentWindow->Size.y };
 
-		if (mousePos.x < windowPos.x || mousePos.y < windowPos.y ||
-			mousePos.x > windowPos.x + windowSize.x || mousePos.y > windowPos.y + windowSize.y)
+		// 정규화 좌표 구하기
+		DirectX::SimpleMath::Vector2 posInViewPort{ mousePos.x - mImagePos.x ,mousePos.y - mImagePos.y };
+		DirectX::SimpleMath::Vector2 posInNormalized{ posInViewPort.x / currentSize.x , posInViewPort.y / currentSize.y };
+
+		// 정규화 좌표로 버퍼 좌표 구하기
+		const auto bufferWidth = mGameProcess->mGraphics->GetWindowWidth();
+		const auto bufferHeight = mGameProcess->mGraphics->GetWindowHeight();
+		DirectX::SimpleMath::Vector2 posInImage{ posInNormalized.x * bufferWidth, posInNormalized.y * bufferHeight };
+
+		if (posInImage.x < 0
+			|| posInImage.y < 0
+			|| posInImage.x > bufferWidth
+			|| posInImage.y > bufferHeight)
 		{
 			return;
 		}
 
-		// 스크린 좌표 -> 이미지 좌표변환 
-		mousePos.x = std::clamp(mousePos.x - mImagePos.x, 0.f, mViewportSize.x - 1);
-		mousePos.y = std::clamp(mousePos.y - mImagePos.y, 0.f, mViewportSize.y - 1);
-
-		UINT screenWidth = mGameProcess->mWindowSystem->GetScreenWidth();
-		UINT screenHeight = mGameProcess->mWindowSystem->GetScreenHeight();
-
-		// 이미지 좌표 -> 뷰포트 좌표 변환
-		mousePos.x = mousePos.x * static_cast<float>(screenWidth) / mViewportSize.x;
-		mousePos.y = mousePos.y * static_cast<float>(screenHeight) / mViewportSize.y;
-
-		UINT mousePosX = std::clamp(static_cast<UINT>(mousePos.x), 0u, screenWidth);
-		UINT mousePosY = std::clamp(static_cast<UINT>(mousePos.y), 0u, screenHeight);
-
-		void* meshPtr = mGameProcess->mGraphics->GetPickingObject(mousePosX, mousePosY);
+		void* meshPtr = mGameProcess->mGraphics->GetPickingObject(posInImage.x, posInImage.y);
 
 		// 빈공간을 클릭한경우 
 		if (meshPtr == nullptr)
