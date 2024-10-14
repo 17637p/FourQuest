@@ -94,8 +94,14 @@ void fq::client::QuestManager::OnStart()
 	mCurSubQuest.clear();
 	mViewSubQuest.clear();
 
-	mCurMainQuest = mMainQuests[mStartQuests.startMainQuestIndex];
+	//mCurMainQuest = mMainQuests[mStartQuests.startMainQuestIndex];
+	auto it = std::find_if(mMainQuests.begin(), mMainQuests.end(), [this](Quest quest)
+		{
+			return quest.mIndex == mStartQuests.startMainQuestIndex;
+		});
+	mCurMainQuest = *it;
 	mViewMainQuest = mCurMainQuest;
+
 	for (int i = 0; i < mStartQuests.startSubQuestIndex.size(); i++)
 	{
 		auto it = std::find_if(mSubQuests.begin(), mSubQuests.end(), [this, i](Quest quest)
@@ -557,30 +563,6 @@ void fq::client::QuestManager::eventProcessClearQuest()
 					{
 						mCurMainQuest = mMainQuests[i];
 						spdlog::trace("Complete PreQuest!");
-
-						// Complete 연출
-						int questUIindex = 0;
-						mCompleteImageCounts[questUIindex] = 3.0f;
-						auto uiInfo = mCompleteImages[questUIindex]->GetUIInfomation(0);
-						uiInfo.isRender = true;
-						uiInfo.Alpha = 1;
-						mCompleteImages[questUIindex]->SetUIInfomation(0, uiInfo);
-
-						uiInfo = mLeftChecks[questUIindex]->GetUIInfomation(0);
-						uiInfo.Width = 100;
-						uiInfo.Height = 100;
-						uiInfo.Alpha = 1;
-						uiInfo.isRender = true;
-						mLeftChecks[questUIindex]->SetUIInfomation(0, uiInfo);
-
-						uiInfo = mRightChecks[questUIindex]->GetUIInfomation(0);
-						uiInfo.Width = 100;
-						uiInfo.Height = 100;
-						uiInfo.Alpha = 1;
-						uiInfo.isRender = true;
-						mRightChecks[questUIindex]->SetUIInfomation(0, uiInfo);
-
-						mNewImages[questUIindex]->SetIsRender(0, false);
 					}
 				}
 			}
@@ -622,6 +604,32 @@ void fq::client::QuestManager::eventProcessClearQuest()
 						}
 					}
 				}
+			}
+			else
+			{
+				// Complete 연출
+				int questUIindex = 0;
+				mCompleteImageCounts[questUIindex] = 3.0f;
+				auto uiInfo = mCompleteImages[questUIindex]->GetUIInfomation(0);
+				uiInfo.isRender = true;
+				uiInfo.Alpha = 1;
+				mCompleteImages[questUIindex]->SetUIInfomation(0, uiInfo);
+
+				uiInfo = mLeftChecks[questUIindex]->GetUIInfomation(0);
+				uiInfo.Width = 100;
+				uiInfo.Height = 100;
+				uiInfo.Alpha = 1;
+				uiInfo.isRender = true;
+				mLeftChecks[questUIindex]->SetUIInfomation(0, uiInfo);
+
+				uiInfo = mRightChecks[questUIindex]->GetUIInfomation(0);
+				uiInfo.Width = 100;
+				uiInfo.Height = 100;
+				uiInfo.Alpha = 1;
+				uiInfo.isRender = true;
+				mRightChecks[questUIindex]->SetUIInfomation(0, uiInfo);
+
+				mNewImages[questUIindex]->SetIsRender(0, false);
 			}
 
 			for (int i = 0; i < mSubQuests.size(); i++)
