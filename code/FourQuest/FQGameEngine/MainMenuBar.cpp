@@ -15,6 +15,8 @@
 #include "ResourceSystem.h"
 #include "GamePlayWindow.h"
 
+#include "EditorHelper.h"
+
 fq::game_engine::MainMenuBar::MainMenuBar()
 	:mGameProcess(nullptr)
 	, mEditorProcess(nullptr)
@@ -49,6 +51,7 @@ void fq::game_engine::MainMenuBar::Render()
 		beginMenu_File();
 		beginMenu_Window();
 		beginMenu_DebugOption();
+		beginMenu_Save();
 
 		beginText_SceneName();
 		beginText_FPS();
@@ -383,6 +386,18 @@ void fq::game_engine::MainMenuBar::beginMenu_DebugOption()
 
 		bool& onUseRenderDebug = debug->GetOnUseRenderDebug();
 		ImGui::Checkbox("UseDebugRender", &onUseRenderDebug);
+
+		ImGui::EndMenu();
+	}
+}
+
+void fq::game_engine::MainMenuBar::beginMenu_Save()
+{
+	if (ImGui::BeginMenu("Save_Scene.txt"))
+	{
+		auto& debug = mEditorProcess->mDebugSystem;
+
+		EditorHelper::SetStartSceneName(mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName());
 
 		ImGui::EndMenu();
 	}
