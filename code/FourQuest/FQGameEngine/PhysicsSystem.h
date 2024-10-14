@@ -153,11 +153,13 @@ namespace fq::game_engine
 		entt::id_type mCapsuleTypeID;
 		entt::id_type mMeshTypeID;
 		entt::id_type mCharactorControllerTypeID;
+		entt::id_type mControllerTypeID;
 		entt::id_type mTerrainTypeID;
 		entt::id_type mArticulationTypeID;
 		entt::id_type mRigidTypeID;
 
 		bool mbIsGameLoaded;
+		int mAddControllerID;
 		ColliderContainer mColliderContainer;
 		ColliderID mLastColliderID;
 		CallbackContainer mCallbacks;

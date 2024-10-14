@@ -281,6 +281,7 @@ void fq::game_engine::EditorEngine::Finalize()
 
 	mGameProcess->mSceneManager->UnloadScene();
 	mGameProcess->mLoadingSystem->Finalize();
+	mGameProcess->mSoundSystem->Finalize();
 	mGameProcess->mUISystem->Finalize();
 
 	// Editor Process

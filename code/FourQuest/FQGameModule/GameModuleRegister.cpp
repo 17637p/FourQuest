@@ -31,6 +31,7 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "CharacterController.h"
+#include "Controller.h"
 #include "TerrainCollider.h"
 #include "ClothCollider.h"
 #include "Articulation.h"
@@ -765,6 +766,22 @@ void fq::game_module::RegisterMetaData()
 		.data<&CharacterController::SetControllerInfo, &CharacterController::GetControllerInfo>("ControllerInfo"_hs)
 		.prop(fq::reflect::prop::Name, "ControllerInfo")
 		.base<Component>();
+
+	// Controller
+	entt::meta<Controller>()
+		.type("Controller"_hs)
+		.prop(fq::reflect::prop::Name, "Controller")
+		.prop(fq::reflect::prop::Label, "Physcis")
+		.data<&Controller::SetControllerID, &Controller::GetControllerID>("ControllerID"_hs)
+		.prop(fq::reflect::prop::Name, "ControllerID")
+		.prop(fq::reflect::prop::Comment, u8" 0 ~ 3")
+		.data<&Controller::SetOffset, &Controller::GetOffset>("Offset"_hs)
+		.prop(fq::reflect::prop::Name, "Offset")
+		.data<&Controller::SetMovementInfo, &Controller::GetMovementInfo>("MoveInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MoveInfo")
+		.data<&Controller::SetControllerInfo, &Controller::GetControllerInfo>("ControllerInfo"_hs)
+		.prop(fq::reflect::prop::Name, "ControllerInfo")
+		.base<Component>();
 	
 	// ClothCollider
 	entt::meta<ClothCollider>()
@@ -773,9 +790,46 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "Physcis")
 		.data<&ClothCollider::SetClothPath, &ClothCollider::GetClothPath>("ClothPath"_hs)
 		.prop(fq::reflect::prop::Name, "ClothPath")
-		.prop(fq::reflect::prop::Comment, u8" ")
+		.prop(fq::reflect::prop::DragDrop, ".Cloth")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::Comment, u8"천 콜라이더 데이터 정보 파일 경로")
+		.data<&ClothCollider::SetClothMass, &ClothCollider::GetClothMass>("ClothMass"_hs)
+		.prop(fq::reflect::prop::Name, "ClothMass")
+		.prop(fq::reflect::prop::Comment, u8"천 질량 : 천 전체의 질량을 나타냅니다.")
+		.data<&ClothCollider::SetAdhesion, &ClothCollider::GetAdhesion>("Adhesion"_hs)
+		.prop(fq::reflect::prop::Name, "Adhesion")
+		.prop(fq::reflect::prop::Comment, u8"점착력 : 천이 다른 표면에 붙는 정도를 나타냅니다.")
+		.data<&ClothCollider::SetCflCoefficient, &ClothCollider::GetCflCoefficient>("CflCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "CflCoefficient")
+		.prop(fq::reflect::prop::Comment, u8"CFL 계수 : 천 시뮬레이션에서 안정성을 제어하는 계수입니다.")
+		.data<&ClothCollider::SetCohesion, &ClothCollider::GetCohesion>("Cohesion"_hs)
+		.prop(fq::reflect::prop::Name, "Cohesion")
+		.prop(fq::reflect::prop::Comment, u8"응집력 : 천의 입자들이 서로 모이는 힘을 나타냅니다.")
+		.data<&ClothCollider::SetDamping, &ClothCollider::GetDamping>("Damping"_hs)
+		.prop(fq::reflect::prop::Name, "Damping")
+		.prop(fq::reflect::prop::Comment, u8"감쇠 계수 : 천의 운동 에너지를 감쇠시키는 정도를 나타냅니다.")
+		.data<&ClothCollider::SetDrag, &ClothCollider::GetDrag>("Drag"_hs)
+		.prop(fq::reflect::prop::Name, "Drag")
+		.prop(fq::reflect::prop::Comment, u8"항력 : 천이 움직일 때 저항을 받는 힘을 나타냅니다.")
+		.data<&ClothCollider::SetFriction, &ClothCollider::GetFriction>("Friction"_hs)
+		.prop(fq::reflect::prop::Name, "Friction")
+		.prop(fq::reflect::prop::Comment, u8"마찰 계수 : 천의 표면과 다른 물체 간의 마찰 정도를 결정합니다.")
+		.data<&ClothCollider::SetGravityScale, &ClothCollider::GetGravityScale>("GravityScale"_hs)
+		.prop(fq::reflect::prop::Name, "GravityScale")
+		.prop(fq::reflect::prop::Comment, u8"중력 스케일 : 천에 작용하는 중력의 크기를 조정합니다.")
+		.data<&ClothCollider::SetLift, &ClothCollider::GetLift>("Lift"_hs)
+		.prop(fq::reflect::prop::Name, "Lift")
+		.prop(fq::reflect::prop::Comment, u8"양력 : 천이 위로 떠오르는 힘을 나타냅니다.")
+		.data<&ClothCollider::SetSurfaceTension, &ClothCollider::GetSurfaceTension>("SurfaceTension"_hs)
+		.prop(fq::reflect::prop::Name, "SurfaceTension")
+		.prop(fq::reflect::prop::Comment, u8"표면 장력 : 천의 표면에서 발생하는 장력을 나타냅니다.")
+		.data<&ClothCollider::SetViscosity, &ClothCollider::GetViscosity>("Viscosity"_hs)
+		.prop(fq::reflect::prop::Name, "Viscosity")
+		.prop(fq::reflect::prop::Comment, u8"점성 : 천의 내부 저항으로 인해 움직임이 저하되는 정도를 나타냅니다.")
+		.data<&ClothCollider::SetVorticityConfinement, &ClothCollider::GetVorticityConfinement>("VorticityConfinement"_hs)
+		.prop(fq::reflect::prop::Name, "VorticityConfinement")
+		.prop(fq::reflect::prop::Comment, u8"와도 구속 : 천의 소용돌이 효과를 제어하는 데 사용됩니다.")
 		.base<Component>();
-
 
 	// Articulation
 	entt::meta<fq::physics::JointAxisInfo>()

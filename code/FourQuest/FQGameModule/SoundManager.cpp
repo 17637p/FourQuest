@@ -76,7 +76,6 @@ void fq::game_module::SoundManager::UnloadAllSound()
 	}
 
 	mSoundList.clear();
-
 }
 
 
@@ -140,5 +139,13 @@ void fq::game_module::SoundManager::SetChannelVoulme(fq::sound::EChannel channel
 float fq::game_module::SoundManager::GetChannelVoulme(fq::sound::EChannel channel) const
 {
 	return mChannelVolume[channel];
+}
+
+void fq::game_module::SoundManager::StopChannelsWithoutNoneStopChannel()
+{
+	for (unsigned int index = 0; index < MaxChannel; ++index)
+	{
+		StopChannel(index);
+	}
 }
 

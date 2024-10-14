@@ -325,6 +325,11 @@ std::shared_ptr<fq::graphics::ISkinnedMesh> fq::game_engine::ResourceSystem::Get
 
 float fq::game_engine::ResourceSystem::GetLoadingRatio() const
 {
+	if (mResourceCount == 0)
+	{
+		return 0.f;
+	}
+
 	return static_cast<float>(mLoadedResourceCount) / mResourceCount;
 }
 
