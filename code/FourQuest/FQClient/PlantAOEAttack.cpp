@@ -78,6 +78,12 @@ namespace fq::client
 		}
 		else if (!mbIsCreateEffect)
 		{
+			// 자식 오브젝트 제거
+			for (auto* child : GetGameObject()->GetChildren())
+			{
+				GetScene()->DestroyGameObject(child);
+			}
+
 			mbIsCreateEffect = true;
 
 			auto transform = GetComponent<fq::game_module::Transform>();

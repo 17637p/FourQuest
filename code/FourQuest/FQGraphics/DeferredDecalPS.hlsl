@@ -37,7 +37,7 @@ PixelOut main(VertexOut pin) : SV_Target
     float4 sampledPosL = mul(float4(sampledPosW, 1.f), gInvWorldMatrix);
     clip(0.5f - abs(sampledPosL.xyz));
     
-    float2 sampledPosTex = sampledPosL.xz + 0.5f;
+    float2 sampledPosTex = mul(float4(sampledPosL.xz + 0.5f, 0, 1), gTexMatrix);
     
     pout.Albedo = gBaseColor;
     

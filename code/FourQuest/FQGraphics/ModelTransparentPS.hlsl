@@ -31,7 +31,7 @@ cbuffer cbMaterial : register(b0)
 cbuffer cbLight : register(b1)
 {
     DirectionalLight directionalLights[3];
-    PointLight pointLights[10];
+    PointLight pointLights[30];
     SpotLight spotLights[5];
     
     unsigned int numOfDirectionalLight;

@@ -41,6 +41,7 @@
 #include "AnimationStateNode.h"
 #include "Animator.h"
 #include "UVAnimator.h"
+#include "DecalUVAnimator.h"
 #include "MaterialAnimator.h"
 #include "LogStateBehaviour.h"
 #include "SoundEmitter.h"
@@ -1280,6 +1281,55 @@ void fq::game_module::RegisterMetaData()
 		.data<&UVAnimator::SetIsUpdate, &UVAnimator::GetIsUpdate>("IsUpdate"_hs)
 		.prop(fq::reflect::prop::Name, "IsUpdate")
 		.prop(fq::reflect::prop::Comment, u8"애니메이션 갱신 여부")
+		.data<&UVAnimator::SetPlaySpeed, &UVAnimator::GetPlaySpeed>("PlaySpeed"_hs)
+		.prop(fq::reflect::prop::Name, "PlaySpeed")
+		.prop(fq::reflect::prop::Comment, u8"애니메이션 속도")
+		.base<Component>();
+
+	entt::meta<DecalKeyframe>()
+		.type("DecalKeyframe"_hs)
+		.prop(fq::reflect::prop::POD)
+		.prop(fq::reflect::prop::Name, "DecalKeyframe")
+		.data<&DecalKeyframe::TimePos>("TimePos"_hs)
+		.prop(fq::reflect::prop::Name, "TimePos")
+		.data<&DecalKeyframe::Translation>("Translation"_hs)
+		.prop(fq::reflect::prop::Name, "Translation")
+		.data<&DecalKeyframe::Scale>("Scale"_hs)
+		.prop(fq::reflect::prop::Name, "Scale")
+		.data<&DecalKeyframe::Rotation>("Rotation"_hs)
+		.prop(fq::reflect::prop::Name, "Rotation");
+
+	entt::meta<DecalUVKeyframe>()
+		.type("DecalUVKeyframe"_hs)
+		.prop(fq::reflect::prop::POD)
+		.prop(fq::reflect::prop::Name, "DecalUVKeyframe")
+		.data<&DecalUVKeyframe::TimePos>("TimePos"_hs)
+		.prop(fq::reflect::prop::Name, "TimePos")
+		.data<&DecalUVKeyframe::Translation>("Translation"_hs)
+		.prop(fq::reflect::prop::Name, "Translation")
+		.data<&DecalUVKeyframe::Scale>("Scale"_hs)
+		.prop(fq::reflect::prop::Name, "Scale")
+		.data<&DecalUVKeyframe::Rotation>("Rotation"_hs)
+		.prop(fq::reflect::prop::Name, "Rotation");
+
+	entt::meta<DecalUVAnimator>()
+		.type("DecalUVAnimator"_hs)
+		.prop(fq::reflect::prop::Name, "DecalUVAnimator")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&DecalUVAnimator::mbIsLooping>("bIsLooping"_hs)
+		.prop(fq::reflect::prop::Name, "bIsLooping")
+		.data<&DecalUVAnimator::mbIsUpdate>("bIsUpdate"_hs)
+		.prop(fq::reflect::prop::Name, "bIsUpdate")
+		.data<&DecalUVAnimator::mPlaySpeed>("PlaySpeed"_hs)
+		.prop(fq::reflect::prop::Name, "PlaySpeed")
+		.data<&DecalUVAnimator::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.data<&DecalUVAnimator::mAccumulationTime>("AccumulationTime"_hs)
+		.prop(fq::reflect::prop::Name, "AccumulationTime")
+		.data<&DecalUVAnimator::mKeyframes>("Keyframes"_hs)
+		.prop(fq::reflect::prop::Name, "Keyframes")
+		.data<&DecalUVAnimator::mUVKeyframes>("mUVKeyframes"_hs)
+		.prop(fq::reflect::prop::Name, "mUVKeyframes")
 		.base<Component>();
 
 	entt::meta<LogStateBehaviour>()
@@ -1784,7 +1834,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::DecalInfo::DebugRenderColor>("DebugRenderColor"_hs)
 		.prop(fq::reflect::prop::Name, "DebugRenderColor")
 		.data<&fq::graphics::DecalInfo::bIsRenderDebug>("bIsRenderDebug"_hs)
-		.prop(fq::reflect::prop::Name, "bIsRenderDebug");
+		.prop(fq::reflect::prop::Name, "bIsRenderDebug")
+		.data<&fq::graphics::DecalInfo::bIsIgnoreParentRotation>("bIsIgnoreParentRotation"_hs)
+		.prop(fq::reflect::prop::Name, "bIsIgnoreParentRotation");;
 
 	entt::meta<Decal>()
 		.type("Decal"_hs)

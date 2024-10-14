@@ -150,7 +150,7 @@ namespace fq::graphics
 	struct LightData
 	{
 		DirectionalLight directionalLight[3];
-		PointLight pointLight[10];
+		PointLight pointLight[30];
 		SpotLight spotLight[5];
 
 		unsigned int numOfDirectionalLight;

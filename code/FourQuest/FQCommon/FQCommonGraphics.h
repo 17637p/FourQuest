@@ -402,9 +402,12 @@ namespace fq::graphics
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
+		float Rotation = 0.f;
 
 		DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };
 		bool bIsRenderDebug = true;
+
+		bool bIsIgnoreParentRotation = false;
 	};
 
 	struct TrailInfo

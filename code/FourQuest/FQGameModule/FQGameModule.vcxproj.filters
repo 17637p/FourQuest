@@ -365,6 +365,9 @@
     <ClInclude Include="TriangleCollider.h">
       <Filter>include\01.EntityComponent\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="ClothDataLoader.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
     <ClInclude Include="CameraShakeTrack.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
@@ -386,8 +389,11 @@
     <ClInclude Include="VibrationTrack.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
-    <ClInclude Include="ClothDataLoader.h">
-      <Filter>include\07.Physics</Filter>
+    <ClInclude Include="DecalUVAnimator.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="EAnimationMode.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -613,6 +619,9 @@
     <ClCompile Include="TriangleCollider.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="ClothDataLoader.cpp">
+      <Filter>src\07.Physics</Filter>
+    </ClCompile>
     <ClCompile Include="CameraShakeTrack.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
@@ -631,8 +640,8 @@
     <ClCompile Include="VibrationTrack.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
-    <ClCompile Include="ClothDataLoader.cpp">
-      <Filter>src\07.Physics</Filter>
+    <ClCompile Include="DecalUVAnimator.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

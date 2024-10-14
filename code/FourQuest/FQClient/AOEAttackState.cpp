@@ -3,6 +3,7 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/Animator.h"
+#include "../FQGameModule/RigidBody.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/CharacterController.h"
 #include "MagicArmour.h"
@@ -83,6 +84,7 @@ void fq::client::AOEAttackState::OnStateExit(game_module::Animator& animator, ga
 void fq::client::AOEAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
 	// UI 이동 처리
+	auto rigidBody = mAttackWarningUI->GetComponent<fq::game_module::RigidBody>();
 	auto UIT = mAttackWarningUI->GetComponent<game_module::Transform>();
 	auto input = animator.GetScene()->GetInputManager();
 
@@ -95,6 +97,8 @@ void fq::client::AOEAttackState::OnStateUpdate(game_module::Animator& animator, 
 
 	DirectX::SimpleMath::Vector2 moveDistance{ dt * moveSpeed * x, dt * moveSpeed * y };
 
+	rigidBody->SetLinearVelocity({ moveSpeed * x, -9.8, moveSpeed * y });
+	
 	auto currentPos = prevPos;
 	currentPos.x += moveDistance.x;
 	currentPos.z += moveDistance.y;
@@ -114,5 +118,5 @@ void fq::client::AOEAttackState::OnStateUpdate(game_module::Animator& animator, 
 		currentPos.z += moveVec.z;
 	}
 
-	UIT->SetWorldPosition(currentPos);
+	// UIT->SetWorldPosition(currentPos);
 }
