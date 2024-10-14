@@ -28,6 +28,8 @@ namespace fq::graphics
 		/// 창 크기 변환
 		virtual bool SetWindowSize(const unsigned short width, const unsigned short height) override; // 툴의 에디터를 포함한 전체 윈도우 영역
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
+		virtual unsigned short GetWindowWidth() override;
+		virtual unsigned short GetWindowHeight() override;
 
 		// Model Data Helper
 		virtual fq::common::Model ConvertModel(const std::string& fbxFile) override;
@@ -243,6 +245,9 @@ namespace fq::graphics
 		bool mIsOnPostProcessing;
 		bool mbIsRenderUI;
 		bool mbIsUseLightmapOnly;
+
+		unsigned short mWindowsWidth;
+		unsigned short mWindowsHeight;
 	};
 }
 

@@ -474,15 +474,15 @@ namespace fq::physics
 #pragma endregion
 
 #pragma region PhysicsClothManager
-	bool FQPhysics::CreateCloth(const PhysicsClothInfo& info)
+	bool FQPhysics::CreateCloth(const Cloth::CreateClothData& info)
 	{
 		return mClothManager->CreateCloth(info, mCollisionMatrix);
 	}
-	bool FQPhysics::GetClothData(unsigned int id, PhysicsClothGetData& data)
+	bool FQPhysics::GetClothData(unsigned int id, Cloth::GetSetClothData& data)
 	{
 		return mClothManager->GetClothData(id, data);
 	}
-	bool FQPhysics::SetClothData(unsigned int id, const PhysicsClothSetData& data)
+	bool FQPhysics::SetClothData(unsigned int id, const Cloth::GetSetClothData& data)
 	{
 		return mClothManager->SetClothData(id, data);
 	}

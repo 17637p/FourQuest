@@ -64,7 +64,7 @@ void fq::client::HpBar::SetVisible(bool isVisible)
 {
 	mbIsVisible = isVisible;
 
-	auto infomations = mImageUI->GetUIInfomations();
+	auto infomations = mImageUI->GetUIInfomations();	
 	for (int i = 0; i < 3; ++i)
 	{
 		infomations[i].isRender = isVisible;

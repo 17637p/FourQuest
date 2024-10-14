@@ -51,6 +51,7 @@ namespace fq::game_engine
 		void beginMenu_File();
 		void beginMenu_Window();
 		void beginMenu_DebugOption();
+		void beginMenu_Save();
 
 		void beginMenuItem_CreateScene();
 		void beginMenuItem_LoadScene();
