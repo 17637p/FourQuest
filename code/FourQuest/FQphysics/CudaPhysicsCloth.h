@@ -29,7 +29,7 @@ namespace fq::physics
 		/// <summary>
 		/// 초기화
 		/// </summary>
-		bool Initialize(const PhysicsClothInfo& info, 
+		bool Initialize(const Cloth::CreateClothData& info,
 			physx::PxPhysics* physics, 
 			physx::PxScene* scene, 
 			physx::PxCudaContextManager* cudaContextManager, 
@@ -44,8 +44,8 @@ namespace fq::physics
 		/// <summary>
 		/// 천 GetSet
 		/// </summary>
-		void GetPhysicsCloth(PhysicsClothGetData& data);
-		bool SetPhysicsCloth(const PhysicsClothSetData& data);
+		void GetPhysicsCloth(Cloth::GetSetClothData& data);
+		bool SetPhysicsCloth(const Cloth::GetSetClothData& data);
 
 		/// <summary>
 		/// 버텍스 ID3D11Buffer 저장
@@ -67,7 +67,7 @@ namespace fq::physics
 
 
 	private:
-		void settingInfoData(const PhysicsClothInfo& info);
+		void settingInfoData(const Cloth::CreateClothData& info);
 		void extractSpringsData();
 		void createClothParticle(
 			physx::PxPhysics* physics, 

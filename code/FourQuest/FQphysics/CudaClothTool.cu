@@ -49,9 +49,6 @@ __global__ void UpdateVertex(
 	physx::PxVec4 v0 = vertices[i0];
 	physx::PxVec4 v1 = vertices[i1];
 	physx::PxVec4 v2 = vertices[i2];
-	v0.z = -v0.z;
-	v1.z = -v1.z;
-	v2.z = -v2.z;
 
 	physx::PxVec2 uv0 = uvs[i0];
 	physx::PxVec2 uv1 = uvs[i1];
@@ -181,7 +178,7 @@ __global__ void TransformVertices(
 	SimpleVector3 vertex;
 	vertex.x = particle[idx].x;
 	vertex.y = particle[idx].y;
-	vertex.z = -particle[idx].z;
+	vertex.z = particle[idx].z;
 
 	// 이전 worldTransform의 역행렬 적용
 	vertex = multiply(previousTransformInverse, vertex);
@@ -192,7 +189,7 @@ __global__ void TransformVertices(
 	// 변환된 vertex 저장
 	particle[idx].x = vertex.x;
 	particle[idx].y = vertex.y;
-	particle[idx].z = -vertex.z;
+	particle[idx].z = vertex.z;
 }
 #pragma endregion
 
@@ -220,7 +217,7 @@ __global__ void CopyVertexDataToCPU(
 
 	vertices[idx].x = vertex.x;
 	vertices[idx].y = vertex.y;
-	vertices[idx].z = -vertex.z;
+	vertices[idx].z = vertex.z;
 }
 #pragma endregion
 
