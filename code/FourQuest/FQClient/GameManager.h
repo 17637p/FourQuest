@@ -44,6 +44,8 @@ namespace fq::client
 		void testKey();
 		// result 스코어 초기화 
 		void resetResult();
+		void setPlayerName();
+		std::string wstringToString(std::wstring wStr);
 
 		// temp alpha
 		std::shared_ptr<game_module::GameObject> SpawnPlayer(fq::game_module::PrefabResource prefab, int index);
