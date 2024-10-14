@@ -1,7 +1,9 @@
 #pragma once
 
 #include <set>
+#include <map>
 #include <string>
+#include <vector>
 
 #include "../FQGameModule/EventHandler.h"
 #include "../FQGameModule/Event.h"
@@ -9,6 +11,11 @@
 namespace fq::game_module
 {
 	class GameObject;
+}
+
+namespace fq::graphics
+{
+	class IImageObject;
 }
 
 namespace fq::game_engine
@@ -69,6 +76,11 @@ namespace fq::game_engine
 		/// </summary>
 		void WriteAnimation(const fq::event::WriteAnimation& event);
 
+		/// <summary>
+		// 현재 활성화된 UI On/Off 이벤트
+		/// </summary>
+		void OnUIRender(const fq::event::UIRender& event);
+
 		unsigned int GetModelKey(const Path& modelPath, const Path& texturePath = "")const;
 
 	private:
@@ -81,10 +93,10 @@ namespace fq::game_engine
 		void loadTerrain(fq::game_module::GameObject* object);
 		void unloadTerrain(fq::game_module::GameObject* object);
 
-		void loadAnimation(fq::game_module::GameObject * object);
+		void loadAnimation(fq::game_module::GameObject* object);
 		void unloadAnimation(fq::game_module::GameObject* object);
 
-		void loadUVAnimation(fq::game_module::GameObject * object);
+		void loadUVAnimation(fq::game_module::GameObject* object);
 		void loadSequenceAnimation(fq::game_module::GameObject* object);
 
 	private:
@@ -104,5 +116,7 @@ namespace fq::game_engine
 
 		bool mbIsGameLoaded;
 		DirectX::SimpleMath::Matrix mPlaneMatrix;
+
+		std::map < fq::game_module::GameObject*, std::vector<size_t>> mOnUIRenderEventActivatedObjects;
 	};
 }

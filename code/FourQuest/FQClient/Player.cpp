@@ -321,15 +321,15 @@ void fq::client::Player::SummonSoul(bool isDestroyArmour)
 	if (isDestroyArmour)
 	{
 		spdlog::trace("DestroyArmour");
-	}
 
-	// 이펙트 방출
-	fq::event::OnCreateStateEvent stateEvent;
-	stateEvent.gameObject = GetGameObject();
-	stateEvent.RegisterKeyName = "P_Die_Armor";
-	if (!stateEvent.RegisterKeyName.empty())
-	{
-		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+		// 이펙트 방출
+		fq::event::OnCreateStateEvent stateEvent;
+		stateEvent.gameObject = GetGameObject();
+		stateEvent.RegisterKeyName = "P_Die_Armor";
+		if (!stateEvent.RegisterKeyName.empty())
+		{
+			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+		}
 	}
 
 	// 위치 설정

@@ -10,6 +10,7 @@ fq::game_module::ImageUI::ImageUI()
 	:mUIInfomations{}
 	, mbIsBindTransform(true)
 	, mImageObjects{}
+	, mbIsApplyUIRenderEvent{true}
 {}
 
 fq::game_module::ImageUI::~ImageUI()

@@ -333,6 +333,9 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "UIInfomations")
 		.data<&ImageUI::mbIsBindTransform>("IsBindTransform"_hs)
 		.prop(fq::reflect::prop::Name, "IsBindTransform")
+		.data<&ImageUI::mbIsApplyUIRenderEvent>("bIsApplyUIRenderEvent"_hs)
+		.prop(fq::reflect::prop::Name, "bIsApplyUIRenderEvent")
+		.prop(fq::reflect::prop::Comment, u8"UIRenderEvent 적용 여부")
 		.base<Component>();
 
 	entt::meta<fq::graphics::ETextAlign>()

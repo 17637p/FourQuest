@@ -232,7 +232,7 @@ void fq::client::MaterialManager::OnUpdate(float dt)
 						assert(meshRenderer != nullptr);
 
 						std::vector<std::shared_ptr<fq::graphics::IMaterial>> materials = meshRenderer->GetMaterialInterfaces();
-						mMaterialCache.insert({ &object, materials });
+						mMaterialCache.insert({ staticMeshObject, materials });
 
 						std::vector<std::shared_ptr<fq::graphics::IMaterial>> managerMaterials(materials.size(), mManagerMaterialOrNull);
 						meshRenderer->SetMaterialInterfaces(managerMaterials);
@@ -245,7 +245,7 @@ void fq::client::MaterialManager::OnUpdate(float dt)
 						auto meshRenderer = staticMeshObject->GetComponent<fq::game_module::StaticMeshRenderer>();
 						assert(meshRenderer != nullptr);
 
-						auto find = mMaterialCache.find(&object);
+						auto find = mMaterialCache.find(staticMeshObject);
 
 						if (find != mMaterialCache.end())
 						{

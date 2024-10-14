@@ -56,7 +56,7 @@ void fq::client::MaterialManagedGroup::OnStart()
 
 	std::function<void(fq::game_module::GameObject*)> registerRecursive = [this, &registerRecursive](fq::game_module::GameObject* object)
 		{
-			if (GetComponent<fq::game_module::StaticMeshRenderer>() != nullptr)
+			if (object->GetComponent<fq::game_module::StaticMeshRenderer>() != nullptr)
 			{
 				this->mStaticMeshObjects.push_back(object);
 			}
