@@ -298,9 +298,8 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 
 	mImagePos.x = windowPos.x + cursorPos.x;
 	mImagePos.y = windowPos.y + cursorPos.y;
-
-	auto windowSize = ImGui::GetWindowSize();
-	ImGui::Image(mGameProcess->mGraphics->GetSRV(), windowSize);
+ 
+	ImGui::Image(mGameProcess->mGraphics->GetSRV(), viewportSize);
 }
 
 void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
@@ -558,7 +557,7 @@ void fq::game_engine::GamePlayWindow::drawSelectObjectDebugInfomation()
 	if (!mSelectObject || mGameProcess->mCameraSystem->GetCameraType() != CameraSystem::CameraType::Editor)  return;
 
 	using namespace fq::game_module;
-
+	  
 	// 카메라 정보 표시
 	if (mSelectObject->HasComponent<Camera>())
 	{
