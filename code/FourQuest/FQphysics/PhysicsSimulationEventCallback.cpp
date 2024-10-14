@@ -144,8 +144,8 @@ namespace fq::physics
 		for (physx::PxU32 j = 0; j < contactCount; j++)
 		{
 			points[j].x = contactPoints[j].position.x;
-			points[j].y = contactPoints[j].position.x;
-			points[j].z = contactPoints[j].position.x;
+			points[j].y = contactPoints[j].position.y;
+			points[j].z = contactPoints[j].position.z;
 		}
 
 		CollisionData ActorData1;

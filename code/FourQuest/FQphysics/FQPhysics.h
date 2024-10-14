@@ -192,17 +192,17 @@ namespace fq::physics
 		/// <summary>
 		/// 천을 생성합니다.
 		/// </summary>
-		virtual bool CreateCloth(const PhysicsClothInfo& info) override;
+		virtual bool CreateCloth(const Cloth::CreateClothData& info) override;
 
 		/// <summary>
 		/// 천 데이터를 얻습니다.
 		/// </summary>
-		virtual bool GetClothData(unsigned int id, PhysicsClothGetData& data) override;
+		virtual bool GetClothData(unsigned int id, Cloth::GetSetClothData& data) override;
 
 		/// <summary>
 		/// 천 데이터를 세팅합니다.
 		/// </summary>
-		virtual bool SetClothData(unsigned int id, const PhysicsClothSetData& data) override;
+		virtual bool SetClothData(unsigned int id, const Cloth::GetSetClothData& data) override;
 
 		/// <summary>
 		/// 천을 삭제합니다.

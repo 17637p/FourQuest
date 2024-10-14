@@ -395,6 +395,9 @@
     <ClInclude Include="EAnimationMode.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="ClothCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -642,6 +645,9 @@
     </ClCompile>
     <ClCompile Include="DecalUVAnimator.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ClothCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
