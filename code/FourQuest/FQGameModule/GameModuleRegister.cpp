@@ -32,6 +32,7 @@
 #include "MeshCollider.h"
 #include "CharacterController.h"
 #include "TerrainCollider.h"
+#include "ClothCollider.h"
 #include "Articulation.h"
 
 //
@@ -759,6 +760,16 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MoveInfo")
 		.data<&CharacterController::SetControllerInfo, &CharacterController::GetControllerInfo>("ControllerInfo"_hs)
 		.prop(fq::reflect::prop::Name, "ControllerInfo")
+		.base<Component>();
+	
+	// ClothCollider
+	entt::meta<ClothCollider>()
+		.type("ClothCollider"_hs)
+		.prop(fq::reflect::prop::Name, "ClothCollider")
+		.prop(fq::reflect::prop::Label, "Physcis")
+		.data<&ClothCollider::SetClothPath, &ClothCollider::GetClothPath>("ClothPath"_hs)
+		.prop(fq::reflect::prop::Name, "ClothPath")
+		.prop(fq::reflect::prop::Comment, u8" ")
 		.base<Component>();
 
 

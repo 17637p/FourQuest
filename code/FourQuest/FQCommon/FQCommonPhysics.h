@@ -176,16 +176,6 @@ namespace fq::physics
 		unsigned int myLayerNumber = UINT_MAX;
 	};
 
-	struct PhysicsClothGetData
-	{
-		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
-		unsigned int myLayerNumber = UINT_MAX;
-	};
-	struct PhysicsClothSetData
-	{
-		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
-		unsigned int myLayerNumber = UINT_MAX;
-	};
 #pragma endregion
 
 #pragma region Resource
@@ -389,8 +379,8 @@ namespace fq::physics
 			int vertexSize = 0;									// ∏µ® πˆ≈ÿΩ∫ ªÁ¿Ã¡Ó
 			unsigned int* indices = nullptr;					// ∏µ® ¿Œµ¶Ω∫
 			int indexSize = 0;									// ∏µ® ¿Œµ¶Ω∫ ªÁ¿Ã¡Ó
-			unsigned int* disableIndices = nullptr;					// ∏µ® ¿Œµ¶Ω∫
-			int disableIndexSize = 0;									// ∏µ® ¿Œµ¶Ω∫ ªÁ¿Ã¡Ó
+			unsigned int* disableIndices = nullptr;				// ∏µ® ¿Œµ¶Ω∫
+			int disableIndexSize = 0;							// ∏µ® ¿Œµ¶Ω∫ ªÁ¿Ã¡Ó
 
 			void* vertexBuffer = nullptr;							// D3D11Buffer*
 			void* indexBuffer = nullptr;							// D3D11Buffer*
@@ -398,10 +388,8 @@ namespace fq::physics
 
 		struct GetSetClothData
 		{
-			unsigned int id = unregisterID;
-			unsigned int layerNumber = 0;
-
-			DirectX::SimpleMath::Matrix worldTransform = {};
+			unsigned int myLayerNumber = UINT_MAX;
+			DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
 		};
 	}
 #pragma endregion
