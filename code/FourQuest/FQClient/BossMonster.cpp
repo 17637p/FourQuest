@@ -452,7 +452,6 @@ void fq::client::BossMonster::EmitComboAttack(float xAxisOffset)
 	attackPos += right * xAxisOffset;
 	attackT->GenerateWorld(attackPos, rotation, scale);
 
-
 	// 공격 정보 설정
 	AttackInfo attackInfo{};
 	auto attackComponent = attackObj->GetComponent<Attack>();
