@@ -7,6 +7,7 @@
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/RigidBody.h"
 
 #include "Attack.h"
 #include "CameraMoving.h"
@@ -238,6 +239,29 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 		auto monsterAtk = collision.other->GetComponent<client::Attack>();
 		if (monsterAtk->ProcessAttack())
 		{
+			// 플레이어 넉백 처리
+			if (monsterAtk->HasKnockBack())
+			{
+				auto type = monsterAtk->GetKnockBackType();
+				float power = monsterAtk->GetKnockBackPower();
+				
+				if (type == EKnockBackType::TargetPosition)
+				{
+					auto playerPos = mTransform->GetWorldPosition();
+					playerPos.y = 0.f;
+					auto monsterPos = monsterAtk->GetTransform()->GetWorldPosition();
+					monsterPos.y = 0.f;
+
+					auto knockBackDir = playerPos - monsterPos;
+					knockBackDir.Normalize();
+					auto rigid = GetComponent<game_module::RigidBody>();
+
+					knockBackDir *= power;
+					rigid->AddLinearVelocity(knockBackDir);
+				}
+			}
+
+
 			// 플레이어 방패 막기 처리 
 			if (mbOnShieldBlock)
 			{
@@ -276,7 +300,6 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 				mAnimator->SetParameterTrigger("OnHit");
 				mInvincibleElapsedTime = mInvincibleTime;
 			}
-
 		}
 	}
 
