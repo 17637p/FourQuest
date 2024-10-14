@@ -227,6 +227,7 @@
     <ClInclude Include="ClothCollider.h" />
     <ClInclude Include="ClothDataLoader.h" />
     <ClInclude Include="CameraShakeTrack.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="DecalUVAnimator.h" />
     <ClInclude Include="EAnimationMode.h" />
     <ClInclude Include="MaterialAnimator.h" />
@@ -320,6 +321,7 @@
     <ClCompile Include="ClothCollider.cpp" />
     <ClCompile Include="ClothDataLoader.cpp" />
     <ClCompile Include="CameraShakeTrack.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="DecalUVAnimator.cpp" />
     <ClCompile Include="MaterialAnimator.cpp" />
     <ClCompile Include="AnimatorControllerLoader.cpp" />
