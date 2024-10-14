@@ -10,6 +10,7 @@ namespace fq
 	{
 		class GameProcess;
 
+
 		class SkyBoxWindow;
 		class LightmapWindow;
 
