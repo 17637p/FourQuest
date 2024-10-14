@@ -55,6 +55,30 @@ namespace fq::game_module
 		}
 	}
 
+	void fq::game_module::Controller::OnCollisionEnter(const Collision& collision)
+	{
+		++mCollisionCount;
+	}
+
+	void fq::game_module::Controller::OnCollisionExit(const Collision& collision)
+	{
+		if (mCollisionCount == 0) return;
+
+		--mCollisionCount;
+	}
+
+	void fq::game_module::Controller::OnTriggerEnter(const Collision& collision)
+	{
+		++mCollisionCount;
+	}
+
+	void fq::game_module::Controller::OnTriggerExit(const Collision& collision)
+	{
+		if (mCollisionCount == 0) return;
+
+		--mCollisionCount;
+	}
+
 	std::shared_ptr<Component> Controller::Clone(std::shared_ptr<Component> clone) const
 	{
 		auto cloneController = std::dynamic_pointer_cast<Controller>(clone);

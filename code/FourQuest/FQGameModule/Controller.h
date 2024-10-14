@@ -31,9 +31,19 @@ namespace fq::game_module
 		std::array<bool, 4> GetMoveRestrction()const { return mbMoveRestriction; }
 		void SetMoveRestriction(std::array<bool, 4> restriction);
 
+		/// <summary>
+		/// 현재 충돌중인 콜라이더 갯수를 반환합니다 
+		/// </summary>
+		unsigned int GetCollisionCount() const { return mCollisionCount; }
+
 	private:
 		void OnStart() override;
 		void OnFixedUpdate(float dt) override;
+
+		void OnCollisionEnter(const Collision& collision) override;
+		void OnCollisionExit(const Collision& collision) override;
+		void OnTriggerEnter(const Collision& collision) override;
+		void OnTriggerExit(const Collision& collision) override;
 
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }
