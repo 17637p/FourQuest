@@ -13,6 +13,8 @@
 #include "PlayerInfoVariable.h"
 #include "SoulVariable.h"
 
+#include <boost/locale.hpp>
+
 std::shared_ptr<fq::game_module::Component> fq::client::GameManager::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
 	auto cloneGameMgr = std::dynamic_pointer_cast<GameManager>(clone);
@@ -291,6 +293,8 @@ void fq::client::GameManager::OnStart()
 
 void fq::client::GameManager::OnAwake()
 {
+	setPlayerName();
+
 	mRegisterPlayerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::RegisterPlayer>(
 		[this](const client::event::RegisterPlayer& event)
 		{
@@ -645,5 +649,18 @@ void fq::client::GameManager::resetResult()
 	PlayerInfoVariable::Player2Knight = 0;
 	PlayerInfoVariable::Player3Knight = 0;
 	PlayerInfoVariable::Player4Knight = 0;
+}
+
+void fq::client::GameManager::setPlayerName()
+{
+	PlayerInfoVariable::KnightName = wstringToString(L"루카스");
+	PlayerInfoVariable::MagicName = wstringToString(L"아르카나");
+	PlayerInfoVariable::BerserkerName = wstringToString(L"발더");
+	PlayerInfoVariable::ArcherName = wstringToString(L"실버");
+}
+
+std::string fq::client::GameManager::wstringToString(std::wstring wStr)
+{
+	return boost::locale::conv::from_utf(wStr, "UTF-8");
 }
 
