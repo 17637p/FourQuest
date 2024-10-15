@@ -14,6 +14,7 @@ namespace fq::game_module
 		virtual ~IPool(){}
 
 		virtual void Clear() abstract;
+		virtual void CleanUp() abstract;
 		virtual size_t GetSize()const abstract;
 	};
 
@@ -57,6 +58,15 @@ namespace fq::game_module
 		/// </summary>
 		void Clear() override {
 			mContainer.clear();
+		}
+
+		void CleanUp() override
+		{
+			mContainer.erase(std::remove_if(mContainer.begin(), mContainer.end()
+				, [](std::shared_ptr<T>& element)
+				{
+					return element.use_count() == 1;	
+				}), mContainer.end());
 		}
 
 	private:
