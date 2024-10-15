@@ -20,6 +20,8 @@ namespace fq::game_module
 	{
 		ordered_json clothJson;
 
+		clothJson["modelPath"] = data->modelPath;
+
 		// vertices를 JSON 배열로 변환
 		clothJson["vertices"] = json::array();
 		for (const auto& vertex : data->vertices)
@@ -67,6 +69,9 @@ namespace fq::game_module
 		ordered_json clothJson;
 		file >> clothJson;
 		file.close();
+
+		// modelPath 읽기
+		clothData->modelPath = clothJson["modelPath"];
 
 		// vertices 읽기
 		if (clothJson.contains("vertices") && clothJson["vertices"].is_array())

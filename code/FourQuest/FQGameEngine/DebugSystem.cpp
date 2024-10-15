@@ -12,6 +12,7 @@
 #include "../FQGameModule/MeshCollider.h"
 #include "../FQGameModule/CapsuleCollider.h"
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Controller.h"
 #include "GameProcess.h"
 #include "WindowSystem.h"
 #include "PhysicsSystem.h"
@@ -361,6 +362,56 @@ void fq::game_engine::DebugSystem::RenderCharaterController(fq::game_module::Tra
 	mGameProcess->mGraphics->DrawRay(ray);
 }
 
+void fq::game_engine::DebugSystem::RenderCharaterController(fq::game_module::Transform& transform, fq::game_module::Controller& cotroller)
+{
+	using DirectX::SimpleMath::Color;
+
+	Color color = (cotroller.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
+
+	auto upDir = transform.GetWorldMatrix().Up();
+	upDir.Normalize();
+	auto controllerInfo = cotroller.GetControllerInfo();
+	auto offset = cotroller.GetOffset();
+
+	// UpSphere
+	fq::graphics::debug::SphereInfo info;
+	info.Color = color;
+	info.Sphere.Center = transform.GetWorldPosition() + offset + upDir * controllerInfo.height * 0.5f;
+	info.Sphere.Radius = controllerInfo.radius;
+	mGameProcess->mGraphics->DrawSphere(info);
+
+	// DownSphere
+	info.Sphere.Center = transform.GetWorldPosition() + offset - upDir * controllerInfo.height * 0.5f;
+	mGameProcess->mGraphics->DrawSphere(info);
+
+	// BodyRay 
+	fq::graphics::debug::RayInfo ray;
+
+	ray.Direction = upDir * controllerInfo.height;
+	ray.Color = color;
+	ray.Normalize = false;
+	auto orgin = info.Sphere.Center;
+	auto rightDir = transform.GetWorldMatrix().Right();
+	rightDir.Normalize();
+	rightDir *= controllerInfo.radius;
+
+	auto fowardDir = transform.GetWorldMatrix().Forward();
+	fowardDir.Normalize();
+	fowardDir *= controllerInfo.radius;
+
+	ray.Origin = orgin + rightDir;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin - rightDir;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin + fowardDir;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin - fowardDir;
+	mGameProcess->mGraphics->DrawRay(ray);
+}
+
 void fq::game_engine::DebugSystem::renderCapsuleCollider()
 {
 	if (!GetOnCapsuleCollider()) return;
@@ -413,6 +464,13 @@ void fq::game_engine::DebugSystem::renderCharaterController()
 
 	mScene->ViewComponents<Transform, CharacterController>
 		([this](GameObject& object, Transform& transform, CharacterController& cotroller)
+			{
+				if (mbUseColliderTag[static_cast<int>(object.GetTag())])
+					RenderCharaterController(transform, cotroller);
+			});
+
+	mScene->ViewComponents<Transform, Controller>
+		([this](GameObject& object, Transform& transform, Controller& cotroller)
 			{
 				if (mbUseColliderTag[static_cast<int>(object.GetTag())])
 					RenderCharaterController(transform, cotroller);

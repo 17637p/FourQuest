@@ -8,6 +8,7 @@
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Animator.h"
+#include "../FQGameModule/UVAnimator.h"
 #include "../FQCommon/FQPath.h"
 #include "GameProcess.h"
 
@@ -25,10 +26,12 @@ fq::game_engine::ResourceSystem::~ResourceSystem()
 void fq::game_engine::ResourceSystem::Initialize(GameProcess* game)
 {
 	mGameProcess = game;
-	mPreOnLoadSceneHandler = mGameProcess->mEventManager->
-		RegisterHandle<fq::event::PreOnLoadScene>(this, &ResourceSystem::LoadSceneResource);
-	mPreOnLoadSceneHandler = mGameProcess->mEventManager->
+
+	mLoadMaterialHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::LoadMaterial>(this, &ResourceSystem::LoadMaterialResource);
+
+	mUnLoadSceneResourceHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::UnloadSceneResource>(this, &ResourceSystem::UnloadSceneResource);
 }
 
 void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScene event)
@@ -38,8 +41,12 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	SceneResourceList list;
 	list.Load(listPath.string());
 
+	mResourceCount = list.modelPaths.size()
+		+ list.animationPaths.size()
+		+ list.materialPaths.size()
+		+ list.uvAnimationPath.size()
+		+ list.nodeHierachyPaths.size();
 	mLoadedResourceCount = 0;
-	mResourceCount = list.modelPaths.size() + list.animationPaths.size() + list.materialPaths.size();
 
 	// Model 로드
 	for (const auto& modelPath : list.modelPaths)
@@ -55,7 +62,21 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 		++mLoadedResourceCount;
 	}
 
-	//// Material 로드
+	// UV Animation 로드 
+	for (const auto& uvAnimationPath : list.uvAnimationPath)
+	{
+		LoadUVAnimation(uvAnimationPath);
+		++mLoadedResourceCount;
+	}
+
+	// NodeHierachy 로드 
+	for (const auto& nodeHierachyPath : list.nodeHierachyPaths)
+	{
+		LoadNodeHierarchy(nodeHierachyPath);
+		++mLoadedResourceCount;
+	}
+
+	// Material 로드
 	for (const auto& materialPath : list.materialPaths)
 	{
 		LoadMaterial(materialPath);
@@ -71,7 +92,6 @@ void fq::game_engine::ResourceSystem::LoadMaterialResource(fq::event::LoadMateri
 
 void fq::game_engine::ResourceSystem::Finalize()
 {
-
 }
 
 void fq::game_engine::ResourceSystem::LoadModelResource(const Path& modelPath)
@@ -105,6 +125,36 @@ void fq::game_engine::ResourceSystem::LoadModelResource(const Path& modelPath)
 	}
 
 	mModels.insert({ modelPath, std::move(model) });
+}
+
+void fq::game_engine::ResourceSystem::UnloadModelResource(const Path& path)
+{
+	if (mModels.find(path) == mModels.end())
+	{
+		return;
+	}
+
+	auto& model = mModels.at(path);
+
+	for (const auto& [node, mesh] : model.Meshes)
+	{
+		if (mesh.Vertices.empty())
+		{
+			continue;
+		}
+
+		if (mesh.BoneVertices.empty())
+		{
+			mStaticMeshes.erase(path + mesh.Name);
+			mStaticMeshes.erase(path + node.Name); // 유니티에서 메쉬 이름이 노드 이름으로 변환되어 해당 로직 추가합니다_홍지환
+		}
+		else
+		{
+			mSkinnedMeshes.erase(path + mesh.Name);
+			mSkinnedMeshes.erase(path + node.Name); // 유니티에서 메쉬 이름이 노드 이름으로 변환되어 해당 로직 추가합니다_홍지환
+		}
+	}
+	mModels.erase(path);
 }
 
 const fq::common::Model& fq::game_engine::ResourceSystem::GetModel(const Path& path)const
@@ -252,6 +302,22 @@ void fq::game_engine::ResourceSystem::SaveObjectResource(SceneResourceList& list
 		{
 			list.animatorControllerPaths.insert(controllerpath);
 		}
+
+		if (fs::exists(nodeHierachyPath))
+		{
+			list.nodeHierachyPaths.insert(nodeHierachyPath);
+		}
+	}
+
+	if (object->HasComponent<UVAnimator>())
+	{
+		auto uvAnimator = object->GetComponent<UVAnimator>();
+		auto uvAnimationPath = uvAnimator->GetUVAnimationPath();
+
+		if (fs::exists(uvAnimationPath))
+		{
+			list.uvAnimationPath.insert(uvAnimationPath);
+		}
 	}
 
 }
@@ -325,6 +391,118 @@ std::shared_ptr<fq::graphics::ISkinnedMesh> fq::game_engine::ResourceSystem::Get
 
 float fq::game_engine::ResourceSystem::GetLoadingRatio() const
 {
+	if (mResourceCount == 0)
+	{
+		return 0.f;
+	}
+
 	return static_cast<float>(mLoadedResourceCount) / mResourceCount;
+}
+
+void fq::game_engine::ResourceSystem::UnloadSceneResource(fq::event::UnloadSceneResource event)
+{
+	// 같은 씬의 경우에는 리소스를 언로드 하지 않습니다.
+	if (event.currentSceneName == event.nextSceneName)
+	{
+		return;
+	}
+
+	// 다음 씬이 없는 경우에도 모든 리소스를 언로드합니다 .
+	if (event.nextSceneName.empty())
+	{
+		mModels.clear();
+		mStaticMeshes.clear();
+		mSkinnedMeshes.clear();
+		mNodeHierarchies.clear();
+		mAnimations.clear();
+		mUVAnimations.clear();
+		mMaterials.clear();
+		return;
+	}
+
+	auto currentScenePath = fq::path::GetScenePath() / event.currentSceneName / "resource_list.txt";
+	SceneResourceList currentList;
+	currentList.Load(currentScenePath.string());
+
+	auto nextScenePath = fq::path::GetScenePath() / event.nextSceneName / "resource_list.txt";
+	SceneResourceList nextList;
+	nextList.Load(nextScenePath.string());
+
+	// 다음씬에서 필요없는 리소스를 언로드합니다.
+
+	// ModelResource
+	auto& nextModels = nextList.modelPaths;
+
+	for (auto& loadModel : currentList.modelPaths)
+	{
+		if (nextModels.find(loadModel) == nextModels.end())
+		{
+			UnloadModelResource(loadModel);
+		}
+	}
+
+	// Animation
+	auto& nextAnimations = nextList.animationPaths;
+	
+	for (auto& loadAnimation : currentList.animationPaths)
+	{
+		if (nextAnimations.find(loadAnimation) == nextAnimations.end())
+		{
+			UnloadAnimation(loadAnimation);
+		}
+	}
+
+	// UVAnimation
+	auto& nextUVAnimations = nextList.uvAnimationPath;
+
+	for (auto& loadUVAnimation : currentList.uvAnimationPath)
+	{
+		if (nextUVAnimations.find(loadUVAnimation) == nextUVAnimations.end())
+		{
+			UnloadUVAnimation(loadUVAnimation);
+		}
+	}
+
+	// Material
+	auto& nextMaterials = nextList.materialPaths;
+
+	for (auto& materialPath : currentList.materialPaths)
+	{
+		if (nextMaterials.find(materialPath) == nextMaterials.end())
+		{
+			UnloadMaterial(materialPath);
+		}
+	}
+
+	// NodeHierachy
+	auto& nextNodeHierachy = nextList.nodeHierachyPaths;
+
+	for (auto& nodeHierachyPath : currentList.nodeHierachyPaths)
+	{
+		if (nextNodeHierachy.find(nodeHierachyPath) == nextNodeHierachy.end())
+		{
+			UnloadNodeHierarchy(nodeHierachyPath);
+		}
+	}
+}
+
+void fq::game_engine::ResourceSystem::UnloadAnimation(const Path& path)
+{
+	mAnimations.erase(path);
+}
+
+void fq::game_engine::ResourceSystem::UnloadNodeHierarchy(const Path& path)
+{
+	mNodeHierarchies.erase(path);
+}
+
+void fq::game_engine::ResourceSystem::UnloadUVAnimation(const Path& path)
+{
+	mUVAnimations.erase(path);
+}
+
+void fq::game_engine::ResourceSystem::UnloadMaterial(const Path& path)
+{
+	mMaterials.erase(path);
 }
 

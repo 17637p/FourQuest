@@ -1,6 +1,7 @@
 #include "MaterialManager.h"
 #include "ClientEvent.h"
 #include "GameManager.h"
+#include "MaterialManagedGroup.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Camera.h"
 #include "../FQGameModule/Transform.h"
@@ -9,7 +10,6 @@
 
 fq::client::MaterialManager::MaterialManager(const MaterialManager& other)
 	: mGameManager(other.mGameManager)
-	, mStaticMeshObjects(other.mStaticMeshObjects)
 	, mMaterialCache(other.mMaterialCache)
 	, mManagerMaterialPath(other.mManagerMaterialPath)
 	, mManagerMaterialOrNull(other.mManagerMaterialOrNull)
@@ -24,7 +24,6 @@ fq::client::MaterialManager& fq::client::MaterialManager::operator=(const Materi
 	}
 
 	mGameManager = other.mGameManager;
-	mStaticMeshObjects = other.mStaticMeshObjects;
 	mMaterialCache = other.mMaterialCache;
 	mManagerMaterialPath = other.mManagerMaterialPath;
 	mManagerMaterialOrNull = other.mManagerMaterialOrNull;
@@ -79,13 +78,18 @@ void fq::client::MaterialManager::OnUpdate(float dt)
 	GetScene()->ViewComponents<fq::game_module::Camera>(
 		[&mainCamera](fq::game_module::GameObject& object, fq::game_module::Camera& camera)
 		{
-			if (camera.IsMain())
+			if (camera.IsMain() && object.GetName() == "MainCamera")
 			{
 				mainCamera = &camera;
 				return;
 			}
 		}
 	);
+
+	if (mainCamera == nullptr)
+	{
+		return;
+	}
 
 	if (mbUseDebugDraw)
 	{
@@ -95,7 +99,7 @@ void fq::client::MaterialManager::OnUpdate(float dt)
 			DirectX::SimpleMath::Vector3 cameraPosW = mainCamera->GetTransform()->GetWorldPosition();
 
 			DirectX::SimpleMath::Vector3 lay = playerPosW - cameraPosW;
-			
+
 			fq::graphics::debug::RayInfo rayInfo;
 
 			rayInfo.Origin = cameraPosW;
@@ -108,62 +112,157 @@ void fq::client::MaterialManager::OnUpdate(float dt)
 		}
 	}
 
-	GetScene()->ViewComponents<fq::game_module::StaticMeshRenderer>(
-		[this, &mainCamera, &players](fq::game_module::GameObject& object, fq::game_module::StaticMeshRenderer& meshRenderer)
-		{
-			if (!meshRenderer.GetIsStatic())
+	if (mbUseAllStaticObjectCheck)
+	{
+		GetScene()->ViewComponents<fq::game_module::StaticMeshRenderer>(
+			[this, &mainCamera, &players](fq::game_module::GameObject& object, fq::game_module::StaticMeshRenderer& meshRenderer)
 			{
-				return;
-			}
-			if (mainCamera == nullptr)
-			{
-				return;
-			}
-
-			const DirectX::BoundingBox& boundingBox = meshRenderer.GetStaticMeshObject()->GetStaticMesh()->GetMeshData().RenderBoundingBox;
-
-			for (const auto& player : players)
-			{
-				const auto& objectInverseTransform = object.GetTransform()->GetWorldMatrix().Invert();
-
-				DirectX::SimpleMath::Vector3 playerPosW = DirectX::SimpleMath::Vector3::TransformNormal(mLocalPointOffset, player->GetTransform()->GetLocalMatrix()) + player->GetTransform()->GetWorldPosition() + mWorldPointOffset;
-				DirectX::SimpleMath::Vector3 cameraPosW = mainCamera->GetTransform()->GetWorldPosition();
-
-				DirectX::SimpleMath::Vector3 playerPosL = DirectX::SimpleMath::Vector3::Transform(playerPosW, objectInverseTransform);
-				DirectX::SimpleMath::Vector3 cameraPosL = DirectX::SimpleMath::Vector3::Transform(cameraPosW, objectInverseTransform);
-
-				DirectX::SimpleMath::Vector3 lay = cameraPosL - playerPosL;
-
-				float distance = lay.Length();
-				lay.Normalize();
-
-				if (boundingBox.Intersects(playerPosL, lay, distance))
+				if (!meshRenderer.GetIsStatic())
 				{
-					std::vector<std::shared_ptr<fq::graphics::IMaterial>> materials = meshRenderer.GetMaterialInterfaces();
-					mMaterialCache.insert({ &object, materials });
-
-					std::vector< std::shared_ptr<fq::graphics::IMaterial>> managerMaterials(materials.size(), mManagerMaterialOrNull);
-					meshRenderer.SetMaterialInterfaces(managerMaterials);
-
-					break;
+					return;
 				}
-				else
+				if (mainCamera == nullptr)
 				{
-					auto find = mMaterialCache.find(&object);
+					return;
+				}
 
-					if (find != mMaterialCache.end())
+				auto findIgnord = mIgnoredObjects.find(&object);
+
+				if (findIgnord != mIgnoredObjects.end())
+				{
+					return;
+				}
+				
+				const DirectX::BoundingBox& boundingBox = meshRenderer.GetStaticMeshObject()->GetStaticMesh()->GetMeshData().RenderBoundingBox;
+
+				for (const auto& player : players)
+				{
+					const auto& objectInverseTransform = object.GetTransform()->GetWorldMatrix().Invert();
+
+					DirectX::SimpleMath::Vector3 playerPosW = DirectX::SimpleMath::Vector3::TransformNormal(mLocalPointOffset, player->GetTransform()->GetLocalMatrix()) + player->GetTransform()->GetWorldPosition() + mWorldPointOffset;
+					DirectX::SimpleMath::Vector3 cameraPosW = mainCamera->GetTransform()->GetWorldPosition();
+
+					DirectX::SimpleMath::Vector3 playerPosL = DirectX::SimpleMath::Vector3::Transform(playerPosW, objectInverseTransform);
+					DirectX::SimpleMath::Vector3 cameraPosL = DirectX::SimpleMath::Vector3::Transform(cameraPosW, objectInverseTransform);
+
+					DirectX::SimpleMath::Vector3 lay = cameraPosL - playerPosL;
+
+					float distance = lay.Length();
+					lay.Normalize();
+
+					if (boundingBox.Intersects(playerPosL, lay, distance))
 					{
-						meshRenderer.SetMaterialInterfaces(find->second);
-						mMaterialCache.erase(find);
+						std::vector<std::shared_ptr<fq::graphics::IMaterial>> materials = meshRenderer.GetMaterialInterfaces();
+						mMaterialCache.insert({ &object, materials });
+
+						std::vector< std::shared_ptr<fq::graphics::IMaterial>> managerMaterials(materials.size(), mManagerMaterialOrNull);
+						meshRenderer.SetMaterialInterfaces(managerMaterials);
+
+						break;
+					}
+					else
+					{
+						auto find = mMaterialCache.find(&object);
+
+						if (find != mMaterialCache.end())
+						{
+							meshRenderer.SetMaterialInterfaces(find->second);
+							mMaterialCache.erase(find);
+						}
 					}
 				}
 			}
-		}
-	);
+		);
+	}
+
+	if (mbUseMaterialGroup)
+	{
+		GetScene()->ViewComponents<MaterialManagedGroup>(
+			[this, &mainCamera, &players](fq::game_module::GameObject& object, MaterialManagedGroup& materialManagedGroup)
+			{
+				if (mainCamera == nullptr)
+				{
+					return;
+				}
+				if (!materialManagedGroup.GetUsed())
+				{
+					return;
+				}
+
+				// 충돌 체크
+				bool bIsCollision = false;
+				const auto& staticMeshObjects = materialManagedGroup.GetStaticMeshObjects();
+
+				for (auto* staticMeshObject : staticMeshObjects)
+				{
+					for (const auto& player : players)
+					{
+						auto meshRenderer = staticMeshObject->GetComponent<fq::game_module::StaticMeshRenderer>();
+						assert(meshRenderer != nullptr);
+
+						const DirectX::BoundingBox& boundingBox = meshRenderer->GetStaticMeshObject()->GetStaticMesh()->GetMeshData().RenderBoundingBox;
+						const auto& objectInverseTransform = staticMeshObject->GetTransform()->GetWorldMatrix().Invert();
+
+						DirectX::SimpleMath::Vector3 playerPosW = DirectX::SimpleMath::Vector3::TransformNormal(mLocalPointOffset, player->GetTransform()->GetLocalMatrix()) + player->GetTransform()->GetWorldPosition() + mWorldPointOffset;
+						DirectX::SimpleMath::Vector3 cameraPosW = mainCamera->GetTransform()->GetWorldPosition();
+
+						DirectX::SimpleMath::Vector3 playerPosL = DirectX::SimpleMath::Vector3::Transform(playerPosW, objectInverseTransform);
+						DirectX::SimpleMath::Vector3 cameraPosL = DirectX::SimpleMath::Vector3::Transform(cameraPosW, objectInverseTransform);
+
+						DirectX::SimpleMath::Vector3 lay = cameraPosL - playerPosL;
+
+						float distance = lay.Length();
+						lay.Normalize();
+
+						if (boundingBox.Intersects(playerPosL, lay, distance))
+						{
+							bIsCollision = true;
+							goto EXIT;
+						}
+					}
+				}
+			EXIT:
+
+				// 세팅
+				if (bIsCollision)
+				{
+					for (auto* staticMeshObject : staticMeshObjects)
+					{
+						auto meshRenderer = staticMeshObject->GetComponent<fq::game_module::StaticMeshRenderer>();
+						assert(meshRenderer != nullptr);
+
+						std::vector<std::shared_ptr<fq::graphics::IMaterial>> materials = meshRenderer->GetMaterialInterfaces();
+						mMaterialCache.insert({ staticMeshObject, materials });
+
+						std::vector<std::shared_ptr<fq::graphics::IMaterial>> managerMaterials(materials.size(), mManagerMaterialOrNull);
+						meshRenderer->SetMaterialInterfaces(managerMaterials);
+					}
+				}
+				else
+				{
+					for (auto* staticMeshObject : staticMeshObjects)
+					{
+						auto meshRenderer = staticMeshObject->GetComponent<fq::game_module::StaticMeshRenderer>();
+						assert(meshRenderer != nullptr);
+
+						auto find = mMaterialCache.find(staticMeshObject);
+
+						if (find != mMaterialCache.end())
+						{
+							meshRenderer->SetMaterialInterfaces(find->second);
+							mMaterialCache.erase(find);
+						}
+					}
+				}
+			}
+		);
+	}
 }
 
 void fq::client::MaterialManager::OnStart()
 {
+	mIgnoredObjects.clear();
+
 	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
 
 	fq::event::LoadMaterial loadMaterial;
@@ -171,5 +270,20 @@ void fq::client::MaterialManager::OnStart()
 	loadMaterial.materialPtr = &mManagerMaterialOrNull;
 
 	GetScene()->GetEventManager()->FireEvent<fq::event::LoadMaterial>(std::move(loadMaterial));
+
+	GetScene()->ViewComponents<MaterialManagedGroup>(
+		[this](fq::game_module::GameObject& object, MaterialManagedGroup& materialManagedGroup)
+		{
+			if (materialManagedGroup.GetUsed())
+			{
+				return;
+			}
+			const auto& staticMeshObjects = materialManagedGroup.GetStaticMeshObjects();
+
+			for (auto* staticMeshObject : staticMeshObjects)
+			{
+				mIgnoredObjects.insert(staticMeshObject);
+			}
+		});
 }
 

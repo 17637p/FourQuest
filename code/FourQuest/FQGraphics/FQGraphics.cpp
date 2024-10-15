@@ -39,6 +39,8 @@ FQGraphics::FQGraphics()
 	, mIsRenderObjects(true)
 	, mbIsRenderUI(true)
 	, mbIsUseLightmapOnly(false)
+	, mWindowsWidth(0)
+	, mWindowsHeight(0)
 {
 }
 
@@ -66,6 +68,9 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mLightProbeManager->Initialize(mDevice, mResourceManager);
 	mUIManager->Initialize(hWnd, mDevice, mResourceManager, width, height);
 	mPostProcessingManager->Initialize(mDevice, mResourceManager, mCameraManager, width, height);
+
+	mWindowsWidth = width;
+	mWindowsHeight = height;
 
 	return true;
 }
@@ -471,6 +476,16 @@ bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned shor
 	return true;
 }
 
+unsigned short fq::graphics::FQGraphics::GetWindowWidth()
+{
+	return mWindowsWidth;
+}
+
+unsigned short fq::graphics::FQGraphics::GetWindowHeight()
+{
+	return mWindowsHeight;
+}
+
 bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short height)
 {
 	// 16:9 비율 유지하기 위한 스케일링 계산
@@ -501,6 +516,8 @@ bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short 
 		mUIManager->OnResize(mDevice, width, height);
 		mPostProcessingManager->OnResize(mDevice, mResourceManager, width, height);
 
+		mWindowsWidth = width;
+		mWindowsHeight = height;
 		return true;
 	}
 	else
@@ -512,6 +529,8 @@ bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short 
 		mUIManager->OnResize(mDevice, fixed16_9Width, fixed16_9Height);
 		mPostProcessingManager->OnResize(mDevice, mResourceManager, fixed16_9Width, fixed16_9Height);
 
+		mWindowsWidth = fixed16_9Width;
+		mWindowsHeight = fixed16_9Height;
 		return true;
 	}
 }

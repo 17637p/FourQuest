@@ -51,6 +51,7 @@
     <ClInclude Include="GoddessStatue.h" />
     <ClInclude Include="LevelHepler.h" />
     <ClInclude Include="LookingObjectHelper.h" />
+    <ClInclude Include="MaterialManagedGroup.h" />
     <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="MultiPlayerObjectCreator.h" />
     <ClInclude Include="PlantAOEAttack.h" />
@@ -205,6 +206,7 @@
     <ClCompile Include="GoddessStatue.cpp" />
     <ClCompile Include="LevelHepler.cpp" />
     <ClCompile Include="LookingObjectHelper.cpp" />
+    <ClCompile Include="MaterialManagedGroup.cpp" />
     <ClCompile Include="MultiPlayerObjectCreator.cpp" />
     <ClCompile Include="PlantAOEAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />

@@ -33,6 +33,9 @@ namespace fq::game_module
 
 		bool IsBindTransform() const { return mbIsBindTransform; }
 		void SetBindTransform(bool isBind) { mbIsBindTransform = isBind; }
+
+		bool GetIsApplyUIRenderEvent() const { return mbIsApplyUIRenderEvent; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -44,6 +47,7 @@ namespace fq::game_module
 		std::vector<graphics::IImageObject*> mImageObjects;
 
 		bool mbIsBindTransform;
+		bool mbIsApplyUIRenderEvent; // UIRender 이벤트 적용 여부, 추가_홍지환
 
 		friend void RegisterMetaData();
 	};

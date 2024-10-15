@@ -14,6 +14,7 @@
 #include "Mesh.h"
 #include "d3d11Shader.h"
 #include "ConstantBufferStructure.h"
+#include "D3D11Texture.h"
 
 fq::graphics::D3D11PickingManager::D3D11PickingManager()
 	:mR(0),
@@ -62,6 +63,13 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 
 	mBackBufferDSV = resourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 	mBackBufferRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default);
+
+	mViewport.Width = (float)width;
+	mViewport.Height = (float)height;
+	mViewport.MinDepth = 0.f;
+	mViewport.MaxDepth = 1.f;
+	mViewport.TopLeftX = 0.f;
+	mViewport.TopLeftY = 0.f;
 }
 
 void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects,
@@ -121,12 +129,22 @@ void fq::graphics::D3D11PickingManager::NextColor()
 
 unsigned int fq::graphics::D3D11PickingManager::GetHashColor(const std::shared_ptr<D3D11Device> device, const short x, const short y)
 {
+	ID3D11Device* devicePtr = device->GetDevice().Get();
 	ID3D11DeviceContext* deviceContext = device->GetDeviceContext().Get();
 
 	ID3D11Resource* pickingDrawResource = nullptr;
 	mPickingDrawRTV->GetRTV()->GetResource(&pickingDrawResource);
 
-	//deviceContext->CopyResource(mCopyTexture.Get(), pickingDrawResource);
+	// 디버깅 정보 찍어보기 용도
+	// {
+	// 	D3D11_TEXTURE2D_DESC desc;
+	// 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
+	// 	pickingDrawResource->QueryInterface<ID3D11Texture2D>(pTexture.GetAddressOf());
+	// 	pTexture->GetDesc(&desc);
+	// 	D3D11Texture::SaveTextureToFile(devicePtr, deviceContext, pTexture.Get(), L"pickingTexture.dds");
+	// }
+
+	deviceContext->CopyResource(mCopyTexture.Get(), pickingDrawResource);
 
 	D3D11_BOX box;
 
@@ -231,6 +249,8 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	const std::set<ITerrainMeshObject*>& terrainMeshObjects,
 	const std::set<IProbeObject*>& probeObjects)
 {
+	device->GetDeviceContext()->RSSetViewports(1, &mViewport);
+
 	mPickingDrawRTV->Clear(device, { 0.f, 0.f, 0.f, 1.f });
 	mDSV->Clear(device);
 	mPickingDrawRTV->Bind(device, mDSV);
@@ -334,6 +354,30 @@ void fq::graphics::D3D11PickingManager::OnResize(const short width, const short 
 {
 	mPickingDrawRTV->OnResize(device, ED3D11RenderTargetViewType::Picking, width, height);
 	mDSV->OnResize(device, ED3D11DepthStencilViewType::Picking, width, height);
+
+	mViewport.Width = (float)width;
+	mViewport.Height = (float)height;
+	mViewport.MinDepth = 0.f;
+	mViewport.MaxDepth = 1.f;
+	mViewport.TopLeftX = 0.f;
+	mViewport.TopLeftY = 0.f;
+
+	mCopyTexture.Reset();
+
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	textureDesc.Width = width;
+	textureDesc.Height = height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Usage = D3D11_USAGE_STAGING;
+	textureDesc.BindFlags = 0;
+	textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	textureDesc.MiscFlags = 0;
+
+	device->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &mCopyTexture);
 }
 
 void fq::graphics::D3D11PickingManager::EndRender(const std::shared_ptr<D3D11Device>& device)

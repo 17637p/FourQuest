@@ -9,6 +9,7 @@
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/RigidBody.h"
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Controller.h"
 #include "../FQGameModule/BoxCollider.h"
 #include "../FQGameModule/SphereCollider.h"
 #include "../FQGameModule/MeshCollider.h"
@@ -45,6 +46,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mArticulationTypeID(0)
 	, mAddInputMoveHandler{}
 	, mOneFrameRagdollCreateCount(0)
+	, mAddControllerID(4)
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -89,6 +91,7 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 	mCapsuleTypeID = entt::resolve<fq::game_module::CapsuleCollider>().id();
 	mMeshTypeID = entt::resolve<fq::game_module::MeshCollider>().id();
 	mCharactorControllerTypeID = entt::resolve<fq::game_module::CharacterController>().id();
+	mControllerTypeID = entt::resolve<fq::game_module::Controller>().id();
 	mRigidTypeID = entt::resolve<game_module::RigidBody>().id();
 	mTerrainTypeID = entt::resolve<game_module::TerrainCollider>().id();
 	mArticulationTypeID = entt::resolve<game_module::Articulation>().id();
@@ -364,6 +367,31 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		controller->SetControllerInfo(controllerInfo);
 	}
 
+	// 5.Controller
+	if (object->HasComponent<Controller>())
+	{
+		auto controller = object->GetComponent<Controller>();
+		auto controllerInfo = controller->GetControllerInfo();
+		auto movementInfo = controller->GetMovementInfo();
+		auto offset = controller->GetOffset();
+		auto charaterTransform = transform->GetTransform();
+
+		ColliderID id = ++mLastColliderID;
+		controllerInfo.id = id;
+		controllerInfo.layerNumber = static_cast<int>(object->GetTag());
+		controllerInfo.position = transform->GetWorldPosition() + controller->GetOffset();
+
+		bool check = mPhysicsEngine->CreateCCT(controllerInfo, movementInfo);
+		assert(check);
+
+		mColliderContainer.insert({ id,
+			{mControllerTypeID
+			, controller->shared_from_this()
+			,object->shared_from_this()
+			,controller,false} });
+		controller->SetControllerInfo(controllerInfo);
+	}
+
 	bool hasStaticMesh = object->HasComponent<StaticMeshRenderer>();
 	bool hasSkinnedMesh = object->HasComponent<SkinnedMeshRenderer>();
 
@@ -610,6 +638,16 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
+	// 4. Controller
+	if (object->HasComponent<Controller>())
+	{
+		auto controller = object->GetComponent<Controller>();
+		auto id = controller->GetControllerInfo().id;
+		assert(id != physics::unregisterID);
+
+		mColliderContainer.at(id).bIsDestroyed = true;
+	}
+
 	// 4. Mesh Collider
 	if (object->HasComponent<MeshCollider>())
 	{
@@ -687,6 +725,17 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		if (colliderInfo.enttID == mCharactorControllerTypeID)
 		{
 			auto controller = colliderInfo.component->GetComponent<fq::game_module::CharacterController>();
+			auto controll = mPhysicsEngine->GetCharacterControllerData(id);
+			auto movement = mPhysicsEngine->GetCharacterMovementData(id);
+			auto position = controll.position - controller->GetOffset();
+
+			controller->SetFalling(movement.isFall);
+			rigid->SetLinearVelocity(movement.velocity);
+			transform->SetWorldPosition(position);
+		}
+		else if (colliderInfo.enttID == mControllerTypeID)
+		{
+			auto controller = colliderInfo.component->GetComponent<fq::game_module::Controller>();
 			auto controll = mPhysicsEngine->GetCharacterControllerData(id);
 			auto movement = mPhysicsEngine->GetCharacterMovementData(id);
 			auto position = controll.position - controller->GetOffset();
@@ -901,7 +950,39 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			moveData.restriction = controller->GetMoveRestrction();
 			moveData.maxSpeed = controller->GetMovementInfo().maxSpeed;
 			mPhysicsEngine->SetCharacterMovementData(id, moveData);
+		}
+		else if (colliderInfo.enttID == mControllerTypeID)
+		{
+			auto controller = colliderInfo.component->GetComponent<fq::game_module::Controller>();
 
+			fq::physics::CharacterControllerGetSetData data;
+			data.position = transform->GetWorldPosition() + controller->GetOffset();
+			data.rotation = transform->GetWorldRotation();
+			data.scale = transform->GetWorldScale();
+
+			// Tag가 변경된 경우
+			auto controllerInfo = controller->GetControllerInfo();
+			auto prevLayer = controllerInfo.layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				controllerInfo.layerNumber = currentLayer;
+				controller->SetControllerInfo(controllerInfo);
+			}
+
+			mPhysicsEngine->SetCharacterControllerData(id, data);
+
+			fq::physics::CharacterMovementGetSetData moveData;
+
+			auto movementInfo = controller->GetMovementInfo();
+			moveData.acceleration = movementInfo.acceleration;
+			moveData.maxSpeed = movementInfo.maxSpeed;
+			moveData.velocity = rigid->GetLinearVelocity();
+			moveData.isFall = controller->IsFalling();
+			moveData.restriction = controller->GetMoveRestrction();
+			moveData.maxSpeed = controller->GetMovementInfo().maxSpeed;
+			mPhysicsEngine->SetCharacterMovementData(id, moveData);
 		}
 		else if (colliderInfo.enttID == mCapsuleTypeID)
 		{
@@ -1087,7 +1168,7 @@ void fq::game_engine::PhysicsSystem::PostUpdate()
 		{
 			if (info.enttID == mArticulationTypeID)
 				mPhysicsEngine->RemoveArticulation(colliderID);
-			else if (info.enttID == mCharactorControllerTypeID)
+			else if (info.enttID == mCharactorControllerTypeID || info.enttID == mControllerTypeID)
 				mPhysicsEngine->RemoveController(colliderID);
 			else
 				mPhysicsEngine->RemoveRigidBody(colliderID);
