@@ -1537,6 +1537,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackEmitTick")
 		.data<&StaffSoulAttack::mAttackDuration>("AttackDuration"_hs)
 		.prop(fq::reflect::prop::Name, "AttackDuration")
+		.data<&StaffSoulAttack::mKnockBackPower>("KnockBackPower"_hs)
+		.prop(fq::reflect::prop::Name, "KnockBackPower")
 		.data<&StaffSoulAttack::mAttack>("Attack"_hs)
 		.prop(fq::reflect::prop::Name, "Attack")
 		.base<fq::game_module::Component>();

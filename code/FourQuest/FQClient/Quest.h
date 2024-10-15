@@ -111,6 +111,7 @@ namespace fq::client
 		int mIndex;
 		std::string mName;
 		bool mIsMain; // QuestType
+		bool mIsClear = false;
 
 		QuestJoinCondition mJoinConditionList;
 		QuestClearCondition mclearConditionList;

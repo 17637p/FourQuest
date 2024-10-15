@@ -13,6 +13,7 @@ fq::client::StaffSoulAttack::StaffSoulAttack()
 	, mAttackEmitElapsedTime(0.f)
 	, mAttackDuration(5.f)
 	, mAttackElapsedTime(0.f)
+	, mKnockBackPower(5.)
 {}
 
 fq::client::StaffSoulAttack::~StaffSoulAttack()
@@ -75,6 +76,9 @@ void fq::client::StaffSoulAttack::emitAttack()
 	AttackInfo attackInfo{};
 	attackInfo.attacker = mPlayer->GetGameObject();
 	attackInfo.damage = dc::GetStaffSoulDamage(mPlayer->GetAttackPower());
+	attackInfo.knocBackPower = mKnockBackPower;
+	attackInfo.attackPosition = transform->GetWorldPosition();
+	attackInfo.type = EKnockBackType::TargetPosition;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);

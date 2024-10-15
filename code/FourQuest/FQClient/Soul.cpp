@@ -115,6 +115,13 @@ void fq::client::Soul::OnTriggerEnter(const fq::game_module::Collision& collisio
 	{
 		mSelectGoddessStatue = goddessStatue;
 	}
+
+	// Quest Event 
+	if (mController != nullptr)
+	{
+		GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideTrigger>(
+			{ (int)mController->GetControllerID(), collision.other->GetName() });
+	}
 }
 
 void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision)

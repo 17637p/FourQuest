@@ -42,7 +42,8 @@ void fq::client::Portal::OnTriggerEnter(const fq::game_module::Collision& collis
 {
 	if (collision.other->GetTag() == game_module::ETag::Player 
 		|| collision.other->GetTag() == game_module::ETag::Soul
-		|| collision.other->GetTag() == game_module::ETag::Dash)
+		|| collision.other->GetTag() == game_module::ETag::Dash
+		|| collision.other->GetTag() == game_module::ETag::PlayerMonsterIgnore)
 	{
 		// 타임 스케일 0 으로 바꾸기 
 		GetScene()->GetTimeManager()->SetTimeScale(0);
