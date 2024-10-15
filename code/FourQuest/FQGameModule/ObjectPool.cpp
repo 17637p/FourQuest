@@ -24,3 +24,11 @@ void fq::game_module::ObjectPool::Finalize()
 	delete mInstance;
 }
 
+void fq::game_module::ObjectPool::CleanUp()
+{
+	for (auto& pool : mInstance->mPools)
+	{
+		pool.second->CleanUp();
+	}
+}
+

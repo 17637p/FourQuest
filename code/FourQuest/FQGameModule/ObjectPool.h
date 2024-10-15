@@ -28,6 +28,11 @@ namespace fq::game_module
 		static ObjectPool* GetInstance();
 
 		/// <summary>
+		/// 오브젝트풀을 정리합니다 
+		/// </summary>
+		static void CleanUp();
+
+		/// <summary>
 		/// 오브젝트풀을 종료합니다 
 		/// </summary>
 		static void Finalize();
