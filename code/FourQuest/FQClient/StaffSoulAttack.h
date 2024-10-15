@@ -30,6 +30,7 @@ namespace fq::client
 		float mAttackEmitTick;
 		float mAttackDuration;
 		float mAttackElapsedTime;
+		float mKnockBackPower;
 
 		friend void RegisterMetaData();
 	};
