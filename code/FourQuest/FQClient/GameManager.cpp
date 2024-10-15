@@ -360,6 +360,7 @@ void fq::client::GameManager::testKey()
 			auto playerComponent = player->GetComponent<Player>();
 			if (playerComponent != nullptr)
 			{
+				playerComponent->SetMaxHp(100000.f);
 				playerComponent->SetHp(100000.f);
 			}
 		}
