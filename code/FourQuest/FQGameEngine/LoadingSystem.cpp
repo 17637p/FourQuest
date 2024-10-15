@@ -94,7 +94,6 @@ void fq::game_engine::LoadingSystem::ProcessLoading()
 void fq::game_engine::LoadingSystem::updateUI(float dt)
 {
 	float ratio = mGameProcess->mResourceSystem->GetLoadingRatio();
-	spdlog::trace("ratio {}", ratio);
 	auto loadingUI = mLoadingUIObject[0]->GetComponent<client::LoadingUI>();
 	loadingUI->SetProgressBar(ratio);
 
