@@ -884,6 +884,11 @@ void fq::client::Player::SetLowerBodyAnimation()
 
 void fq::client::Player::DecreaseHp(float hp, bool bUseMinHp /*= false*/, bool bIgnoreInvincible /*= fasle*/)
 {
+	if (GetGameObject()->IsDestroyed())
+	{
+		return;
+	}
+
 	bool isHitAble = mInvincibleElapsedTime == 0.f;
 
 	if (!isHitAble && !bIgnoreInvincible) return;
