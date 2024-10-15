@@ -30,7 +30,7 @@ void fq::client::LoadingUI::OnStart()
 	// 초기값 세팅
 	auto Bars = GetGameObject()->GetChildren()[0]->GetChildren();
 	mProgressBar = Bars[0]->GetComponent<game_module::ImageUI>();
-	mProgressBarMaxWidth = mProgressBar->GetUIInfomation(0).Width;
+	mProgressBarMaxWidth = 1720;
 
 	mProgressSoul = Bars[1]->GetComponent<game_module::Transform>();
 
@@ -124,6 +124,8 @@ void fq::client::LoadingUI::SetProgressBar(float progress)
 
 	uiInfo.Width = mProgressBarMaxWidth * progress;
 	uiInfo.XRatio = progress;
+
+	spdlog::trace("UIInfo.Width: {}", uiInfo.Width);
 
 	mProgressBar->SetUIInfomation(0, uiInfo);
 
