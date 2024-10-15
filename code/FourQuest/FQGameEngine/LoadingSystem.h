@@ -19,7 +19,13 @@ namespace fq::game_engine
 
 		void Initialize(GameProcess* game);
 		void Finalize();
-		void ProcessLoading();
+
+		/// <summary>
+		/// 로딩이 중단된 경우 true 를 반환합니다.
+		/// </summary>
+		/// <returns></returns>
+		bool ProcessLoading();
+
 	private:
 		void loadUI();
 		void updateUI(float dt);

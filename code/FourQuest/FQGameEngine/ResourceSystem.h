@@ -57,6 +57,11 @@ namespace fq::game_engine
 		void LoadNodeHierarchy(const Path& path);
 		void UnloadNodeHierarchy(const Path& path);
 
+		/// <summary>
+		/// 리소스 로딩을 종료합니다.
+		/// </summary>
+		void StopLoadResource() { mbIsStopLoadResource = true; };
+
 		inline std::map<Path, std::shared_ptr<graphics::IMaterial>> GetMaterials() const; // 그레이 스케일로 인해 추가
 
 		/// <summary>
@@ -78,6 +83,7 @@ namespace fq::game_engine
 		std::map<Path, std::shared_ptr<graphics::IUVAnimation>> mUVAnimations;
 		std::map<Path, std::shared_ptr<graphics::IMaterial>> mMaterials;
 
+		std::atomic<bool> mbIsStopLoadResource;
 		std::atomic<size_t> mResourceCount;
 		std::atomic<size_t> mLoadedResourceCount;
 	};

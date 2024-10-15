@@ -10,7 +10,7 @@ Application::~Application()
 
 }
 
-void Application::Initialize(Mode mode)
+bool Application::Initialize(Mode mode)
 {
 	if (mode == Mode::Game)
 	{
@@ -21,7 +21,7 @@ void Application::Initialize(Mode mode)
 		mEngine = fq::game_engine::Exporter::GetEditorEngine();
 	}
 
-	mEngine->Initialize();
+	return mEngine->Initialize();
 }
 
 void Application::Process()

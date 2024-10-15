@@ -20,7 +20,7 @@ namespace fq
 			GameEngine();
 			~GameEngine();
 
-			void Initialize() override;
+			bool Initialize() override;
 			void Process() override;
 			void Finalize() override;
 

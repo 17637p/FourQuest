@@ -41,7 +41,7 @@ fq::game_engine::EditorEngine::EditorEngine()
 fq::game_engine::EditorEngine::~EditorEngine()
 {}
 
-void fq::game_engine::EditorEngine::Initialize()
+bool fq::game_engine::EditorEngine::Initialize()
 {
 	// COM
 	HRESULT hr = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
@@ -112,11 +112,8 @@ void fq::game_engine::EditorEngine::Initialize()
 	// Editor 초기화
 	InitializeEditor();
 
-	// 모델 데이터 수정이 생긴경우
-	// mEditor->mModelSystem->ConvertAllModel();
-
 	// Scene 로드 
-	mGameProcess->mLoadingSystem->ProcessLoading();
+	return mGameProcess->mLoadingSystem->ProcessLoading();
 }
 
 void fq::game_engine::EditorEngine::Process()
@@ -257,7 +254,8 @@ void fq::game_engine::EditorEngine::Process()
 			if (mGameProcess->mSceneManager->IsChangeScene())
 			{
 				mGameProcess->mSceneManager->UnloadScene();
-				mGameProcess->mLoadingSystem->ProcessLoading();
+				bool IsExitGame = mGameProcess->mLoadingSystem->ProcessLoading();
+				if (IsExitGame) return;
 				mGameProcess->mSceneManager->StartScene();
 			}
 
@@ -285,12 +283,12 @@ void fq::game_engine::EditorEngine::Finalize()
 	mGameProcess->mUISystem->Finalize();
 
 	// Editor Process
-	mEditor->mImageSystem->Finalize();
+   	mEditor->mImageSystem->Finalize();
 	mEditor->mFileDialog->Finalize();
 	mEditor->mGamePlayWindow->Finalize();
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
-	mEditor->mImGuiSystem->Finalize();
+	mEditor->mImGuiSystem->Finalize();   
 	mEditor->mAnimatorWindow->Finalize();
 	mEditor->mArticulationHierarchy->Finalize();
 	mEditor->mClothEditorWindow->Finalize();
@@ -300,7 +298,7 @@ void fq::game_engine::EditorEngine::Finalize()
 	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
 	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
 
-	// GameProcess
+	// GameProcess 
 	mGameProcess->mSceneManager->Finalize();
 	mGameProcess->mEventManager->RemoveAllHandles();
 

@@ -16,6 +16,7 @@ fq::game_engine::ResourceSystem::ResourceSystem()
 	:mGameProcess(nullptr)
 	, mLoadedResourceCount(0)
 	, mResourceCount(0)
+	, mbIsStopLoadResource(false)
 {}
 
 fq::game_engine::ResourceSystem::~ResourceSystem()
@@ -51,6 +52,7 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	// Model 로드
 	for (const auto& modelPath : list.modelPaths)
 	{
+		if (mbIsStopLoadResource) return;
 		LoadModelResource(modelPath);
 		++mLoadedResourceCount;
 	}
@@ -58,6 +60,7 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	// Animation 로드
 	for (const auto& animationPath : list.animationPaths)
 	{
+		if (mbIsStopLoadResource) return;
 		LoadAnimation(animationPath);
 		++mLoadedResourceCount;
 	}
@@ -65,6 +68,7 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	// UV Animation 로드 
 	for (const auto& uvAnimationPath : list.uvAnimationPath)
 	{
+		if (mbIsStopLoadResource) return;
 		LoadUVAnimation(uvAnimationPath);
 		++mLoadedResourceCount;
 	}
@@ -72,6 +76,7 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	// NodeHierachy 로드 
 	for (const auto& nodeHierachyPath : list.nodeHierachyPaths)
 	{
+		if (mbIsStopLoadResource) return;
 		LoadNodeHierarchy(nodeHierachyPath);
 		++mLoadedResourceCount;
 	}
@@ -79,6 +84,7 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	// Material 로드
 	for (const auto& materialPath : list.materialPaths)
 	{
+		if (mbIsStopLoadResource) return;
 		LoadMaterial(materialPath);
 		++mLoadedResourceCount;
 	}

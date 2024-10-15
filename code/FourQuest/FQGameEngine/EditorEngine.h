@@ -20,7 +20,7 @@ namespace fq
 			/// <summary>
 			/// 에디터를 초기화합니다 
 			/// </summary>
-			void Initialize() override;
+			bool Initialize() override;
 			
 			/// <summary>
 			/// 에디터를 실행합니다
