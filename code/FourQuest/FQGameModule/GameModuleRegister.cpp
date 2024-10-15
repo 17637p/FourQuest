@@ -98,8 +98,9 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::AimAssist>("AimAssist"_hs) // 15
 		.prop(fq::reflect::prop::Name, "AimAssist")
 		.data<ETag::PlayerMonsterIgnore>("PlayerMonsterIgnore"_hs) // 16
-		.prop(fq::reflect::prop::Name, "PlayerMonsterIgnore");;
-
+		.prop(fq::reflect::prop::Name, "PlayerMonsterIgnore")
+		.data<ETag::MagicCircle>("MagicCircle"_hs) // 17
+		.prop(fq::reflect::prop::Name, "MagicCircle");
 
 	// GameObject
 	entt::meta<GameObject>()
