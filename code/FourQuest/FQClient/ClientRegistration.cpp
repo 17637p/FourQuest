@@ -44,6 +44,7 @@
 #include "BerserkerRushChargingState.h"
 #include "AttackInvalidation.h"
 #include "PlayerLowerMovementState.h"
+#include "PlayerDummy.h"
 
 // Monster
 #include "Monster.h"
@@ -472,6 +473,11 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "DeadArcherArmour")
 		.data<&Player::mDeadWarriorArmour>("DeadWarriorArmour"_hs)
 		.prop(reflect::prop::Name, "DeadWarriorArmour")
+
+		.data<&Player::mDummyPrefab>("DummyPrefab"_hs)
+		.prop(reflect::prop::Name, "DummyPrefab")
+		.prop(reflect::prop::Comment, u8"갑옷 해체 후 소울이 될 경우 생성되는 프리팹")
+
 		.base<game_module::Component>();
 
 	entt::meta<DeadArmour>()
@@ -718,6 +724,15 @@ void fq::client::RegisterMetaData()
 		.data<&AimAssist::mTheta>("Theta"_hs)
 		.prop(reflect::prop::Name, "Theta")
 		.prop(reflect::prop::Comment, u8"보정할 각도, 기본 180도")
+		.base<game_module::Component>();
+
+	entt::meta<PlayerDummy>()
+		.type("PlayerDummy"_hs)
+		.prop(reflect::prop::Name, "PlayerDummy")
+		.prop(reflect::prop::Label, "Player")
+		.data<&PlayerDummy::mDuration>("Duration"_hs)
+		.prop(reflect::prop::Name, "Duration")
+		.prop(reflect::prop::Comment, u8"더미 오브젝트 생존 시간")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1074,6 +1089,18 @@ void fq::client::RegisterMetaData()
 		.data<&MeleeMonster::mDetectRange>("DetectRange"_hs)
 		.prop(fq::reflect::prop::Name, "DetectRange")
 		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
+		.data<&MeleeMonster::mDummyTraceDurationTime>("DummyTraceDurationTime"_hs)
+		.prop(fq::reflect::prop::Name, "DummyTraceDurationTime")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 추적 시간")
+		.data<&MeleeMonster::mbUseDummyTraceRandomRange>("bUseDummyTraceRandomRange"_hs)
+		.prop(fq::reflect::prop::Name, "bUseDummyTraceRandomRange")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 추적 시간에 더해질 랜덤 추적 시간을 사용할지 여부")
+		.data<&MeleeMonster::mDummyDurationRandomRangeMin>("DummyDurationRandomRangeMin"_hs)
+		.prop(fq::reflect::prop::Name, "DummyDurationRandomRangeMin")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 더해질 최소 랜덤 추적 시간(최소값 ~ 최댓값)")
+		.data<&MeleeMonster::mDummyDurationRandomRangeMax>("DummyDurationRandomRangeMax"_hs)
+		.prop(fq::reflect::prop::Name, "DummyDurationRandomRangeMax")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 더해질 최대 랜덤 추적 시간(최소값 ~ 최댓값)")
 		.base<fq::game_module::Component>();
 
 	entt::meta<MeleeMonsterExplosion>()
@@ -1231,6 +1258,20 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ComboEffect")
 		.data<&BossMonster::mHpBarPrefab>("HpBarPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "HpBarPrefab")
+
+		.data<&BossMonster::mDummyTraceDurationTime>("DummyTraceDurationTime"_hs)
+		.prop(fq::reflect::prop::Name, "DummyTraceDurationTime")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 추적 시간")
+		.data<&BossMonster::mbUseDummyTraceRandomRange>("bUseDummyTraceRandomRange"_hs)
+		.prop(fq::reflect::prop::Name, "bUseDummyTraceRandomRange")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 추적 시간에 더해질 랜덤 추적 시간을 사용할지 여부")
+		.data<&BossMonster::mDummyDurationRandomRangeMin>("DummyDurationRandomRangeMin"_hs)
+		.prop(fq::reflect::prop::Name, "DummyDurationRandomRangeMin")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 더해질 최소 랜덤 추적 시간(최소값 ~ 최댓값)")
+		.data<&BossMonster::mDummyDurationRandomRangeMax>("DummyDurationRandomRangeMax"_hs)
+		.prop(fq::reflect::prop::Name, "DummyDurationRandomRangeMax")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 더해질 최대 랜덤 추적 시간(최소값 ~ 최댓값)")
+
 		.base<fq::game_module::Component>();
 
 	entt::meta<BossMonsterIdleState>()
@@ -1366,6 +1407,20 @@ void fq::client::RegisterMetaData()
 		.data<&PlantMonster::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "RotationSpeed")
 		.prop(fq::reflect::prop::Comment, u8"회전 속도 0 < x <= 1.f")
+
+		.data<&PlantMonster::mDummyTraceDurationTime>("DummyTraceDurationTime"_hs)
+		.prop(fq::reflect::prop::Name, "DummyTraceDurationTime")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 추적 시간")
+		.data<&PlantMonster::mbUseDummyTraceRandomRange>("bUseDummyTraceRandomRange"_hs)
+		.prop(fq::reflect::prop::Name, "bUseDummyTraceRandomRange")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 추적 시간에 더해질 랜덤 추적 시간을 사용할지 여부")
+		.data<&PlantMonster::mDummyDurationRandomRangeMin>("DummyDurationRandomRangeMin"_hs)
+		.prop(fq::reflect::prop::Name, "DummyDurationRandomRangeMin")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 더해질 최소 랜덤 추적 시간(최소값 ~ 최댓값)")
+		.data<&PlantMonster::mDummyDurationRandomRangeMax>("DummyDurationRandomRangeMax"_hs)
+		.prop(fq::reflect::prop::Name, "DummyDurationRandomRangeMax")
+		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 더해질 최대 랜덤 추적 시간(최소값 ~ 최댓값)")
+
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

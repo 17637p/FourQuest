@@ -112,7 +112,11 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 				{
 					auto nodeHierarchyInstanceOrNull = meshObject->GetNodeHierarchyInstance();
 
-					if (nodeHierarchyInstanceOrNull == nullptr)
+					if (!mesh.GetUseTransform())
+					{
+						meshObject->SetTransform(DirectX::SimpleMath::Matrix::Identity);
+					}
+					else if (nodeHierarchyInstanceOrNull == nullptr)
 					{
 						meshObject->SetTransform(transform.GetWorldMatrix());
 					}

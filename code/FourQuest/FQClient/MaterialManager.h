@@ -14,8 +14,8 @@ namespace fq::client
 	{
 	public:
 		MaterialManager() = default;
-		MaterialManager(const MaterialManager& other);
-		MaterialManager& operator=(const MaterialManager& other);
+		MaterialManager(const MaterialManager& other) = default;
+		MaterialManager& operator=(const MaterialManager& other) = default;
 		~MaterialManager() = default;
 
 		void SetManagerMaterialOrNull(std::shared_ptr<fq::graphics::IMaterial> managerMaterialOrNull);

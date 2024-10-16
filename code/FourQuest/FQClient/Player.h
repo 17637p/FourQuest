@@ -174,6 +174,12 @@ namespace fq::client
 		float GetGBIncreaseSpeed() const { return mGBIncreaseSpeed; } // 이동속도 증가 
 		void SetGBIncreaseSpeed(float val) { mGBIncreaseSpeed = val; } // 버프 없을 때 0
 
+		/// <summary>
+		/// 플레이어 위치에 더미 오브젝트를 생성합니다.
+		/// 소울 상태로 변환된 경우에만 더미 생성이 가능하고 그 외에는 nullptr을 반환합니다.
+		/// </summary>
+		fq::game_module::GameObject* CreateDummyOrNull();
+
 	private:
 		void processInput(float dt);
 		void processCoolTime(float dt);
@@ -269,5 +275,9 @@ namespace fq::client
 
 		// 이펙트 방출 여부
 		bool mbIsEmitEnhanceEffect;
+
+		// 더미 프리팹
+		bool mbCanCreateDummy;
+		game_module::PrefabResource mDummyPrefab;
 	};
 }

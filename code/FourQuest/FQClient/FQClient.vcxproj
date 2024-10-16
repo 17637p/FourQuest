@@ -53,8 +53,10 @@
     <ClInclude Include="LevelHepler.h" />
     <ClInclude Include="LookingObjectHelper.h" />
     <ClInclude Include="MaterialManagedGroup.h" />
+    <ClInclude Include="MeleeMonsterVariable.h" />
     <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="MultiPlayerObjectCreator.h" />
+    <ClInclude Include="ParabolaAttack.h" />
     <ClInclude Include="PlantAOEAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
@@ -146,6 +148,7 @@
     <ClInclude Include="PlantMonsterIdleState.h" />
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerCheckUI.h" />
+    <ClInclude Include="PlayerDummy.h" />
     <ClInclude Include="PlayerInfoVariable.h" />
     <ClInclude Include="PlayerMovementSoundState.h" />
     <ClInclude Include="PlayerSoundState.h" />
@@ -210,6 +213,7 @@
     <ClCompile Include="LookingObjectHelper.cpp" />
     <ClCompile Include="MaterialManagedGroup.cpp" />
     <ClCompile Include="MultiPlayerObjectCreator.cpp" />
+    <ClCompile Include="ParabolaAttack.cpp" />
     <ClCompile Include="PlantAOEAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
@@ -291,6 +295,7 @@
     <ClCompile Include="PlantMonsterIdleState.cpp" />
     <ClCompile Include="PlantMonsterStareState.cpp" />
     <ClCompile Include="PlayerCheckUI.cpp" />
+    <ClCompile Include="PlayerDummy.cpp" />
     <ClCompile Include="PlayerMovementSoundState.cpp" />
     <ClCompile Include="PlayerSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />

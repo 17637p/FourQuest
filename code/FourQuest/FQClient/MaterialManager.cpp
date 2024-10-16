@@ -8,29 +8,6 @@
 #include "../FQGameModule/CharacterController.h"
 #include "../FQCommon/FQCommonGraphics.h"
 
-fq::client::MaterialManager::MaterialManager(const MaterialManager& other)
-	: mGameManager(other.mGameManager)
-	, mMaterialCache(other.mMaterialCache)
-	, mManagerMaterialPath(other.mManagerMaterialPath)
-	, mManagerMaterialOrNull(other.mManagerMaterialOrNull)
-{
-}
-
-fq::client::MaterialManager& fq::client::MaterialManager::operator=(const MaterialManager& other)
-{
-	if (this == &other)
-	{
-		return *this;
-	}
-
-	mGameManager = other.mGameManager;
-	mMaterialCache = other.mMaterialCache;
-	mManagerMaterialPath = other.mManagerMaterialPath;
-	mManagerMaterialOrNull = other.mManagerMaterialOrNull;
-
-	return *this;
-}
-
 void fq::client::MaterialManager::SetManagerMaterialOrNull(std::shared_ptr<fq::graphics::IMaterial> managerMaterialOrNull)
 {
 	mManagerMaterialOrNull = managerMaterialOrNull;

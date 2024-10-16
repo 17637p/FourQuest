@@ -55,7 +55,7 @@ namespace fq::client
 		/// 타겟을 응시합니다
 		/// </summary>
 		void LookAtTarget();
-	
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -87,6 +87,15 @@ namespace fq::client
 
 		DirectX::SimpleMath::Vector3 mStartPosition;
 		DirectX::SimpleMath::Vector3 mPatrolDestination;
+
+		// 더미 플레이어 추적 관련 변수
+		float mDummyTraceDurationTime;
+		bool mbUseDummyTraceRandomRange;
+		float mDummyDurationRandomRangeMin;
+		float mDummyDurationRandomRangeMax;
+		float mCurrentDummyTraceDurationTime; // traceDuration + randomRange;
+		float mDummyTraceElapsedTime;
+		bool mIsDummyTarget;
 
 		friend void RegisterMetaData();
 	};

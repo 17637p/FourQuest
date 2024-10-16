@@ -101,6 +101,10 @@ namespace fq::game_module
 		const fq::graphics::MaterialInstanceInfo& GetMaterialInstanceInfo() const { return mMaterialInstanceInfo; }
 		void SetMaterialInstanceInfo(const fq::graphics::MaterialInstanceInfo& info);
 
+		// 랜더링 시 행렬 사용 여부, false 시 단위 행렬을 전달 받음
+		void SetUseTransform(bool bUseTransform) { mbIsUseTransform = bUseTransform; }
+		bool GetUseTransform() const { return mbIsUseTransform; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -129,6 +133,8 @@ namespace fq::game_module
 		bool mbIsRender;
 
 		fq::graphics::MaterialInstanceInfo mMaterialInstanceInfo;
+
+		bool mbIsUseTransform;
 	};
 
 }

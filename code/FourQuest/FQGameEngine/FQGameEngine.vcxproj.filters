@@ -269,11 +269,14 @@
     <ClInclude Include="StateEventSystem.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="RenderingDebugWindow.h">
-      <Filter>include\05.EditorWindow</Filter>
-    </ClInclude>
     <ClInclude Include="ChangeWindow.h">
-      <Filter>include\05.EditorWindow</Filter>
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="GameVariableWindow.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingDebugWindow.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -463,11 +466,14 @@
     <ClCompile Include="StateEventSystem.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="RenderingDebugWindow.cpp">
-      <Filter>src\05.Window</Filter>
-    </ClCompile>
     <ClCompile Include="ChangeWindow.cpp">
-      <Filter>src\05.Window</Filter>
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="GameVariableWindow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingDebugWindow.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
