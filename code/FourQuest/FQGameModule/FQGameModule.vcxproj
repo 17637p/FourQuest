@@ -247,7 +247,10 @@
     <ClInclude Include="ObjectAnimationTrack.h" />
     <ClInclude Include="ObjectMoveTrack.h" />
     <ClInclude Include="ObjectTeleportTrack.h" />
+    <ClInclude Include="PlayerMoveTrack.h" />
+    <ClInclude Include="PlayerTeleportTrack.h" />
     <ClInclude Include="Sequence.h" />
+    <ClInclude Include="SequenceStructure.h" />
     <ClInclude Include="SoundEmitter.h" />
     <ClInclude Include="SoundEnum.h" />
     <ClInclude Include="SoundTrack.h" />
@@ -337,6 +340,8 @@
     <ClCompile Include="ObjectAnimationTrack.cpp" />
     <ClCompile Include="ObjectMoveTrack.cpp" />
     <ClCompile Include="ObjectTeleportTrack.cpp" />
+    <ClCompile Include="PlayerMoveTrack.cpp" />
+    <ClCompile Include="PlayerTeleportTrack.cpp" />
     <ClCompile Include="Sequence.cpp" />
     <ClCompile Include="SoundEmitter.cpp" />
     <ClCompile Include="SoundTrack.cpp" />

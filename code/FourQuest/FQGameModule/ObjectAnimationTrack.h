@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sequence.h"
+#include "SequenceStructure.h"
 #include "Track.h"
 
 namespace fq::game_module
@@ -13,6 +13,8 @@ namespace fq::game_module
 
 		bool Initialize(const ObjectAnimationInfo& info, Scene* scene, std::vector<std::shared_ptr<fq::graphics::IAnimation>> animationContainer);
 
+		const bool& GetIsLoop() { return mbIsLoop; }
+		void SetIsLoop(const bool isLoop) { mbIsLoop = isLoop; }
 		const std::string& GetTargetObjectName() { return mTargetObjectName; }
 		void SetTargetObjectName(const std::string& objectName) { mTargetObjectName = objectName; }
 		const std::string& GetPrevAnimationPath() { return mPrevAnimationPath; }
@@ -27,6 +29,8 @@ namespace fq::game_module
 		virtual void End() override;
 
 	private:
+		bool mbIsLoop;
+
 		std::string mTargetObjectName;
 		std::vector<AnimationTrackKey> mAnimationTrackKeys;
 		std::string mPrevAnimationPath;

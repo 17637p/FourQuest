@@ -392,6 +392,15 @@
     <ClInclude Include="ClothCollider.h">
       <Filter>include\01.EntityComponent\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerTeleportTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMoveTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="SequenceStructure.h">
+      <Filter>include\01.EntityComponent\Sequence</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -639,6 +648,12 @@
     </ClCompile>
     <ClCompile Include="ClothCollider.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerTeleportTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMoveTrack.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

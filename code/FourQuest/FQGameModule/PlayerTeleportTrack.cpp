@@ -1,32 +1,46 @@
-#include "ObjectTeleportTrack.h"
+#define NOMINMAX 
+#include "PlayerTeleportTrack.h"
 
-#include "Transform.h"
 #include "Scene.h"
+#include "CharacterController.h"
+#include "Transform.h"
 
 namespace fq::game_module
 {
-	ObjectTeleportTrack::ObjectTeleportTrack()
-		: Track(ETrackType::OBJECT_TELEPORT)
-		, mbIsObjectReturnToStartTransform()
+	PlayerTeleportTrack::PlayerTeleportTrack()
+		: Track(ETrackType::PLAYER_TELEPORT)
 		, mTargetObject()
 		, mKeys{}
+		, mPlayerID()
+		, mbIsObjectReturnToStartTransform{}
 		, mPrevPosition{}
 		, mPrevRotation{}
 		, mPrevScale{}
 	{
 	}
-	ObjectTeleportTrack::~ObjectTeleportTrack()
+
+	PlayerTeleportTrack::~PlayerTeleportTrack()
 	{
 	}
 
-	bool ObjectTeleportTrack::Initialize(const ObjectTeleportTrackInfo& info, Scene* scene)
+	bool PlayerTeleportTrack::Initialize(const PlayerTeleportTrackInfo& info, Scene* scene)
 	{
-		mTrackObjectName.push_back(info.targetObjectName);
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
 		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;
+		mPlayerID = info.playerID;
 
-		mTargetObject = scene->GetObjectByName(info.targetObjectName);
+		// 컨트롤러를 탐색해서 플레이어 찾기
+		for (auto& object : scene->GetComponentView<CharacterController>())
+		{
+			auto characterController = object.GetComponent<CharacterController>();
+
+			if (info.playerID == characterController->GetControllerID())
+			{
+				mTrackObjectName.push_back(object.GetName());
+				mTargetObject = scene->GetObjectByName(object.GetName());
+			}
+		}
 
 		if (mTargetObject.expired()) return false;
 
@@ -42,7 +56,7 @@ namespace fq::game_module
 		return true;
 	}
 
-	void ObjectTeleportTrack::PlayEnter()
+	void PlayerTeleportTrack::PlayEnter()
 	{
 		// time 값에 따라 TrackKey 벡터를 오름차순으로 정렬
 		std::sort(mKeys.begin(), mKeys.end(), [](const TrackKey& a, const TrackKey& b)
@@ -51,7 +65,7 @@ namespace fq::game_module
 			});
 	}
 
-	void ObjectTeleportTrack::PlayOn()
+	void PlayerTeleportTrack::PlayOn()
 	{
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
@@ -80,10 +94,11 @@ namespace fq::game_module
 		}
 	}
 
-	void ObjectTeleportTrack::PlayExit()
+	void PlayerTeleportTrack::PlayExit()
 	{
 	}
-	void ObjectTeleportTrack::End()
+
+	void PlayerTeleportTrack::End()
 	{
 		if (!mTargetObject.expired() && mbIsObjectReturnToStartTransform)
 		{

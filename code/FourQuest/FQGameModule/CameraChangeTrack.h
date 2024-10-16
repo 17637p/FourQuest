@@ -1,8 +1,6 @@
 #pragma once
 
-#include <string>
-
-#include "Sequence.h"
+#include "SequenceStructure.h"
 #include "Track.h"
 #include "Camera.h"
 
