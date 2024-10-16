@@ -20,6 +20,9 @@
 
 #include <boost/locale.hpp>
 
+#include <spdlog/spdlog.h>
+#include <fstream>
+
 fq::graphics::UIManager::UIManager()
 	:mHWnd{ NULL },
 	mDirect2DFactory{ nullptr },
@@ -274,6 +277,48 @@ void fq::graphics::UIManager::loadBitmap(const std::wstring& path)
 	ID2D1Bitmap* tempBitmap = nullptr;
 	hr = mRenderTarget->CreateBitmapFromWicBitmap(p_converter, NULL, &tempBitmap);
 
+	/// 한번 fqr로 저장, 다시 불러오기 테스트 해보기
+	// 저장
+	// 일단 파일에 앞 뒤로 Start, End 붙이기  
+	// 1. WIC 팩토리 생성
+	IWICImagingFactory* pWICFactory = nullptr;
+	HRESULT hr = CoCreateInstance(
+		CLSID_WICImagingFactory,
+		nullptr,
+		CLSCTX_INPROC_SERVER,
+		IID_PPV_ARGS(&pWICFactory)
+	);
+
+	if (FAILED(hr)) 
+	{
+		spdlog::error("HR 1");
+	}
+
+	IWICBitmapEncoder* pEncoder = nullptr;
+	IWICStream* pStream = nullptr;
+	IWICBitmapFrameEncode* pFrame = nullptr;
+
+	std::wstring filePath;
+
+	// 2. 파일 스트림 열기
+	std::ofstream file(filePath.c_str(), std::ios::binary);
+	if (!file.is_open()) 
+	{
+		spdlog::error("HR 2");
+	}
+
+	// 3. 메타데이터에 문자열 길이를 기록
+	metadata.stringLength = static_cast<uint32_t>(customString.length());
+
+	// 4. 메타데이터를 파일에 기록
+	file.write(reinterpret_cast<char*>(&metadata), sizeof(metadata));
+
+	// 5. 문자열 데이터를 파일에 기록
+	file.write(customString.c_str(), customString.length());
+
+	// 불러오기
+
+	/// -------------------------------------------
 	FQBitmap* fqBitmap = new FQBitmap;
 	fqBitmap->bitmap = tempBitmap;
 	fqBitmap->refCount = 1;

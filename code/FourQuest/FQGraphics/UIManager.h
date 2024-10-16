@@ -85,6 +85,15 @@ namespace fq::graphics
 
 		void SetIsRenderObjects(bool isRenderObjects) { mIsRenderObjects = isRenderObjects; }
 
+		/// UI FQR 작업 (리소스 통합 작업)
+		// UI.fqr Load, Unload
+		void SaveUIFQR(std::string path);
+		void LoadUIFQR(std::string path);
+		void UnLoadUIFQR();
+
+		// fqr 로부터 bitmap 생성
+		void LoadBitmapFromFQR(std::string originalImagePath);
+
 	private:
 		void loadBitmap(const std::wstring& path);
 		HRESULT createRenderTarget(std::shared_ptr<D3D11Device> device, const short width, const short height);

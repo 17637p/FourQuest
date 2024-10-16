@@ -146,3 +146,128 @@ void fq::client::LoadingUI::SetScaleScreen()
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
 }
+
+
+
+#include <fstream>
+#include <string>
+#include <d2d1.h>
+#include <wincodec.h>
+
+// 메타데이터 구조체
+struct MyCustomMetadata {
+	uint32_t width;
+	uint32_t height;
+	uint32_t format;
+	uint32_t stringLength; // 문자열 길이
+};
+
+// 비트맵 데이터를 저장하는 함수
+HRESULT SaveBitmapWithMetadataAndString(
+	ID2D1Bitmap* pBitmap,
+	const WCHAR* filePath,
+	MyCustomMetadata metadata,
+	const std::string& customString // 추가할 문자열
+)
+{
+	// 1. WIC 팩토리 생성
+	IWICImagingFactory* pWICFactory = nullptr;
+	HRESULT hr = CoCreateInstance(
+		CLSID_WICImagingFactory,
+		nullptr,
+		CLSCTX_INPROC_SERVER,
+		IID_PPV_ARGS(&pWICFactory)
+	);
+
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	IWICBitmapEncoder* pEncoder = nullptr;
+	IWICStream* pStream = nullptr;
+	IWICBitmapFrameEncode* pFrame = nullptr;
+
+	// 2. 파일 스트림 열기
+	std::ofstream file(filePath, std::ios::binary);
+	if (!file.is_open()) {
+		return E_FAIL;
+	}
+
+	// 3. 메타데이터에 문자열 길이를 기록
+	metadata.stringLength = static_cast<uint32_t>(customString.length());
+
+	// 4. 메타데이터를 파일에 기록
+	file.write(reinterpret_cast<char*>(&metadata), sizeof(metadata));
+
+	// 5. 문자열 데이터를 파일에 기록
+	file.write(customString.c_str(), customString.length());
+
+	// 6. WIC 스트림 생성
+	hr = pWICFactory->CreateStream(&pStream);
+	if (SUCCEEDED(hr)) {
+		hr = pStream->InitializeFromFilename(filePath, GENERIC_WRITE);
+	}
+
+	if (SUCCEEDED(hr)) {
+		// 7. PNG 인코더 생성
+		hr = pWICFactory->CreateEncoder(GUID_ContainerFormatPng, nullptr, &pEncoder);
+	}
+
+	if (SUCCEEDED(hr)) {
+		hr = pEncoder->Initialize(pStream, WICBitmapEncoderNoCache);
+	}
+
+	if (SUCCEEDED(hr)) {
+		hr = pEncoder->CreateNewFrame(&pFrame, nullptr);
+	}
+
+	if (SUCCEEDED(hr)) {
+		hr = pFrame->Initialize(nullptr);
+	}
+
+	if (SUCCEEDED(hr)) {
+		// 8. 비트맵의 크기 가져오기
+		D2D1_SIZE_U size = pBitmap->GetPixelSize();
+		hr = pFrame->SetSize(size.width, size.height);
+
+		if (SUCCEEDED(hr)) {
+			WICPixelFormatGUID format = GUID_WICPixelFormat32bppPBGRA;
+			hr = pFrame->SetPixelFormat(&format);
+		}
+
+		if (SUCCEEDED(hr)) {
+			D2D1_MAPPED_RECT mappedRect;
+			hr = pBitmap->Map(D2D1_MAP_OPTIONS_READ, &mappedRect);
+
+			if (SUCCEEDED(hr)) {
+				hr = pFrame->WritePixels(
+					size.height,
+					mappedRect.pitch,
+					mappedRect.pitch * size.height,
+					mappedRect.bits
+				);
+
+				pBitmap->Unmap();
+			}
+		}
+
+		if (SUCCEEDED(hr)) {
+			hr = pFrame->Commit();
+		}
+
+		if (SUCCEEDED(hr)) {
+			hr = pEncoder->Commit();
+		}
+	}
+
+	// 스트림과 엔코더 해제
+	SAFE_RELEASE(pFrame);
+	SAFE_RELEASE(pEncoder);
+	SAFE_RELEASE(pStream);
+	SAFE_RELEASE(pWICFactory);
+
+	// 파일 스트림 닫기
+	file.close();
+
+	return hr;
+}
