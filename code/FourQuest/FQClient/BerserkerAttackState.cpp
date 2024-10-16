@@ -3,6 +3,7 @@
 #include "BerserkerAttackState.h"
 #include "Attack.h"
 #include "BerserkerArmour.h"
+#include "Player.h"
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/RigidBody.h"
@@ -40,6 +41,13 @@ namespace fq::client
 		animator.GetGameObject()->SetTag(game_module::ETag::PlayerMonsterIgnore);
 
 		mElapsedTime = 0.f;
+
+		// 슈퍼아머 기능 On
+		auto playerOrNull = animator.GetComponent<Player>();
+		if (playerOrNull != nullptr)
+		{
+			playerOrNull->SetIsActiveOnHit(false);
+		}
 	}
 
 	void BerserkerAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
@@ -57,7 +65,7 @@ namespace fq::client
 			if (berserkerArmour != nullptr)
 			{
 				berserkerArmour->EmitAttackIntend(mAttackType, mColliderOffset, mColliderScale, mKnocBackPower, mDestroyTime);
-			
+
 				// 공격 시 발생하는 전진량
 				auto transform = animator.GetComponent<game_module::Transform>();
 				auto rigid = animator.GetComponent<game_module::RigidBody>();
@@ -77,5 +85,12 @@ namespace fq::client
 
 		// 몬스터 충돌에 의한 밀림 무시
 		animator.GetGameObject()->SetTag(game_module::ETag::Player);
+
+		// 슈퍼아머 기능 off
+		auto playerOrNull = animator.GetComponent<Player>();
+		if (playerOrNull != nullptr)
+		{
+			playerOrNull->SetIsActiveOnHit(true);
+		}
 	}
 }
