@@ -73,6 +73,16 @@ void fq::game_engine::SceneResourceList::Load(const Path& path)
 			nodeHierachyPaths.insert(absolutePath.string());
 		}
 	}
+
+	if (auto json = readJson.find("ImageUI"); json != readJson.end())
+	{
+		for (const auto& path : json.value())
+		{
+			auto absolutePath = fq::path::GetAbsolutePath(path);
+			imageUIPaths.insert(absolutePath.string());
+		}
+	}
+
 }
 
 void fq::game_engine::SceneResourceList::Save(const Path& path)
@@ -127,11 +137,20 @@ void fq::game_engine::SceneResourceList::Save(const Path& path)
 	}
 	saveJson["NodeHierachy"] = nodeHierachy;
 
+
+	json imageUI;
+	for (const auto& path : imageUIPaths)
+	{
+		auto relative = fq::path::GetRelativePath(path);
+		imageUI.push_back(relative);
+	}
+	saveJson["ImageUI"] = imageUI;
+
 	std::ofstream output(path);
 
 	if (output.is_open())
 	{
-		output << std::setw(4) << saveJson;	
+		output << std::setw(4) << saveJson;
 		output.close();
 	}
 }

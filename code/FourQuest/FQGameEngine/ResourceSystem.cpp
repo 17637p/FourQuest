@@ -9,6 +9,7 @@
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/UVAnimator.h"
+#include "../FQGameModule/ImageUI.h"
 #include "../FQCommon/FQPath.h"
 #include "GameProcess.h"
 
@@ -323,6 +324,24 @@ void fq::game_engine::ResourceSystem::SaveObjectResource(SceneResourceList& list
 		if (fs::exists(uvAnimationPath))
 		{
 			list.uvAnimationPath.insert(uvAnimationPath);
+		}
+	}
+
+	if (object->HasComponent<ImageUI>())
+	{
+		auto imageUI = object->GetComponent<ImageUI>();
+
+		for (auto& imageUIInfo : imageUI->GetUIInfomations())
+		{
+			if (fs::exists(imageUIInfo.ImagePath))
+			{
+				list.imageUIPaths.insert(imageUIInfo.ImagePath);
+			}
+
+			if (fs::exists(imageUIInfo.MaskPath))
+			{
+				list.imageUIPaths.insert(imageUIInfo.MaskPath);
+			}
 		}
 	}
 

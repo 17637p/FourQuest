@@ -19,6 +19,7 @@ namespace fq::game_engine
 		std::set<Path> uvAnimationPath;
 		std::set<Path> animationPaths;
 		std::set<Path> nodeHierachyPaths;
+		std::set<Path> imageUIPaths;
 
 		void Load(const Path& path);
 		void Save(const Path& path);
