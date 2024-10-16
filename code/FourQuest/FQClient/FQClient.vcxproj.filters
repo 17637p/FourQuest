@@ -581,6 +581,9 @@
     <ClInclude Include="MaterialManagedGroup.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerDummy.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -999,6 +1002,9 @@
     </ClCompile>
     <ClCompile Include="MaterialManagedGroup.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerDummy.cpp">
+      <Filter>src\01.Player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -16,8 +16,10 @@
 #include "DeadArmour.h"
 #include "LevelHepler.h"
 #include "Player.h"
-
 #include "PlayerInfoVariable.h"
+#include "PlayerDummy.h"
+#include "ClientHelper.h"
+
 #include <spdlog/spdlog.h>
 
 fq::client::BossMonster::BossMonster()
@@ -56,6 +58,13 @@ fq::client::BossMonster::BossMonster()
 	, mSmashKnockBackPower(3.f)
 	, mComboAttackKnockBackPower(3.f)
 	, mContinousKnockBackPower(3.f)
+	, mDummyTraceDurationTime(0.f)
+	, mbUseDummyTraceRandomRange(false)
+	, mDummyDurationRandomRangeMin(0.f)
+	, mDummyDurationRandomRangeMax(0.f)
+	, mCurrentDummyTraceDurationTime(0.f)
+	, mDummyTraceElapsedTime(0.f)
+	, mIsDummyTarget(false)
 {}
 
 fq::client::BossMonster::~BossMonster()
@@ -250,7 +259,17 @@ void fq::client::BossMonster::SetTarget(game_module::GameObject* target)
 	{
 		mTarget = nullptr;
 		mAnimator->SetParameterBoolean("HasTarget", false);
+		mIsDummyTarget = false;
 		return;
+	}
+
+	// 더미 타겟인지 체크
+	mIsDummyTarget = target->GetComponent<PlayerDummy>() != nullptr;
+	if (mIsDummyTarget)
+	{
+		mDummyTraceElapsedTime = 0.f;
+		float random = helper::RandomGenerator::GetInstance().GetRandomNumber(mDummyDurationRandomRangeMin, mDummyDurationRandomRangeMax);
+		mCurrentDummyTraceDurationTime = mDummyTraceDurationTime + random;
 	}
 
 	mTarget = target->shared_from_this();
@@ -267,10 +286,30 @@ void fq::client::BossMonster::Move(DirectX::SimpleMath::Vector3 destination)
 
 void fq::client::BossMonster::ChaseTarget()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
 	{
 		SetTarget(nullptr);
 		return;
+	}
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
+
+		if (playerOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		auto playerDummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (playerDummyOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		SetTarget(playerDummyOrNull);
 	}
 
 	auto targetPos = mTarget->GetTransform()->GetWorldPosition();
@@ -279,11 +318,34 @@ void fq::client::BossMonster::ChaseTarget()
 
 void fq::client::BossMonster::CheckTargetInAttackRange()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
 	{
 		SetTarget(nullptr);
 		mAnimator->SetParameterBoolean("InAttackRange", false);
 		return;
+	}
+	// 사망 시 플레이어라면 더미 생성이 가능한지 체크한다.
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
+
+		if (playerOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			mAnimator->SetParameterBoolean("InAttackRange", false);
+			return;
+		}
+
+		auto dummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (dummyOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			mAnimator->SetParameterBoolean("InAttackRange", false);
+			return;
+		}
+
+		SetTarget(dummyOrNull);
 	}
 
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
@@ -380,10 +442,30 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitSmashD
 
 void fq::client::BossMonster::HomingTarget()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
 	{
 		SetTarget(nullptr);
 		return;
+	}
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
+
+		if (playerOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		auto dummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (dummyOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		SetTarget(dummyOrNull);
 	}
 
 	auto targetT = mTarget->GetComponent<game_module::Transform>();

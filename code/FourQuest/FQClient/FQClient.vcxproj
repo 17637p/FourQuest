@@ -145,6 +145,7 @@
     <ClInclude Include="PlantMonsterIdleState.h" />
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerCheckUI.h" />
+    <ClInclude Include="PlayerDummy.h" />
     <ClInclude Include="PlayerInfoVariable.h" />
     <ClInclude Include="PlayerMovementSoundState.h" />
     <ClInclude Include="PlayerSoundState.h" />
@@ -289,6 +290,7 @@
     <ClCompile Include="PlantMonsterIdleState.cpp" />
     <ClCompile Include="PlantMonsterStareState.cpp" />
     <ClCompile Include="PlayerCheckUI.cpp" />
+    <ClCompile Include="PlayerDummy.cpp" />
     <ClCompile Include="PlayerMovementSoundState.cpp" />
     <ClCompile Include="PlayerSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
