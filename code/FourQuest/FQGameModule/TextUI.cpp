@@ -38,6 +38,7 @@ void fq::game_module::TextUI::SetTextInfo(fq::graphics::TextInfo val)
 fq::game_module::TextUI::TextUI()
 	:mTextObject(nullptr)
 	,mTextInfo{}
+	,mbIsApplyUIRenderEvent{ true }
 {
 }
 

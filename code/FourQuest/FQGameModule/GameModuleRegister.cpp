@@ -399,6 +399,9 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&TextUI::SetTextInfo, &TextUI::GetTextInfo>("TextInformation"_hs)
 		.prop(fq::reflect::prop::Name, "TextInformation")
+		.data<&TextUI::mbIsApplyUIRenderEvent>("bIsApplyUIRenderEvent"_hs)
+		.prop(fq::reflect::prop::Name, "bIsApplyUIRenderEvent")
+		.prop(fq::reflect::prop::Comment, u8"UIRenderEvent 적용 여부")
 		.base<Component>();
 
 	entt::meta<graphics::SpriteInfo>()
@@ -2253,7 +2256,11 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::PostProcessingInfo::bUseFog>("bUseFog"_hs)
 		.prop(fq::reflect::prop::Name, "bUseFog")
 		.data<&fq::graphics::PostProcessingInfo::bUseGrayScale>("bUseGrayScale"_hs)
-		.prop(fq::reflect::prop::Name, "bUseGrayScale");
+		.prop(fq::reflect::prop::Name, "bUseGrayScale")
+		.data<&fq::graphics::PostProcessingInfo::bUseBlendColor>("bUseBlendColor"_hs)
+		.prop(fq::reflect::prop::Name, "bUseBlendColor")
+		.data<&fq::graphics::PostProcessingInfo::BlendColor>("BlendColor"_hs)
+		.prop(fq::reflect::prop::Name, "BlendColor");
 
 	entt::meta<PostProcessing>()
 		.type("PostProcessing"_hs)

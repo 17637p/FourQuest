@@ -187,19 +187,26 @@ namespace fq::game_module
 					mTotalPlayTime = trackTotalTime;
 			}
 		}
+
+		mbIsProcessedUIRender = false;
 	}
 
 	void Sequence::OnUpdate(float dt)
 	{
 		if (mbIsPlay)
 		{
+			if (!mbIsProcessedUIRender && mbIsOffUIRender)
+			{
+				GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
+				mbIsProcessedUIRender = true;
+			}
+
 			checkSeqeunce();
 
 			float deltaTime = GetScene()->GetTimeManager()->GetDeltaTime();
 			mDurationTime += deltaTime;
 
 			playTrack(deltaTime);
-			updateUI();
 			updateSequenceObject(deltaTime);
 
 			if (mDurationTime >= mTotalPlayTime)
@@ -226,7 +233,10 @@ namespace fq::game_module
 
 	void Sequence::OnDestroy()
 	{
-		GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
+		if (mbIsOffUIRender)
+		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
+		}
 
 		auto input = GetScene()->GetInputManager();
 
@@ -280,17 +290,6 @@ namespace fq::game_module
 				track->End();
 			}
 		}
-	}
-
-	void Sequence::updateUI()
-	{
-		// UI ²ô±â
-		if (mbIsOffUIRender)
-			GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
-
-		// UI ÄÑ±â
-		if (mDurationTime >= mTotalPlayTime)
-			GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ true });
 	}
 
 	void Sequence::updateSequenceObject(float dt)

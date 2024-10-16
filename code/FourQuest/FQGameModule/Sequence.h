@@ -177,7 +177,6 @@ namespace fq::game_module
 	private:
 		void checkSeqeunce();
 		void playTrack(float dt);
-		void updateUI();
 		void updateSequenceObject(float dt);
 
 		virtual entt::meta_handle GetHandle() override;
@@ -206,5 +205,7 @@ namespace fq::game_module
 		std::vector<VibrationTrackInfo>			mVibrationTrackInfo;
 
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>> mAnimationContainer;
+
+		bool mbIsProcessedUIRender;
 	};
 }
