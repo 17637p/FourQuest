@@ -1153,6 +1153,7 @@ void fq::game_engine::PhysicsSystem::CleanUp(const fq::event::OnCleanUp& event)
 		if (iter->second.bIsDestroyed
 			&& iter->second.bIsRemoveBody)
 		{
+			//spdlog::trace("{} id  {} name collider delete ", iter->first, iter->second.gameObject->GetName());
 			iter = mColliderContainer.erase(iter);
 		}
 		else
@@ -1184,12 +1185,12 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 	{
 		auto lfs = mColliderContainer.find(data.myId);
 		auto rhs = mColliderContainer.find(data.otherId);
-
+			
 		if (data.myId == data.otherId
 			|| lfs == mColliderContainer.end()
 			|| rhs == mColliderContainer.end())
 		{
-			spdlog::warn("ColliderContainer CallBack Error");
+			spdlog::warn("ColliderContainer CallBack Error lhs {} rhs {}", data.myId, data.otherId);
 			continue; 
 		}
 		

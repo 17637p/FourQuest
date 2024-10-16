@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/PrefabResource.h"
+#include "../FQGameModule/InputEnum.h"
 
 namespace fq::game_module
 {
@@ -79,6 +80,9 @@ namespace fq::client
 		float mShieldDuration;
 		float mShieldElapsedTime;
 		float mOnShieldElapsedTime;
+		EVibrationMode mDashHitVibrationMode;
+		float mDashHitVibrationIntensity;
+		float mDashHitVibrationDuration;
 
 		float mShieldDashPower;
 		float mXAttackDashPower;

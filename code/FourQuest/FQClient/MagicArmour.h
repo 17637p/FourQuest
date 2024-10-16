@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/PrefabResource.h"
+#include "../FQGameModule/InputEnum.h"
 
 namespace fq::game_module
 {
@@ -95,6 +96,10 @@ namespace fq::client
 		float mLaserDistance;
 		float mLaserHiTick;
 		float mLaserHitElapsedTime;
+
+		EVibrationMode mLaserHitVibrationMode;
+		float mLaserHitVibrationIntensity;
+		float mLaserHitVibrationDuration;
 
 		std::shared_ptr<game_module::GameObject> mLaserLineEffect;
 		std::shared_ptr<game_module::GameObject> mLaserHeadEffect;

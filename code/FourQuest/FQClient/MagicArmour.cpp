@@ -37,6 +37,9 @@ fq::client::MagicArmour::MagicArmour()
 	, mLaserHiTick(0.25f)
 	, mLaserHitElapsedTime(0.f)
 	, mMagicBallPenetrationCount(1)
+	, mLaserHitVibrationDuration(0.1f)
+	, mLaserHitVibrationIntensity(1000.f)
+	, mLaserHitVibrationMode(EVibrationMode::Left)
 	, mAimAisst(nullptr)
 {}
 
@@ -219,6 +222,8 @@ void fq::client::MagicArmour::EmitLaser()
 		attackInfo.attacker = GetGameObject();
 		attackInfo.remainingAttackCount = 1;
 		attackInfo.bIsInfinite = false;
+
+		// 공격 콜백 설정 
 		attackInfo.mHitCallback = [this, isIncrease = false]() mutable
 			{
 				if (!isIncrease)
@@ -226,6 +231,13 @@ void fq::client::MagicArmour::EmitLaser()
 					this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
 					isIncrease = true;
 				}
+
+				// 진동 설정 
+				auto input = this->GetScene()->GetInputManager();
+				input->SetVibration(mController->GetControllerID(),
+					mLaserHitVibrationMode,
+					mLaserHitVibrationIntensity,
+					mLaserHitVibrationDuration);
 			};
 		attackInfo.HitEffectName = "M_Laser_Hit";
 		attackComponent->Set(attackInfo);

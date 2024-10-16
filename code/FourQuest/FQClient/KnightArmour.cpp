@@ -34,6 +34,9 @@ fq::client::KnightArmour::KnightArmour()
 	, mShieldCoolTimeReduction(0.f)
 	, mDashCoolTimeReduction(0.f)
 	, mbOnShield(false)
+	, mDashHitVibrationDuration(0.1f)
+	, mDashHitVibrationIntensity(1000.f)
+	, mDashHitVibrationMode(EVibrationMode::Left)
 {}
 
 fq::client::KnightArmour::~KnightArmour()
@@ -231,7 +234,14 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
 				isIncrease = true;
 			}
+
+			auto input = GetScene()->GetInputManager();
+			input->SetVibration(mController->GetControllerID(),
+				mDashHitVibrationMode,
+				mDashHitVibrationIntensity,
+				mDashHitVibrationDuration);
 		};
+
 	attackInfo.hitSound = "K_Bash_Hit";
 	attackInfo.HitEffectName = "W_Hit_blunt";
 	attackComponent->Set(attackInfo);

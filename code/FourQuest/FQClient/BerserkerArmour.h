@@ -3,6 +3,7 @@
 #include "EBerserkerAttackType.h"
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/PrefabResource.h"
+#include "../FQGameModule/InputEnum.h"
 
 namespace fq::game_module
 {
@@ -79,6 +80,10 @@ namespace fq::client
 
 		float mTargetPosRatio = 1.f;
 		float mDirectionRatio = 1.f;
+
+		EVibrationMode mDashHitVibrationMode;
+		float mDashHitVibrationIntensity;
+		float mDashHitVibrationDuration;
 
 		// 로직 변수
 		float mSwingAroundElapsedTime;
