@@ -50,6 +50,8 @@ namespace fq::client
 		std::vector<game_module::TextUI*> mWeaponNameTexts;
 		std::vector<game_module::TextUI*> mContentTexts;
 
+		std::vector<DirectX::SimpleMath::Color> mSoulNameColors;
+
 		std::vector<game_module::SpriteAnimationUI*> mPlayerSoulIcons;
 
 		std::vector<std::string> mSoulNames;
