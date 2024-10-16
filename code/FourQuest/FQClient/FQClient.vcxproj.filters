@@ -413,9 +413,6 @@
     <ClInclude Include="PlantMonsterHitState.h">
       <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
-    <ClInclude Include="IMonster.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="MaterialManager.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
@@ -580,6 +577,12 @@
     </ClInclude>
     <ClInclude Include="MaterialManagedGroup.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="IMonster.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="ArmourDestroyer.h">
+      <Filter>include\06.ETC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -999,6 +1002,9 @@
     </ClCompile>
     <ClCompile Include="MaterialManagedGroup.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ArmourDestroyer.cpp">
+      <Filter>src\06.ETC</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

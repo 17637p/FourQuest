@@ -170,6 +170,7 @@
 #include "LookingObjectHelper.h"
 #include "MultiPlayerObjectCreator.h"
 #include "DynamicLightHelper.h"
+#include "ArmourDestroyer.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -375,6 +376,7 @@ void fq::client::RegisterMetaData()
 		.data<&MultiPlayerObjectCreator::mSpawnObjectPrefab>("SpawnObject"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnObject")
 		.base<game_module::Component>();
+
 	entt::meta<DynamicLightHelper>()
 		.type("DynamicLightHelper"_hs)
 		.prop(reflect::prop::Name, "DynamicLightHelper")
@@ -387,6 +389,11 @@ void fq::client::RegisterMetaData()
 		.data<&DynamicLightHelper::mSpeed>("Speed"_hs)
 		.prop(fq::reflect::prop::Name, "Speed")
 		.prop(fq::reflect::prop::Comment, u"시간 * Speed // 기본은 1초를 기준으로 반복함")
+		.base<game_module::Component>();
+
+	entt::meta<ArmourDestroyer>()
+		.type("ArmourDestroyer"_hs)
+		.prop(reflect::prop::Name, "ArmourDestroyer")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

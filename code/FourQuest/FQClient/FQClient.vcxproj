@@ -40,6 +40,7 @@
   <ItemGroup>
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
+    <ClInclude Include="ArmourDestroyer.h" />
     <ClInclude Include="AttackInvalidation.h" />
     <ClInclude Include="BGaugeUI.h" />
     <ClInclude Include="DynamicLightHelper.h" />
@@ -195,6 +196,7 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="ArmourDestroyer.cpp" />
     <ClCompile Include="AttackInvalidation.cpp" />
     <ClCompile Include="BGaugeUI.cpp" />
     <ClCompile Include="DynamicLightHelper.cpp" />
