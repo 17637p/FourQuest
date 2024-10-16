@@ -1,18 +1,8 @@
 #include "Sequence.h"
 
 #include "..\FQClient\Player.h"
+#include "CharacterController.h"
 
-#include "Scene.h"
-#include "Track.h"
-#include "CameraChangeTrack.h"
-#include "CameraShakeTrack.h"
-#include "ObjectMoveTrack.h"
-#include "ObjectTeleportTrack.h"
-#include "TextPrintTrack.h"
-#include "EffectTrack.h"
-#include "SoundTrack.h"
-#include "ObjectAnimationTrack.h"
-#include "VibrationTrack.h"
 
 #include "EventManager.h"
 #include "Event.h"
@@ -33,12 +23,16 @@ namespace fq::game_module
 		, mDurationTime(0.f)
 		, mAnimationContainer{}
 		, mCameraChangeTrackInfo{}
+		, mCameraShakeTrackInfo{}
 		, mObjectMoveTrackInfo{}
 		, mObjectTeleportTrackInfo{}
+		, mPlayerMoveTrackInfo{}
+		, mPlayerTeleportTrackInfo{}
 		, mObjectAnimationInfo{}
 		, mEffectTrackInfo{}
 		, mSoundTrackInfo{}
 		, mTextPrintTrackInfo{}
+		, mVibrationTrackInfo{}
 	{
 	}
 
@@ -49,54 +43,21 @@ namespace fq::game_module
 
 	void Sequence::OnStart()
 	{
+		createTrack<CameraChangeTrack>(mCameraChangeTrackInfo);
+		createTrack<CameraShakeTrack>(mCameraShakeTrackInfo);
+		createTrack<ObjectMoveTrack>(mObjectMoveTrackInfo);
+		createTrack<ObjectTeleportTrack>(mObjectTeleportTrackInfo);
+		createTrack<PlayerMoveTrack>(mPlayerMoveTrackInfo);
+		createTrack<PlayerTeleportTrack>(mPlayerTeleportTrackInfo);
+		createTrack<EffectTrack>(mEffectTrackInfo);
+		createTrack<SoundTrack>(mSoundTrackInfo);
+		createTrack<TextPrintTrack>(mTextPrintTrackInfo);
+		createTrack<VibrationTrack>(mVibrationTrackInfo);
+
 		auto scene = GetScene();
 		bool check = false;
+		mbIsProcessedUIRender = false;
 
-		for (const auto& trackInfo : mCameraChangeTrackInfo)
-		{
-			std::shared_ptr<CameraChangeTrack> track = std::make_shared<CameraChangeTrack>();
-			check = track->Initialize(trackInfo, scene);
-
-			if (check)
-			{
-				mTracks.push_back(track);
-
-				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
-
-				if (mTotalPlayTime < trackTotalTime)
-					mTotalPlayTime = trackTotalTime;
-			}
-		}
-		for (const auto& trackInfo : mObjectMoveTrackInfo)
-		{
-			std::shared_ptr<ObjectMoveTrack> track = std::make_shared<ObjectMoveTrack>();
-			check = track->Initialize(trackInfo, scene);
-
-			if (check)
-			{
-				mTracks.push_back(track);
-
-				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
-
-				if (mTotalPlayTime < trackTotalTime)
-					mTotalPlayTime = trackTotalTime;
-			}
-		}
-		for (const auto& trackInfo : mObjectTeleportTrackInfo)
-		{
-			std::shared_ptr<ObjectTeleportTrack> track = std::make_shared<ObjectTeleportTrack>();
-			check = track->Initialize(trackInfo, scene);
-
-			if (check)
-			{
-				mTracks.push_back(track);
-
-				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
-
-				if (mTotalPlayTime < trackTotalTime)
-					mTotalPlayTime = trackTotalTime;
-			}
-		}
 		for (const auto& trackInfo : mObjectAnimationInfo)
 		{
 			std::shared_ptr<ObjectAnimationTrack> track = std::make_shared<ObjectAnimationTrack>();
@@ -112,83 +73,6 @@ namespace fq::game_module
 					mTotalPlayTime = trackTotalTime;
 			}
 		}
-		for (const auto& trackInfo : mSoundTrackInfo)
-		{
-			std::shared_ptr<SoundTrack> track = std::make_shared<SoundTrack>();
-			check = track->Initialize(trackInfo, scene);
-
-			if (check)
-			{
-				mTracks.push_back(track);
-
-				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
-
-				if (mTotalPlayTime < trackTotalTime)
-					mTotalPlayTime = trackTotalTime;
-			}
-		}
-		for (const auto& trackInfo : mEffectTrackInfo)
-		{
-			std::shared_ptr<EffectTrack> track = std::make_shared<EffectTrack>();
-			check = track->Initialize(trackInfo, scene);
-
-			if (check)
-			{
-				mTracks.push_back(track);
-
-				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
-
-				if (mTotalPlayTime < trackTotalTime)
-					mTotalPlayTime = trackTotalTime;
-			}
-		}
-		for (const auto& trackInfo : mTextPrintTrackInfo)
-		{
-			std::shared_ptr<TextPrintTrack> track = std::make_shared<TextPrintTrack>();
-			check = track->Initialize(trackInfo, scene);
-
-			if (check)
-			{
-				mTracks.push_back(track);
-
-				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
-
-				if (mTotalPlayTime < trackTotalTime)
-					mTotalPlayTime = trackTotalTime;
-			}
-		}
-		for (const auto& trackInfo : mCameraShakeTrackInfo)
-		{
-			std::shared_ptr<CameraShakeTrack> track = std::make_shared<CameraShakeTrack>();
-			check = track->Initialize(trackInfo, scene);
-
-			if (check)
-			{
-				mTracks.push_back(track);
-
-				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
-
-				if (mTotalPlayTime < trackTotalTime)
-					mTotalPlayTime = trackTotalTime;
-			}
-		}
-		for (const auto& trackInfo : mVibrationTrackInfo)
-		{
-			std::shared_ptr<VibrationTrack> track = std::make_shared<VibrationTrack>();
-			check = track->Initialize(trackInfo, scene);
-
-			if (check)
-			{
-				mTracks.push_back(track);
-
-				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
-
-				if (mTotalPlayTime < trackTotalTime)
-					mTotalPlayTime = trackTotalTime;
-			}
-		}
-
-		mbIsProcessedUIRender = false;
 	}
 
 	void Sequence::OnUpdate(float dt)
@@ -248,7 +132,7 @@ namespace fq::game_module
 
 	void Sequence::OnTriggerEnter(const Collision& collision)
 	{
-		if (collision.other->HasComponent<fq::client::Player>())
+		if (collision.other->HasComponent<CharacterController>())
 		{
 			mbIsPlay = true;
 

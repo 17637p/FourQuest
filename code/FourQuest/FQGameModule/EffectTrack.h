@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sequence.h"
+#include "SequenceStructure.h"
 #include "Track.h"
 
 namespace fq::game_module

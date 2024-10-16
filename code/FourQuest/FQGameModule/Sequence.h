@@ -1,126 +1,24 @@
 #pragma once
-
-#include <set>
-#include <vector>
-#include <string>
-
 #include "Component.h"
-#include "../FQCommon/IFQRenderResource.h"
-#include "InputEnum.h"
+
+#include "SequenceStructure.h"
+
+#include "Scene.h"
+#include "Track.h"
+#include "CameraChangeTrack.h"
+#include "CameraShakeTrack.h"
+#include "ObjectMoveTrack.h"
+#include "ObjectTeleportTrack.h"
+#include "PlayerMoveTrack.h"
+#include "PlayerTeleportTrack.h"
+#include "TextPrintTrack.h"
+#include "EffectTrack.h"
+#include "SoundTrack.h"
+#include "ObjectAnimationTrack.h"
+#include "VibrationTrack.h"
 
 namespace fq::game_module
 {
-	class Track;
-
-	struct TrackKey
-	{
-		float time = 0.f;
-		DirectX::SimpleMath::Vector3 position = { 0.f, 0.f, 0.f };
-		DirectX::SimpleMath::Vector3 rotation = { 0.f, 0.f, 0.f };
-		DirectX::SimpleMath::Vector3 scale = { 1.f, 1.f, 1.f };
-	};
-
-	struct AnimationTrackKey
-	{
-		float time = 0.f;
-		std::string animationPath = {};
-	};
-
-	struct CameraChangeTrackInfo
-	{
-		float startTime = 0.f;
-		float totalPlayTime = 1.f;
-
-		std::string targetCameraName = {};
-		std::string prevCameraName = {};
-		std::vector<TrackKey> keys;
-	};
-
-	struct ObjectMoveTrackInfo
-	{
-		bool isObjectReturnToStartTransform = true;
-		float startTime = 0.f;
-		float totalPlayTime = 1.f;
-
-		std::string targetObjectName = {};
-		std::vector<TrackKey> keys;
-	};
-
-	struct ObjectTeleportTrackInfo
-	{
-		bool isObjectReturnToStartTransform = true;
-		float startTime = 0.f;
-		float totalPlayTime = 1.f;
-
-		std::string targetObjectName = {};
-		std::vector<TrackKey> keys;
-	};
-
-	struct ObjectAnimationInfo
-	{
-		float startTime = 0.f;
-		float totalPlayTime = 1.f;
-
-		std::string targetObjectName = {};
-		std::vector<AnimationTrackKey> animationTrackKeys = {};
-	};
-
-	struct EffectTrackInfo
-	{
-		float startTime = 0.f;
-		float totalPlayTime = 1.f;
-
-		std::string effectPath = {};
-		std::vector<TrackKey> keys;
-	};
-
-	struct SoundTrackInfo
-	{
-		float startTime = 0.f;
-		float totalPlayTime = 1.f;
-
-		std::string keyName = {};
-		std::string soundObjectName = {};
-		bool bIsLoop = false;
-	};
-	
-	struct TextPrintTrackInfo
-	{
-		std::string fontPath = {};// "던파 연단된 칼날";
-		float startTime = 0.f;
-		float totalPlayTime = 1.f;
-
-		float nameFontCenterY = 200.f;
-		float nameFontSize = 30.f;
-		DirectX::SimpleMath::Color nameFontColor = { 0.f, 0.f, 1.f, 1.f };
-		std::string name = {};
-
-		float textFontCenterY = 150.f;
-		float textFontSize = 20.f;
-		DirectX::SimpleMath::Color textFontColor = { 1.f, 1.f, 1.f, 1.f };
-		std::string text = {};
-	};
-
-	struct CameraShakeTrackInfo
-	{
-		float startTime = 0.f;
-		float totalPlayTime = 1.f;
-
-		std::string cameraObjectName = {};
-		DirectX::SimpleMath::Vector3 magnitude = {};
-		int shakeCount = 100;
-		int originInitSpacing = 5;
-	};
-
-	struct VibrationTrackInfo
-	{
-		float startTime = 0.f;
-		float totalPlayTime = 1.f;
-
-		EVibrationMode mode = EVibrationMode::Left;
-		float Intensity = 0.f;
-	};
-
 	class Sequence : public Component
 	{
 	public:
@@ -158,6 +56,10 @@ namespace fq::game_module
 		void SetObjectMoveTrackInfo(const std::vector<ObjectMoveTrackInfo>& info) { mObjectMoveTrackInfo = info; }
 		const std::vector<ObjectTeleportTrackInfo>& GetObjectTeleportTrackInfo() const { return mObjectTeleportTrackInfo; }
 		void SetObjectTeleportTrackInfo(const std::vector<ObjectTeleportTrackInfo>& info) { mObjectTeleportTrackInfo = info; }
+		const std::vector<PlayerMoveTrackInfo>& GetPlayerMoveTrackInfo() const { return mPlayerMoveTrackInfo; }
+		void SetPlayerMoveTrackInfo(const std::vector<PlayerMoveTrackInfo>& info) { mPlayerMoveTrackInfo = info; }
+		const std::vector<PlayerTeleportTrackInfo>& GetPlayerTeleportTrackInfo() const { return mPlayerTeleportTrackInfo; }
+		void SetPlayerTeleportTrackInfo(const std::vector<PlayerTeleportTrackInfo>& info) { mPlayerTeleportTrackInfo = info; }
 		const std::vector<TextPrintTrackInfo>& GetTextPrintTrackInfo() const { return mTextPrintTrackInfo; }
 		void SetTextPrintTrackInfo(const std::vector<TextPrintTrackInfo>& info) { mTextPrintTrackInfo = info; }
 		const std::vector<EffectTrackInfo>& GetEffectTrackInfo() const { return mEffectTrackInfo; }
@@ -179,6 +81,9 @@ namespace fq::game_module
 		void playTrack(float dt);
 		void updateSequenceObject(float dt);
 
+		template<class ClassName, class T, typename... Args>
+		void createTrack(const T& trackInfoContainer, Args&... arg);
+
 		virtual entt::meta_handle GetHandle() override;
 		virtual std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 
@@ -197,6 +102,8 @@ namespace fq::game_module
 		std::vector<CameraChangeTrackInfo>		mCameraChangeTrackInfo;
 		std::vector<ObjectMoveTrackInfo>		mObjectMoveTrackInfo;
 		std::vector<ObjectTeleportTrackInfo>	mObjectTeleportTrackInfo;
+		std::vector<PlayerMoveTrackInfo>		mPlayerMoveTrackInfo;
+		std::vector<PlayerTeleportTrackInfo>	mPlayerTeleportTrackInfo;
 		std::vector<ObjectAnimationInfo>		mObjectAnimationInfo;
 		std::vector<EffectTrackInfo>			mEffectTrackInfo;
 		std::vector<SoundTrackInfo>				mSoundTrackInfo;
@@ -208,4 +115,33 @@ namespace fq::game_module
 
 		bool mbIsProcessedUIRender;
 	};
+
+	template<typename ClassName, typename T, typename... Args>
+	inline void Sequence::createTrack(const T& trackInfoContainer, Args&... arg)
+	{
+		auto scene = GetScene();
+		bool check = false;
+
+		for (const auto& trackInfo : trackInfoContainer)
+		{
+			// 트랙 생성
+			std::shared_ptr<ClassName> track = std::make_shared<ClassName>();
+
+			// 트랙 초기화
+			check = track->Initialize(trackInfo, scene, arg...);
+
+			if (check)
+			{
+				// 트랙을 목록에 추가
+				mTracks.push_back(track);
+
+				// 총 재생 시간 계산
+				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
+
+				// 총 재생 시간 갱신
+				if (mTotalPlayTime < trackTotalTime)
+					mTotalPlayTime = trackTotalTime;
+			}
+		}
+	}
 }

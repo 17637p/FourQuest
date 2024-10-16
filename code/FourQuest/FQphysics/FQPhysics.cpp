@@ -146,7 +146,7 @@ namespace fq::physics
 		// 매니저 초기화
 		if (!mResourceManager->Initialize(mPhysics->GetPhysics())) return false;
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager)) return false;
-		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager)) return false;
+		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager, mCollisionMatrix)) return false;
 		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene, mCollisionDataManager)) return false;
 		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mGpuScene, mCudaContextManager)) return false;
 		mMyEventCallback->Initialize(mCollisionDataManager);
@@ -393,7 +393,7 @@ namespace fq::physics
 #pragma region CCTManager
 	bool FQPhysics::CreateCCT(const CharacterControllerInfo& controllerInfo, const CharacterMovementInfo& movementInfo)
 	{
-		return mCCTManager->CreateCCT(controllerInfo, movementInfo, mCollisionMatrix);
+		return mCCTManager->CreateCCT(controllerInfo, movementInfo);
 	}
 	bool FQPhysics::RemoveController(const unsigned int& id)
 	{
@@ -422,7 +422,7 @@ namespace fq::physics
 	}
 	void FQPhysics::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
 	{
-		mCCTManager->SetCharacterControllerData(id, controllerData, mCollisionMatrix);
+		mCCTManager->SetCharacterControllerData(id, controllerData);
 	}
 	void FQPhysics::SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData)
 	{
