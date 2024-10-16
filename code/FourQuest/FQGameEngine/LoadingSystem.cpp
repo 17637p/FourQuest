@@ -53,9 +53,8 @@ void fq::game_engine::LoadingSystem::loadUI()
 	}
 }
 
-void fq::game_engine::LoadingSystem::ProcessLoading()
+bool fq::game_engine::LoadingSystem::ProcessLoading()
 {
-	mGameProcess->mSceneManager->LoadScene();
 	setRenderUI(true);
 
 	auto pool = fq::game_module::ThreadPool::GetInstance();
@@ -72,7 +71,8 @@ void fq::game_engine::LoadingSystem::ProcessLoading()
 		{
 			if (msg.message == WM_QUIT)
 			{
-				break;
+				mGameProcess->mResourceSystem->StopLoadResource();
+				return true;
 			}
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -88,7 +88,11 @@ void fq::game_engine::LoadingSystem::ProcessLoading()
 	}
 
 	setRenderUI(false);
+
+	mGameProcess->mSceneManager->LoadScene();
 	mGameProcess->mEventManager->FireEvent<fq::event::OnLoadScene>({ mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName() });
+
+	return false;
 }
 
 void fq::game_engine::LoadingSystem::updateUI(float dt)

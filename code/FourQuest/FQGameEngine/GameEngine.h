@@ -10,6 +10,7 @@ namespace fq
 	{
 		class GameProcess;
 
+
 		class SkyBoxWindow;
 		class LightmapWindow;
 
@@ -19,7 +20,7 @@ namespace fq
 			GameEngine();
 			~GameEngine();
 
-			void Initialize() override;
+			bool Initialize() override;
 			void Process() override;
 			void Finalize() override;
 

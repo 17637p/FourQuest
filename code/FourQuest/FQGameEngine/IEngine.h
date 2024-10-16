@@ -16,7 +16,7 @@ namespace fq
 		public:
 			virtual ~IEngine() {}
 
-			virtual FQ_ENGNIE_API void Initialize() abstract;
+			virtual FQ_ENGNIE_API bool Initialize() abstract;
 
 			virtual FQ_ENGNIE_API void Process() abstract;
 

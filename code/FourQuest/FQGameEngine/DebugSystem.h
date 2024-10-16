@@ -12,6 +12,7 @@ namespace fq::game_module
 	class CapsuleCollider;
 	class SphereCollider;
 	class CharacterController;
+	class Controller;
 	class Scene;
 	class Light;
 }
@@ -51,6 +52,7 @@ namespace fq::game_engine
 		void RenderSphereCollier(fq::game_module::Transform& transform, fq::game_module::SphereCollider& collider);
 		void RenderCapsuleCollier(fq::game_module::Transform& transform, fq::game_module::CapsuleCollider& collider);
 		void RenderCharaterController(fq::game_module::Transform& transform, fq::game_module::CharacterController& cotroller);
+		void RenderCharaterController(fq::game_module::Transform& transform, fq::game_module::Controller& cotroller);
 
 		bool& GetOnGrid() { return mbOnGrid; }
 		bool& GetOnBoxCollider() { return mbOnBoxCollider; }

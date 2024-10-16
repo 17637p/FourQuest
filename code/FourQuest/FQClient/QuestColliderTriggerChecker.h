@@ -14,6 +14,7 @@ namespace fq::client
 		QuestColliderTriggerChecker& operator=(const QuestColliderTriggerChecker& other);
 
 		virtual void OnTriggerEnter(const game_module::Collision& collision) override;
+		virtual void OnTriggerStay(const game_module::Collision& collision) override;
 		virtual void OnTriggerExit(const game_module::Collision& collision) override;
 
 		virtual void OnAwake() override;
@@ -27,7 +28,8 @@ namespace fq::client
 	private:
 		game_module::EventHandler mUpdatePlayerStateHandler;
 
-		int mMaxPlayerNum;
+		std::vector<bool> mIsAlive;
+
 		int mCollidingPlayerNum;
 		bool mIsClear;
 	};

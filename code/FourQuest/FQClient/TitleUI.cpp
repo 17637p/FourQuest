@@ -156,12 +156,13 @@ void fq::client::TitleUI::clickButton()
 	{
 		case 0:
 			// 로비로 씬 이동
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Start", false , 31 });
 			GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({ mNextSceneName, true });
 			break;
 		case 1:
 			// 설정
 			mIsActive = false;
-			spawnUIObject(mSettingUIPrefab);
+			spawnUIObject(mSettingUIPrefab); 
 			break;
 		case 2:
 			// 제작진
@@ -223,6 +224,7 @@ void fq::client::TitleUI::processInput()
 			if (mSelectButtonID < 3)
 			{
 				mSelectButtonID++;
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 
@@ -244,6 +246,7 @@ void fq::client::TitleUI::processInput()
 			if (mSelectButtonID > 0)
 			{
 				mSelectButtonID--;
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 	}
@@ -253,6 +256,7 @@ void fq::client::TitleUI::processInput()
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
 		{
 			clickButton();
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 		}
 	}
 }

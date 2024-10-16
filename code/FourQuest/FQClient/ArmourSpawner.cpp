@@ -136,7 +136,7 @@ void fq::client::ArmourSpawner::SpawnArmourAll()
 		bool isValid = false;
 		while (!isValid && count < 100)
 		{
-			isValid = GetGameObject()->GetComponent<game_module::NavigationAgent>()->IsValid(center, nearPos);
+			isValid = GetScene()->GetObjectByName("QuestUI")->GetComponent<game_module::NavigationAgent>()->IsValid(center, nearPos);
 			count++;
 		}
 		nearPos.y += 1.0f;

@@ -15,6 +15,9 @@
 #include "KnockBack.h"
 #include "Player.h"
 #include "LevelHepler.h"
+#include "PlayerInfoVariable.h"
+#include "PlayerDummy.h"
+#include "ClientHelper.h"
 
 fq::client::MeleeMonster::MeleeMonster()
 	:mMaxHp(0.f)
@@ -35,6 +38,13 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mPatrolDestination{}
 	, mTransform(nullptr)
 	, mAttackOffset(1.f)
+	, mDummyTraceDurationTime(0.f)
+	, mbUseDummyTraceRandomRange(false)
+	, mDummyDurationRandomRangeMin(0.f)
+	, mDummyDurationRandomRangeMax(0.f)
+	, mCurrentDummyTraceDurationTime(0.f)
+	, mDummyTraceElapsedTime(0.f)
+	, mIsDummyTarget(false)
 {}
 
 fq::client::MeleeMonster::~MeleeMonster()
@@ -71,7 +81,17 @@ void fq::client::MeleeMonster::SetTarget(game_module::GameObject* target)
 	{
 		mTarget = nullptr;
 		mAnimator->SetParameterBoolean("HasTarget", false);
+		mIsDummyTarget = false;
 		return;
+	}
+
+	// 더미 타겟인지 체크
+	mIsDummyTarget = target->GetComponent<PlayerDummy>() != nullptr;
+	if (mIsDummyTarget) 
+	{
+		mDummyTraceElapsedTime = 0.f;
+		float random = helper::RandomGenerator::GetInstance().GetRandomNumber(mDummyDurationRandomRangeMin, mDummyDurationRandomRangeMax);
+		mCurrentDummyTraceDurationTime = mDummyTraceDurationTime + random;
 	}
 
 	mTarget = target->shared_from_this();
@@ -84,7 +104,7 @@ void fq::client::MeleeMonster::OnStart()
 	mStartPosition = mTransform->GetWorldPosition();
 	mAnimator = GetComponent<game_module::Animator>();
 	mKnockBack = GetComponent<KnockBack>();
-	
+
 	// 난이도에 따른 공격력 HP 설정
 	mAttackPower = mAttackPower * LevelHepler::GetDamageRatio();
 	mHp = mHp * LevelHepler::GetHpRatio();
@@ -263,7 +283,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 			// HP 설정
 			mHp -= attackPower;
 			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
-			
+
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
 
@@ -279,6 +299,30 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 			// 사망처리 
 			if (mHp <= 0.f)
 			{
+				if (playerAttack->GetAttacker() != nullptr)
+				{
+					auto attackerID = playerAttack->GetAttacker()->GetComponent<Player>()->GetPlayerID();
+					if (attackerID == 0)
+					{
+						PlayerInfoVariable::Player1Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player1Monster);
+					}
+					if (attackerID == 1)
+					{
+						PlayerInfoVariable::Player2Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player2Monster);
+					}
+					if (attackerID == 2)
+					{
+						PlayerInfoVariable::Player3Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player3Monster);
+					}
+					if (attackerID == 3)
+					{
+						PlayerInfoVariable::Player4Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player4Monster);
+					}
+				}
 				mAnimator->SetParameterBoolean("IsDead", true);
 			}
 		}
@@ -287,10 +331,30 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 
 void fq::client::MeleeMonster::ChaseTarget()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
 	{
 		SetTarget(nullptr);
 		return;
+	}
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
+
+		if (playerOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		auto dummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (dummyOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		SetTarget(dummyOrNull);
 	}
 
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
@@ -317,14 +381,49 @@ void fq::client::MeleeMonster::DetectTarget()
 			mAnimator->SetParameterBoolean("FindTarget", true);
 		}
 	}
+
+	GetScene()->ViewComponents<PlayerDummy>(
+		[this, monsterPos](fq::game_module::GameObject& object, PlayerDummy& camera)
+		{
+			auto dummyPlayerT = object.GetComponent<game_module::Transform>();
+			auto playerPos = dummyPlayerT->GetWorldPosition();
+			float distance = (monsterPos - playerPos).Length();
+
+			if (distance <= mDetectRange)
+			{
+				SetTarget(&object);
+				mAnimator->SetParameterBoolean("FindTarget", true);
+			}
+		}
+	);
 }
 
 void fq::client::MeleeMonster::CheckTargetInAttackRange()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
 	{
 		SetTarget(nullptr);
 		return;
+	}
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
+
+		if (playerOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		auto dummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (dummyOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		SetTarget(dummyOrNull);
 	}
 
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
@@ -351,6 +450,17 @@ void fq::client::MeleeMonster::CheckAttackAble() const
 void fq::client::MeleeMonster::OnUpdate(float dt)
 {
 	mAttackElapsedTime = std::max(0.f, mAttackElapsedTime - dt);
+
+	// 현재 타겟이 더미 타겟인지 체크
+	if (mIsDummyTarget)
+	{
+		mDummyTraceElapsedTime += dt;
+
+		if (mCurrentDummyTraceDurationTime < mDummyTraceElapsedTime)
+		{
+			SetTarget(nullptr);
+		}
+	}
 }
 
 void fq::client::MeleeMonster::AnnounceFindedTarget()
@@ -365,8 +475,28 @@ void fq::client::MeleeMonster::AnnounceFindedTarget()
 
 void fq::client::MeleeMonster::LookAtTarget()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
+	{
 		return;
+	}
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
+
+		if (playerOrNull == nullptr)
+		{
+			return;
+		}
+
+		auto dummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (dummyOrNull == nullptr)
+		{
+			return;
+		}
+
+		SetTarget(dummyOrNull);
+	}
 
 	constexpr float RotationSpeed = 0.1f;
 

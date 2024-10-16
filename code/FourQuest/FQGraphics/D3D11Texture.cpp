@@ -292,6 +292,46 @@ std::string fq::graphics::D3D11Texture::GenerateRID(const std::wstring& textureP
 	return typeid(D3D11Texture).name() + temp;
 }
 
+void fq::graphics::D3D11Texture::SaveTextureToFile(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11Texture2D* texture, const std::wstring& fileName)
+{
+	using Microsoft::WRL::ComPtr;
+	
+	ComPtr<ID3D11Texture2D> stagingTexture;
+
+	// Step 1: Get texture description
+	D3D11_TEXTURE2D_DESC desc;
+	texture->GetDesc(&desc);
+
+	// Step 2: Create a staging texture if needed (for copying the texture data to the CPU)
+	if (!(desc.CPUAccessFlags & D3D11_CPU_ACCESS_READ) || (desc.Usage != D3D11_USAGE_STAGING))
+	{
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+		desc.Usage = D3D11_USAGE_STAGING;
+		desc.BindFlags = 0;
+		desc.MiscFlags = 0;
+
+		HRESULT hr = device->CreateTexture2D(&desc, nullptr, &stagingTexture);
+		if (FAILED(hr)) return;
+
+		// Copy the original texture to the staging texture
+		context->CopyResource(stagingTexture.Get(), texture);
+
+		texture = stagingTexture.Get();
+	}
+
+	// Step 3: Capture the texture data into a ScratchImage using DirectXTex
+	DirectX::ScratchImage image;
+	HRESULT hr = DirectX::CaptureTexture(device, context, texture, image);
+	if (FAILED(hr)) return;
+
+	// Step 4: Save the image to a DDS file (or other format like PNG/JPG)
+	hr = DirectX::SaveToDDSFile(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::DDS_FLAGS_NONE, fileName.c_str());
+	// Alternatively, you can save to PNG or JPG by using SaveToWICFile:
+	// hr = DirectX::SaveToWICFile(image.GetImages(), image.GetImageCount(), DirectX::WIC_FLAGS_NONE, GUID_ContainerFormatPng, fileName.c_str());
+
+	return;
+}
+
 void fq::graphics::D3D11Texture::CreateUAV(const std::shared_ptr<D3D11Device>& d3d11Device, UINT mipSlice)
 {
 	assert(mTexture != nullptr);

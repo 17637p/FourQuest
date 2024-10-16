@@ -20,6 +20,7 @@ fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	, mPrevApplyTransform{}
 	, mbIsRender{ true }
 	, mMaterialInstanceInfo{}
+	, mbIsUseTransform{ true }
 {
 }
 

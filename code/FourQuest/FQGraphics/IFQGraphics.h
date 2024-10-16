@@ -58,6 +58,8 @@ extern "C" {
 			/// 창 크기 변환
 			virtual FQ_GRAPHICS bool SetWindowSize(const unsigned short width, const unsigned short height) abstract; // 툴의 에디터를 포함한 전체 윈도우 영역
 			virtual FQ_GRAPHICS bool SetViewportSize(const unsigned short width, const unsigned short height) abstract; // 툴에서 씬을 그리는 영역
+			virtual FQ_GRAPHICS unsigned short GetWindowWidth() abstract;
+			virtual FQ_GRAPHICS unsigned short GetWindowHeight() abstract;
 
 			// Model Data Helper
 			virtual FQ_GRAPHICS fq::common::Model ConvertModel(const std::string& fbxFile) abstract;

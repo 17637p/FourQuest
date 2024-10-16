@@ -9,6 +9,12 @@
 #include "Attack.h"
 #include "HpBar.h"
 #include "LevelHepler.h"
+#include "Player.h"
+#include "PlayerInfoVariable.h"
+#include "PlayerDummy.h"
+#include "ClientHelper.h"
+
+#include <spdlog/spdlog.h>
 
 fq::client::PlantMonster::PlantMonster()
 	:mMaxHp(0.f)
@@ -54,7 +60,7 @@ void fq::client::PlantMonster::OnStart()
 	mAnimator = GetComponent<game_module::Animator>();
 	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
 
-	
+
 	// 난이도에 따른 공경력 HP 설정
 	mAttackPower = mAttackPower * LevelHepler::GetDamageRatio();
 	mHp = mHp * LevelHepler::GetHpRatio();
@@ -142,11 +148,34 @@ void fq::client::PlantMonster::OnUpdate(float dt)
 	if (mTarget)
 	{
 		if (mTarget->IsDestroyed())
-			SetTarget(nullptr);
+		{
+			auto playerOrNull = mTarget->GetComponent<Player>();
+
+			if (playerOrNull == nullptr)
+			{
+				SetTarget(nullptr);
+			}
+			else
+			{
+				auto dummyOrNull = playerOrNull->CreateDummyOrNull();
+				SetTarget(dummyOrNull);
+			}
+		}
 	}
 
 	// 공격 쿨타임 
 	mAttackElapsedTime = std::max(mAttackElapsedTime - dt, 0.f);
+
+	// 현재 타겟이 더미 타겟인지 체크
+	if (mIsDummyTarget)
+	{
+		mDummyTraceElapsedTime += dt;
+
+		if (mCurrentDummyTraceDurationTime < mDummyTraceElapsedTime)
+		{
+			SetTarget(nullptr);
+		}
+	}
 }
 
 void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& collision)
@@ -172,6 +201,31 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 			// PlantMonster 사망 처리 
 			if (mHp <= 0.f)
 			{
+				if (playerAttack->GetAttacker() != nullptr)
+				{
+					auto attackerID = playerAttack->GetAttacker()->GetComponent<Player>()->GetPlayerID();
+					if (attackerID == 0)
+					{
+						PlayerInfoVariable::Player1Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player1Monster);
+					}
+					if (attackerID == 1)
+					{
+						PlayerInfoVariable::Player2Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player2Monster);
+					}
+					if (attackerID == 2)
+					{
+						PlayerInfoVariable::Player3Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player3Monster);
+					}
+					if (attackerID == 3)
+					{
+						PlayerInfoVariable::Player4Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player4Monster);
+					}
+				}
+
 				mAnimator->SetParameterBoolean("IsDead", true);
 			}
 
@@ -200,9 +254,18 @@ void fq::client::PlantMonster::SetTarget(fq::game_module::GameObject* target)
 	if (target == nullptr)
 	{
 		mTarget = nullptr;
-
 		mAnimator->SetParameterBoolean("HasTarget", false);
+		mIsDummyTarget = false;
 		return;
+	}
+
+	// 더미 타겟인지 체크
+	mIsDummyTarget = target->GetComponent<PlayerDummy>() != nullptr;
+	if (mIsDummyTarget)
+	{
+		mDummyTraceElapsedTime = 0.f;
+		float random = helper::RandomGenerator::GetInstance().GetRandomNumber(mDummyDurationRandomRangeMin, mDummyDurationRandomRangeMax);
+		mCurrentDummyTraceDurationTime = mDummyTraceDurationTime + random;
 	}
 
 	mTarget = target->shared_from_this();
@@ -211,8 +274,28 @@ void fq::client::PlantMonster::SetTarget(fq::game_module::GameObject* target)
 
 void fq::client::PlantMonster::LookAtTarget()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
+	{
 		return;
+	}
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
+
+		if (playerOrNull == nullptr)
+		{
+			return;
+		}
+
+		auto dummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (dummyOrNull == nullptr)
+		{
+			return;
+		}
+
+		SetTarget(dummyOrNull);
+	}
 
 	auto transform = GetComponent<game_module::Transform>();
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
@@ -241,9 +324,28 @@ void fq::client::PlantMonster::LookAtTarget()
 
 void fq::client::PlantMonster::CheckTargetInAttackRange()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
+	{
 		return;
+	}
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
 
+		if (playerOrNull == nullptr)
+		{
+			return;
+		}
+
+		auto dummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (dummyOrNull == nullptr)
+		{
+			return;
+		}
+
+		SetTarget(dummyOrNull);
+	}
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
 	auto plantT = GetComponent<game_module::Transform>();
 

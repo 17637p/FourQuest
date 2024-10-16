@@ -413,9 +413,6 @@
     <ClInclude Include="PlantMonsterHitState.h">
       <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
-    <ClInclude Include="IMonster.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="MaterialManager.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
@@ -557,9 +554,6 @@
     <ClInclude Include="PlayerCheckUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
-    <ClInclude Include="LookingObjectHelper.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="MultiPlayerObjectCreator.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
@@ -572,11 +566,32 @@
     <ClInclude Include="SpawnStruct.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
-    <ClInclude Include="DynamicLightHelper.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="YAxisSetter.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="IMonster.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="ArmourDestroyer.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterVariable.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="ParabolaAttack.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerDummy.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicLightHelper.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="LookingObjectHelper.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialManagedGroup.h">
+      <Filter>include\06.ETC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -973,9 +988,6 @@
     <ClCompile Include="EffectColorManager.cpp">
       <Filter>src\06.ETC</Filter>
     </ClCompile>
-    <ClCompile Include="LookingObjectHelper.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="MultiPlayerObjectCreator.cpp">
       <Filter>src\06.ETC</Filter>
     </ClCompile>
@@ -988,11 +1000,26 @@
     <ClCompile Include="Spawner.cpp">
       <Filter>src\06.ETC</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicLightHelper.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="YAxisSetter.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ArmourDestroyer.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="ParabolaAttack.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerDummy.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="LookingObjectHelper.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicLightHelper.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialManagedGroup.cpp">
+      <Filter>src\06.ETC</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

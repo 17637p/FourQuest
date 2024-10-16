@@ -30,6 +30,8 @@ fq::client::Soul::Soul()
 	, mNeedHoldB(2)
 	, mCurHoldB(0)
 	, mIsOverlayGoddessStatue(false)
+	, mbIsOnSummon(false)
+	, mSummonArmourOrNull(nullptr)
 {}
 
 fq::client::Soul::~Soul()
@@ -81,6 +83,9 @@ void fq::client::Soul::OnStart()
 	SetSoulHP();		// 소울 HP
 
 	setName();
+
+	mbIsOnSummon = false;
+	mSummonArmourOrNull = nullptr;
 }
 
 void fq::client::Soul::DestorySoul()
@@ -110,6 +115,13 @@ void fq::client::Soul::OnTriggerEnter(const fq::game_module::Collision& collisio
 	{
 		mSelectGoddessStatue = goddessStatue;
 	}
+
+	// Quest Event 
+	if (mController != nullptr)
+	{
+		GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideTrigger>(
+			{ (int)mController->GetControllerID(), collision.other->GetName() });
+	}
 }
 
 void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision)
@@ -133,11 +145,14 @@ void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision
 
 void fq::client::Soul::OnUpdate(float dt)
 {
-	selectGoddessStatue(dt);
-	selectArmour();
-	checkOtherPlayer();
-	updateSoulHP(dt);
-	checkReleaseGoddessStatue();
+	if (!handleOnSummon())
+	{
+		selectGoddessStatue(dt);
+		selectArmour();
+		checkOtherPlayer();
+		updateSoulHP(dt);
+		checkReleaseGoddessStatue();
+	}
 }
 
 void fq::client::Soul::OnLateUpdate(float dt)
@@ -197,15 +212,31 @@ void fq::client::Soul::selectArmour()
 		{
 			PlayerInfo info{ mController->GetControllerID(), mSoulType };
 
-			if (closestArmour->SummonLivingArmour(info))
+			if (closestArmour->EnterSummonLivingArmour(info))
 			{
-				DestorySoul();
+				mbIsOnSummon = true;
+				mSummonArmourOrNull = closestArmour;
+				mController->SetCanMoveCharater(false);
 
-				spdlog::trace("DestroySoul");
+				// 위치 조정
+				auto armourTransform = closestArmour->GetTransform();
+				auto curTransform = GetTransform();
+				curTransform->SetWorldMatrix(armourTransform->GetWorldMatrix());
+
+				// 속도 제거
+				auto rigidbody = GetComponent<fq::game_module::RigidBody>();
+				if (rigidbody != nullptr)
+				{
+					rigidbody->SetLinearVelocity({ 0,0,0 });
+				}
+				
+				// UI 제거
+				mBGaugeUI->SetVisible(false);
+				GetComponent<HpBar>()->SetVisible(false);
 			}
 		}
 	}
-	else if(mBGaugeUI)
+	else if (mBGaugeUI)
 	{
 		mBGaugeUI->SetVisible(false);
 	}
@@ -246,18 +277,18 @@ void fq::client::Soul::SetSoulColor()
 
 			switch (mSoulType)
 			{
-				case fq::client::ESoulType::Sword:
-					matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
-					break;
-				case fq::client::ESoulType::Staff:
-					matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
-					break;
-				case fq::client::ESoulType::Axe:
-					matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
-					break;
-				case fq::client::ESoulType::Bow:
-					matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
-					break;
+			case fq::client::ESoulType::Sword:
+				matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
+				break;
+			case fq::client::ESoulType::Staff:
+				matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
+				break;
+			case fq::client::ESoulType::Axe:
+				matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
+				break;
+			case fq::client::ESoulType::Bow:
+				matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
+				break;
 			}
 
 			particle->SetParticleMaterialInfo(matInfo);
@@ -346,6 +377,27 @@ void fq::client::Soul::updateSoulHP(float dt)
 				camera.DeletePlayerTransform(GetComponent<game_module::Transform>());
 			});
 	}
+}
+
+bool fq::client::Soul::handleOnSummon()
+{
+	if (mbIsOnSummon)
+	{
+		assert(mSummonArmourOrNull != nullptr);
+		PlayerInfo info{ mController->GetControllerID(), mSoulType };
+		GetComponent<HpBar>()->SetVisible(false);
+
+		if (mSummonArmourOrNull->SummonLivingArmour(info))
+		{
+			mController->SetCanMoveCharater(true);
+			mController->SetOnMove(true);
+
+			DestorySoul();
+			spdlog::trace("DestroySoul");
+		}
+	}
+
+	return mbIsOnSummon;
 }
 
 void fq::client::Soul::SetSoulType(fq::client::ESoulType type)
@@ -446,20 +498,20 @@ void fq::client::Soul::setName()
 	{
 		switch (soulType)
 		{
-			case 0:
-				speechBubble->SetName(PlayerInfoVariable::KnightName);
-				break;
-			case 1:
-				speechBubble->SetName(PlayerInfoVariable::MagicName);
-				break;
-			case 2:
-				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-				break;
-			case 3:
-				speechBubble->SetName(PlayerInfoVariable::ArcherName);
-				break;
-			default:
-				break;
+		case 0:
+			speechBubble->SetName(PlayerInfoVariable::KnightName);
+			break;
+		case 1:
+			speechBubble->SetName(PlayerInfoVariable::MagicName);
+			break;
+		case 2:
+			speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+			break;
+		case 3:
+			speechBubble->SetName(PlayerInfoVariable::ArcherName);
+			break;
+		default:
+			break;
 		}
 	}
 }

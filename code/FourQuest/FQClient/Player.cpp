@@ -7,6 +7,7 @@
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/RigidBody.h"
 
 #include "Attack.h"
 #include "CameraMoving.h"
@@ -25,6 +26,7 @@
 #include "DeadArmour.h"
 #include "BGaugeUI.h"
 #include "EffectColorTransmitter.h"
+#include "PlayerDummy.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -58,7 +60,13 @@ fq::client::Player::Player()
 	, mASkillCoolTimeRatio(0.f)
 	, mXSkillCoolTimeRatio(0.f)
 	, mbIsEmitEnhanceEffect(false)
-{}
+	, mGBDecreaseDurability(false)
+	, mGBIncreaseAttackPower(0)
+	, mGBDecreaseCooltime(1)
+	, mGBIncreaseSpeed(0)
+	, mbCanCreateDummy(false)
+{
+}
 
 fq::client::Player::~Player()
 {}
@@ -102,8 +110,6 @@ void fq::client::Player::OnLateUpdate(float dt)
 
 void fq::client::Player::OnStart()
 {
-	mMaxHp = mHp;
-
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	mController = GetComponent<fq::game_module::CharacterController>();
 	mTransform = GetComponent<fq::game_module::Transform>();
@@ -151,6 +157,31 @@ void fq::client::Player::OnStart()
 			mSkinnedMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
 		}
 	}
+
+	GetComponent<HpBar>()->DecreaseHp((mMaxHp - mHp) / mMaxHp);
+
+	mbCanCreateDummy = false;
+}
+
+fq::game_module::GameObject* fq::client::Player::CreateDummyOrNull()
+{
+	if (!mbCanCreateDummy)
+	{
+		return nullptr;
+	}
+	if (mDummyPrefab.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDummyPrefab);
+	auto& dummyObject = *(instance.begin());
+	const auto& worldMatrix = GetTransform()->GetWorldMatrix();
+	dummyObject->GetTransform()->SetWorldMatrix(worldMatrix);
+
+	GetScene()->AddGameObject(dummyObject);
+
+	return dummyObject.get();
 }
 
 void fq::client::Player::processInput(float dt)
@@ -197,8 +228,14 @@ void fq::client::Player::processInput(float dt)
 			deadArmourTransform->SetWorldMatrix(thisTransform->GetWorldMatrix()
 				* DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.f, 1.372f, 0.f)));
 
-			// 해당 갑옷에 벗은 플레이어 ID 저장
-			soul->GetComponent<DeadArmour>()->SetUnequippedPlayerId(GetPlayerID());
+			// 해당 갑옷에 벗은 플레이어 ID 저장 및 체력 설정
+			auto deadArmour = soul->GetComponent<DeadArmour>();
+			assert(deadArmour != nullptr);
+			if (deadArmour != nullptr)
+			{
+				deadArmour->SetUnequippedPlayerId(GetPlayerID());
+				deadArmour->SetHp(mHp);
+			}
 
 			GetScene()->AddGameObject(soul);
 		}
@@ -230,53 +267,76 @@ void fq::client::Player::OnDestroy()
 
 void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 {
-	bool isHitAble = mInvincibleElapsedTime == 0.f;
-
 	// 플레이어 피격
-	if (isHitAble && collision.other->GetTag() == game_module::ETag::MonsterAttack)
+	if (collision.other->GetTag() == game_module::ETag::MonsterAttack)
 	{
 		auto monsterAtk = collision.other->GetComponent<client::Attack>();
+		bool isHitAble = mInvincibleElapsedTime == 0.f;
 		if (monsterAtk->ProcessAttack())
 		{
-			// 플레이어 방패 막기 처리 
-			if (mbOnShieldBlock)
+			// 플레이어 넉백 처리
+			if (monsterAtk->HasKnockBack())
 			{
-				auto attackDir = monsterAtk->GetAttackDirection();
-				auto lookAtDir = mTransform->GetLookAtVector();
+				auto type = monsterAtk->GetKnockBackType();
+				float power = monsterAtk->GetKnockBackPower();
 
-				attackDir.Normalize();
-				lookAtDir.Normalize();
-
-				float dotProduct = lookAtDir.Dot(attackDir);
-				float radian = std::acos(dotProduct);
-
-				if (radian >= DirectX::XM_PIDIV2)
+				if (type == EKnockBackType::TargetPosition)
 				{
-					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , fq::sound::EChannel::SE });
+					auto playerPos = mTransform->GetWorldPosition();
+					playerPos.y = 0.f;
+					auto monsterPos = monsterAtk->GetTransform()->GetWorldPosition();
+					monsterPos.y = 0.f;
 
-					fq::event::OnCreateStateEvent stateEvent;
-					stateEvent.gameObject = GetGameObject();
-					stateEvent.RegisterKeyName = "K_Shield_Block";
-					if (!stateEvent.RegisterKeyName.empty())
-					{
-						GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
-					}
+					auto knockBackDir = playerPos - monsterPos;
+					knockBackDir.Normalize();
+					auto rigid = GetComponent<game_module::RigidBody>();
 
-					return;
+					knockBackDir *= power;
+					rigid->AddLinearVelocity(knockBackDir);
 				}
 			}
-			// 체력 감소
-			float attackPower = monsterAtk->GetAttackPower();
-			DecreaseHp(attackPower);
 
-			// Hit 애니메이션 
-			if (mbIsActiveOnHit)
+			if (isHitAble)
 			{
-				// 무적시간 
-				mAnimator->SetParameterTrigger("OnHit");
-				mInvincibleElapsedTime = mInvincibleTime;
-			}
+				// 플레이어 방패 막기 처리 
+				if (mbOnShieldBlock)
+				{
+					auto attackDir = monsterAtk->GetAttackDirection();
+					auto lookAtDir = mTransform->GetLookAtVector();
 
+					attackDir.Normalize();
+					lookAtDir.Normalize();
+
+					float dotProduct = lookAtDir.Dot(attackDir);
+					float radian = std::acos(dotProduct);
+
+					if (radian >= DirectX::XM_PIDIV2)
+					{
+						GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , fq::sound::EChannel::SE });
+
+						fq::event::OnCreateStateEvent stateEvent;
+						stateEvent.gameObject = GetGameObject();
+						stateEvent.RegisterKeyName = "K_Shield_Block";
+						if (!stateEvent.RegisterKeyName.empty())
+						{
+							GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+						}
+
+						return;
+					}
+				}
+				// 체력 감소
+				float attackPower = monsterAtk->GetAttackPower();
+				DecreaseHp(attackPower);
+
+				// Hit 애니메이션 
+				if (mbIsActiveOnHit)
+				{
+					// 무적시간 
+					mAnimator->SetParameterTrigger("OnHit");
+					mInvincibleElapsedTime = mInvincibleTime;
+				}
+			}
 		}
 	}
 
@@ -293,15 +353,15 @@ void fq::client::Player::SummonSoul(bool isDestroyArmour)
 	if (isDestroyArmour)
 	{
 		spdlog::trace("DestroyArmour");
-	}
 
-	// 이펙트 방출
-	fq::event::OnCreateStateEvent stateEvent;
-	stateEvent.gameObject = GetGameObject();
-	stateEvent.RegisterKeyName = "P_Die_Armor";
-	if (!stateEvent.RegisterKeyName.empty())
-	{
-		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+		// 이펙트 방출
+		fq::event::OnCreateStateEvent stateEvent;
+		stateEvent.gameObject = GetGameObject();
+		stateEvent.RegisterKeyName = "P_Die_Armor";
+		if (!stateEvent.RegisterKeyName.empty())
+		{
+			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+		}
 	}
 
 	// 위치 설정
@@ -312,6 +372,8 @@ void fq::client::Player::SummonSoul(bool isDestroyArmour)
 		{ (int)GetPlayerID(), mSoulType, worldMat, mSoulPrefab, isDestroyArmour });
 
 	GetScene()->DestroyGameObject(GetGameObject());
+
+	mbCanCreateDummy = !isDestroyArmour;
 }
 
 void fq::client::Player::processCoolTime(float dt)
@@ -365,7 +427,6 @@ void fq::client::Player::processDebuff(float dt)
 
 		poisonZone->SetDurationTime(durationTime);
 	}
-
 }
 
 int fq::client::Player::GetPlayerID() const
@@ -595,8 +656,28 @@ void fq::client::Player::AddSoulGauge(float soul)
 
 void fq::client::Player::SetHp(float hp)
 {
-	mHp = hp;
+	mHp = std::min<float>(hp, mMaxHp);
+}
+
+void fq::client::Player::SetMaxHp(float maxHp)
+{
+	mMaxHp = maxHp;
+}
+
+float fq::client::Player::GetHp() const
+{
+	return mHp;
+}
+
+float fq::client::Player::GetMaxHp() const
+{
+	return mMaxHp;
+}
+
+void fq::client::Player::SetEditorHp(float hp)
+{
 	mMaxHp = hp;
+	mHp = hp;
 }
 
 bool fq::client::Player::CanUseSoulAttack() const
@@ -856,6 +937,11 @@ void fq::client::Player::SetLowerBodyAnimation()
 
 void fq::client::Player::DecreaseHp(float hp, bool bUseMinHp /*= false*/, bool bIgnoreInvincible /*= fasle*/)
 {
+	if (GetGameObject()->IsDestroyed())
+	{
+		return;
+	}
+
 	bool isHitAble = mInvincibleElapsedTime == 0.f;
 
 	if (!isHitAble && !bIgnoreInvincible) return;

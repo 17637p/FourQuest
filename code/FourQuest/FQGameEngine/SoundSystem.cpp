@@ -40,8 +40,7 @@ void fq::game_engine::SoundSystem::OnLoadScene(const fq::event::OnLoadScene even
 
 void fq::game_engine::SoundSystem::OnUnLoadScene()
 {
-	mSoundManager->UnloadAllSound();
-
+	mSoundManager->StopChannelsWithoutNoneStopChannel();
 	mbIsGameLoaded = false;
 }
 
@@ -53,4 +52,9 @@ void fq::game_engine::SoundSystem::OnPlaySound(fq::event::OnPlaySound event)
 void fq::game_engine::SoundSystem::OnStopChannel(fq::event::OnStopChannel event)
 {
 	mSoundManager->StopChannel(event.channelIndex);
+}
+
+void fq::game_engine::SoundSystem::Finalize()
+{
+	mSoundManager->UnloadAllSound();
 }

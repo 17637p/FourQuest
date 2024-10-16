@@ -94,8 +94,14 @@ void fq::client::QuestManager::OnStart()
 	mCurSubQuest.clear();
 	mViewSubQuest.clear();
 
-	mCurMainQuest = mMainQuests[mStartQuests.startMainQuestIndex];
+	//mCurMainQuest = mMainQuests[mStartQuests.startMainQuestIndex];
+	auto it = std::find_if(mMainQuests.begin(), mMainQuests.end(), [this](Quest quest)
+		{
+			return quest.mIndex == mStartQuests.startMainQuestIndex;
+		});
+	mCurMainQuest = *it;
 	mViewMainQuest = mCurMainQuest;
+
 	for (int i = 0; i < mStartQuests.startSubQuestIndex.size(); i++)
 	{
 		auto it = std::find_if(mSubQuests.begin(), mSubQuests.end(), [this, i](Quest quest)
@@ -368,27 +374,69 @@ void fq::client::QuestManager::eventProcessPlayerCollideTrigger()
 			}
 
 			// Join - Collider Trigger 처리
-			std::vector<QuestColliderTrigger>& joinQuestColliderTriggerList = mCurMainQuest.mJoinConditionList.colliderTriggerList;
-			if (joinQuestColliderTriggerList.size() > 0)
+			for (int i = 0; i < mMainQuests.size(); i++)
 			{
-				if (joinQuestColliderTriggerList[0].colliderName == event.colliderName)
-				{
-					GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
-						{ mCurMainQuest, 0 });
-					spdlog::trace("Complete Collider Trigger Clear Condition");
-				}
-			}
+				std::vector<QuestColliderTrigger>& joinQuestColliderTriggerList = mMainQuests[i].mJoinConditionList.colliderTriggerList;
 
-			for (int i = 0; i < mCurSubQuest.size(); i++)
-			{
-				std::vector<QuestColliderTrigger>& joinQuestColliderTriggerList = mCurSubQuest[i].mJoinConditionList.colliderTriggerList;
 				if (joinQuestColliderTriggerList.size() > 0)
 				{
 					if (joinQuestColliderTriggerList[0].colliderName == event.colliderName)
 					{
-						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
-							{ mCurSubQuest[i], i });
-						spdlog::trace("Complete Collider Trigger Clear Condition");
+						mCurMainQuest = mMainQuests[i];
+
+						spdlog::trace("Complete Collider Trigger Join Condition");
+					}
+				}
+			}
+
+			for (int i = 0; i < mSubQuests.size(); i++)
+			{
+				std::vector<QuestColliderTrigger>& joinQuestColliderTriggerList = mSubQuests[i].mJoinConditionList.colliderTriggerList;
+				if (joinQuestColliderTriggerList.size() > 0)
+				{
+					if (joinQuestColliderTriggerList[0].colliderName == event.colliderName)
+					{
+						if (!joinQuestColliderTriggerList[0].isAll)
+						{
+							// isClear가 아니면 // 현재 목록에 없다면 // 렌더도 해야함 // 지금 서브 퀘스트가 3개보다 작은지 체크도 해야함 
+							bool isInProgress = false;
+							for (int j = 0; j < mCurSubQuest.size(); j++)
+							{
+								if (mCurSubQuest[j].mIndex == mSubQuests[i].mIndex)
+								{
+									isInProgress = true;
+								}
+							}
+
+							if ((mCurSubQuest.size() < 3 && !mSubQuests[i].mIsClear) && !isInProgress)
+							{
+								mCurSubQuest.push_back(mSubQuests[i]);
+								mViewSubQuest.push_back(mSubQuests[i]);
+
+								// new Sub quest Render
+								for (int j = 0; j < 3; j++)
+								{
+									if (j < mViewSubQuest.size())
+									{
+										RenderOnSubQuest(j, true);
+									}
+									else
+									{
+										RenderOnSubQuest(j, false);
+									}
+								}
+
+								// New 연출
+								int newSubQuestIndex = mViewSubQuest.size();
+								mNewImageCounts[newSubQuestIndex] = 3.0f;
+								auto uiInfo = mNewImages[newSubQuestIndex]->GetUIInfomation(0);
+								uiInfo.isRender = true;
+								uiInfo.Alpha = 1;
+								mNewImages[newSubQuestIndex]->SetUIInfomation(0, uiInfo);
+
+								spdlog::trace("Complete Collider Trigger Join Condition");
+							}
+						}
 					}
 				}
 			}
@@ -464,6 +512,29 @@ void fq::client::QuestManager::eventProcessClearQuest()
 	mClearQuestHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ClearQuestEvent>(
 		[this](const client::event::ClearQuestEvent& event)
 		{
+			if (event.clearQuest.mIsMain)
+			{
+				for (int i = 0; i < mMainQuests.size(); i++)
+				{
+					if (event.clearQuest.mIndex == mMainQuests[i].mIndex)
+					{
+						mMainQuests[i].mIsClear = true;
+					}
+				}
+			}
+			else
+			{
+				for (int i = 0; i < mSubQuests.size(); i++)
+				{
+					if (event.clearQuest.mIndex == mSubQuests[i].mIndex)
+					{
+						mSubQuests[i].mIsClear = true;
+					}
+				}
+			}
+
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Quest_complete", false , fq::sound::EChannel::SE });
+
 			// 방금 깬 퀘스트가 클리어 조건으로 있는 퀘스트가 있다면 클리어 하기 
 			std::vector<ClearQuest>& clearQuestList = mCurMainQuest.mclearConditionList.clearQuestList;
 			if (clearQuestList.size() > 0)
@@ -555,30 +626,6 @@ void fq::client::QuestManager::eventProcessClearQuest()
 					{
 						mCurMainQuest = mMainQuests[i];
 						spdlog::trace("Complete PreQuest!");
-
-						// Complete 연출
-						int questUIindex = 0;
-						mCompleteImageCounts[questUIindex] = 3.0f;
-						auto uiInfo = mCompleteImages[questUIindex]->GetUIInfomation(0);
-						uiInfo.isRender = true;
-						uiInfo.Alpha = 1;
-						mCompleteImages[questUIindex]->SetUIInfomation(0, uiInfo);
-
-						uiInfo = mLeftChecks[questUIindex]->GetUIInfomation(0);
-						uiInfo.Width = 100;
-						uiInfo.Height = 100;
-						uiInfo.Alpha = 1;
-						uiInfo.isRender = true;
-						mLeftChecks[questUIindex]->SetUIInfomation(0, uiInfo);
-
-						uiInfo = mRightChecks[questUIindex]->GetUIInfomation(0);
-						uiInfo.Width = 100;
-						uiInfo.Height = 100;
-						uiInfo.Alpha = 1;
-						uiInfo.isRender = true;
-						mRightChecks[questUIindex]->SetUIInfomation(0, uiInfo);
-
-						mNewImages[questUIindex]->SetIsRender(0, false);
 					}
 				}
 			}
@@ -620,6 +667,32 @@ void fq::client::QuestManager::eventProcessClearQuest()
 						}
 					}
 				}
+			}
+			else
+			{
+				// Complete 연출
+				int questUIindex = 0;
+				mCompleteImageCounts[questUIindex] = 3.0f;
+				auto uiInfo = mCompleteImages[questUIindex]->GetUIInfomation(0);
+				uiInfo.isRender = true;
+				uiInfo.Alpha = 1;
+				mCompleteImages[questUIindex]->SetUIInfomation(0, uiInfo);
+
+				uiInfo = mLeftChecks[questUIindex]->GetUIInfomation(0);
+				uiInfo.Width = 100;
+				uiInfo.Height = 100;
+				uiInfo.Alpha = 1;
+				uiInfo.isRender = true;
+				mLeftChecks[questUIindex]->SetUIInfomation(0, uiInfo);
+
+				uiInfo = mRightChecks[questUIindex]->GetUIInfomation(0);
+				uiInfo.Width = 100;
+				uiInfo.Height = 100;
+				uiInfo.Alpha = 1;
+				uiInfo.isRender = true;
+				mRightChecks[questUIindex]->SetUIInfomation(0, uiInfo);
+
+				mNewImages[questUIindex]->SetIsRender(0, false);
 			}
 
 			for (int i = 0; i < mSubQuests.size(); i++)
@@ -675,6 +748,71 @@ void fq::client::QuestManager::eventProcessAllColliderTrigger()
 						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 							{ mCurSubQuest[i], i });
 						spdlog::trace("Complete Collider Trigger All Clear Condition");
+					}
+				}
+			}
+
+			// Join
+			for (int i = 0; i < mMainQuests.size(); i++)
+			{
+				std::vector<QuestColliderTrigger>& joinQuestColliderTriggerList = mMainQuests[i].mJoinConditionList.colliderTriggerList;
+
+				if (joinQuestColliderTriggerList.size() > 0)
+				{
+					if (joinQuestColliderTriggerList[0].colliderName == event.colliderName)
+					{
+						mCurMainQuest = mMainQuests[i];
+
+						spdlog::trace("Complete Collider Trigger Join Condition");
+					}
+				}
+			}
+
+			for (int i = 0; i < mSubQuests.size(); i++)
+			{
+				std::vector<QuestColliderTrigger>& joinQuestColliderTriggerList = mSubQuests[i].mJoinConditionList.colliderTriggerList;
+				if (joinQuestColliderTriggerList.size() > 0)
+				{
+					if (joinQuestColliderTriggerList[0].colliderName == event.colliderName)
+					{
+						// isClear가 아니면 // 현재 목록에 없다면 // 렌더도 해야함 // 지금 서브 퀘스트가 3개보다 작은지 체크도 해야함 
+						bool isInProgress = false;
+						for (int j = 0; j < mCurSubQuest.size(); j++)
+						{
+							if (mCurSubQuest[j].mIndex == mSubQuests[i].mIndex)
+							{
+								isInProgress = true;
+							}
+						}
+
+						if ((mCurSubQuest.size() < 3 && !mSubQuests[i].mIsClear) && !isInProgress)
+						{
+							mCurSubQuest.push_back(mSubQuests[i]);
+							mViewSubQuest.push_back(mSubQuests[i]);
+
+							// new Sub quest Render
+							for (int j = 0; j < 3; j++)
+							{
+								if (j < mViewSubQuest.size())
+								{
+									RenderOnSubQuest(j, true);
+								}
+								else
+								{
+									RenderOnSubQuest(j, false);
+								}
+							}
+
+							// New 연출
+							int newSubQuestIndex = mViewSubQuest.size();
+							mNewImageCounts[newSubQuestIndex] = 3.0f;
+							auto uiInfo = mNewImages[newSubQuestIndex]->GetUIInfomation(0);
+							uiInfo.isRender = true;
+							uiInfo.Alpha = 1;
+							mNewImages[newSubQuestIndex]->SetUIInfomation(0, uiInfo);
+
+							spdlog::trace("Complete Collider Trigger Join Condition");
+						}
 					}
 				}
 			}
@@ -772,7 +910,6 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 void fq::client::QuestManager::RenderOnSubQuest(int i, bool isOn)
 {
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren()[3]->GetChildren();
-	spdlog::trace("{}, ison: {}", i, (int)isOn);
 
 	auto subQuest = children[i]->GetChildren();
 
@@ -928,8 +1065,6 @@ void fq::client::QuestManager::playNew(float dt)
 				mNewImages[i]->SetUIInfomation(0, uiInfo);
 			}
 			mNewImageCounts[i] -= dt;
-
-			spdlog::trace("{} {}",i, mNewImageCounts[i]);
 		}
 		else
 		{
@@ -1122,4 +1257,5 @@ void fq::client::QuestManager::playComplete(float dt)
 		}
 	}
 }
+
 

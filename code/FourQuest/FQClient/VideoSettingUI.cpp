@@ -285,11 +285,13 @@ void fq::client::VideoSettingUI::processInput(float dt)
 			if (mSelectButtonID == 2)
 			{
 				mSelectButtonID++;
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 			if (mSelectButtonID < 2)
 			{
 				mSelectButtonID++;
 				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 
@@ -312,6 +314,7 @@ void fq::client::VideoSettingUI::processInput(float dt)
 			{
 				mSelectButtonID--;
 				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 
@@ -333,12 +336,16 @@ void fq::client::VideoSettingUI::processInput(float dt)
 
 		if (isDpadLeftTap || isLeftStickLeftTap)
 		{
-			mResolutionIndex--;
-			if (mResolutionIndex <= -1)
+			if (mSelectButtonID == 0)
 			{
-				mResolutionIndex = mResolutions.size() - 1;
+				mResolutionIndex--;
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
+				if (mResolutionIndex <= -1)
+				{
+					mResolutionIndex = mResolutions.size() - 1;
+				}
+				setResolutionTextUI();
 			}
-			setResolutionTextUI();
 		}
 
 		// ¿ì·Î
@@ -356,12 +363,16 @@ void fq::client::VideoSettingUI::processInput(float dt)
 
 		if (isDpadRightTap || isLeftStickRightTap)
 		{
-			mResolutionIndex++;
-			if (mResolutionIndex >= mResolutions.size())
+			if (mSelectButtonID == 0)
 			{
-				mResolutionIndex = 0;
+				mResolutionIndex++;
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
+				if (mResolutionIndex >= mResolutions.size())
+				{
+					mResolutionIndex = 0;
+				}
+				setResolutionTextUI();
 			}
-			setResolutionTextUI();
 		}
 	}
 
@@ -370,6 +381,7 @@ void fq::client::VideoSettingUI::processInput(float dt)
 		// A Button
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 			if (mSelectButtonID == 3)
 			{
 				saveSettingData();
@@ -388,6 +400,7 @@ void fq::client::VideoSettingUI::processInput(float dt)
 		// B Button
 		if (input->IsPadKeyState(i, EPadKey::B, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Cancle", false , fq::sound::EChannel::SE });
 			if (isChangeSettingData())
 			{
 				mIsActive = false;
@@ -402,6 +415,7 @@ void fq::client::VideoSettingUI::processInput(float dt)
 		// Y Button
 		if (input->IsPadKeyState(i, EPadKey::Y, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 			mIsActive = false;
 			spawnUIObject(mResetMessagePrefab);
 		}

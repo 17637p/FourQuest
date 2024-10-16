@@ -12,7 +12,28 @@ namespace fq::client
 {
 	class PlayerCheckUI : public fq::game_module::Component
 	{
+		enum EPlayerID
+		{
+			Sword1P,
+			Statff1P,
+			Axe1P,
+			Bow1P,
+			Sword2P,
+			Statff2P,
+			Axe2P,
+			Bow2P,
+			Sword3P,
+			Statff3P,
+			Axe3P,
+			Bow3P,
+			Sword4P,
+			Statff4P,
+			Axe4P,
+			Bow4P,
+		};
+
 	public:
+		
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -22,6 +43,8 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 
 	private:
+		EPlayerID mImageIndex;
+
 		float mbIsVisible;
 		
 		float mWorldOffset;
@@ -29,8 +52,6 @@ namespace fq::client
 		game_module::Transform* mTransform;
 		game_module::ImageUI* mImageUI;
 		game_module::Camera* mMainCamera;
-
-
 
 		friend void RegisterMetaData();
 	};

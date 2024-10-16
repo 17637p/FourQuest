@@ -7,7 +7,7 @@ namespace fq::game_module
 	{
 		Untagged = 0,
 		Camera = 1,
-		Player =2,
+		Player = 2,
 		Monster = 3,
 		Obstacle = 4,
 		Wall = 5,
@@ -22,6 +22,7 @@ namespace fq::game_module
 		Box = 14,
 		AimAssist = 15,
 		PlayerMonsterIgnore = 16,
-		End =17,
+		MagicCircle = 17,
+		End = 18,
 	};
 }

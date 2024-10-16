@@ -41,8 +41,6 @@ void fq::game_module::SceneHeleper::AddIndexName(std::string& outName)
 	outName = newName;
 }
 
-
-
 bool fq::game_module::SceneHeleper::HasSameName(Scene& scene, GameObject& object, const std::string& name)
 {
 	for (const GameObject& viewObject : scene.GetObjectView(true))

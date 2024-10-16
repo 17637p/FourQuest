@@ -18,7 +18,7 @@ public:
 	/// <summary>
 	/// 초기화
 	/// </summary>
-	void Initialize(Mode mode);
+	bool Initialize(Mode mode);
 
 	/// <summary>
 	/// 게임 루프

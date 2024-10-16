@@ -54,11 +54,11 @@ void fq::game_module::UVAnimator::UpdateTimePos(float dt)
 
 	if (mbIsRecursive)
 	{
-		mIUVAnimationInstance->SetTimePos(std::fmod(timePos + dt, duration));
+		mIUVAnimationInstance->SetTimePos(std::fmod(timePos + dt * mPlaySpeed, duration));
 	}
 	else
 	{
-		mIUVAnimationInstance->SetTimePos(std::min<float>(timePos + dt, duration));
+		mIUVAnimationInstance->SetTimePos(std::min<float>(timePos + dt * mPlaySpeed, duration));
 	}
 }
 

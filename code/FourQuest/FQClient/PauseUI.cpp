@@ -135,6 +135,10 @@ void fq::client::PauseUI::setScaleScreen()
 	{
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
+
+	auto myPos = myTransform->GetLocalPosition();
+	myPos.y = 120 * scaleY;
+	myTransform->SetLocalPosition(myPos);
 }
 
 void fq::client::PauseUI::setSelectBoxPosition(float dt)
@@ -244,6 +248,7 @@ void fq::client::PauseUI::processInput()
 			{
 				mSelectButtonID++;
 				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 
@@ -266,6 +271,7 @@ void fq::client::PauseUI::processInput()
 			{
 				mSelectButtonID--;
 				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 	}
@@ -275,6 +281,7 @@ void fq::client::PauseUI::processInput()
 	{
 		if (input->IsPadKeyState(i, EPadKey::B, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Cancle", false , fq::sound::EChannel::SE });
 			GetScene()->GetEventManager()->FireEvent<event::OffPopupPause>({});
 			GetScene()->DestroyGameObject(GetGameObject());
 		}
@@ -284,6 +291,7 @@ void fq::client::PauseUI::processInput()
 	{
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 			clickButton();
 		}
 	}

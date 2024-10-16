@@ -3,8 +3,10 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/Animator.h"
+#include "../FQGameModule/RigidBody.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Controller.h"
 #include "MagicArmour.h"
 
 fq::client::AOEAttackState::AOEAttackState()
@@ -44,11 +46,18 @@ void fq::client::AOEAttackState::OnStateEnter(game_module::Animator& animator, g
 	// Controller ID 
 	mControllerID = animator.GetComponent<game_module::CharacterController>()->GetControllerID();
 
+	// 공격 범위 UI 컨트롤러에 연동
+	auto controller = mAttackWarningUI->GetComponent<fq::game_module::Controller>();
+
+	if (controller != nullptr)
+	{
+		controller->SetControllerID(mControllerID);
+	}
+
 	mMoveRange = magicArmour->GetAOEMoveRange();
 
 	// 시작 사운드 재생
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Explosion_Start", false , fq::sound::EChannel::SE});
-
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Explosion_Start", false , fq::sound::EChannel::SE });
 
 	// 이펙트 색상 설정
 	auto player = animator.GetComponent<Player>();
@@ -82,37 +91,4 @@ void fq::client::AOEAttackState::OnStateExit(game_module::Animator& animator, ga
 
 void fq::client::AOEAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
-	// UI 이동 처리
-	auto UIT = mAttackWarningUI->GetComponent<game_module::Transform>();
-	auto input = animator.GetScene()->GetInputManager();
-
-	float x = input->GetStickInfomation(mControllerID, EPadStick::leftX);
-	float y = input->GetStickInfomation(mControllerID, EPadStick::leftY);
-
-	auto prevPos = UIT->GetWorldPosition();
-
-	constexpr float moveSpeed = 10.f;
-
-	DirectX::SimpleMath::Vector2 moveDistance{ dt * moveSpeed * x, dt * moveSpeed * y };
-
-	auto currentPos = prevPos;
-	currentPos.x += moveDistance.x;
-	currentPos.z += moveDistance.y;
-
-	auto moveVec = currentPos - mCenterPosition;
-	float distance = moveVec.Length();
-
-	// 범위밖으로 나가는 처리 
-	if (mMoveRange < distance)
-	{
-		moveVec.y = 0.f;
-		moveVec.Normalize();
-		moveVec *= mMoveRange;
-
-		currentPos = mCenterPosition;
-		currentPos.x += moveVec.x;
-		currentPos.z += moveVec.z;
-	}
-
-	UIT->SetWorldPosition(currentPos);
 }

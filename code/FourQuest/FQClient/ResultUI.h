@@ -19,15 +19,18 @@ namespace fq::client
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 
+		void SetNextScene(std::string nextScene);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void SetScaleScreen();
+		void setScaleScreen();
 
-		void InitBar();
-		void SetTotal();
-		void SetBar();
+		void initBar();
+		void OnOffBar(); // 없는 캐릭터 바 렌더 지우기 
+		void setTotal();
+		void setBar();
 
 	private:
 		game_module::ScreenManager* mScreenManager;
@@ -62,8 +65,12 @@ namespace fq::client
 
 		float mBarWidth;
 
+		std::string mNextScene;
+
 	private:
 		friend void RegisterMetaData();
 	};
 }
+
+//기사, 마법사, 워리어, 궁수 
 

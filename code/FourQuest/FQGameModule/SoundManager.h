@@ -62,6 +62,11 @@ namespace fq::game_module
 		void StopChannel(ChannelIndex index);
 
 		/// <summary>
+		/// NoneStop 채널빼고 모든 채널을 정지합니다 
+		/// </summary>
+		void StopChannelsWithoutNoneStopChannel();
+
+		/// <summary>
 		/// 사운드를 재생합니다 
 		/// </summary>
 		void Play(const SoundKey& key, bool bIsLoop, ChannelIndex index);
@@ -77,8 +82,12 @@ namespace fq::game_module
 		/// </summary>
 		float GetChannelVoulme(fq::sound::EChannel channel)const;
 
-	private:
+
+	public:
 		static constexpr ChannelIndex MaxChannel = 32;
+		static constexpr ChannelIndex NoneStopChannel = 31;
+
+	private:
 
 		FMOD_RESULT mFmodResult;
 		SoundSystem* mSoundSystem;

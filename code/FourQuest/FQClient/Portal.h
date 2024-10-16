@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../FQGameModule/Component.h"
+#include "../FQGameModule/PrefabResource.h"
 
 namespace fq::client
 {
@@ -21,8 +22,10 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 		virtual void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 		entt::meta_handle GetHandle() override { return *this; }
+
 	private:
 		std::string mNextSceneName;
+		game_module::PrefabResource mResultUIPrefab;
 
 		friend void RegisterMetaData();
 	};

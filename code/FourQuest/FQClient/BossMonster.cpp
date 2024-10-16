@@ -15,6 +15,12 @@
 #include "MonsterDefine.h"
 #include "DeadArmour.h"
 #include "LevelHepler.h"
+#include "Player.h"
+#include "PlayerInfoVariable.h"
+#include "PlayerDummy.h"
+#include "ClientHelper.h"
+
+#include <spdlog/spdlog.h>
 
 fq::client::BossMonster::BossMonster()
 	:mMaxHp(0.f)
@@ -48,6 +54,17 @@ fq::client::BossMonster::BossMonster()
 	, mEatProbability(0.1f)
 	, mRushProbability(0.1f)
 	, mSmashProbability(0.2f)
+	, mRushKnockBackPower(5.f)
+	, mSmashKnockBackPower(3.f)
+	, mComboAttackKnockBackPower(3.f)
+	, mContinousKnockBackPower(3.f)
+	, mDummyTraceDurationTime(0.f)
+	, mbUseDummyTraceRandomRange(false)
+	, mDummyDurationRandomRangeMin(0.f)
+	, mDummyDurationRandomRangeMax(0.f)
+	, mCurrentDummyTraceDurationTime(0.f)
+	, mDummyTraceElapsedTime(0.f)
+	, mIsDummyTarget(false)
 {}
 
 fq::client::BossMonster::~BossMonster()
@@ -148,6 +165,31 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			// 사망처리
 			if (mHp <= 0.f)
 			{
+				if (playerAttack->GetAttacker() != nullptr)
+				{
+					auto attackerID = playerAttack->GetAttacker()->GetComponent<Player>()->GetPlayerID();
+					if (attackerID == 0)
+					{
+						PlayerInfoVariable::Player1Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player1Monster);
+					}
+					if (attackerID == 1)
+					{
+						PlayerInfoVariable::Player2Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player2Monster);
+					}
+					if (attackerID == 2)
+					{
+						PlayerInfoVariable::Player3Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player3Monster);
+					}
+					if (attackerID == 3)
+					{
+						PlayerInfoVariable::Player4Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player4Monster);
+					}
+				}
+
 				mAnimator->SetParameterBoolean("IsDead", true);
 			}
 
@@ -217,7 +259,17 @@ void fq::client::BossMonster::SetTarget(game_module::GameObject* target)
 	{
 		mTarget = nullptr;
 		mAnimator->SetParameterBoolean("HasTarget", false);
+		mIsDummyTarget = false;
 		return;
+	}
+
+	// 더미 타겟인지 체크
+	mIsDummyTarget = target->GetComponent<PlayerDummy>() != nullptr;
+	if (mIsDummyTarget)
+	{
+		mDummyTraceElapsedTime = 0.f;
+		float random = helper::RandomGenerator::GetInstance().GetRandomNumber(mDummyDurationRandomRangeMin, mDummyDurationRandomRangeMax);
+		mCurrentDummyTraceDurationTime = mDummyTraceDurationTime + random;
 	}
 
 	mTarget = target->shared_from_this();
@@ -234,10 +286,30 @@ void fq::client::BossMonster::Move(DirectX::SimpleMath::Vector3 destination)
 
 void fq::client::BossMonster::ChaseTarget()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
 	{
 		SetTarget(nullptr);
 		return;
+	}
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
+
+		if (playerOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		auto playerDummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (playerDummyOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		SetTarget(playerDummyOrNull);
 	}
 
 	auto targetPos = mTarget->GetTransform()->GetWorldPosition();
@@ -246,11 +318,34 @@ void fq::client::BossMonster::ChaseTarget()
 
 void fq::client::BossMonster::CheckTargetInAttackRange()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
 	{
 		SetTarget(nullptr);
 		mAnimator->SetParameterBoolean("InAttackRange", false);
 		return;
+	}
+	// 사망 시 플레이어라면 더미 생성이 가능한지 체크한다.
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
+
+		if (playerOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			mAnimator->SetParameterBoolean("InAttackRange", false);
+			return;
+		}
+
+		auto dummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (dummyOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			mAnimator->SetParameterBoolean("InAttackRange", false);
+			return;
+		}
+
+		SetTarget(dummyOrNull);
 	}
 
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
@@ -282,9 +377,10 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::Rush()
 	// 공격 정보 설정
 	AttackInfo attackInfo{};
 	auto attackComponent = attackObj->GetComponent<Attack>();
-
 	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = dc::GetMonsterRushDamage(mAttackPower);
+	attackInfo.type = EKnockBackType::TargetPosition;
+	attackInfo.knocBackPower = mRushKnockBackPower;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
@@ -315,6 +411,8 @@ void fq::client::BossMonster::EmitSmashDown()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = dc::GetMonsterSmashDownDamage(mAttackPower);
 	attackInfo.attackDirection = foward;
+	attackInfo.type = EKnockBackType::TargetPosition;
+	attackInfo.knocBackPower = mSmashKnockBackPower;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
@@ -344,10 +442,30 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitSmashD
 
 void fq::client::BossMonster::HomingTarget()
 {
-	if (mTarget == nullptr || mTarget->IsDestroyed())
+	if (mTarget == nullptr)
 	{
 		SetTarget(nullptr);
 		return;
+	}
+	if (mTarget->IsDestroyed())
+	{
+		auto playerOrNull = mTarget->GetComponent<Player>();
+
+		if (playerOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		auto dummyOrNull = playerOrNull->CreateDummyOrNull();
+
+		if (dummyOrNull == nullptr)
+		{
+			SetTarget(nullptr);
+			return;
+		}
+
+		SetTarget(dummyOrNull);
 	}
 
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
@@ -416,7 +534,6 @@ void fq::client::BossMonster::EmitComboAttack(float xAxisOffset)
 	attackPos += right * xAxisOffset;
 	attackT->GenerateWorld(attackPos, rotation, scale);
 
-
 	// 공격 정보 설정
 	AttackInfo attackInfo{};
 	auto attackComponent = attackObj->GetComponent<Attack>();
@@ -424,6 +541,8 @@ void fq::client::BossMonster::EmitComboAttack(float xAxisOffset)
 	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = dc::GetMonsterComboAttackDamage(mAttackPower);
 	attackInfo.attackDirection = foward;
+	attackInfo.type = EKnockBackType::TargetPosition;
+	attackInfo.knocBackPower = mComboAttackKnockBackPower;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);

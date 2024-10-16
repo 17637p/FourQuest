@@ -13,6 +13,8 @@
 #include "PlayerInfoVariable.h"
 #include "SoulVariable.h"
 
+#include <boost/locale.hpp>
+
 std::shared_ptr<fq::game_module::Component> fq::client::GameManager::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
 	auto cloneGameMgr = std::dynamic_pointer_cast<GameManager>(clone);
@@ -87,10 +89,22 @@ void fq::client::GameManager::OnUpdate(float dt)
 	auto input = GetScene()->GetInputManager();
 	if (!mIsStop)
 	{
+		if (input->IsKeyState(EKey::ESC, EKeyState::Tap))
+		{
+			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPauseUI);
+			auto pauseUIObject = *(instance.begin());
+
+			GetScene()->AddGameObject(pauseUIObject);
+
+			// ¸ØÃã Ã³¸®
+			GetScene()->GetTimeManager()->SetTimeScale(0);
+			mIsStop = true;
+
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
+		}
 		for (int i = 0; i < 4; i++)
 		{
-			if (input->IsPadKeyState(i, EPadKey::Start, EKeyState::Tap) || 
-				input->IsKeyState(EKey::ESC, EKeyState::Tap))
+			if (input->IsPadKeyState(i, EPadKey::Start, EKeyState::Tap))
 			{
 				auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPauseUI);
 				auto pauseUIObject = *(instance.begin());
@@ -100,6 +114,8 @@ void fq::client::GameManager::OnUpdate(float dt)
 				// ¸ØÃã Ã³¸®
 				GetScene()->GetTimeManager()->SetTimeScale(0);
 				mIsStop = true;
+
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 			}
 		}
 	}
@@ -115,8 +131,9 @@ void fq::client::GameManager::OnUpdate(float dt)
 
 void fq::client::GameManager::OnStart()
 {
-	mSoulManagerModule->OnStart(GetScene());
+	resetResult();
 
+	mSoulManagerModule->OnStart(GetScene());
 
 	EventProcessOffPopupPause();
 	EventProcessOffPopupSetting();
@@ -276,6 +293,8 @@ void fq::client::GameManager::OnStart()
 
 void fq::client::GameManager::OnAwake()
 {
+	setPlayerName();
+
 	mRegisterPlayerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::RegisterPlayer>(
 		[this](const client::event::RegisterPlayer& event)
 		{
@@ -341,6 +360,7 @@ void fq::client::GameManager::testKey()
 			auto playerComponent = player->GetComponent<Player>();
 			if (playerComponent != nullptr)
 			{
+				playerComponent->SetMaxHp(100000.f);
 				playerComponent->SetHp(100000.f);
 			}
 		}
@@ -602,5 +622,46 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::GameManager::SpawnPlaye
 
 	newObject->GetTransform()->SetLocalPosition(spawnPos);
 	return newObject;
+}
+
+void fq::client::GameManager::resetResult()
+{
+	PlayerInfoVariable::Player1Monster = 0;
+	PlayerInfoVariable::Player2Monster = 0;
+	PlayerInfoVariable::Player3Monster = 0;
+	PlayerInfoVariable::Player4Monster = 0;
+
+	PlayerInfoVariable::Player1Magic = 0;
+	PlayerInfoVariable::Player2Magic = 0;
+	PlayerInfoVariable::Player3Magic = 0;
+	PlayerInfoVariable::Player4Magic = 0;
+
+	PlayerInfoVariable::Player1Archer = 0;
+	PlayerInfoVariable::Player2Archer = 0;
+	PlayerInfoVariable::Player3Archer = 0;
+	PlayerInfoVariable::Player4Archer = 0;
+
+	PlayerInfoVariable::Player1Warrior = 0;
+	PlayerInfoVariable::Player2Warrior = 0;
+	PlayerInfoVariable::Player3Warrior = 0;
+	PlayerInfoVariable::Player4Warrior = 0;
+
+	PlayerInfoVariable::Player1Knight = 0;
+	PlayerInfoVariable::Player2Knight = 0;
+	PlayerInfoVariable::Player3Knight = 0;
+	PlayerInfoVariable::Player4Knight = 0;
+}
+
+void fq::client::GameManager::setPlayerName()
+{
+	PlayerInfoVariable::KnightName = wstringToString(L"·çÄ«½º");
+	PlayerInfoVariable::MagicName = wstringToString(L"¾Æ¸£Ä«³ª");
+	PlayerInfoVariable::BerserkerName = wstringToString(L"¹ß´õ");
+	PlayerInfoVariable::ArcherName = wstringToString(L"½Ç¹ö");
+}
+
+std::string fq::client::GameManager::wstringToString(std::wstring wStr)
+{
+	return boost::locale::conv::from_utf(wStr, "UTF-8");
 }
 

@@ -15,8 +15,11 @@
 #include "../FQGameModule/MaterialAnimator.h"
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/PostProcessing.h"
+#include "../FQGameModule/ImageUI.h"
 #include "../FQCommon/FQCommonGraphics.h"
 #include "../FQCommon/FQPath.h"
+#include "../FQCommon/IFQRenderObject.h"
+
 #include "GameProcess.h"
 #include "AnimationSystem.h"
 #include "PhysicsSystem.h"
@@ -79,10 +82,7 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 			});
 
 	mUIRenderHandler = eventMgr->
-		RegisterHandle<fq::event::UIRender>([this](fq::event::UIRender event)
-			{
-				mGameProcess->mGraphics->SetIsRenderUI(event.bIsRenderingUI);
-			});
+		RegisterHandle<fq::event::UIRender>(this, &RenderingSystem::OnUIRender);
 }
 
 void fq::game_engine::RenderingSystem::Update(float dt)
@@ -112,7 +112,11 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 				{
 					auto nodeHierarchyInstanceOrNull = meshObject->GetNodeHierarchyInstance();
 
-					if (nodeHierarchyInstanceOrNull == nullptr)
+					if (!mesh.GetUseTransform())
+					{
+						meshObject->SetTransform(DirectX::SimpleMath::Matrix::Identity);
+					}
+					else if (nodeHierarchyInstanceOrNull == nullptr)
 					{
 						meshObject->SetTransform(transform.GetWorldMatrix());
 					}
@@ -206,6 +210,35 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 	if (postProcessingView.begin() == postProcessingView.end())
 	{
 		mGameProcess->mGraphics->SetIsUsePostProcessing(false);
+	}
+
+	for (auto iter = mOnUIRenderEventActivatedObjects.begin(); iter != mOnUIRenderEventActivatedObjects.end();)
+	{
+		if (iter->first->IsDestroyed())
+		{
+			iter = mOnUIRenderEventActivatedObjects.erase(iter);
+		}
+		else
+		{
+			auto object = iter->first;
+			auto imageUI = object->GetComponent<ImageUI>();
+
+			if (imageUI == nullptr)
+			{
+				continue;
+			}
+
+			auto infos = imageUI->GetUIInfomations();
+
+			for (auto imageObjectIndex : iter->second)
+			{
+				infos[imageObjectIndex].isRender = false;
+			}
+
+			imageUI->SetUIInfomations(infos);
+
+			++iter;
+		}
 	}
 }
 
@@ -476,9 +509,9 @@ void fq::game_engine::RenderingSystem::unloadAnimation(fq::game_module::GameObje
 
 	auto animator = object->GetComponent<game_module::Animator>();
 
-//	animator->SetController(nullptr);
-//	animator->SetNodeHierarchyInstance(nullptr);
-//	animator->SetNodeHierarchy(nullptr);
+	//	animator->SetController(nullptr);
+	//	animator->SetNodeHierarchyInstance(nullptr);
+	//	animator->SetNodeHierarchy(nullptr);
 }
 
 
@@ -761,6 +794,73 @@ void fq::game_engine::RenderingSystem::unloadTerrain(fq::game_module::GameObject
 	auto terrainMeshObject = terrain->GetTerrainMeshObject();
 	mGameProcess->mGraphics->DeleteTerrainMeshObject(terrainMeshObject);
 	terrain->SetTerrainMeshObject(nullptr);
+}
+
+void fq::game_engine::RenderingSystem::OnUIRender(const fq::event::UIRender& event)
+{
+	using namespace fq::game_module;
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+	if (!event.bIsRenderingUI)
+	{
+		// 활성화 UI를 컨테이너에 저장하고 랜더링 여부를 Off시킴
+
+		scene->ViewComponents<ImageUI>(
+			[this](GameObject& object, ImageUI& imageUI)
+			{
+				if (!imageUI.GetIsApplyUIRenderEvent())
+				{
+					return;
+				}
+
+				auto infos = imageUI.GetUIInfomations();
+				auto interfaceObjects = imageUI.GetImageObjects();
+				assert(infos.size() == interfaceObjects.size());
+
+				std::vector<size_t> imageObjectInterfaces;
+				imageObjectInterfaces.reserve(infos.size());
+
+				for (size_t i = 0; i < infos.size(); ++i)
+				{
+					if (infos[i].isRender)
+					{
+						imageObjectInterfaces.push_back(i);
+						infos[i].isRender = false;
+					}
+				}
+
+				imageUI.SetUIInfomations(infos);
+				mOnUIRenderEventActivatedObjects.insert({ &object, imageObjectInterfaces });
+			}
+		);
+
+	}
+	else
+	{
+		// 캐쉬에 저장된 데이터의 랜더링 여부를 On 시킴
+
+		for (auto eventObject : mOnUIRenderEventActivatedObjects)
+		{
+			auto object = eventObject.first;
+			auto imageUI = object->GetComponent< ImageUI>();
+
+			if (imageUI == nullptr)
+			{
+				continue;
+			}
+
+			auto infos = imageUI->GetUIInfomations();
+
+			for (auto imageObjectIndex : eventObject.second)
+			{
+				infos[imageObjectIndex].isRender = true;
+			}
+
+			imageUI->SetUIInfomations(infos);
+		}
+
+		mOnUIRenderEventActivatedObjects.clear();
+	}
 }
 
 unsigned int fq::game_engine::RenderingSystem::GetModelKey(const Path& modelPath, const Path& texturePath) const

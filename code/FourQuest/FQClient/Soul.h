@@ -7,6 +7,7 @@
 namespace fq::game_module
 {
 	class CharacterController;
+	class GameObject;
 }
 
 namespace fq::client
@@ -19,16 +20,16 @@ namespace fq::client
 	public:
 		Soul();
 		~Soul();
-		
+
 		void DestorySoul();
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
 		void SetSoulType(fq::client::ESoulType type);
-	
+
 		void SetSoulColor();
 		void SetSoulHP();
 
 		void ReleaseGoddessStatue();
-		
+
 		float GetSoulHpRatio()const;
 
 	private:
@@ -49,6 +50,8 @@ namespace fq::client
 		void checkReleaseGoddessStatue();
 		// ¿µÈ¥ HP ¾÷µ¥ÀÌÆ®
 		void updateSoulHP(float dt);
+		// °©¿Ê ÀåÂø ÁßÀÏ °æ¿ì¸¦ Ã¼Å©ÇÔ
+		bool handleOnSummon();
 
 		void setName();
 
@@ -68,6 +71,9 @@ namespace fq::client
 		float mNeedHoldB;
 		float mCurHoldB;
 		bool mIsOverlayGoddessStatue;
+
+		bool mbIsOnSummon;
+		DeadArmour* mSummonArmourOrNull;
 
 	private:
 		friend void RegisterMetaData();

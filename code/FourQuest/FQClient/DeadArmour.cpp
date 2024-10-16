@@ -1,4 +1,6 @@
 #define NOMINMAX
+#include <limits>
+
 #include "DeadArmour.h"
 
 #include "../FQGameModule/GameModule.h"
@@ -12,6 +14,7 @@
 #include "Player.h"
 #include "ClientEvent.h"
 #include "SoulVariable.h"
+#include "PlayerInfoVariable.h"
 
 fq::client::DeadArmour::DeadArmour()
 	:mPlayerCount(0)
@@ -19,11 +22,14 @@ fq::client::DeadArmour::DeadArmour()
 	, mUnequippedPlayerId(-1)
 	, mPlayerArmourCoolTime(0.f)
 	, mbIsSummonAble(true)
+	, mSummonDuration(1.f)
+	, mbIsOnSummon(false)
+	, mSummonElapsedTime(0.f)
+	, mHp(std::numeric_limits<float>::max())
 {}
 
 fq::client::DeadArmour::~DeadArmour()
 {
-
 }
 
 std::shared_ptr<fq::game_module::Component> fq::client::DeadArmour::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
@@ -43,12 +49,39 @@ std::shared_ptr<fq::game_module::Component> fq::client::DeadArmour::Clone(std::s
 	return cloneController;
 }
 
-bool fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
+bool fq::client::DeadArmour::EnterSummonLivingArmour(PlayerInfo info)
 {
 	assert(info.ControllerID <= 3);
 
-	if (mUnequippedPlayerId == info.ControllerID && mPlayerArmourCoolTime < SoulVariable::ArmourCoolTime)
+	if (mbIsOnSummon)
+	{
 		return false;
+	}
+	if (mUnequippedPlayerId == info.ControllerID && mPlayerArmourCoolTime < SoulVariable::ArmourCoolTime)
+	{
+		return false;
+	}
+
+	mbIsOnSummon = true;
+
+	// 이펙트 방출 
+	fq::event::OnCreateStateEvent stateEvent;
+	stateEvent.gameObject = GetGameObject();
+	stateEvent.RegisterKeyName = "O_ArmorSpawn";
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+
+	// UI 제거
+	setUI(false);
+
+	return true;
+}
+
+bool fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
+{
+	if (mSummonDuration > mSummonElapsedTime)
+	{
+		return false;
+	}
 
 	// 인스턴스 생성
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLivingArmourPrefab);
@@ -57,8 +90,15 @@ bool fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 	// 컨트롤러 연결
 	livingArmour->GetComponent<game_module::CharacterController>()->SetControllerID(info.ControllerID);
 
+	AddArmourCount(info.ControllerID);
+
 	// 영혼 타입 설정
-	livingArmour->GetComponent<Player>()->SetSoulType(info.SoulType);
+	auto player = livingArmour->GetComponent<Player>();
+	if (player != nullptr)
+	{
+		player->SetSoulType(info.SoulType);
+		player->SetHp(mHp);
+	}
 
 	// 위치 설정
 	auto world = GetComponent<game_module::Transform>()->GetWorldMatrix();
@@ -66,19 +106,13 @@ bool fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 
 	GetScene()->AddGameObject(livingArmour);
 
-	// 이펙트 방출 
-	fq::event::OnCreateStateEvent stateEvent;
-	stateEvent.gameObject = livingArmour.get();
-	stateEvent.RegisterKeyName = "O_ArmorSpawn";
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
-
 	// 상호작용 이벤트 발생
 	GetScene()->GetEventManager()->FireEvent<client::event::ObjectInteractionEvent>(
 		{ GetGameObject()->GetTag() });
-	
+
 	// DeadArmour 삭제 
 	GetScene()->DestroyGameObject(GetGameObject());
-	
+
 	return true;
 }
 
@@ -93,7 +127,6 @@ void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collis
 	{
 		constexpr DirectX::SimpleMath::Color Yellow{ 0.8f,0.6f,0.2f,1.f };
 		setOutlineColor(Yellow);
-		setUI(true);
 	}
 }
 
@@ -112,7 +145,6 @@ void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collisi
 		constexpr DirectX::SimpleMath::Color NoOutLine{ 0.f,0.f,0.f,1.f };
 
 		setOutlineColor(NoOutLine);
-		setUI(false);
 	}
 }
 
@@ -120,10 +152,21 @@ void fq::client::DeadArmour::OnStart()
 {
 	assert(GetComponent<game_module::ImageUI>() != nullptr);
 
-	setUI(false);
+	setUI(true);
 	mbIsSummonAble = true;
+	mbIsOnSummon = false;
+	mSummonElapsedTime = 0.f;
 
-
+	// // HP 가져오기
+	// auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLivingArmourPrefab);
+	// auto& livingArmour = *(instance.begin());
+	// auto player = livingArmour->GetComponent<Player>();
+	// 
+	// assert(player != nullptr);
+	// if (player != nullptr)
+	// {
+	// 	mHp = player->GetMaxHp();
+	// }
 }
 
 void fq::client::DeadArmour::setUI(bool isVisible)
@@ -132,16 +175,18 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 
 	mbIsVisible = isVisible;
 	auto imageUI = GetComponent<game_module::ImageUI>();
-	auto uiInfo = imageUI->GetUIInfomations();
+	auto uiInfos = imageUI->GetUIInfomations();
 
-	if (!uiInfo.empty())
+	uiInfos[0].Layer = 5000;
+	if (!uiInfos.empty())
 	{
-		uiInfo[0].isRender = true;
+		uiInfos[0].isRender = isVisible;
 
-		if (uiInfo.size() > 1)
-			uiInfo[1].isRender = false;
+		if (uiInfos.size() > 1)
+			uiInfos[1].isRender = false;
 	}
-	imageUI->SetUIInfomations(uiInfo);
+
+	imageUI->SetUIInfomations(uiInfos);
 }
 
 void fq::client::DeadArmour::OnUpdate(float dt)
@@ -182,6 +227,11 @@ void fq::client::DeadArmour::OnUpdate(float dt)
 		imageUI->SetUIInfomations(uiInfomations);
 	}
 
+	// 소환 
+	if (mbIsOnSummon)
+	{
+		mSummonElapsedTime += dt;
+	}
 }
 
 void fq::client::DeadArmour::SetSummonAble(bool isSummonAble)
@@ -192,7 +242,6 @@ void fq::client::DeadArmour::SetSummonAble(bool isSummonAble)
 	{
 		constexpr DirectX::SimpleMath::Color Red = { 1.f,0.f,0.f,1.f };
 		setOutlineColor(Red);
-		setUI(false);
 	}
 	else
 	{
@@ -224,5 +273,102 @@ void fq::client::DeadArmour::setOutlineColor(DirectX::SimpleMath::Color color)
 			skinnedMeshRenderer->SetMeshObjectInfomation(info);
 		}
 	}
+}
+
+void fq::client::DeadArmour::AddArmourCount(int playerID)
+{
+	std::string prefabPath = mLivingArmourPrefab.GetPrefabPath();
+
+	std::string knightStr = "Knight";
+	std::string magicStr = "Magic";
+	std::string archerStr = "Archer";
+	std::string warriorStr = "Warrior";
+
+	if (prefabPath.find(knightStr) != std::string::npos)
+	{
+		if (playerID == 0)
+		{
+			PlayerInfoVariable::Player1Knight += 1;
+		}
+		else if (playerID == 1)
+		{
+			PlayerInfoVariable::Player2Knight += 1;
+		}
+		else if (playerID == 2)
+		{
+			PlayerInfoVariable::Player3Knight += 1;
+		}
+		else if (playerID == 3)
+		{
+			PlayerInfoVariable::Player4Knight += 1;
+		}
+	}
+	if (prefabPath.find(magicStr) != std::string::npos)
+	{
+		if (playerID == 0)
+		{
+			PlayerInfoVariable::Player1Magic += 1;
+		}
+		else if (playerID == 1)
+		{
+			PlayerInfoVariable::Player2Magic += 1;
+		}
+		else if (playerID == 2)
+		{
+			PlayerInfoVariable::Player3Magic += 1;
+		}
+		else if (playerID == 3)
+		{
+			PlayerInfoVariable::Player4Magic += 1;
+		}
+	}
+	if (prefabPath.find(archerStr) != std::string::npos)
+	{
+		if (playerID == 0)
+		{
+			PlayerInfoVariable::Player1Archer += 1;
+		}
+		else if (playerID == 1)
+		{
+			PlayerInfoVariable::Player2Archer += 1;
+		}
+		else if (playerID == 2)
+		{
+			PlayerInfoVariable::Player3Archer += 1;
+		}
+		else if (playerID == 3)
+		{
+			PlayerInfoVariable::Player4Archer += 1;
+		}
+	}
+	if (prefabPath.find(warriorStr) != std::string::npos)
+	{
+		if (playerID == 0)
+		{
+			PlayerInfoVariable::Player1Warrior += 1;
+		}
+		else if (playerID == 1)
+		{
+			PlayerInfoVariable::Player2Warrior += 1;
+		}
+		else if (playerID == 2)
+		{
+			PlayerInfoVariable::Player3Warrior += 1;
+		}
+		else if (playerID == 3)
+		{
+			PlayerInfoVariable::Player4Warrior += 1;
+		}
+	}
+}
+
+void fq::client::DeadArmour::SetHp(float hp)
+{
+	mHp = hp;
+}
+
+float fq::client::DeadArmour::GetHp() const
+{
+	return mHp;
 }
 

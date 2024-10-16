@@ -9,6 +9,10 @@
 #include "MeleeMonster.h"
 #include "HpBar.h"
 
+#include "Player.h"
+#include "PlayerInfoVariable.h"
+#include <spdlog/spdlog.h>
+
 fq::client::MonsterSpawner::MonsterSpawner()
 	:mSpawnCoolTime(10.f)
 	, mSpawnElapsedTime(0.f)
@@ -145,6 +149,31 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 			// 스포너 사망 처리 
 			if (mHp <= 0.f)
 			{
+				if (playerAttack->GetAttacker() != nullptr)
+				{
+					auto attackerID = playerAttack->GetAttacker()->GetComponent<Player>()->GetPlayerID();
+					if (attackerID == 0)
+					{
+						PlayerInfoVariable::Player1Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player1Monster);
+					}
+					if (attackerID == 1)
+					{
+						PlayerInfoVariable::Player2Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player2Monster);
+					}
+					if (attackerID == 2)
+					{
+						PlayerInfoVariable::Player3Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player3Monster);
+					}
+					if (attackerID == 3)
+					{
+						PlayerInfoVariable::Player4Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player4Monster);
+					}
+				}
+
 				mAnimator->SetParameterBoolean("IsDead", true);
 				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "Spawner_Death", false , fq::sound::EChannel::SE });
 			}

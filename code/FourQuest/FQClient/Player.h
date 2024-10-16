@@ -89,6 +89,27 @@ namespace fq::client
 		void SetHp(float hp);
 
 		/// <summary>
+		/// Hp를 읽어옵니다. 
+		/// </summary>
+		float GetHp() const;
+
+		/// <summary>
+		/// MaxHp를 설정합니다 
+		/// </summary>
+		void SetMaxHp(float maxHp);
+
+		/// <summary>
+		/// MaxHp를 읽어옵니다
+		/// </summary>
+		float GetMaxHp() const;
+
+		/// <summary>
+		/// Hp와 MaxHp를 한 번에 설정합니다.
+		/// Editor에서 Set 처리를 위한 함수입니다.
+		/// </summary>
+		void SetEditorHp(float hp);
+
+		/// <summary>
 		/// 플레이어 Hp를 감소시킵니다
 		/// </summary>
 		/// <param name="hp">hp 감소량</param>
@@ -105,7 +126,7 @@ namespace fq::client
 		/// 현재 피버타임인지 반환합니다
 		/// </summary>
 		bool IsFeverTime()const;
-		
+
 		/// <summary>
 		/// 하체 애니메이션을 상태를 현재 입력 방향에 따라서 설정합니다. 
 		/// </summary>
@@ -142,7 +163,7 @@ namespace fq::client
 		/// </summary>
 		/// <returns></returns>
 		bool GetGBDecreaseDurability() const { return mGBDecreaseDurability; } // 내구도 감소  
-		void SetGBDecreaseDurability(bool val) { mGBDecreaseDurability = val; } 
+		void SetGBDecreaseDurability(bool val) { mGBDecreaseDurability = val; }
 
 		float GetGBIncreaseAttackPower() const { return mGBIncreaseAttackPower; } // 공격력 강화
 		void SetGBIncreaseAttackPower(float val) { mGBIncreaseAttackPower = val; } // 버프 없을 때 0
@@ -152,6 +173,12 @@ namespace fq::client
 
 		float GetGBIncreaseSpeed() const { return mGBIncreaseSpeed; } // 이동속도 증가 
 		void SetGBIncreaseSpeed(float val) { mGBIncreaseSpeed = val; } // 버프 없을 때 0
+
+		/// <summary>
+		/// 플레이어 위치에 더미 오브젝트를 생성합니다.
+		/// 소울 상태로 변환된 경우에만 더미 생성이 가능하고 그 외에는 nullptr을 반환합니다.
+		/// </summary>
+		fq::game_module::GameObject* CreateDummyOrNull();
 
 	private:
 		void processInput(float dt);
@@ -205,7 +232,7 @@ namespace fq::client
 		float mFeverElapsedTime; // 피버타임 경과 시간
 		bool mbIsFeverTime; // 현재 피버 타임인지 
 
- 		float mRSkillCoolTimeRatio; // R 버튼 쿨타임  
+		float mRSkillCoolTimeRatio; // R 버튼 쿨타임  
 		float mASkillCoolTimeRatio; // A 버튼 쿨타임
 		float mXSkillCoolTimeRatio; // X 버튼 쿨타임
 
@@ -246,7 +273,11 @@ namespace fq::client
 		std::array<game_module::StaticMeshRenderer*, static_cast<int>(EWeaponeMesh::End)> mWeaponeMeshes;
 		friend void RegisterMetaData();
 
-		// 이펙트
+		// 이펙트 방출 여부
 		bool mbIsEmitEnhanceEffect;
+
+		// 더미 프리팹
+		bool mbCanCreateDummy;
+		game_module::PrefabResource mDummyPrefab;
 	};
 }

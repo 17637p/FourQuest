@@ -163,6 +163,10 @@ namespace fq::client
 		float mSecondComboAttackRatio;
 		float mMinWaitAttackTime;
 		float mMaxWaitAttackTime;
+		float mRushKnockBackPower;
+		float mSmashKnockBackPower;
+		float mComboAttackKnockBackPower;
+		float mContinousKnockBackPower;
 
 		// 그로기 관련 
 		float mStartGroggyGauge;
@@ -186,6 +190,15 @@ namespace fq::client
 
 		std::shared_ptr<game_module::GameObject> mHpBar;
 		fq::game_module::PrefabResource mHpBarPrefab;
+
+		// 더미 플레이어 추적 관련 변수
+		float mDummyTraceDurationTime;
+		bool mbUseDummyTraceRandomRange;
+		float mDummyDurationRandomRangeMin;
+		float mDummyDurationRandomRangeMax;
+		float mCurrentDummyTraceDurationTime; // traceDuration + randomRange;
+		float mDummyTraceElapsedTime;
+		bool mIsDummyTarget;
 
 		friend void RegisterMetaData();
 	};

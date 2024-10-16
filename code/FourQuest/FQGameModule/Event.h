@@ -57,6 +57,15 @@ namespace fq::event
 	struct OnUnloadScene
 	{
 	};
+	
+	/// <summary>
+	/// 씬 리소스 해제 용 이벤트 
+	/// </summary>
+	struct UnloadSceneResource
+	{
+		std::string currentSceneName;
+		std::string nextSceneName;
+	};
 
 	/// <summary>
 	/// 씬 CleanUp 함수 호출

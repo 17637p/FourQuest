@@ -56,6 +56,15 @@ void fq::game_engine::SceneResourceList::Load(const Path& path)
 		}
 	}
 
+	if (auto json = readJson.find("UVAnimation"); json != readJson.end())
+	{
+		for (const auto& path : json.value())
+		{
+			auto absolutePath = fq::path::GetAbsolutePath(path);
+			uvAnimationPath.insert(absolutePath.string());
+		}
+	}
+
 	if (auto json = readJson.find("NodeHierachy"); json != readJson.end())
 	{
 		for (const auto& path : json.value())
@@ -64,6 +73,16 @@ void fq::game_engine::SceneResourceList::Load(const Path& path)
 			nodeHierachyPaths.insert(absolutePath.string());
 		}
 	}
+
+	if (auto json = readJson.find("ImageUI"); json != readJson.end())
+	{
+		for (const auto& path : json.value())
+		{
+			auto absolutePath = fq::path::GetAbsolutePath(path);
+			imageUIPaths.insert(absolutePath.string());
+		}
+	}
+
 }
 
 void fq::game_engine::SceneResourceList::Save(const Path& path)
@@ -102,13 +121,30 @@ void fq::game_engine::SceneResourceList::Save(const Path& path)
 	}
 	saveJson["Animation"] = animation;
 
-	json nodeHiera;
+	json uvAnimation;
+	for (const auto& path : uvAnimationPath)
+	{
+		auto relative = fq::path::GetRelativePath(path);
+		uvAnimation.push_back(relative);
+	}
+	saveJson["UVAnimation"] = uvAnimation;
+
+	json nodeHierachy;
 	for (const auto& path : animationPaths)
 	{
 		auto relative = fq::path::GetRelativePath(path);
-		animation.push_back(relative);
+		nodeHierachy.push_back(relative);
 	}
-	saveJson["Animation"] = animation;
+	saveJson["NodeHierachy"] = nodeHierachy;
+
+
+	json imageUI;
+	for (const auto& path : imageUIPaths)
+	{
+		auto relative = fq::path::GetRelativePath(path);
+		imageUI.push_back(relative);
+	}
+	saveJson["ImageUI"] = imageUI;
 
 	std::ofstream output(path);
 

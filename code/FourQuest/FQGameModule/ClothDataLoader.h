@@ -15,6 +15,7 @@ namespace fq::game_module
 	
 	struct ClothData
 	{
+		std::string modelPath;
 		std::vector<DirectX::SimpleMath::Vector3> vertices;
 		std::vector<unsigned int> indices;
 		std::vector<unsigned int> disableIndices;

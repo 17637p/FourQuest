@@ -15,6 +15,7 @@
 #include "Soul.h"
 #include "PlayerInfoVariable.h"
 #include "SettingVariable.h"
+#include "PlayerSoulVariable.h"
 
 #include <boost/locale.hpp>
 
@@ -51,10 +52,20 @@ void fq::client::SoulSelectUI::OnStart()
 		mContentTexts.push_back(curPlayerSoulBox->GetChildren()[3]->GetComponent<game_module::TextUI>());
 	}
 
-	mSoulNames.push_back(wstringToString(L"노란 영혼"));
-	mSoulNames.push_back(wstringToString(L"파란 영혼"));
-	mSoulNames.push_back(wstringToString(L"빨간 영혼"));
-	mSoulNames.push_back(wstringToString(L"초록 영혼"));
+	mSoulNames.clear();
+	mSoulNameColors.clear();
+	mWeapons.clear();
+	mContents.clear();
+
+	mSoulNames.push_back(wstringToString(L"루카스"));
+	mSoulNames.push_back(wstringToString(L"아르카나"));
+	mSoulNames.push_back(wstringToString(L"발더"));
+	mSoulNames.push_back(wstringToString(L"실버"));
+
+	mSoulNameColors.push_back(PlayerSoulVariable::SwordSoulColor);
+	mSoulNameColors.push_back(PlayerSoulVariable::StaffSoulColor);
+	mSoulNameColors.push_back(PlayerSoulVariable::AxeSoulColor);
+	mSoulNameColors.push_back(PlayerSoulVariable::BowSoulColor);
 
 	mWeapons.push_back(wstringToString(L"숙련 무기 : 검"));
 	mWeapons.push_back(wstringToString(L"숙련 무기 : 완드"));
@@ -87,6 +98,9 @@ void fq::client::SoulSelectUI::OnStart()
 	for (int i = 0; i < 4; i++)
 	{
 		mSoulNameTexts[i]->SetText(mSoulNames[mSelectSouls[i]]);
+		auto textInfo = mSoulNameTexts[i]->GetTextInfo();
+		textInfo.FontColor = mSoulNameColors[mSelectSouls[i]];
+		mSoulNameTexts[i]->SetTextInfo(textInfo);
 		mWeaponNameTexts[i]->SetText(mWeapons[mSelectSouls[i]]);
 		mContentTexts[i]->SetText(mContents[mSelectSouls[i]]);
 	}
@@ -183,7 +197,8 @@ fq::client::SoulSelectUI::SoulSelectUI()
 	mCurStickDelay(0),
 	mUIAnimSpeed(1000),
 	mSelectButtonID(0),
-	mNextSceneName("Scene1")
+	mNextSceneName("Scene1"),
+	mSoulNameColors()
 {
 }
 
@@ -281,6 +296,7 @@ void fq::client::SoulSelectUI::processInput()
 				{
 					mSelectButtonID++;
 					mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 				}
 			}
 
@@ -303,6 +319,7 @@ void fq::client::SoulSelectUI::processInput()
 				{
 					mSelectButtonID--;
 					mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 				}
 			}
 		}
@@ -311,6 +328,7 @@ void fq::client::SoulSelectUI::processInput()
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap
 			|| input->GetKeyState(EKey::A) == EKeyState::Tap)
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 			if (mIsOnSelectLevel)
 			{
 				SettingVariable::SelectLevel = mSelectButtonID;
@@ -344,6 +362,7 @@ void fq::client::SoulSelectUI::processInput()
 					}
 
 					// 레디
+					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Soul", false , fq::sound::EChannel::SE });
 					mIsReadys[i] = true;
 					mIsSelects[i] = false;
 					setReadyUI(i, true);
@@ -406,6 +425,8 @@ void fq::client::SoulSelectUI::processInput()
 		if (input->GetPadKeyState(i, EPadKey::B) == EKeyState::Tap
 			|| input->GetKeyState(EKey::B) == EKeyState::Tap)
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Cancle", false , fq::sound::EChannel::SE });
+
 			if (mIsSelectedLevel)
 			{
 				mIsSelectedLevel = false;
@@ -466,6 +487,8 @@ void fq::client::SoulSelectUI::processInput()
 			// 영혼 선택창이라면
 			if (mIsSelects[i])
 			{
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
+
 				if (mSelectSouls[i] == 0)
 				{
 					mSelectSouls[i] = 3;
@@ -476,6 +499,9 @@ void fq::client::SoulSelectUI::processInput()
 				}
 
 				mSoulNameTexts[i]->SetText(mSoulNames[mSelectSouls[i]]);
+				auto textInfo = mSoulNameTexts[i]->GetTextInfo();
+				textInfo.FontColor = mSoulNameColors[mSelectSouls[i]];
+				mSoulNameTexts[i]->SetTextInfo(textInfo);
 				mWeaponNameTexts[i]->SetText(mWeapons[mSelectSouls[i]]);
 				mContentTexts[i]->SetText(mContents[mSelectSouls[i]]);
 
@@ -495,6 +521,8 @@ void fq::client::SoulSelectUI::processInput()
 			// 영혼 선택창이라면
 			if (mIsSelects[i])
 			{
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
+
 				if (mSelectSouls[i] == 3)
 				{
 					mSelectSouls[i] = 0;
@@ -505,6 +533,9 @@ void fq::client::SoulSelectUI::processInput()
 				}
 
 				mSoulNameTexts[i]->SetText(mSoulNames[mSelectSouls[i]]);
+				auto textInfo = mSoulNameTexts[i]->GetTextInfo();
+				textInfo.FontColor = mSoulNameColors[mSelectSouls[i]];
+				mSoulNameTexts[i]->SetTextInfo(textInfo);
 				mWeaponNameTexts[i]->SetText(mWeapons[mSelectSouls[i]]);
 				mContentTexts[i]->SetText(mContents[mSelectSouls[i]]);
 

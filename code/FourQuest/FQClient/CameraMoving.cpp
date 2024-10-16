@@ -64,56 +64,6 @@ void fq::client::CameraMoving::OnUpdate(float dt)
 	// 플레이어 중앙 추적
 	chaseCenter(dt);
 	restrcitPlayerMove();
-
-	/*auto input = GetScene()->GetInputManager();
-	if (input->GetKeyState(EKey::A) == EKeyState::Tap)
-	{
-		bool isis = IsValid(0, EDirection::Left);
-		if (isis)
-		{
-			spdlog::trace("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-		}
-		else
-		{
-			spdlog::trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		}
-	}
-	if (input->GetKeyState(EKey::W) == EKeyState::Tap)
-	{
-		bool isis = IsValid(0, EDirection::Top);
-		if (isis)
-		{
-			spdlog::trace("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-		}
-		else
-		{
-			spdlog::trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		}
-	}
-	if (input->GetKeyState(EKey::S) == EKeyState::Tap)
-	{
-		bool isis = IsValid(0, EDirection::Bottom);
-		if (isis)
-		{
-			spdlog::trace("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-		}
-		else
-		{
-			spdlog::trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		}
-	}
-	if (input->GetKeyState(EKey::D) == EKeyState::Tap)
-	{
-		bool isis = IsValid(0, EDirection::Right);
-		if (isis)
-		{
-			spdlog::trace("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-		}
-		else
-		{
-			spdlog::trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		}
-	}*/
 }
 
 DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPosInView(float dt)

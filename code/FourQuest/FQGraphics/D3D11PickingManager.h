@@ -127,6 +127,8 @@ namespace fq::graphics
 		// 마무리를 위한 렌더타겟과 뎁스스텐실뷰
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
 		std::shared_ptr<D3D11DepthStencilView> mBackBufferDSV;
+
+		D3D11_VIEWPORT mViewport;
 	};
 
 	// 1. 오브젝트 마다 해쉬 컬러 정하기

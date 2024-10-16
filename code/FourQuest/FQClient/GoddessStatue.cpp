@@ -29,7 +29,11 @@ std::shared_ptr<fq::game_module::Component> fq::client::GoddessStatue::Clone(std
 
 void fq::client::GoddessStatue::OnTriggerEnter(const game_module::Collision& collision)
 {
-	if (collision.other->GetTag() == game_module::ETag::Player)
+	auto otherTag = collision.other->GetTag();
+
+	if (otherTag == game_module::ETag::Player
+		|| otherTag == game_module::ETag::Dash
+		|| otherTag == game_module::ETag::PlayerMonsterIgnore)
 	{
 		Player* player = collision.other->GetComponent<Player>();
 		mInRangePlayers.push_back(player);
@@ -63,7 +67,11 @@ void fq::client::GoddessStatue::OnTriggerEnter(const game_module::Collision& col
 
 void fq::client::GoddessStatue::OnTriggerExit(const game_module::Collision& collision)
 {
-	if (collision.other->GetTag() == game_module::ETag::Player)
+	auto otherTag = collision.other->GetTag();
+
+	if (otherTag == game_module::ETag::Player
+		|| otherTag == game_module::ETag::Dash
+		|| otherTag == game_module::ETag::PlayerMonsterIgnore)
 	{
 		Player* collisionPlayer = collision.other->GetComponent<Player>();
 		int collisionPlayerID = collisionPlayer->GetPlayerID();
@@ -151,7 +159,6 @@ void fq::client::GoddessStatue::cleanUpGoddessState(float dt)
 		HpBar* hpBar = GetComponent<HpBar>();
 		hpBar->SetVisible(true);
 		hpBar->SetHp(mCurGauge / mMaxGauge);
-		spdlog::trace("{}", mCurGauge / mMaxGauge);
 
 		auto myPos = GetTransform()->GetWorldPosition();
 		myPos.y += 2.0f;

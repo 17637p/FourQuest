@@ -33,6 +33,7 @@ namespace fq::game_engine
 		const fq::common::Model& GetModel(const Path& path)const;
 
 		void LoadSceneResource(fq::event::PreOnLoadScene event);
+		void UnloadSceneResource(fq::event::UnloadSceneResource event);
 		void LoadMaterialResource(fq::event::LoadMaterial event);
 
 		std::shared_ptr<graphics::IStaticMesh> GetStaticMesh(const Path& modelPath, std::string meshName) const;
@@ -46,10 +47,20 @@ namespace fq::game_engine
 		bool HasAnimation(const Path& path) const;
 
 		void LoadModelResource(const Path& path);
+		void UnloadModelResource(const Path& path);
 		void LoadAnimation(const Path& path);
+		void UnloadAnimation(const Path& path);
 		void LoadMaterial(const Path& path);
+		void UnloadMaterial(const Path& path);
 		void LoadUVAnimation(const Path& path);
+		void UnloadUVAnimation(const Path& path);
 		void LoadNodeHierarchy(const Path& path);
+		void UnloadNodeHierarchy(const Path& path);
+
+		/// <summary>
+		/// 리소스 로딩을 종료합니다.
+		/// </summary>
+		void StopLoadResource() { mbIsStopLoadResource = true; };
 
 		inline std::map<Path, std::shared_ptr<graphics::IMaterial>> GetMaterials() const; // 그레이 스케일로 인해 추가
 
@@ -60,7 +71,8 @@ namespace fq::game_engine
 
 	private:
 		GameProcess* mGameProcess;
-		EventHandler mPreOnLoadSceneHandler;
+		EventHandler mLoadMaterialHandler;
+		EventHandler mUnLoadSceneResourceHandler;
 		fq::game_module::AnimatorControllerLoader mLoader;
 
 		std::map<Path, fq::common::Model> mModels;
@@ -71,6 +83,7 @@ namespace fq::game_engine
 		std::map<Path, std::shared_ptr<graphics::IUVAnimation>> mUVAnimations;
 		std::map<Path, std::shared_ptr<graphics::IMaterial>> mMaterials;
 
+		std::atomic<bool> mbIsStopLoadResource;
 		std::atomic<size_t> mResourceCount;
 		std::atomic<size_t> mLoadedResourceCount;
 	};

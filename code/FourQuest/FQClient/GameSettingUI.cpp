@@ -305,11 +305,13 @@ void fq::client::GameSettingUI::processInput(float dt)
 			if (mSelectButtonID == 2)
 			{
 				mSelectButtonID++;
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 			if (mSelectButtonID < 2)
 			{
 				mSelectButtonID++;
 				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 
@@ -332,6 +334,7 @@ void fq::client::GameSettingUI::processInput(float dt)
 			{
 				mSelectButtonID--;
 				mExplanationTextUI->SetText(mExplanationTexts[mSelectButtonID]);
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Moving", false , fq::sound::EChannel::SE });
 			}
 		}
 	}
@@ -350,10 +353,13 @@ void fq::client::GameSettingUI::processInput(float dt)
 				mIsOn[mSelectButtonID] = !mIsOn[mSelectButtonID];
 				setToggle(mSelectButtonID);
 			}
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
 		}
 		// B Button
 		if (input->IsPadKeyState(i, EPadKey::B, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Cancle", false , fq::sound::EChannel::SE });
+
 			if (isChangeSettingData())
 			{
 				mIsActive = false;
@@ -368,6 +374,8 @@ void fq::client::GameSettingUI::processInput(float dt)
 		// Y Button
 		if (input->IsPadKeyState(i, EPadKey::Y, EKeyState::Tap))
 		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Select", false , fq::sound::EChannel::SE });
+
 			mIsActive = false;
 			spawnUIObject(mResetMessagePrefab);
 		}

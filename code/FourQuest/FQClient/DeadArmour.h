@@ -7,7 +7,7 @@
 
 namespace fq::client
 {
-	class DeadArmour :	public game_module::Component
+	class DeadArmour : public game_module::Component
 	{
 	public:
 		DeadArmour();
@@ -15,6 +15,12 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 	public:
+		/// <summary>
+		/// 플레이어 소환 과정에 들어갑니다. 
+		/// 타이머만큼 대기해야함
+		/// </summary>
+		bool EnterSummonLivingArmour(PlayerInfo info);
+
 		/// <summary>
 		/// 죽은 갑옷에서 플레이어를 소환합니다
 		/// </summary>
@@ -37,6 +43,13 @@ namespace fq::client
 		/// </summary>
 		void CheckArmourCoolTime(unsigned int playerID) const;
 
+		// 결과창 용 
+		void AddArmourCount(int playerID);
+
+		void SetHp(float hp);
+
+		float GetHp() const;
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnStart() override;
@@ -55,6 +68,12 @@ namespace fq::client
 
 		int mUnequippedPlayerId;
 		float mPlayerArmourCoolTime;
+
+		float mSummonDuration;
+		bool mbIsOnSummon;
+		float mSummonElapsedTime;
+
+		float mHp;
 
 		friend void RegisterMetaData();
 	};

@@ -45,7 +45,7 @@ fq::game_engine::GameEngine::GameEngine()
 fq::game_engine::GameEngine::~GameEngine()
 {}
 
-void fq::game_engine::GameEngine::Initialize()
+bool fq::game_engine::GameEngine::Initialize()
 {
 	// 메타데이터 정보를 등록합니다
 	fq::game_module::RegisterMetaData();
@@ -117,11 +117,18 @@ void fq::game_engine::GameEngine::Initialize()
 	mLightMap->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
-	mGameProcess->mLoadingSystem->ProcessLoading();
+	bool isLoadFaild = mGameProcess->mLoadingSystem->ProcessLoading();
+	if (isLoadFaild)
+	{
+		return true;
+	}
+
 	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
 
 	// 게임을 시작하므로 StartScene 호출
 	mGameProcess->mSceneManager->StartScene();
+
+	return false;
 }
 
 void fq::game_engine::GameEngine::Process()
@@ -243,7 +250,8 @@ void fq::game_engine::GameEngine::Process()
 			if (mGameProcess->mSceneManager->IsChangeScene())
 			{
 				mGameProcess->mSceneManager->UnloadScene();
-				mGameProcess->mLoadingSystem->ProcessLoading();
+				bool IsExitGame = mGameProcess->mLoadingSystem->ProcessLoading();
+				if (IsExitGame) return;
 				mGameProcess->mSceneManager->StartScene();
 			}
 
@@ -261,12 +269,12 @@ void fq::game_engine::GameEngine::Finalize()
 
 	//System
 	mGameProcess->mLightProbeSystem->Finalize();
-
 	mGameProcess->mSceneManager->UnloadScene();
 	mGameProcess->mLoadingSystem->Finalize();
 	mGameProcess->mUISystem->Finalize();
-
+	mGameProcess->mSoundSystem->Finalize();
 	mGameProcess->mGraphics->Finalize();
+
 	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
 	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
 
