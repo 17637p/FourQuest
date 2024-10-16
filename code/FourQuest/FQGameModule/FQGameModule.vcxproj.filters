@@ -406,7 +406,7 @@
     </ClInclude>
     <ClInclude Include="SequenceStructure.h">
       <Filter>include\01.EntityComponent\Sequence</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="Controller.h">
       <Filter>include\01.EntityComponent\Physics</Filter>
     </ClInclude>
@@ -665,11 +665,10 @@
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
     <ClCompile Include="PlayerMoveTrack.cpp">
-	  <Filter>src\01.EntityComponent\Sequence\Track</Filter>
-	</ClCompile>
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
     <ClCompile Include="Controller.cpp">
-		<Filter>src\01.EntityComponent\Physics</Filter>
-      <Filter>src</Filter>
+      <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

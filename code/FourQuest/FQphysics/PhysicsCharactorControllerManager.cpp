@@ -25,10 +25,16 @@ namespace fq::physics
 		PX_RELEASE(mCCTManager);
 	}
 
-	bool PhysicsCharactorControllerManager::initialize(physx::PxScene* scene, physx::PxPhysics* physics, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager)
+	bool PhysicsCharactorControllerManager::initialize(
+		physx::PxScene* scene, 
+		physx::PxPhysics* physics, 
+		std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager,
+		int* collisionMatrix
+	)
 	{
 		mPhysics = physics;
 		mCollisionDataManager = collisionDataManager;
+		mCollisionMatrix = collisionMatrix;
 		mCCTManager = PxCreateControllerManager(*scene);
 		assert(mCCTManager);
 
@@ -44,12 +50,13 @@ namespace fq::physics
 				return false;
 		}
 
+		CreateCCT();
+
 		return true;
 	}
 
 	bool PhysicsCharactorControllerManager::FinalUpdate()
 	{
-		mRemoveCCT.clear();
 
 		return true;
 	}
@@ -79,24 +86,35 @@ namespace fq::physics
 	}
 
 #pragma region CreateAndRemoveCCT
-	bool PhysicsCharactorControllerManager::CreateCCT(const CharacterControllerInfo& controllerInfo, const CharacterMovementInfo& movementInfo, int* collisionMatrix)
+	bool PhysicsCharactorControllerManager::CreateCCT(CharacterControllerInfo controllerInfo, CharacterMovementInfo movementInfo)
 	{
-		std::shared_ptr<PlayerCharacterController> controller = std::make_shared<PlayerCharacterController>();
-		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
-		if (!controller->Initialize(controllerInfo, movementInfo, mCCTManager, mMaterial, collisionData, collisionMatrix)) return false;
+		mUpComingCharacterControllerContainer.push_back(std::make_pair(controllerInfo, movementInfo));
 
-		mCollisionDataManager.lock()->Create(controllerInfo.id, collisionData);
-		mCCTmap.insert(std::make_pair(controller->GetID(), controller));
+		return true;
+	}
+
+	bool PhysicsCharactorControllerManager::CreateCCT()
+	{
+		for (auto& [controllerInfo, movementInfo] : mUpComingCharacterControllerContainer)
+		{
+			std::shared_ptr<PlayerCharacterController> controller = std::make_shared<PlayerCharacterController>();
+			std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
+			if (!controller->Initialize(controllerInfo, movementInfo, mCCTManager, mMaterial, collisionData, mCollisionMatrix)) return false;
+
+			mCollisionDataManager.lock()->Create(controllerInfo.id, collisionData);
+			mCCTmap.insert(std::make_pair(controller->GetID(), controller));
+		}
+		mUpComingCharacterControllerContainer.clear();
+
 		return true;
 	}
 
 	bool PhysicsCharactorControllerManager::RemoveController(const unsigned int& id)
 	{
-		auto controller = mCCTmap.find(id);
-		if (controller != mCCTmap.end())
+		auto controllerIter = mCCTmap.find(id);
+		if (controllerIter != mCCTmap.end())
 		{
-			mRemoveCCT.push_back(controller->second);
-			mCCTmap.erase(controller);
+			mCCTmap.erase(controllerIter);
 			return true;
 		}
 
@@ -112,38 +130,72 @@ namespace fq::physics
 #pragma region GetSetFunction
 	void PhysicsCharactorControllerManager::GetCharacterControllerData(const unsigned int& id, CharacterControllerGetSetData& data)
 	{
-		auto& controller = mCCTmap.find(id)->second;
-		physx::PxController* pxController = controller->GetPxController();
+		if (mCCTmap.find(id) != mCCTmap.end())
+		{
+			auto& controller = mCCTmap.find(id)->second;
+			physx::PxController* pxController = controller->GetPxController();
 
-		controller->GetPosition(data.position);
+			controller->GetPosition(data.position);
+		}
+		else
+		{
+			for (auto& [controllor, movement] : mUpComingCharacterControllerContainer)
+			{
+				if (controllor.id == id)
+				{
+					data.position = controllor.position;
+				}
+			}
+		}
+		
 	}
 	void PhysicsCharactorControllerManager::GetCharacterMovementData(const unsigned int& id, CharacterMovementGetSetData& data)
 	{
-		auto& controller = mCCTmap.find(id)->second;
-		std::shared_ptr<CharacterMovement> movement = controller->GetCharacterMovement();
+		if (mCCTmap.find(id) != mCCTmap.end())
+		{
+			auto& controller = mCCTmap.find(id)->second;
+			std::shared_ptr<CharacterMovement> movement = controller->GetCharacterMovement();
 
-		data.velocity = movement->GetDisplacementVector();
-		data.isFall = movement->GetIsFall();
-		data.maxSpeed = movement->GetMaxSpeed();
+			data.velocity = movement->GetDisplacementVector();
+			data.isFall = movement->GetIsFall();
+			data.maxSpeed = movement->GetMaxSpeed();
+		}
+
 	}
-	void PhysicsCharactorControllerManager::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData, int* collisionMatrix)
+	void PhysicsCharactorControllerManager::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
 	{
-		auto& controller = mCCTmap.find(id)->second;
-		physx::PxController* pxController = controller->GetPxController();
+		if (mCCTmap.find(id) != mCCTmap.end())
+		{
+			auto& controller = mCCTmap.find(id)->second;
+			physx::PxController* pxController = controller->GetPxController();
 
-		mCCTmap.find(id)->second->ChangeLayerNumber(controllerData.myLayerNumber, collisionMatrix, mCollisionDataManager);
-		controller->SetPosition(controllerData.position);
+			mCCTmap.find(id)->second->ChangeLayerNumber(controllerData.myLayerNumber, mCollisionMatrix, mCollisionDataManager);
+			controller->SetPosition(controllerData.position);
+		}
+		else
+		{
+			for (auto& [controllor, movement] : mUpComingCharacterControllerContainer)
+			{
+				if (controllor.id == id)
+				{
+					controllor.position = controllerData.position;
+				}
+			}
+		}
 	}
 	void PhysicsCharactorControllerManager::SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData)
 	{
-		auto& controller = mCCTmap.find(id)->second;
-		std::shared_ptr<CharacterMovement> movement = controller->GetCharacterMovement();
+		if (mCCTmap.find(id) != mCCTmap.end())
+		{
+			auto& controller = mCCTmap.find(id)->second;
+			std::shared_ptr<CharacterMovement> movement = controller->GetCharacterMovement();
 
-		controller->SetMoveRestriction(movementData.restriction);
-		movement->SetIsFall(movementData.isFall);
-		movement->SetVelocity(movementData.velocity);
-		movement->SetMaxSpeed(movementData.maxSpeed);
-		movement->SetAcceleration(movementData.acceleration);
+			controller->SetMoveRestriction(movementData.restriction);
+			movement->SetIsFall(movementData.isFall);
+			movement->SetVelocity(movementData.velocity);
+			movement->SetMaxSpeed(movementData.maxSpeed);
+			movement->SetAcceleration(movementData.acceleration);
+		}
 	}
 #pragma endregion
 }
