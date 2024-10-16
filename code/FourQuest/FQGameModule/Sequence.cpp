@@ -19,6 +19,7 @@ namespace fq::game_module
 		, mbIsOnce(true)
 		, mbIsTimeStop(false)
 		, mbIsOffUIRender(false)
+		, mbIsProcessedUIRender(false)
 		, mTotalPlayTime(0.f)
 		, mDurationTime(0.f)
 		, mAnimationContainer{}
@@ -43,6 +44,7 @@ namespace fq::game_module
 
 	void Sequence::OnStart()
 	{
+		// 飘发 积己
 		createTrack<CameraChangeTrack>(mCameraChangeTrackInfo);
 		createTrack<CameraShakeTrack>(mCameraShakeTrackInfo);
 		createTrack<ObjectMoveTrack>(mObjectMoveTrackInfo);
@@ -58,6 +60,7 @@ namespace fq::game_module
 		bool check = false;
 		mbIsProcessedUIRender = false;
 
+		// 局聪皋捞记 飘发 积己
 		for (const auto& trackInfo : mObjectAnimationInfo)
 		{
 			std::shared_ptr<ObjectAnimationTrack> track = std::make_shared<ObjectAnimationTrack>();

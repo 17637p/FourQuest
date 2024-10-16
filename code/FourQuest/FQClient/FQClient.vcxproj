@@ -43,6 +43,7 @@
     <ClInclude Include="ArmourDestroyer.h" />
     <ClInclude Include="AttackInvalidation.h" />
     <ClInclude Include="BGaugeUI.h" />
+    <ClInclude Include="DestroyWhenCollisionToWall.h" />
     <ClInclude Include="DynamicLightHelper.h" />
     <ClInclude Include="EffectColorManager.h" />
     <ClInclude Include="EffectColorTransmitter.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="ArmourDestroyer.cpp" />
     <ClCompile Include="AttackInvalidation.cpp" />
     <ClCompile Include="BGaugeUI.cpp" />
+    <ClCompile Include="DestroyWhenCollisionToWall.cpp" />
     <ClCompile Include="DynamicLightHelper.cpp" />
     <ClCompile Include="EffectColorManager.cpp" />
     <ClCompile Include="EffectColorTransmitter.cpp" />

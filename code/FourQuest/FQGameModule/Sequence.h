@@ -50,6 +50,9 @@ namespace fq::game_module
 		void SetDurationTime(float durationTime);
 		void StopSequnce();
 
+		/// <summary>
+		/// 트랙 구조체 정보를 가져와서 트랙을 생성하기 위한 데이터들 세팅입니다.
+		/// </summary>
 		const std::vector<CameraChangeTrackInfo>& GetCameraChangeTrackInfo() const { return mCameraChangeTrackInfo; }
 		void SetCameraChangeTrackInfo(const std::vector<CameraChangeTrackInfo>& info) { mCameraChangeTrackInfo = info; }
 		const std::vector<ObjectMoveTrackInfo>& GetObjectMoveTrackInfo() const { return mObjectMoveTrackInfo; }
@@ -81,8 +84,8 @@ namespace fq::game_module
 		void playTrack(float dt);
 		void updateSequenceObject(float dt);
 
-		template<class ClassName, class T, typename... Args>
-		void createTrack(const T& trackInfoContainer, Args&... arg);
+		template<class ClassName, class TrackInfo, typename... Args>
+		void createTrack(const TrackInfo& trackInfoContainer, Args&... arg);
 
 		virtual entt::meta_handle GetHandle() override;
 		virtual std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
@@ -116,8 +119,8 @@ namespace fq::game_module
 		bool mbIsProcessedUIRender;
 	};
 
-	template<typename ClassName, typename T, typename... Args>
-	inline void Sequence::createTrack(const T& trackInfoContainer, Args&... arg)
+	template<typename ClassName, typename TrackInfo, typename... Args>
+	inline void Sequence::createTrack(const TrackInfo& trackInfoContainer, Args&... arg)
 	{
 		auto scene = GetScene();
 		bool check = false;

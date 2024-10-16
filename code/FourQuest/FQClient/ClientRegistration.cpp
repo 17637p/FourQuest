@@ -172,6 +172,7 @@
 #include "MultiPlayerObjectCreator.h"
 #include "DynamicLightHelper.h"
 #include "ArmourDestroyer.h"
+#include "DestroyWhenCollisionToWall.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -395,6 +396,11 @@ void fq::client::RegisterMetaData()
 	entt::meta<ArmourDestroyer>()
 		.type("ArmourDestroyer"_hs)
 		.prop(reflect::prop::Name, "ArmourDestroyer")
+		.base<game_module::Component>();
+
+	entt::meta<DestroyWhenCollisionToWall>()
+		.type("DestroyWhenCollisionToWall"_hs)
+		.prop(reflect::prop::Name, "DestroyWhenCollisionToWall")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
