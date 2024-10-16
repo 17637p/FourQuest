@@ -15,6 +15,7 @@
 #include "Soul.h"
 #include "PlayerInfoVariable.h"
 #include "SettingVariable.h"
+#include "PlayerSoulVariable.h"
 
 #include <boost/locale.hpp>
 
@@ -51,10 +52,20 @@ void fq::client::SoulSelectUI::OnStart()
 		mContentTexts.push_back(curPlayerSoulBox->GetChildren()[3]->GetComponent<game_module::TextUI>());
 	}
 
-	mSoulNames.push_back(wstringToString(L"노란 영혼"));
-	mSoulNames.push_back(wstringToString(L"파란 영혼"));
-	mSoulNames.push_back(wstringToString(L"빨간 영혼"));
-	mSoulNames.push_back(wstringToString(L"초록 영혼"));
+	mSoulNames.clear();
+	mSoulNameColors.clear();
+	mWeapons.clear();
+	mContents.clear();
+
+	mSoulNames.push_back(wstringToString(L"루카스"));
+	mSoulNames.push_back(wstringToString(L"아르카나"));
+	mSoulNames.push_back(wstringToString(L"발더"));
+	mSoulNames.push_back(wstringToString(L"실버"));
+
+	mSoulNameColors.push_back(PlayerSoulVariable::SwordSoulColor);
+	mSoulNameColors.push_back(PlayerSoulVariable::StaffSoulColor);
+	mSoulNameColors.push_back(PlayerSoulVariable::AxeSoulColor);
+	mSoulNameColors.push_back(PlayerSoulVariable::BowSoulColor);
 
 	mWeapons.push_back(wstringToString(L"숙련 무기 : 검"));
 	mWeapons.push_back(wstringToString(L"숙련 무기 : 완드"));
@@ -87,6 +98,9 @@ void fq::client::SoulSelectUI::OnStart()
 	for (int i = 0; i < 4; i++)
 	{
 		mSoulNameTexts[i]->SetText(mSoulNames[mSelectSouls[i]]);
+		auto textInfo = mSoulNameTexts[i]->GetTextInfo();
+		textInfo.FontColor = mSoulNameColors[mSelectSouls[i]];
+		mSoulNameTexts[i]->SetTextInfo(textInfo);
 		mWeaponNameTexts[i]->SetText(mWeapons[mSelectSouls[i]]);
 		mContentTexts[i]->SetText(mContents[mSelectSouls[i]]);
 	}
@@ -183,7 +197,8 @@ fq::client::SoulSelectUI::SoulSelectUI()
 	mCurStickDelay(0),
 	mUIAnimSpeed(1000),
 	mSelectButtonID(0),
-	mNextSceneName("Scene1")
+	mNextSceneName("Scene1"),
+	mSoulNameColors()
 {
 }
 
@@ -484,6 +499,9 @@ void fq::client::SoulSelectUI::processInput()
 				}
 
 				mSoulNameTexts[i]->SetText(mSoulNames[mSelectSouls[i]]);
+				auto textInfo = mSoulNameTexts[i]->GetTextInfo();
+				textInfo.FontColor = mSoulNameColors[mSelectSouls[i]];
+				mSoulNameTexts[i]->SetTextInfo(textInfo);
 				mWeaponNameTexts[i]->SetText(mWeapons[mSelectSouls[i]]);
 				mContentTexts[i]->SetText(mContents[mSelectSouls[i]]);
 
@@ -515,6 +533,9 @@ void fq::client::SoulSelectUI::processInput()
 				}
 
 				mSoulNameTexts[i]->SetText(mSoulNames[mSelectSouls[i]]);
+				auto textInfo = mSoulNameTexts[i]->GetTextInfo();
+				textInfo.FontColor = mSoulNameColors[mSelectSouls[i]];
+				mSoulNameTexts[i]->SetTextInfo(textInfo);
 				mWeaponNameTexts[i]->SetText(mWeapons[mSelectSouls[i]]);
 				mContentTexts[i]->SetText(mContents[mSelectSouls[i]]);
 

@@ -40,6 +40,7 @@
   <ItemGroup>
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
+    <ClInclude Include="ArmourDestroyer.h" />
     <ClInclude Include="AttackInvalidation.h" />
     <ClInclude Include="BGaugeUI.h" />
     <ClInclude Include="DynamicLightHelper.h" />
@@ -52,8 +53,10 @@
     <ClInclude Include="LevelHepler.h" />
     <ClInclude Include="LookingObjectHelper.h" />
     <ClInclude Include="MaterialManagedGroup.h" />
+    <ClInclude Include="MeleeMonsterVariable.h" />
     <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="MultiPlayerObjectCreator.h" />
+    <ClInclude Include="ParabolaAttack.h" />
     <ClInclude Include="PlantAOEAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
@@ -196,6 +199,7 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="ArmourDestroyer.cpp" />
     <ClCompile Include="AttackInvalidation.cpp" />
     <ClCompile Include="BGaugeUI.cpp" />
     <ClCompile Include="DynamicLightHelper.cpp" />
@@ -209,6 +213,7 @@
     <ClCompile Include="LookingObjectHelper.cpp" />
     <ClCompile Include="MaterialManagedGroup.cpp" />
     <ClCompile Include="MultiPlayerObjectCreator.cpp" />
+    <ClCompile Include="ParabolaAttack.cpp" />
     <ClCompile Include="PlantAOEAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
