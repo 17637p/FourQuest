@@ -30,6 +30,8 @@ namespace fq::game_module
 
 		fq::graphics::ITextObject* GetTextObject() const { return mTextObject; }
 		void SetTextObject(fq::graphics::ITextObject* val) { mTextObject = val; }
+		
+		bool GetIsApplyUIRenderEvent() const { return mbIsApplyUIRenderEvent; }
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -38,6 +40,10 @@ namespace fq::game_module
 	private:
 		fq::graphics::ITextObject* mTextObject;
 		fq::graphics::TextInfo mTextInfo;
+		
+		bool mbIsApplyUIRenderEvent; // UIRender 이벤트 적용 여부, 추가_홍지환
+		
+		friend void RegisterMetaData();
 	};
 }
 

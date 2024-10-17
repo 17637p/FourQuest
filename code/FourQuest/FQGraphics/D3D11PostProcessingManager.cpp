@@ -173,6 +173,7 @@ namespace fq::graphics
 		postProcessingBuffer.ShadowColor = mPostProcessingInfo.ShadowColor;
 		postProcessingBuffer.HighlightColor = mPostProcessingInfo.HighlightColor;
 		postProcessingBuffer.VignettColor = mPostProcessingInfo.VignettColor;
+		postProcessingBuffer.BlendColor = mPostProcessingInfo.BlendColor;
 
 		postProcessingBuffer.Exposure = mPostProcessingInfo.Exposure;
 		postProcessingBuffer.Contrast = mPostProcessingInfo.Contrast;
@@ -192,7 +193,9 @@ namespace fq::graphics
 		postProcessingBuffer.bUseVignett = mPostProcessingInfo.bUseVignett;
 		postProcessingBuffer.bUseToneMapping = mPostProcessingInfo.bUseToneMapping;
 		postProcessingBuffer.bUseFog = mPostProcessingInfo.bUseFog;
+		
 		postProcessingBuffer.bUseGrayScale = mPostProcessingInfo.bUseGrayScale;
+		postProcessingBuffer.bUseBlendColor = mPostProcessingInfo.bUseBlendColor;
 
 		// Fog
 		Fog fog;

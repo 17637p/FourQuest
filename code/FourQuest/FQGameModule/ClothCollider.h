@@ -14,6 +14,11 @@ namespace fq::game_module
 		ClothCollider();
 		~ClothCollider();
 
+		/// <summary>
+		/// 가지고 있는 경로를 통해 Cloth를 로드합니다.
+		/// </summary>
+		void Load();
+
 		ClothPath GetClothPath() const { return mClothPath; }
 		float GetClothMass() const { return mClothInfo.clothMass; }
 		float GetRestOffset() const { return mClothInfo.restOffset; }

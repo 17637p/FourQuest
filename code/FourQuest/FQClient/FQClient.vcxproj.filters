@@ -566,9 +566,6 @@
     <ClInclude Include="SpawnStruct.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
-    <ClInclude Include="YAxisSetter.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="IMonster.h">
       <Filter>include\02.Monster\Melee</Filter>
     </ClInclude>
@@ -591,6 +588,12 @@
       <Filter>include\06.ETC</Filter>
     </ClInclude>
     <ClInclude Include="MaterialManagedGroup.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="YAxisSetter.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="DestroyWhenCollisionToWall.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1020,6 +1023,9 @@
     </ClCompile>
     <ClCompile Include="MaterialManagedGroup.cpp">
       <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="DestroyWhenCollisionToWall.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
