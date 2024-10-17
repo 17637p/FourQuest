@@ -19,6 +19,7 @@ namespace fq::game_module
 		virtual void End() override;
 
 	private:
+		Scene* mScene;
 		std::weak_ptr<GameObject>		mTargetObject;
 		std::vector<TrackKey>			mKeys;
 

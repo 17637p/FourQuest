@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "Animator.h"
 #include "AnimatorController.h"
+#include "Transform.h"
 
 namespace fq::game_module
 {
@@ -32,6 +33,19 @@ namespace fq::game_module
 
 		mTargetObject = scene->GetObjectByName(info.targetObjectName);
 
+		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
+		if (mTargetObject.expired())
+		{
+			spdlog::warn("[Warrning] Do not Have TargetObject");
+			return false;
+		}
+
+		// 해당 오브젝트가 Transform을 가지고 있지 않으면 로그 띄우기
+		if (!mTargetObject.lock()->HasComponent<Transform>())
+		{
+			spdlog::warn("[Warrning] TargetObject Have not Trasfrom Component");
+			return false;
+		}
 
 		return true;
 	}

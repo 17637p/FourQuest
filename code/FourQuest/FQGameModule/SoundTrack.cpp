@@ -42,6 +42,10 @@ namespace fq::game_module
 			auto soundClip = object->GetComponent<SoundClip>();
 			soundClip->Play(mKeyName, mbIsLoop, 3);
 		}
+		else
+		{
+			spdlog::warn("[Warrning] Scene do not have SoundClipObject");
+		}
 	}
 	
 	void SoundTrack::PlayOn()
