@@ -64,14 +64,31 @@ void fq::client::VibrationState::OnStateUpdate(game_module::Animator& animator, 
 
 void fq::client::VibrationState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
+	if (mbOffVibrationExitState)
+	{
+		auto input = animator.GetScene()->GetInputManager();
+
+		if (mbUseAllController)
+		{
+			for (int i = 0; i < XUSER_MAX_COUNT; ++i)
+			{
+				input->SetVibration(i, mMode, 0.f, 0.f);
+			}
+		}
+		else if (mControllerID != NoID)
+		{
+			input->SetVibration(mControllerID, mMode, 0.f, 0.f);
+		}
+	}
 }
 
 fq::client::VibrationState::VibrationState()
 	:mIntensity(0.f)
 	, mElapsedTime(0.f)
 	, mMode(EVibrationMode::Both)
-	, mDuration(0.f)
+	, mDuration(0.f) 
 	, mbUseAllController(false)
+	, mbOffVibrationExitState(false)
 	, mVibrationTime(0.f)
 	, mControllerID(NoID)
 {}

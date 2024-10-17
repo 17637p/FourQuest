@@ -117,6 +117,7 @@ namespace fq::game_engine
 		bool mbIsGameLoaded;
 		DirectX::SimpleMath::Matrix mPlaneMatrix;
 
-		std::map < fq::game_module::GameObject*, std::vector<size_t>> mOnUIRenderEventActivatedObjects;
+		std::map<fq::game_module::GameObject*, std::vector<size_t>> mOnImageUIRenderEventActivatedObjects;
+		std::set<fq::game_module::GameObject*> mOnTextUIRenderEventActivatedObjects;
 	};
 }

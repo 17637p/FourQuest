@@ -1,13 +1,23 @@
 #include "ClothCollider.h"
 
+#include "ClothDataLoader.h"
+
 namespace fq::game_module
 {
 	ClothCollider::ClothCollider()
+		: mClothPath{}
 	{
 	}
+
 	ClothCollider::~ClothCollider()
 	{
 	}
+
+	void ClothCollider::Load()
+	{
+	}
+
+
 	entt::meta_handle fq::game_module::ClothCollider::GetHandle()
 	{
 		return *this;

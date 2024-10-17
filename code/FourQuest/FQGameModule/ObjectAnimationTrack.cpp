@@ -12,6 +12,7 @@ namespace fq::game_module
 		, mAnimationTrackKeys{}
 		, mAnimationContainer{}
 		, mTargetObject()
+		, mbIsLoop(true)
 	{
 	}
 	ObjectAnimationTrack::~ObjectAnimationTrack()
@@ -22,9 +23,10 @@ namespace fq::game_module
 	{
 		mTrackObjectName.push_back(info.targetObjectName);
 		mAnimationContainer = animationContainer;
+
+		mbIsLoop = info.isLoop;
 		mTotalPlayTime = info.totalPlayTime;
 		mStartTime = info.startTime;
-
 		mTargetObjectName = info.targetObjectName;
 		mAnimationTrackKeys = info.animationTrackKeys;
 
@@ -67,6 +69,14 @@ namespace fq::game_module
 			auto& nodeHierarchyInstance = animator->GetNodeHierarchyInstance();
 
 			float time = mElapsedTime - checkPointTime;
+
+			if (mbIsLoop)
+			{
+				float animationTotalTime = mAnimationContainer[keyNumber]->GetAnimationClip().Duration;
+
+				while (time >= animationTotalTime)
+					time -= animationTotalTime;
+			}
 
 			nodeHierarchyInstance.Update(time, mAnimationContainer[keyNumber]);
 		}

@@ -36,7 +36,7 @@ namespace fq::physics
 		desc.maxJumpHeight = 100.f;
 		desc.position.x = info.position.x;
 		desc.position.y = info.position.y;
-		desc.position.z = -info.position.z;
+		desc.position.z = info.position.z;
 		desc.material = material;
 		desc.reportCallback = dynamic_pointer_cast<physx::PxUserControllerHitReport>(mCCTHitCallback).get();
 		mPxController = CCTManager->createController(desc);

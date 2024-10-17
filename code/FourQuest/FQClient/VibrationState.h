@@ -22,6 +22,7 @@ namespace fq::client
 		unsigned int NoID = XUSER_MAX_COUNT + 1;
 
 		bool mbUseAllController; 
+		bool mbOffVibrationExitState;
 		EVibrationMode mMode;
 		float mDuration;
 		int mIntensity;

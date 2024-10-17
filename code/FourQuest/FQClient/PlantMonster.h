@@ -81,6 +81,15 @@ namespace fq::client
 		fq::game_module::PrefabResource mAttackPrefab;
 		fq::game_module::PrefabResource mAOEAttackPrefab;
 
+		// 더미 플레이어 추적 관련 변수
+		float mDummyTraceDurationTime;
+		bool mbUseDummyTraceRandomRange;
+		float mDummyDurationRandomRangeMin;
+		float mDummyDurationRandomRangeMax;
+		float mCurrentDummyTraceDurationTime; // traceDuration + randomRange;
+		float mDummyTraceElapsedTime;
+		bool mIsDummyTarget;
+
 		friend void RegisterMetaData();
 	};
 

@@ -147,7 +147,7 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 			playerAttack->PlayHitSound();
 
 			// 스포너 사망 처리 
-			if (mHp <= 0.f)
+			if (mHp <= 0.f )
 			{
 				if (playerAttack->GetAttacker() != nullptr)
 				{

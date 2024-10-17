@@ -760,6 +760,10 @@ namespace fq::graphics
 		float max_thickness = 0.00001;
 
 		bool bUseGrayScale = false;
+
+		// Color Blend
+		bool bUseBlendColor = false;
+		DirectX::SimpleMath::Color BlendColor = { 0, 0, 0, 0 };
 	};
 
 	struct DebugInfo

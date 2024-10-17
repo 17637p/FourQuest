@@ -186,8 +186,8 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 			if (transition->second.GetTransitionDuration() <= std::numeric_limits<float>::epsilon())
 			{
 				mNextState = mStates.find(transition->second.GetEnterState());
-				mNextState->second.OnStateEnter();
 				mCurrentState->second.OnStateExit();
+				mNextState->second.OnStateEnter();
 				mCurrentState = mNextState;
 				mNextState = mStates.end();
 				mCurrentTransition = mTransitions.end();

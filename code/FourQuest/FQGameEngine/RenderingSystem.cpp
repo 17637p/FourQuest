@@ -16,6 +16,7 @@
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/PostProcessing.h"
 #include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/TextUI.h"
 #include "../FQCommon/FQCommonGraphics.h"
 #include "../FQCommon/FQPath.h"
 #include "../FQCommon/IFQRenderObject.h"
@@ -112,7 +113,11 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 				{
 					auto nodeHierarchyInstanceOrNull = meshObject->GetNodeHierarchyInstance();
 
-					if (nodeHierarchyInstanceOrNull == nullptr)
+					if (!mesh.GetUseTransform())
+					{
+						meshObject->SetTransform(DirectX::SimpleMath::Matrix::Identity);
+					}
+					else if (nodeHierarchyInstanceOrNull == nullptr)
 					{
 						meshObject->SetTransform(transform.GetWorldMatrix());
 					}
@@ -208,11 +213,11 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 		mGameProcess->mGraphics->SetIsUsePostProcessing(false);
 	}
 
-	for (auto iter = mOnUIRenderEventActivatedObjects.begin(); iter != mOnUIRenderEventActivatedObjects.end();)
+	for (auto iter = mOnImageUIRenderEventActivatedObjects.begin(); iter != mOnImageUIRenderEventActivatedObjects.end();)
 	{
 		if (iter->first->IsDestroyed())
 		{
-			iter = mOnUIRenderEventActivatedObjects.erase(iter);
+			iter = mOnImageUIRenderEventActivatedObjects.erase(iter);
 		}
 		else
 		{
@@ -221,6 +226,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 			if (imageUI == nullptr)
 			{
+				++iter;
 				continue;
 			}
 
@@ -232,6 +238,32 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 			}
 
 			imageUI->SetUIInfomations(infos);
+
+			++iter;
+		}
+	}
+
+	for (auto iter = mOnTextUIRenderEventActivatedObjects.begin(); iter != mOnTextUIRenderEventActivatedObjects.end();)
+	{
+		if ((*iter)->IsDestroyed())
+		{
+			iter = mOnTextUIRenderEventActivatedObjects.erase(iter);
+		}
+		else
+		{
+			auto object = *iter;
+			auto textUI = object->GetComponent<TextUI>();
+
+			if (textUI == nullptr)
+			{
+				++iter;
+				continue;
+			}
+			
+			auto info = textUI->GetTextInfo();
+			info.IsRender = false;
+			textUI->SetIsRender(false);
+			// textUI->SetTextInfoPlay(info);
 
 			++iter;
 		}
@@ -826,16 +858,34 @@ void fq::game_engine::RenderingSystem::OnUIRender(const fq::event::UIRender& eve
 				}
 
 				imageUI.SetUIInfomations(infos);
-				mOnUIRenderEventActivatedObjects.insert({ &object, imageObjectInterfaces });
+				mOnImageUIRenderEventActivatedObjects.insert({ &object, imageObjectInterfaces });
 			}
 		);
 
+		scene->ViewComponents<TextUI>(
+			[this](GameObject& object, TextUI& textUI)
+			{
+				if (!textUI.GetIsApplyUIRenderEvent())
+				{
+					return;
+				}
+
+				auto info = textUI.GetTextInfo();
+
+				if (info.IsRender)
+				{
+					info.IsRender = false;
+					textUI.SetIsRender(false);
+					//textUI.SetTextInfoPlay(info);
+					mOnTextUIRenderEventActivatedObjects.insert(&object);
+				}
+			}
+		);
 	}
 	else
 	{
 		// 캐쉬에 저장된 데이터의 랜더링 여부를 On 시킴
-
-		for (auto eventObject : mOnUIRenderEventActivatedObjects)
+		for (auto eventObject : mOnImageUIRenderEventActivatedObjects)
 		{
 			auto object = eventObject.first;
 			auto imageUI = object->GetComponent< ImageUI>();
@@ -855,7 +905,25 @@ void fq::game_engine::RenderingSystem::OnUIRender(const fq::event::UIRender& eve
 			imageUI->SetUIInfomations(infos);
 		}
 
-		mOnUIRenderEventActivatedObjects.clear();
+		mOnImageUIRenderEventActivatedObjects.clear();
+
+		for (auto eventObject : mOnTextUIRenderEventActivatedObjects)
+		{
+			auto object = eventObject;	
+			auto textUI = object->GetComponent<TextUI>();
+
+			if (textUI == nullptr)
+			{
+				continue;
+			}
+
+			auto info = textUI->GetTextInfo();
+			info.IsRender = true;
+			textUI->SetIsRender(true);
+			//textUI->SetTextInfoPlay(info);
+		}
+
+		mOnTextUIRenderEventActivatedObjects.clear();
 	}
 }
 

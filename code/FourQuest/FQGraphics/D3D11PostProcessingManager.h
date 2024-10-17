@@ -48,6 +48,7 @@ namespace fq::graphics
 			DirectX::SimpleMath::Color ShadowColor = { 0, 0, 0, 0 };
 			DirectX::SimpleMath::Color HighlightColor = { 0, 0, 0, 0 };
 			DirectX::SimpleMath::Color VignettColor = { 0, 0, 0, 0 };
+			DirectX::SimpleMath::Color BlendColor = { 0, 0, 0, 0 };
 
 			float Exposure = 1.f;
 			float Contrast = 1.f;
@@ -70,7 +71,8 @@ namespace fq::graphics
 			int bUseFog;
 
 			int bUseGrayScale;
-			float unused[3];
+			int bUseBlendColor;
+			float unused[2];
 		};
 
 		struct BloomParams

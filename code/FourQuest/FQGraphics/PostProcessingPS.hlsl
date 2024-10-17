@@ -83,6 +83,7 @@ cbuffer cColorAdjustment : register(b0)
     float4 gShadowColor;
     float4 gHighlightColor;
     float4 gVignettColor;
+    float4 gBlendColor;
     
     float gExposure;
     float gContrast;
@@ -105,6 +106,7 @@ cbuffer cColorAdjustment : register(b0)
     int bUseFog;
     
     int bUseGrayScale;
+    int bUseBlendColor;
 };
 
 cbuffer cFog : register(b1)
@@ -176,15 +178,15 @@ float4 main(float2 uv : Texcoord) : SV_TARGET
         color = AdjustSplitToning(color, gShadowColor.rgb, gHighlightColor.rgb, gBalance);
     }
 
-    if (bUseVignett)
-    {
-        color = AdjustVignetting(color, gVignettRadius, gVignettSmoothness, uv, gVignettColor);
-    }
-    
     if (bUseFog)
     {
         float depth = gDepth.Sample(gSamplerPoint, uv);
         color = AdjustFog(color, cNearPlane, cFarPlane, depth, cVisibleArea, cFogColor);
+    }
+    
+    if (bUseVignett)
+    {
+        color = AdjustVignetting(color, gVignettRadius, gVignettSmoothness, uv, gVignettColor);
     }
     
     float3 retColor = pow(color, 1 / gGamma);
@@ -195,5 +197,10 @@ float4 main(float2 uv : Texcoord) : SV_TARGET
         retColor = float3(grayscale, grayscale, grayscale);
     }
 
+    if (bUseBlendColor)
+    {
+        retColor = (gBlendColor.rgb * gBlendColor.a) + (retColor * (1 - gBlendColor.a));
+    }
+    
     return float4(retColor, 1.0);
 }

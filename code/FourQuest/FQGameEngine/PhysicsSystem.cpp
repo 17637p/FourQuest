@@ -1062,15 +1062,13 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 
 			// 새로 생성되는 레그돌만 프레임 갯수 제한, 씬에 레그돌 최대 갯수 제한, 한 프레임에 레그돌 생성 갯수 제한, 레그돌 On/Off
 			if ((mGameProcess->mTimeManager->GetFPS() <= client::MonsterVariable::MinFrameCountForRagdoll
-				|| client::MonsterVariable::MaxRagdollsPerScene <= mPhysicsEngine->GetArticulationCount()
-				|| client::MonsterVariable::MaxOneFrameCreateRagdollCount <= mOneFrameRagdollCreateCount)
+				|| client::MonsterVariable::MaxRagdollsPerScene <= mPhysicsEngine->GetArticulationCount())
 				&& !mPhysicsEngine->GetArticulationData(id).bIsRagdollSimulation)
 			{
 				articulation->SetIsRagdoll(false);
 				data.bIsRagdollSimulation = false;
 			}
-
-			if (data.bIsRagdollSimulation)
+			else
 			{
 				mOneFrameRagdollCreateCount++;
 			}
@@ -1153,6 +1151,7 @@ void fq::game_engine::PhysicsSystem::CleanUp(const fq::event::OnCleanUp& event)
 		if (iter->second.bIsDestroyed
 			&& iter->second.bIsRemoveBody)
 		{
+			//spdlog::trace("{} id  {} name collider delete ", iter->first, iter->second.gameObject->GetName());
 			iter = mColliderContainer.erase(iter);
 		}
 		else
@@ -1184,12 +1183,12 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 	{
 		auto lfs = mColliderContainer.find(data.myId);
 		auto rhs = mColliderContainer.find(data.otherId);
-
+			
 		if (data.myId == data.otherId
 			|| lfs == mColliderContainer.end()
 			|| rhs == mColliderContainer.end())
 		{
-			spdlog::warn("ColliderContainer CallBack Error");
+			spdlog::warn("ColliderContainer CallBack Error lhs {} rhs {}", data.myId, data.otherId);
 			continue; 
 		}
 		

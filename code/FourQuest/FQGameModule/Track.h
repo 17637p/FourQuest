@@ -17,6 +17,8 @@ namespace fq::game_module
 		SOUND,				// 사운드
 		CAMERA_SHAKE,		// 카메라 진동
 		VIBRATION,			// 컨트롤러 진동
+		PLAYER_TELEPORT,	// 플레이어 순간이동
+		PLAYER_MOVE,		// 플레이어 이동
 
 		END
 	};

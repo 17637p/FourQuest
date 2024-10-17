@@ -26,6 +26,7 @@
 #include "DeadArmour.h"
 #include "BGaugeUI.h"
 #include "EffectColorTransmitter.h"
+#include "PlayerDummy.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -63,6 +64,7 @@ fq::client::Player::Player()
 	, mGBIncreaseAttackPower(0)
 	, mGBDecreaseCooltime(1)
 	, mGBIncreaseSpeed(0)
+	, mbCanCreateDummy(false)
 {
 }
 
@@ -157,6 +159,29 @@ void fq::client::Player::OnStart()
 	}
 
 	GetComponent<HpBar>()->DecreaseHp((mMaxHp - mHp) / mMaxHp);
+
+	mbCanCreateDummy = false;
+}
+
+fq::game_module::GameObject* fq::client::Player::CreateDummyOrNull()
+{
+	if (!mbCanCreateDummy)
+	{
+		return nullptr;
+	}
+	if (mDummyPrefab.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDummyPrefab);
+	auto& dummyObject = *(instance.begin());
+	const auto& worldMatrix = GetTransform()->GetWorldMatrix();
+	dummyObject->GetTransform()->SetWorldMatrix(worldMatrix);
+
+	GetScene()->AddGameObject(dummyObject);
+
+	return dummyObject.get();
 }
 
 void fq::client::Player::processInput(float dt)
@@ -347,6 +372,8 @@ void fq::client::Player::SummonSoul(bool isDestroyArmour)
 		{ (int)GetPlayerID(), mSoulType, worldMat, mSoulPrefab, isDestroyArmour });
 
 	GetScene()->DestroyGameObject(GetGameObject());
+
+	mbCanCreateDummy = !isDestroyArmour;
 }
 
 void fq::client::Player::processCoolTime(float dt)
