@@ -33,6 +33,8 @@ namespace fq::game_module
 		float GetDrag() const { return mClothInfo->materialInfo.drag; }
 		float GetCflCoefficient() const { return mClothInfo->materialInfo.cflCoefficient; }
 		float GetGravityScale() const { return mClothInfo->materialInfo.gravityScale; }
+		void* GetVertexBuffer() const { return mClothInfo->vertexBuffer; }
+		void* GetIndexBuffer() const { return mClothInfo->indexBuffer; }
 		void SetClothPath(ClothPath path) { mClothPath = path; }
 		void SetClothMass(float clothMass) { mClothInfo->clothMass = clothMass; }
 		void SetRestOffset(float restOffset) { mClothInfo->restOffset = restOffset; }
@@ -47,7 +49,11 @@ namespace fq::game_module
 		void SetDrag(float drag) { mClothInfo->materialInfo.drag = drag; }
 		void SetCflCoefficient(float cflCoefficient) { mClothInfo->materialInfo.cflCoefficient = cflCoefficient; }
 		void SetGravityScale(float gravityScale) { mClothInfo->materialInfo.gravityScale = gravityScale; }
+		void SetVertexBuffer(void* vertexBuffer) const { mClothInfo->vertexBuffer = vertexBuffer; }
+		void SetIndexBuffer(void* indexBuffer) const { mClothInfo->indexBuffer = indexBuffer; }
 
+		unsigned int GetClothID() { mClothInfo->id; }
+		void SetClothID(unsigned int id) { mClothInfo->id = id; }
 
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -56,9 +62,6 @@ namespace fq::game_module
 	private:
 		ClothPath mClothPath;
 		std::shared_ptr<ClothInfo> mClothInfo;
-
-		float mClothMass;
-		float mRestOffset;
 	};
 }
 

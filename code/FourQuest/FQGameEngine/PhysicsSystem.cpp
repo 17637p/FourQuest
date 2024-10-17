@@ -15,6 +15,8 @@
 #include "../FQGameModule/MeshCollider.h"
 #include "../FQGameModule/CapsuleCollider.h"
 #include "../FQGameModule/TerrainCollider.h"
+#include "../FQGameModule/TriangleCollider.h"
+#include "../FQGameModule/ClothCollider.h"
 #include "../FQGameModule/Terrain.h"
 #include "../FQGameModule/Articulation.h"
 #include "../FQGameModule/Transform.h"
@@ -590,6 +592,81 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		loadFunction(rootLinkData, id);
 	}
+
+	// 7. Triangle Collider
+	if (object->HasComponent<TriangleCollider>())
+	{
+		ColliderID id = ++mLastColliderID;
+
+		auto triangleCollider = object->GetComponent<TriangleCollider>();
+		auto triangleColliderInfo = triangleCollider->GetTriangleMeshInfomation();
+		triangleColliderInfo.colliderInfo.id = id;
+
+		if (object->HasComponent<StaticMeshRenderer>())
+		{
+			auto staticMeshRenderer = object->GetComponent<StaticMeshRenderer>();
+			auto meshName = staticMeshRenderer->GetMeshName();
+			auto modelPath = staticMeshRenderer->GetModelPath();
+
+			bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
+			assert(check);
+
+			const auto& model = mGameProcess->mResourceSystem->GetModel(modelPath);
+			const auto& mesh = ModelSystem::GetMesh(model, meshName);
+
+			triangleColliderInfo.indices = new unsigned int[mesh.Indices.size()];
+			triangleColliderInfo.indexSize = mesh.Indices.size();
+			triangleColliderInfo.vertices = new DirectX::SimpleMath::Vector3[mesh.Vertices.size()];
+			triangleColliderInfo.vertexSize = mesh.Vertices.size();
+		}
+		else if (object->HasComponent<SkinnedMeshRenderer>())
+		{
+			auto skeletalMeshRenderer = object->GetComponent<SkinnedMeshRenderer>();
+			auto meshName = skeletalMeshRenderer->GetMeshName();
+			auto modelPath = skeletalMeshRenderer->GetModelPath();
+
+			bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
+			assert(check);
+
+			const auto& model = mGameProcess->mResourceSystem->GetModel(modelPath);
+			const auto& mesh = ModelSystem::GetMesh(model, meshName);
+
+			triangleColliderInfo.indices = new unsigned int[mesh.Indices.size()];
+			triangleColliderInfo.indexSize = mesh.Indices.size();
+			triangleColliderInfo.vertices = new DirectX::SimpleMath::Vector3[mesh.Vertices.size()];
+			triangleColliderInfo.vertexSize = mesh.Vertices.size();
+		}
+
+	}
+
+	// 8. Cloth Collider
+	if (object->HasComponent<ClothCollider>())
+	{
+		ColliderID id = ++mLastColliderID;
+
+		auto clothCollider = object->GetComponent<ClothCollider>();
+		clothCollider->SetClothID(id);
+		clothCollider->Load();
+
+		if (object->HasComponent<StaticMeshRenderer>())
+		{
+			auto staticMesh = object->GetComponent<StaticMeshRenderer>();
+			void* indexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetVertexBuffer();
+			void* vertexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetIndexBuffer();
+			clothCollider->SetIndexBuffer(indexBuffer);
+			clothCollider->SetVertexBuffer(vertexBuffer);
+		}
+		else if (object->HasComponent<SkinnedMeshRenderer>())
+		{
+			auto skeletalMesh = object->GetComponent<SkinnedMeshRenderer>();
+			void* indexBuffer = skeletalMesh->GetSkinnedMeshObject()->GetSkinnedMesh()->GetIndexBuffer();
+			void* vertexBuffer = skeletalMesh->GetSkinnedMeshObject()->GetSkinnedMesh()->GetVertexBuffer();
+			clothCollider->SetIndexBuffer(indexBuffer);
+			clothCollider->SetVertexBuffer(vertexBuffer);
+		}
+
+	}
+
 }
 
 void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject* object)

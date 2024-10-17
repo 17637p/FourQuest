@@ -6,6 +6,7 @@ namespace fq::game_module
 {
 	ClothCollider::ClothCollider()
 		: mClothPath{}
+		, mClothInfo(std::make_shared<ClothInfo>())
 	{
 	}
 
