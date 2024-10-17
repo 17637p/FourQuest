@@ -50,7 +50,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::MaterialManagedGroup::Cl
 	return cloned;
 }
 
-void fq::client::MaterialManagedGroup::OnStart()
+void fq::client::MaterialManagedGroup::OnAwake()
 {
 	mStaticMeshObjects.clear();
 

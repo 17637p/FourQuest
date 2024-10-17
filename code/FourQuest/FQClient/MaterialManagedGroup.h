@@ -20,7 +20,7 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */) const override;
 		entt::meta_handle GetHandle() override { return *this; }
 
-		void OnStart() override;
+		void OnAwake() override;
 
 	private:
 		// 자식 오브젝트 중에 static인 녀석들 잡고 있음 
