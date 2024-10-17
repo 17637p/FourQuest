@@ -99,6 +99,16 @@ namespace fq::client::event
 	};
 
 	/// <summary>
+	/// 콜라이더 충돌 인원에 변화가 있을 때 
+	/// </summary>
+	struct ChangePlayerNumCollideTrigger
+	{
+		std::string colliderName;
+		int maxPlayer;
+		int curPlayer;
+	};
+
+	/// <summary>
 	/// 플레이어가 오브젝트(갑옷, 여신상)와 상호작용할 때 발생하는 이벤트
 	/// </summary>
 	struct ObjectInteractionEvent

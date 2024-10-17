@@ -1927,7 +1927,9 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ColliderName")
 		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름")
 		.data<&QuestColliderTrigger::isAll>("IsAll"_hs)
-		.prop(fq::reflect::prop::Name, "IsAll");
+		.prop(fq::reflect::prop::Name, "IsAll")
+		.data<&QuestColliderTrigger::playerNumber>("PlayerNumber"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerNumber");
 
 	entt::meta<MonsterKill>()
 		.type("MonsterKill"_hs)

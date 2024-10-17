@@ -26,13 +26,17 @@ std::shared_ptr<fq::game_module::Component> fq::client::QuestColliderTriggerChec
 
 fq::client::QuestColliderTriggerChecker::QuestColliderTriggerChecker()
 	:mCollidingPlayerNum(0),
-	mIsClear(false)
+	mIsClear(false),
+	mIsAll(true),
+	mRequestPlayerNum(100)
 {
 }
 
 fq::client::QuestColliderTriggerChecker::QuestColliderTriggerChecker(const QuestColliderTriggerChecker& other)
 	:mCollidingPlayerNum(0),
-	mIsClear(0)
+	mIsClear(0),
+	mIsAll(true),
+	mRequestPlayerNum(100)
 {
 }
 
@@ -40,6 +44,8 @@ fq::client::QuestColliderTriggerChecker& fq::client::QuestColliderTriggerChecker
 {
 	mCollidingPlayerNum = 0;
 	mIsClear = false;
+	mIsAll = true;
+	mRequestPlayerNum = 100;
 
 	return *this;
 }
@@ -59,20 +65,20 @@ void fq::client::QuestColliderTriggerChecker::OnTriggerEnter(const game_module::
 		{
 			mCollidingPlayerNum++;
 
-			int maxPlayerNum = 0;
-			for (int i = 0; i < 4; i++)
-			{
-				if (mIsAlive[i] == true)
-				{
-					maxPlayerNum++;
-				}
-			}
+			int maxPlayerNum = GetMaxPlayer();
+
 			if (maxPlayerNum == mCollidingPlayerNum)
 			{
 				mIsClear = true;
 				// 이벤트 발생
 				GetScene()->GetEventManager()->FireEvent<client::event::AllCollideTrigger>(
 					{ GetGameObject()->GetName() });
+			}
+			else
+			{
+				// 이벤트 발생
+				GetScene()->GetEventManager()->FireEvent<client::event::ChangePlayerNumCollideTrigger>(
+					{ GetGameObject()->GetName(), maxPlayerNum, mCollidingPlayerNum });
 			}
 		}
 	}
@@ -88,6 +94,12 @@ void fq::client::QuestColliderTriggerChecker::OnTriggerExit(const game_module::C
 			collision.other->GetTag() == game_module::ETag::PlayerMonsterIgnore)
 		{
 			mCollidingPlayerNum--;
+
+			int maxPlayerNum = GetMaxPlayer();
+
+			// 이벤트 발생
+			GetScene()->GetEventManager()->FireEvent<client::event::ChangePlayerNumCollideTrigger>(
+				{ GetGameObject()->GetName(), maxPlayerNum, mCollidingPlayerNum });
 		}
 	}
 }
@@ -117,6 +129,12 @@ void fq::client::QuestColliderTriggerChecker::OnAwake()
 		mIsAlive[3] = true;
 	}
 
+	int maxPlayerNum = GetMaxPlayer();
+
+	// 이벤트 발생
+	GetScene()->GetEventManager()->FireEvent<client::event::ChangePlayerNumCollideTrigger>(
+		{ GetGameObject()->GetName(), maxPlayerNum, mCollidingPlayerNum });
+
 	EventProcessUpdatePlayerState();
 }
 
@@ -128,6 +146,12 @@ void fq::client::QuestColliderTriggerChecker::EventProcessUpdatePlayerState()
 			if (event.type == EPlayerType::SoulDestoryed)
 			{
 				mIsAlive[event.playerID] = false;
+
+				int maxPlayerNum = GetMaxPlayer();
+
+				// 이벤트 발생
+				GetScene()->GetEventManager()->FireEvent<client::event::ChangePlayerNumCollideTrigger>(
+					{ GetGameObject()->GetName(), maxPlayerNum, mCollidingPlayerNum });
 			}
 		});
 }
@@ -136,14 +160,8 @@ void fq::client::QuestColliderTriggerChecker::OnTriggerStay(const game_module::C
 {
 	if (!mIsClear)
 	{
-		int maxPlayerNum = 0;
-		for (int i = 0; i < 4; i++)
-		{
-			if (mIsAlive[i] == true)
-			{
-				maxPlayerNum++;
-			}
-		}
+		int maxPlayerNum = GetMaxPlayer();
+
 		if (maxPlayerNum == mCollidingPlayerNum)
 		{
 			mIsClear = true;
@@ -152,5 +170,32 @@ void fq::client::QuestColliderTriggerChecker::OnTriggerStay(const game_module::C
 				{ GetGameObject()->GetName() });
 		}
 	}
+}
+
+int fq::client::QuestColliderTriggerChecker::GetMaxPlayer()
+{
+	int maxPlayerNum = 0;
+	if (mIsAll)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			if (mIsAlive[i] == true)
+			{
+				maxPlayerNum++;
+			}
+		}
+	}
+	else
+	{
+		maxPlayerNum = mRequestPlayerNum;
+	}
+
+	return maxPlayerNum;
+}
+
+void fq::client::QuestColliderTriggerChecker::SetRequestPlayerNum(bool isAll, int requestPlayerNum)
+{
+	mRequestPlayerNum = requestPlayerNum;
+	mIsAll = isAll;
 }
 
