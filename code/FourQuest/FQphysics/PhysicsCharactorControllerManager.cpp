@@ -118,6 +118,7 @@ namespace fq::physics
 	bool PhysicsCharactorControllerManager::RemoveController(const unsigned int& id)
 	{
 		auto controllerIter = mCCTmap.find(id);
+
 		if (controllerIter != mCCTmap.end())
 		{
 			mCCTmap.erase(controllerIter);
@@ -129,6 +130,8 @@ namespace fq::physics
 	bool PhysicsCharactorControllerManager::RemoveAllController()
 	{
 		mCCTmap.clear();
+		mUpComingCharacterControllerContainer.clear();
+		mWaitCharacterControllerContainer.clear();
 		return true;
 	}
 #pragma endregion

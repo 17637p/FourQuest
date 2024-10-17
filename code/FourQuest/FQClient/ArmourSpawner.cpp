@@ -158,3 +158,18 @@ void fq::client::ArmourSpawner::SpawnArmourAll()
 		}
 	}
 }
+
+void fq::client::ArmourSpawner::OnStart()
+{
+	// 아머리스트 비어있는 경우 튕김 방지
+	mArmourList.erase(std::remove_if(mArmourList.begin(), mArmourList.end(), [this](game_module::PrefabResource res)
+		{
+			if (res.GetPrefabPath().empty())
+			{
+				spdlog::warn("armour prefanResource empty {}", this->GetGameObject()->GetName());
+				return true;
+			}
+
+			return false;
+		}), mArmourList.end());
+}
