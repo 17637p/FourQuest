@@ -24,7 +24,6 @@ namespace fq::game_module
 	{
 		mScene = scene;
 
-		
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
 

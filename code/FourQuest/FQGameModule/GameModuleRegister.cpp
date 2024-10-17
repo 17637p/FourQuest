@@ -100,7 +100,9 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::PlayerMonsterIgnore>("PlayerMonsterIgnore"_hs) // 16
 		.prop(fq::reflect::prop::Name, "PlayerMonsterIgnore")
 		.data<ETag::MagicCircle>("MagicCircle"_hs) // 17
-		.prop(fq::reflect::prop::Name, "MagicCircle");
+		.prop(fq::reflect::prop::Name, "MagicCircle")
+		.data<ETag::SafeZone>("SafeZone"_hs) // 18
+		.prop(fq::reflect::prop::Name, "SafeZone");
 
 	// GameObject
 	entt::meta<GameObject>()
@@ -1211,6 +1213,26 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Intensity")
 		.prop(fq::reflect::prop::Comment, u8"진동 세기 ( 0 ~ 100 )");
 
+	entt::meta<FadeTrackInfo>()
+		.type("FadeTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "FadeTrackInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::game_module::FadeTrackInfo::startTime>("StartTime"_hs)
+		.prop(fq::reflect::prop::Name, "StartTime")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 시작되고 난 뒤에 시작할 시간")
+		.data<&fq::game_module::FadeTrackInfo::totalPlayTime>("TotalPlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "TotalPlayTime")
+		.prop(fq::reflect::prop::Comment, u8"해당 트랙이 실행되고 난 뒤에 실행할 총 시간")
+		.data<&fq::game_module::FadeTrackInfo::postProcessObjectName>("PostProcessObjectName"_hs)
+		.prop(fq::reflect::prop::Name, "PostProcessObjectName")
+		.prop(fq::reflect::prop::Comment, u8"포스트 프로세싱 오브젝트 이름")
+		.data<&fq::game_module::FadeTrackInfo::blendTime>("BlendTime"_hs)
+		.prop(fq::reflect::prop::Name, "BlendTime")
+		.prop(fq::reflect::prop::Comment, u8"보정 시간")
+		.data<&fq::game_module::FadeTrackInfo::finalColor>("FinalColor"_hs)
+		.prop(fq::reflect::prop::Name, "FinalColor")
+		.prop(fq::reflect::prop::Comment, u8"페이드 인/아웃 할 색상");
+
 	entt::meta<Sequence>()
 		.type("Sequence"_hs)
 		.prop(fq::reflect::prop::Name, "Sequence")
@@ -1269,6 +1291,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&Sequence::SetVibrationTrackInfo, &Sequence::GetVibrationTrackInfo>("VibrationTrackInfo"_hs)
 		.prop(fq::reflect::prop::Name, "VibrationTrackInfo")
 		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 컨트롤러 진동 트랙이 있다면 추가하면 됩니다.")
+		.data<&Sequence::SetFadeTrackInfo, &Sequence::GetFadeTrackInfo>("FadeTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "FadeTrackInfo")
+		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 페이드 인/아웃 트랙이 있다면 추가하면 됩니다.")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

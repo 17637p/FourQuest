@@ -214,8 +214,6 @@ void fq::client::Player::processInput(float dt)
 
 		SummonSoul(false);
 		mbIsUnequipArmourButton = false;
-
-		spdlog::trace("Unequip Armour");
 	}
 	else if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Away))
 	{
@@ -240,9 +238,11 @@ void fq::client::Player::OnDestroy()
 void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 {
 	// 플레이어 피격
-	if (collision.other->GetTag() == game_module::ETag::MonsterAttack)
+	if (collision.other->GetTag() == game_module::ETag::MonsterAttack
+		&& collision.other->HasComponent<client::Attack>()) 
 	{
 		auto monsterAtk = collision.other->GetComponent<client::Attack>();
+
 		bool isHitAble = mInvincibleElapsedTime == 0.f;
 		if (monsterAtk->ProcessAttack())
 		{

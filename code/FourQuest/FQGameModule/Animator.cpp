@@ -223,9 +223,14 @@ void fq::game_module::Animator::OnDestroy()
 	if (mController)
 	{
 		auto& stateMap = mController->GetStateMap();
-		auto name = mController->GetCurrentStateName();
+		auto currentName = mController->GetCurrentStateName();
+		auto nextName = mController->GetNextStateName();
 
-		if (auto iter = stateMap.find(name); iter != stateMap.end())
+		if (auto iter = stateMap.find(currentName); iter != stateMap.end())
+		{
+			iter->second.OnStateExit();
+		}
+		if (auto iter = stateMap.find(nextName); iter != stateMap.end())
 		{
 			iter->second.OnStateExit();
 		}
@@ -233,9 +238,14 @@ void fq::game_module::Animator::OnDestroy()
 	if (mbUseLowerController && mLowerController)
 	{
 		auto& stateMap = mLowerController->GetStateMap();
-		auto name = mLowerController->GetCurrentStateName();
+		auto currentName = mController->GetCurrentStateName();
+		auto nextName = mController->GetNextStateName();
 
-		if (auto iter = stateMap.find(name); iter != stateMap.end())
+		if (auto iter = stateMap.find(currentName); iter != stateMap.end())
+		{
+			iter->second.OnStateExit();
+		}
+		if (auto iter = stateMap.find(nextName); iter != stateMap.end())
 		{
 			iter->second.OnStateExit();
 		}

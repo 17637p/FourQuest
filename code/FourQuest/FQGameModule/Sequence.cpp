@@ -53,8 +53,9 @@ namespace fq::game_module
 		createTrack<PlayerTeleportTrack>(mPlayerTeleportTrackInfo);
 		createTrack<EffectTrack>(mEffectTrackInfo);
 		createTrack<SoundTrack>(mSoundTrackInfo);
-		createTrack<TextPrintTrack>(mTextPrintTrackInfo);
+		createTrack<TextPrintTrack>(mTextPrintTrackInfo); 
 		createTrack<VibrationTrack>(mVibrationTrackInfo);
+		createTrack<FadeTrack>(mFadeTrackInfo);
 
 		auto scene = GetScene();
 		bool check = false;
@@ -161,6 +162,7 @@ namespace fq::game_module
 
 	void Sequence::playTrack(float dt)
 	{
+		// 시퀀스가 가지고 있는 트랙들 Play
 		for (const auto& track : mTracks)
 		{
 			if (dt == 0.f && track->GetType() == ETrackType::TEXT_PRINT)
@@ -169,6 +171,7 @@ namespace fq::game_module
 			track->Play(mDurationTime);
 		}
 
+		// 실행 시간이 종료되었으면 트랙들 End
 		if (mDurationTime >= mTotalPlayTime)
 		{
 			for (const auto& track : mTracks)
@@ -186,6 +189,7 @@ namespace fq::game_module
 
 		GetScene()->GetTimeManager()->SetTimeScale(0.01f);
 
+		// 시간 정지 했을 경우에 시퀀스가 가지고 있는 오브젝트 업데이트 ( 단, 텍스트UI는 제외(오류 뜸) )
 		for (const auto& track : mTracks)
 		{
 			for (auto& objectName : track->GetTrackObjectName())
