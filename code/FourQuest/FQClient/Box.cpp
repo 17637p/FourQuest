@@ -27,38 +27,6 @@ namespace fq::client
 	{
 	}
 
-	void Box::OnStart()
-	{
-		auto transform = GetComponent<fq::game_module::Transform>();
-
-		// 부서지는 항아리 오브젝트를 생성하고 위치를 해당 위치로 세팅
-		auto objects = GetScene()->GetPrefabManager()->LoadPrefab(mBrokenBoxPrefebPath);
-		assert(!objects.empty());
-
-		for (const auto& object : objects)
-		{
-			if (object->GetParent() == nullptr)
-			{
-				mObject = object;
-
-				auto objectTransform = object->GetComponent<fq::game_module::Transform>();
-
-				objectTransform->SetWorldMatrix(transform->GetWorldMatrix());
-				objectTransform->SetWorldScale(transform->GetWorldScale());
-
-				GetScene()->AddGameObject(object);
-			}
-
-			auto prefabObjectMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
-
-			if (prefabObjectMesh != nullptr)
-			{
-				prefabObjectMesh->SetIsRender(false);
-				prefabObjectMesh->SetIsStatic(false);
-			}
-		}
-	}
-
 	void Box::OnTriggerEnter(const fq::game_module::Collision& collision)
 	{
 		if (collision.other->GetTag() != fq::game_module::ETag::PlayerAttack)
@@ -66,6 +34,8 @@ namespace fq::client
 
 		if (!bIsBlock)
 		{
+			breakBox();
+
 			bIsBlock = true;
 			mRotation = collision.other->GetRootObject()->GetTransform()->GetWorldRotation().ToEuler();
 
@@ -181,4 +151,37 @@ namespace fq::client
 	{
 		return *this;
 	}
+
+	void Box::breakBox()
+	{
+		auto transform = GetComponent<fq::game_module::Transform>();
+
+		// 부서지는 항아리 오브젝트를 생성하고 위치를 해당 위치로 세팅
+		auto objects = GetScene()->GetPrefabManager()->LoadPrefab(mBrokenBoxPrefebPath);
+		assert(!objects.empty());
+
+		for (const auto& object : objects)
+		{
+			if (object->GetParent() == nullptr)
+			{
+				mObject = object;
+
+				auto objectTransform = object->GetComponent<fq::game_module::Transform>();
+
+				objectTransform->SetWorldMatrix(transform->GetWorldMatrix());
+				objectTransform->SetWorldScale(transform->GetWorldScale());
+
+				GetScene()->AddGameObject(object);
+			}
+
+			auto prefabObjectMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
+
+			if (prefabObjectMesh != nullptr)
+			{
+				prefabObjectMesh->SetIsRender(false);
+				prefabObjectMesh->SetIsStatic(false);
+			}
+		}
+	}
+
 }

@@ -20,9 +20,10 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 		entt::meta_handle GetHandle() override;
 
-		virtual void OnStart() override;
 		virtual void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 		virtual void OnFixedUpdate(float dt) override;
+
+		void breakBox();
 
 	private:
 		std::string mBrokenBoxPrefebPath;
