@@ -16,7 +16,9 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */) const override;
 		entt::meta_handle GetHandle() override { return *this; }
 
+	private:
+		bool mbIsRemainDeadAromour = true;
+
+		friend void RegisterMetaData();
 	};
-
-
 }

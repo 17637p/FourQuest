@@ -80,6 +80,7 @@ namespace fq::physics
 		std::weak_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
 		std::unordered_map<unsigned int, std::shared_ptr<CharacterController>>	mCCTmap;
 
+		std::vector<std::pair<CharacterControllerInfo, CharacterMovementInfo>> mWaitCharacterControllerContainer;
 		std::vector<std::pair<CharacterControllerInfo, CharacterMovementInfo>> mUpComingCharacterControllerContainer;
 
 		physx::PxPhysics*				mPhysics;

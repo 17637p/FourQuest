@@ -63,8 +63,12 @@ namespace fq::client
 		BGaugeUI* mBGaugeUI;
 		ESoulType mSoulType;
 
+		/// 체력 관련
+		// 근처에 플레이어가 있는지
+		// 세이프 존에 있는지
 		float mHP;
 		bool mbIsDistanceInPlayer;
+		bool mbIsInSafeZone;
 
 		/// 여신상 관련
 		// 영혼 여신상에 빙의 중인지

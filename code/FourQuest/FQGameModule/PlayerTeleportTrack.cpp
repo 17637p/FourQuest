@@ -30,18 +30,6 @@ namespace fq::game_module
 		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;
 		mPlayerID = info.playerID;
 
-		// 컨트롤러를 탐색해서 플레이어 찾기
-		for (auto& object : scene->GetComponentView<CharacterController>())
-		{
-			auto characterController = object.GetComponent<CharacterController>();
-
-			if (info.playerID == characterController->GetControllerID())
-			{
-				mTrackObjectName.push_back(object.GetName());
-				mTargetObject = scene->GetObjectByName(object.GetName());
-			}
-		}
-
 		if (mTargetObject.expired()) return false;
 
 		if (!mTargetObject.lock()->HasComponent<Transform>()) return false;
@@ -63,6 +51,24 @@ namespace fq::game_module
 			{
 				return a.time < b.time;
 			});
+
+		// 컨트롤러를 탐색해서 플레이어 찾기
+		for (auto& object : mScene->GetComponentView<CharacterController>())
+		{
+			auto characterController = object.GetComponent<CharacterController>();
+
+			if (mPlayerID == characterController->GetControllerID())
+			{
+				mTrackObjectName.push_back(object.GetName());
+				mTargetObject = mScene->GetObjectByName(object.GetName());
+			}
+		}
+
+		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
+		if (mTargetObject.expired())
+		{
+			spdlog::warn("[Warrning] Do not Have TargetObject");
+		}
 	}
 
 	void PlayerTeleportTrack::PlayOn()
@@ -100,6 +106,7 @@ namespace fq::game_module
 
 	void PlayerTeleportTrack::End()
 	{
+		// 시퀀스가 시작하기 이전 Transform로 돌아가야 할 경우
 		if (!mTargetObject.expired() && mbIsObjectReturnToStartTransform)
 		{
 			if (!mTargetObject.lock()->HasComponent<Transform>()) return;

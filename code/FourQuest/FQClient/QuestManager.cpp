@@ -82,6 +82,9 @@ std::shared_ptr<fq::game_module::Component> fq::client::QuestManager::Clone(std:
 
 void fq::client::QuestManager::OnStart()
 {
+	mClearEvents.clear();
+	mClearEventIndexes.clear();
+
 	setMonsterGroup();
 	setColliderTriggerChecker();
 
@@ -190,6 +193,17 @@ void fq::client::QuestManager::OnStart()
 
 void fq::client::QuestManager::OnUpdate(float dt)
 {
+	if (mClearEvents.size() > 0)
+	{
+		for (int i = 0; i < mClearEvents.size(); i++)
+		{
+			GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+				{ mClearEvents[i], mClearEventIndexes[i]});
+		}
+		mClearEvents.clear();
+		mClearEventIndexes.clear();
+	}
+
 	setScaleAndPositionScreen();
 
 	// Main Quest Text Setting
@@ -566,6 +580,9 @@ void fq::client::QuestManager::eventProcessClearQuest()
 				if (clearQuestList[0].clearIndex == event.clearQuest.mIndex &&
 					clearQuestList[0].clearIsMain == event.clearQuest.mIsMain)
 				{
+					mClearEvents.push_back(mCurMainQuest);
+					mClearEventIndexes.push_back(0);
+
 					spdlog::trace("Clear Quest Condition True!");
 				}
 			}
@@ -578,6 +595,9 @@ void fq::client::QuestManager::eventProcessClearQuest()
 					if (clearQuestList[0].clearIndex == event.clearQuest.mIndex &&
 						clearQuestList[0].clearIsMain == event.clearQuest.mIsMain)
 					{
+						mClearEvents.push_back(mCurSubQuest[i]);
+						mClearEventIndexes.push_back(i);
+
 						spdlog::trace("Clear Quest Condition True!");
 					}
 				}
@@ -1052,7 +1072,7 @@ void fq::client::QuestManager::SpawnArmour(fq::game_module::PrefabResource armou
 			isValid = GetGameObject()->GetComponent<game_module::NavigationAgent>()->IsValid(center, nearPos);
 			count++;
 		}
-		nearPos.y += 1.0f;
+		nearPos.y += 1.2f;
 		armourObject->GetComponent<game_module::Transform>()->SetLocalPosition(nearPos);
 	}
 }

@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 #include "Transform.h"
+#include "Camera.h"
 
 namespace fq::game_module
 {
@@ -39,6 +40,8 @@ namespace fq::game_module
 		mMagnitude = info.magnitude;
 		mCameraObjectName = info.cameraObjectName;
 
+
+
 		return true;
 	}
 
@@ -48,6 +51,18 @@ namespace fq::game_module
 
 		GenerateNewShakeOffset();
 		mDurationTime = 0.f;
+
+		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
+		if (mCameraObject == nullptr)
+		{
+			spdlog::warn("[Warrning] Do not Have CameraObject");
+		}
+
+		// 해당 오브젝트가 Camera을 가지고 있지 않으면 로그 띄우기
+		if (!mCameraObject->HasComponent<Camera>())
+		{
+			spdlog::warn("[Warrning] CameraObject Have not Camera Component");
+		}
 	}
 
 	void CameraShakeTrack::PlayOn()

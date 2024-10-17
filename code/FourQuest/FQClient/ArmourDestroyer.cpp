@@ -25,6 +25,12 @@ void fq::client::ArmourDestroyer::OnTriggerEnter(const game_module::Collision& c
 	if (collision.other->GetTag() == game_module::ETag::Player)
 	{
 		auto player = collision.other->GetComponent<Player>();
+
+		if (mbIsRemainDeadAromour)
+		{
+			player->RemainDeadArmour();
+		}
+
 		if (player)
 		{
 			player->SummonSoul(false);

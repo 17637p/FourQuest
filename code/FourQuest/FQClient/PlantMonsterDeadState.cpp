@@ -44,10 +44,8 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Death", false , fq::sound::EChannel::SE });
 
-	auto scene = animator.GetScene();
-	scene->DestroyGameObject(animator.GetGameObject());
-
 	// ¸ó½ºÅÍ Á×À½ ÀÌº¥Æ®
+	auto scene = animator.GetScene();
 	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
 		{ EMonsterType::Plant });
 
@@ -78,7 +76,7 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 		}
 	}
 
-	// RimLight ²ô±â
+	// RimLight , Outline ²ô±â
 	for (auto child : animator.GetGameObject()->GetChildren())
 	{
 		auto skeletalMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
@@ -87,8 +85,11 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 		{
 			fq::graphics::MaterialInstanceInfo info;
 			info.bUseRimLight = false;
-
 			skeletalMesh->SetMaterialInstanceInfo(info);
+			auto objectInfo = skeletalMesh->GetMeshObjectInfomation();
+			objectInfo.OutlineColor = {0.f,0.f,0.f,1.f};
+			objectInfo.bUseShadow = false;
+			skeletalMesh->SetMeshObjectInfomation(objectInfo);
 		}
 	}
 }
@@ -101,9 +102,5 @@ void fq::client::PlantMonsterDeadState::OnStateUpdate(game_module::Animator& ani
 	{
 		auto scene = animator.GetScene();
 		scene->DestroyGameObject(animator.GetGameObject());
-
-		// ¸ó½ºÅÍ Á×À½ ÀÌº¥Æ®
-		scene->GetEventManager()->FireEvent<client::event::KillMonster>(
-			{ EMonsterType::Plant });
 	}
 }

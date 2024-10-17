@@ -15,6 +15,16 @@ namespace fq::game_module
 
 	void ClothCollider::Load()
 	{
+		ClothDataLoader loader;
+
+		auto clothData = loader.LoadArticulationData(mClothPath);
+
+		mClothInfo->vertices = clothData->vertices.data();
+		mClothInfo->vertexSize = clothData->vertices.size();
+		mClothInfo->indices = clothData->indices.data();
+		mClothInfo->indexSize = clothData->indices.size();
+		mClothInfo->disableIndices = clothData->disableIndices.data();
+		mClothInfo->disableIndexSize = clothData->disableIndices.size();
 	}
 
 
@@ -37,7 +47,7 @@ namespace fq::game_module
 			*cloneCollider = *this;
 		}
 
-		cloneCollider->mClothInfo.id = fq::physics::unregisterID;
+		cloneCollider->mClothInfo->id = fq::physics::unregisterID;
 
 		return cloneCollider;
 	}
