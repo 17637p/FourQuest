@@ -29,18 +29,6 @@ void fq::client::PlayerCheckUI::OnStart()
 {
 	mTransform = GetComponent<game_module::Transform>();
 	mImageUI = GetComponent<game_module::ImageUI>();
-	auto view = GetScene()->GetComponentView<game_module::Camera>();
-
-	// MainCamera 가져오기 
-	for (auto& object : view)
-	{
-		auto camera = object.GetComponent<game_module::Camera>();
-
-		if (object.GetName() == "MainCamera")
-		{
-			mMainCamera = camera;
-		}
-	}
 
 	if (mImageUI->GetUIInfomations().size() != 16)
 	{
@@ -92,7 +80,9 @@ void fq::client::PlayerCheckUI::OnUpdate(float dt)
 	float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
 	float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
 
-	auto viewProj = mMainCamera->GetViewProjection();
+	fq::game_module::Camera* mainCamera = nullptr;
+	GetScene()->GetEventManager()->FireEvent<fq::event::GetMainCamera>({ &mainCamera });
+	auto viewProj = mainCamera->GetViewProjection();
 	Vector3 screenPos = Vector3::Transform(pos, viewProj);
 	auto infomations = mImageUI->GetUIInfomations();
 
