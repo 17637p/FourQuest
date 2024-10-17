@@ -488,6 +488,14 @@ void fq::client::SpawnerGroup::OnFixedUpdate(float dt)
 			isPlant->SetTarget(nearestPlayer);
 			isPlant->CheckTargetInAttackRange();
 		}
+
+		// 추가_홍지환
+		// 스폰그룹을 통해 생성 시 애니메이션을 실행시키기 위해 추가
+		auto animator = monster->GetComponent<fq::game_module::Animator>();
+		if (animator != nullptr)
+		{
+			animator->SetParameterBoolean("OnSpawnEvent", true);
+		}
 	}
 
 	mAddedMonsterList.clear();

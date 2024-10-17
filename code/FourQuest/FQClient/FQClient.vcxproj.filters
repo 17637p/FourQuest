@@ -108,9 +108,6 @@
     <Filter Include="include\02.Monster\Melee">
       <UniqueIdentifier>{fadcf5a9-afd7-4b02-970b-db5bf7428199}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\02.Monster\Plant">
-      <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\02.Monster\Prototype">
       <UniqueIdentifier>{0e165353-bacb-40cb-ada4-67b85e75ece7}</UniqueIdentifier>
     </Filter>
@@ -119,6 +116,9 @@
     </Filter>
     <Filter Include="include\02.Monster\Boss">
       <UniqueIdentifier>{afe637d8-9f87-4eb7-b528-eb8f4f612b52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Plant">
+      <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -596,6 +596,9 @@
     <ClInclude Include="DestroyWhenCollisionToWall.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterSpawnState.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1025,6 +1028,9 @@
       <Filter>src\06.ETC</Filter>
     </ClCompile>
     <ClCompile Include="DestroyWhenCollisionToWall.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterSpawnState.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

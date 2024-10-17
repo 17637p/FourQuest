@@ -201,9 +201,12 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 	scene->ViewComponents<PostProcessing>
 		([this](GameObject& object, PostProcessing& postProcessing)
 			{
-				auto info = postProcessing.GetPostProcessingInfo();
-				mGameProcess->mGraphics->SetIsUsePostProcessing(true);
-				mGameProcess->mGraphics->SetPostProcessingInfo(info);
+				if (object.GetName() == "PostProcessing")
+				{
+					auto info = postProcessing.GetPostProcessingInfo();
+					mGameProcess->mGraphics->SetIsUsePostProcessing(true);
+					mGameProcess->mGraphics->SetPostProcessingInfo(info);
+				}
 			});
 
 	auto postProcessingView = scene->GetComponentView<game_module::PostProcessing>();
@@ -259,7 +262,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 				++iter;
 				continue;
 			}
-			
+
 			auto info = textUI->GetTextInfo();
 			info.IsRender = false;
 			textUI->SetIsRender(false);
@@ -909,7 +912,7 @@ void fq::game_engine::RenderingSystem::OnUIRender(const fq::event::UIRender& eve
 
 		for (auto eventObject : mOnTextUIRenderEventActivatedObjects)
 		{
-			auto object = eventObject;	
+			auto object = eventObject;
 			auto textUI = object->GetComponent<TextUI>();
 
 			if (textUI == nullptr)

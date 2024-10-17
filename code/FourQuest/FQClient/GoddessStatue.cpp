@@ -36,6 +36,13 @@ void fq::client::GoddessStatue::OnTriggerEnter(const game_module::Collision& col
 		|| otherTag == game_module::ETag::PlayerMonsterIgnore)
 	{
 		Player* player = collision.other->GetComponent<Player>();
+		
+		// Boss 몬스터 돌진 시 Tag가 Dash로 변경됨_홍지환
+		if (player == nullptr)
+		{
+			return;
+		}
+
 		mInRangePlayers.push_back(player);
 		
 		if (mIsCorrupt)
@@ -74,6 +81,13 @@ void fq::client::GoddessStatue::OnTriggerExit(const game_module::Collision& coll
 		|| otherTag == game_module::ETag::PlayerMonsterIgnore)
 	{
 		Player* collisionPlayer = collision.other->GetComponent<Player>();
+
+		// Boss 몬스터 돌진 시 Tag가 Dash로 변경됨_홍지환
+		if (collisionPlayer == nullptr)
+		{
+			return;
+		}
+
 		int collisionPlayerID = collisionPlayer->GetPlayerID();
 
 		if (mIsCorrupt)

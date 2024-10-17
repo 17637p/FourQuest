@@ -24,6 +24,8 @@ void fq::client::BossMonsterDeadState::OnStateEnter(game_module::Animator& anima
 {
 	auto agent = animator.GetComponent<game_module::NavigationAgent>();
 	agent->Stop();
+
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MB_Death", false ,  fq::sound::EChannel::SE });
 }
 
 void fq::client::BossMonsterDeadState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

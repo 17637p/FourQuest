@@ -98,6 +98,7 @@
 #include "PlantMonsterHitState.h"
 #include "PlantMonsterIdleState.h"
 #include "PlantMonsterStareState.h"
+#include "MonsterSpawnState.h"
 
 // MonsterSpawner
 #include "MonsterSpawner.h"
@@ -1471,6 +1472,11 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlantMonsterIdleState>()
 		.type("PlantMonsterIdleState"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonsterIdleState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MonsterSpawnState>()
+		.type("MonsterSpawnState"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterSpawnState")
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

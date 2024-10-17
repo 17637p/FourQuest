@@ -14,7 +14,6 @@ fq::client::BossMonsterHomingRushState::~BossMonsterHomingRushState()
 
 void fq::client::BossMonsterHomingRushState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-
 }
 
 void fq::client::BossMonsterHomingRushState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
