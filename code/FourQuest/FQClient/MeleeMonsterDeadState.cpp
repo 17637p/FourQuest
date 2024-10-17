@@ -36,9 +36,6 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterDeadSt
 
 void fq::client::MeleeMonsterDeadState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	auto scene = animator.GetScene();
-	scene->DestroyGameObject(animator.GetGameObject());
-
 	// 죽었는데 ArmourSpawner 컴포넌트가 있을 경우 갑옷 소환
 	auto armourSpawner = animator.GetComponent<ArmourSpawner>();
 	if (armourSpawner)
@@ -55,7 +52,6 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	auto gameObject = animator.GetGameObject();
 
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
-	//gameObject->RemoveComponent<game_module::NavigationAgent>();
 	gameObject->RemoveComponent<game_module::ImageUI>();
 	gameObject->RemoveComponent<HpBar>();
 
@@ -103,8 +99,11 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 		{
 			fq::graphics::MaterialInstanceInfo info;
 			info.bUseRimLight = false;
-
 			skeletalMesh->SetMaterialInstanceInfo(info);
+			auto objectInfo = skeletalMesh->GetMeshObjectInfomation();
+			objectInfo.OutlineColor = { 0.f,0.f,0.f,1.f };
+			objectInfo.bUseShadow = false;
+			skeletalMesh->SetMeshObjectInfomation(objectInfo);
 		}
 	}
 }
