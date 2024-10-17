@@ -26,6 +26,7 @@ namespace fq::client
 		std::vector<StartSubQuestIndex> startSubQuestIndex;
 	};
 
+	class MonsterGroup;
 	class QuestManager : public game_module::Component
 	{
 	public:
@@ -60,9 +61,13 @@ namespace fq::client
 		void eventProcessAllColliderTrigger();
 		void eventProcessObjectInteraction();
 		void eventProcessClearGoddessStatue();
+		void eventProcessChangePlayerNumCollideTrigger();
 
 		void playNew(float dt);
 		void playComplete(float dt);
+
+		void setColliderTriggerChecker();
+		void setMonsterGroup();
 
 	private:
 		// ¿ŒΩ∫∆Â≈Õ øÎ
@@ -91,6 +96,7 @@ namespace fq::client
 		game_module::EventHandler mAllCollideTriggerHandler;
 		game_module::EventHandler mObjectInteractionHandler;
 		game_module::EventHandler mClearGoddessStatueHandler;
+		game_module::EventHandler mChangePlayerNumCollideTriggereHandler;
 
 		// TextUI
 		game_module::TextUI* mMainQuestText;

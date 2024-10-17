@@ -14,6 +14,7 @@
 #include "ArmourSet.h"
 #include "CameraMoving.h"
 #include "LevelHepler.h"
+#include "QuestColliderTriggerChecker.h"
 
 #include <spdlog/spdlog.h>
 
@@ -81,6 +82,19 @@ std::shared_ptr<fq::game_module::Component> fq::client::QuestManager::Clone(std:
 
 void fq::client::QuestManager::OnStart()
 {
+	setMonsterGroup();
+	setColliderTriggerChecker();
+
+	// 이벤트 핸들러 등록
+	eventProcessKillMonster();
+	eventProcessPlayerCollideTrigger();
+	eventProcessCompleteDefence();
+	eventProcessClearQuest();
+	eventProcessAllColliderTrigger();
+	eventProcessObjectInteraction();
+	eventProcessClearGoddessStatue();
+	eventProcessChangePlayerNumCollideTrigger();
+
 	for (int i = 0; i < mMainQuests.size(); i++)
 	{
 		mMainQuests[i].mIsMain = true;
@@ -124,15 +138,6 @@ void fq::client::QuestManager::OnStart()
 	mGaugeMaxWidth = mMainQuestText->GetGameObject()->GetParent()->GetChildren()[3]->GetComponent<game_module::ImageUI>()->GetUIInfomation(0).Width;
 	// 기본 FontSize 설정
 	mFontSize = mMainQuestText->GetTextInfo().FontSize;
-
-	// 이벤트 핸들러 등록
-	eventProcessKillMonster();
-	eventProcessPlayerCollideTrigger();
-	eventProcessCompleteDefence();
-	eventProcessClearQuest();
-	eventProcessAllColliderTrigger();
-	eventProcessObjectInteraction();
-	eventProcessClearGoddessStatue();
 
 	mScreenManager = GetScene()->GetScreenManager();
 
@@ -222,6 +227,7 @@ void fq::client::QuestManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mAllCollideTriggerHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mObjectInteractionHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mClearGoddessStatueHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mChangePlayerNumCollideTriggereHandler);
 }
 
 void fq::client::QuestManager::eventProcessKillMonster()
@@ -314,7 +320,7 @@ void fq::client::QuestManager::eventProcessKillMonster()
 					if (isClear)
 					{
 						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
-							{ mCurSubQuest[j], j});
+							{ mCurSubQuest[j], j });
 						spdlog::trace("MonsterKill Quest Clear!");
 					}
 				}
@@ -328,6 +334,13 @@ void fq::client::QuestManager::eventProcessKillMonster()
 				MonsterGroup* monsterGroup = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName)->GetComponent<MonsterGroup>();
 				monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
 				monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
+
+				if (monsterGroupKillList[0].curNumber >= monsterGroupKillList[0].groupMonsterNumber)
+				{
+					GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+						{ mCurMainQuest, 0 });
+					spdlog::trace("MonsterGroupKill Quest Clear!");
+				}
 			}
 
 			// Sub
@@ -339,6 +352,14 @@ void fq::client::QuestManager::eventProcessKillMonster()
 					MonsterGroup* monsterGroup = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName)->GetComponent<MonsterGroup>();
 					monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
 					monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
+					spdlog::trace("total {}, cur {}", monsterGroup->GetAllMonsterSize(), monsterGroup->GetRemainMonsterSize());
+
+					if (monsterGroupKillList[0].curNumber >= monsterGroupKillList[0].groupMonsterNumber)
+					{
+						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+							{ mCurSubQuest[i], i });
+						spdlog::trace("MonsterGroupKill Quest Clear!");
+					}
 				}
 			}
 		});
@@ -382,9 +403,12 @@ void fq::client::QuestManager::eventProcessPlayerCollideTrigger()
 				{
 					if (joinQuestColliderTriggerList[0].colliderName == event.colliderName)
 					{
-						mCurMainQuest = mMainQuests[i];
+						if (!joinQuestColliderTriggerList[0].isAll && joinQuestColliderTriggerList[0].playerNumber == -1)
+						{
+							mCurMainQuest = mMainQuests[i];
 
-						spdlog::trace("Complete Collider Trigger Join Condition");
+							spdlog::trace("Complete Collider Trigger Join Condition");
+						}
 					}
 				}
 			}
@@ -396,7 +420,7 @@ void fq::client::QuestManager::eventProcessPlayerCollideTrigger()
 				{
 					if (joinQuestColliderTriggerList[0].colliderName == event.colliderName)
 					{
-						if (!joinQuestColliderTriggerList[0].isAll)
+						if (!joinQuestColliderTriggerList[0].isAll && joinQuestColliderTriggerList[0].playerNumber == -1)
 						{
 							// isClear가 아니면 // 현재 목록에 없다면 // 렌더도 해야함 // 지금 서브 퀘스트가 3개보다 작은지 체크도 해야함 
 							bool isInProgress = false;
@@ -447,7 +471,7 @@ void fq::client::QuestManager::eventProcessPlayerCollideTrigger()
 			{
 				if (clearQuestColliderTriggerList[0].colliderName == event.colliderName)
 				{
-					if (!clearQuestColliderTriggerList[0].isAll)
+					if (!clearQuestColliderTriggerList[0].isAll && clearQuestColliderTriggerList[0].playerNumber == -1)
 					{
 						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 							{ mCurMainQuest, 0 });
@@ -463,7 +487,7 @@ void fq::client::QuestManager::eventProcessPlayerCollideTrigger()
 				{
 					if (clearQuestColliderTriggerList[0].colliderName == event.colliderName)
 					{
-						if (!clearQuestColliderTriggerList[0].isAll)
+						if (!clearQuestColliderTriggerList[0].isAll && clearQuestColliderTriggerList[0].playerNumber == -1)
 						{
 							GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 								{ mCurSubQuest[i], i });
@@ -880,11 +904,24 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		monsterKillText->SetTextInfo(text);
 	}
 
+	// Collider Trigger Setting
+	std::vector<QuestColliderTrigger>& colliderTriggerList = quest.mclearConditionList.colliderTriggerList;
+	if (colliderTriggerList.size() > 0)
+	{
+		if (colliderTriggerList[0].isAll || colliderTriggerList[0].playerNumber != -1)
+		{
+			text.Text = std::to_string(colliderTriggerList[0].curPlayer) + " / " + std::to_string(colliderTriggerList[0].maxPlayer);
+			text.IsRender = true;
+			monsterKillText->SetTextInfo(text);
+		}
+	}
+
 	// Monster Group Kill Setting
 	std::vector<MonsterGroupKill>& monsterGroupKillList = quest.mclearConditionList.monsterGroupKillList;
 	if (monsterGroupKillList.size() > 0)
 	{
-		text.Text = std::to_string(monsterGroupKillList[0].curNumber) + " / " + std::to_string(monsterGroupKillList[0].groupMonsterNumber);
+		text.Text = std::to_string(monsterGroupKillList[0].groupMonsterNumber - monsterGroupKillList[0].curNumber) + " / " + std::to_string(monsterGroupKillList[0].groupMonsterNumber);
+		//spdlog::trace("cur {} / max {}", monsterGroupKillList[0].curNumber, monsterGroupKillList[0].groupMonsterNumber);
 		text.IsRender = true;
 		monsterKillText->SetTextInfo(text);
 	}
@@ -1258,4 +1295,102 @@ void fq::client::QuestManager::playComplete(float dt)
 	}
 }
 
+void fq::client::QuestManager::eventProcessChangePlayerNumCollideTrigger()
+{
+	mChangePlayerNumCollideTriggereHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ChangePlayerNumCollideTrigger>(
+		[this](const client::event::ChangePlayerNumCollideTrigger& event)
+		{
+			std::vector<QuestColliderTrigger>& colliderTriggerList = mViewMainQuest.mclearConditionList.colliderTriggerList;
+			if (colliderTriggerList.size() > 0)
+			{
+				if (colliderTriggerList[0].colliderName == event.colliderName)
+				{
+					colliderTriggerList[0].maxPlayer = event.maxPlayer;
+					colliderTriggerList[0].curPlayer = event.curPlayer;
+				}
+			}
+
+			for (int i = 0; i < mViewSubQuest.size(); i++)
+			{
+				std::vector<QuestColliderTrigger>& colliderTriggerList = mViewSubQuest[i].mclearConditionList.colliderTriggerList;
+				if (colliderTriggerList.size() > 0)
+				{
+					if (colliderTriggerList[0].colliderName == event.colliderName)
+					{
+						colliderTriggerList[0].maxPlayer = event.maxPlayer;
+						colliderTriggerList[0].curPlayer = event.curPlayer;
+					}
+				}
+			}
+		});
+}
+
+void fq::client::QuestManager::setColliderTriggerChecker()
+{
+	// 메인퀘스트, 서브 퀘스트 목록 돌면서 해당하는 콜라이더에 isall, playernum 설정해주기 
+	for (int i = 0; i < mMainQuests.size(); i++)
+	{
+		std::vector<QuestColliderTrigger>& joinColliderTriggerList = mMainQuests[i].mJoinConditionList.colliderTriggerList;
+		if (joinColliderTriggerList.size() > 0 && (joinColliderTriggerList[0].isAll || joinColliderTriggerList[0].playerNumber != -1))
+		{
+			QuestColliderTriggerChecker* questColliderTriggerChecker =
+				GetScene()->GetObjectByName(joinColliderTriggerList[0].colliderName)->GetComponent<QuestColliderTriggerChecker>();
+			questColliderTriggerChecker->SetRequestPlayerNum(joinColliderTriggerList[0].isAll, joinColliderTriggerList[0].playerNumber);
+		}
+		
+		std::vector<QuestColliderTrigger>& clearColliderTriggerList = mMainQuests[i].mclearConditionList.colliderTriggerList;
+		if (clearColliderTriggerList.size() > 0 && (clearColliderTriggerList[0].isAll || clearColliderTriggerList[0].playerNumber != -1))
+		{
+			QuestColliderTriggerChecker* questColliderTriggerChecker =
+				GetScene()->GetObjectByName(clearColliderTriggerList[0].colliderName)->GetComponent<QuestColliderTriggerChecker>();
+			questColliderTriggerChecker->SetRequestPlayerNum(clearColliderTriggerList[0].isAll, clearColliderTriggerList[0].playerNumber);
+			clearColliderTriggerList[0].maxPlayer = questColliderTriggerChecker->GetMaxPlayer();
+		}
+	}
+	for (int i = 0; i < mSubQuests.size(); i++)
+	{
+		std::vector<QuestColliderTrigger>& joinColliderTriggerList = mSubQuests[i].mJoinConditionList.colliderTriggerList;
+		if (joinColliderTriggerList.size() > 0 && (joinColliderTriggerList[0].isAll || joinColliderTriggerList[0].playerNumber != -1))
+		{
+			QuestColliderTriggerChecker* questColliderTriggerChecker =
+				GetScene()->GetObjectByName(joinColliderTriggerList[0].colliderName)->GetComponent<QuestColliderTriggerChecker>();
+			questColliderTriggerChecker->SetRequestPlayerNum(joinColliderTriggerList[0].isAll, joinColliderTriggerList[0].playerNumber);
+
+			//spdlog::trace("QuestManager requestPlayerNum {}, {}, {}",joinColliderTriggerList[0].playerNumber, (int)joinColliderTriggerList[0].isAll);
+		}
+
+		std::vector<QuestColliderTrigger>& clearColliderTriggerList = mSubQuests[i].mclearConditionList.colliderTriggerList;
+		if (clearColliderTriggerList.size() > 0 && (clearColliderTriggerList[0].isAll || clearColliderTriggerList[0].playerNumber != -1))
+		{
+			QuestColliderTriggerChecker* questColliderTriggerChecker =
+				GetScene()->GetObjectByName(clearColliderTriggerList[0].colliderName)->GetComponent<QuestColliderTriggerChecker>();
+			questColliderTriggerChecker->SetRequestPlayerNum(clearColliderTriggerList[0].isAll, clearColliderTriggerList[0].playerNumber);
+			clearColliderTriggerList[0].maxPlayer = questColliderTriggerChecker->GetMaxPlayer();
+		}
+	}
+}
+
+void fq::client::QuestManager::setMonsterGroup()
+{
+	for (int i = 0; i < mMainQuests.size(); i++)
+	{
+		std::vector<MonsterGroupKill>& monsterGroupKillList = mMainQuests[i].mclearConditionList.monsterGroupKillList;
+		if (monsterGroupKillList.size() > 0)
+		{
+			MonsterGroup* monsterGroup = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName)->GetComponent<MonsterGroup>();
+			monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
+			monsterGroupKillList[0].curNumber = monsterGroup->GetAllMonsterSize();
+		}
+	}
+	for (int i = 0; i < mSubQuests.size(); i++)
+	{
+		std::vector<MonsterGroupKill>& monsterGroupKillList = mSubQuests[i].mclearConditionList.monsterGroupKillList;
+		if (monsterGroupKillList.size() > 0)
+		{
+			MonsterGroup* monsterGroup = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName)->GetComponent<MonsterGroup>();
+			monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
+			monsterGroupKillList[0].curNumber = monsterGroup->GetAllMonsterSize();
+		}
+	}
+}
 

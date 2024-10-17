@@ -18,12 +18,15 @@ namespace fq::client
 		virtual void OnTriggerExit(const game_module::Collision& collision) override;
 
 		virtual void OnAwake() override;
+		void SetRequestPlayerNum(bool isAll, int requestPlayerNum);
 
 		void EventProcessUpdatePlayerState();
+		int GetMaxPlayer();
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
+
 
 	private:
 		game_module::EventHandler mUpdatePlayerStateHandler;
@@ -32,6 +35,8 @@ namespace fq::client
 
 		int mCollidingPlayerNum;
 		bool mIsClear;
+		bool mIsAll;
+		int mRequestPlayerNum; // isAll ¿Ã æ∆¥“∂ß
 	};
 }
 

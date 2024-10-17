@@ -18,6 +18,10 @@ namespace fq::client
 	{
 		std::string colliderName = "";
 		bool isAll;
+		int playerNumber = -1; // join 에 쓰는거
+
+		int curPlayer = 0;
+		int maxPlayer = 1;
 	};
 
 	struct MonsterKill
