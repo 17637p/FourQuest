@@ -1072,7 +1072,7 @@ void fq::client::QuestManager::SpawnArmour(fq::game_module::PrefabResource armou
 			isValid = GetGameObject()->GetComponent<game_module::NavigationAgent>()->IsValid(center, nearPos);
 			count++;
 		}
-		nearPos.y += 1.0f;
+		nearPos.y += 1.2f;
 		armourObject->GetComponent<game_module::Transform>()->SetLocalPosition(nearPos);
 	}
 }
