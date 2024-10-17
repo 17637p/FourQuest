@@ -88,7 +88,7 @@ namespace fq::physics
 #pragma region CreateAndRemoveCCT
 	bool PhysicsCharactorControllerManager::CreateCCT(CharacterControllerInfo controllerInfo, CharacterMovementInfo movementInfo)
 	{
-		mUpComingCharacterControllerContainer.push_back(std::make_pair(controllerInfo, movementInfo));
+		mWaitCharacterControllerContainer.push_back(std::make_pair(controllerInfo, movementInfo));
 
 		return true;
 	}
@@ -105,6 +105,12 @@ namespace fq::physics
 			mCCTmap.insert(std::make_pair(controller->GetID(), controller));
 		}
 		mUpComingCharacterControllerContainer.clear();
+
+		for (auto& characterControllerInfo : mWaitCharacterControllerContainer)
+		{
+			mUpComingCharacterControllerContainer.push_back(characterControllerInfo);
+		}
+		mWaitCharacterControllerContainer.clear();
 
 		return true;
 	}
