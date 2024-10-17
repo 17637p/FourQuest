@@ -399,6 +399,9 @@ void fq::client::RegisterMetaData()
 	entt::meta<ArmourDestroyer>()
 		.type("ArmourDestroyer"_hs)
 		.prop(reflect::prop::Name, "ArmourDestroyer")
+		.data<&ArmourDestroyer::mbIsRemainDeadAromour>("IsRemainDeadAromour"_hs)
+		.prop(fq::reflect::prop::Name, "IsRemainDeadAromour")
+		.prop(fq::reflect::prop::Comment, u"¶³¾îÁø °©¿ÊÀÌ ³²´ÂÁö ¿©ºÎ")
 		.base<game_module::Component>();
 
 	entt::meta<DestroyWhenCollisionToWall>()
