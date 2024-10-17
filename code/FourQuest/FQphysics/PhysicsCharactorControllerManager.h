@@ -74,6 +74,11 @@ namespace fq::physics
 		void GetCharacterMovementData(const unsigned int& id, CharacterMovementGetSetData& data);
 		void SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData);
 		void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData);
+		int* GetCollisionMatrix() { return mCollisionMatrix; }
+		void SetCollisionMatrix(int* collisionMatrix) { mCollisionMatrix = collisionMatrix; }
+
+	private:
+		bool updateCCT(float deltaTime);
 
 	private:
 		int* mCollisionMatrix;
