@@ -122,6 +122,11 @@ void fq::client::Soul::OnTriggerEnter(const fq::game_module::Collision& collisio
 		GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideTrigger>(
 			{ (int)mController->GetControllerID(), collision.other->GetName() });
 	}
+
+	if (collision.other->GetTag() == fq::game_module::ETag::SafeZone)
+	{
+		mbIsInSafeZone = true;
+	}
 }
 
 void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision)
@@ -140,6 +145,11 @@ void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision
 	if (goddessStatue != nullptr)
 	{
 		mSelectGoddessStatue = nullptr;
+	}
+
+	if (collision.other->GetTag() == fq::game_module::ETag::SafeZone)
+	{
+		mbIsInSafeZone = false;
 	}
 }
 
@@ -329,8 +339,8 @@ void fq::client::Soul::updateSoulHP(float dt)
 		return;
 	}
 
-	// 여신상에 빙의 중이라면
-	if (mIsOverlayGoddessStatue)
+	// 여신상에 빙의 중이거나 세이프 존에 있는 경우
+	if (mIsOverlayGoddessStatue || mbIsInSafeZone)
 	{
 		return;
 	}

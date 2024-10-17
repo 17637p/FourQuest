@@ -23,6 +23,7 @@ namespace fq::game_module
 		AimAssist = 15,
 		PlayerMonsterIgnore = 16,
 		MagicCircle = 17,
-		End = 18,
+		SafeZone = 18,
+		End = 19,
 	};
 }
