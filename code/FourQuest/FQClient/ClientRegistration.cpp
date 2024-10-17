@@ -1481,8 +1481,6 @@ void fq::client::RegisterMetaData()
 		.type("MonsterGroup"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterGroup")
 		.prop(reflect::prop::Label, "Monster")
-		.data<&MonsterGroup::mMonsterCount>("MonsterCount"_hs)
-		.prop(fq::reflect::prop::Name, "MonsterCount")
 		.data<&MonsterGroup::mGroupIndex>("GroupIndex"_hs)
 		.prop(fq::reflect::prop::Name, "GroupIndex")
 		.base<fq::game_module::Component>();

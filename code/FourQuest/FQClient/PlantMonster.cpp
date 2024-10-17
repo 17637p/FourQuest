@@ -60,7 +60,6 @@ void fq::client::PlantMonster::OnStart()
 	mAnimator = GetComponent<game_module::Animator>();
 	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
 
-
 	// 난이도에 따른 공경력 HP 설정
 	mAttackPower = mAttackPower * LevelHepler::GetDamageRatio();
 	mHp = mHp * LevelHepler::GetHpRatio();

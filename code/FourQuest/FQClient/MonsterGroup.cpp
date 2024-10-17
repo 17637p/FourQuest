@@ -43,20 +43,6 @@ std::shared_ptr<fq::game_module::Component> fq::client::MonsterGroup::Clone(std:
 	return cloneMonsterGroup;
 }
 
-void fq::client::MonsterGroup::OnStart()
-{
-	// 그룹을 생성합니다 
-	for (auto child : GetGameObject()->GetChildren())
-	{
-		if (child->HasComponent<MeleeMonster>()
-			|| child->HasComponent<PlantMonster>())
-		{
-			mMonsters.push_back(child->shared_from_this());
-			++mMonsterCount;
-		}
-	}
-}
-
 void fq::client::MonsterGroup::OnUpdate(float dt)
 {
 	mMonsters.erase(std::remove_if(mMonsters.begin(), mMonsters.end(), [](const std::shared_ptr<game_module::GameObject>& monster)
@@ -113,5 +99,19 @@ void fq::client::MonsterGroup::SetTarget(fq::game_module::GameObject* target)
 
 	mTarget = target->shared_from_this();
 	AnnounceFindedTarget(target);
+}
+
+void fq::client::MonsterGroup::OnAwake()
+{
+	// 그룹을 생성합니다 
+	for (auto child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<MeleeMonster>() || child->HasComponent<PlantMonster>())
+		{
+			mMonsters.push_back(child->shared_from_this());
+			++mMonsterCount;
+		}
+	}
+
 }
 
