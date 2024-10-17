@@ -28,9 +28,18 @@ namespace fq::game_module
 
 		mTargetObject = scene->GetObjectByName(info.targetObjectName);
 
-		if (mTargetObject.expired()) return false;
+		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
+		if (mTargetObject.expired())
+		{
+			spdlog::warn("[Warrning] Do not Have TargetObject");
+			return false;
+		}
 
-		if (!mTargetObject.lock()->HasComponent<Transform>()) return false;
+		if (!mTargetObject.lock()->HasComponent<Transform>()) 
+		{
+			spdlog::warn("[Warrning] TargetObject Have not Trasfrom Component");
+			return false;
+		}
 
 		mKeys = info.keys;
 
@@ -55,6 +64,7 @@ namespace fq::game_module
 	{
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
+
 
 		if (!mTargetObject.expired())
 		{
@@ -85,6 +95,7 @@ namespace fq::game_module
 	}
 	void ObjectTeleportTrack::End()
 	{
+		// 시퀀스가 시작하기 이전 Transform로 돌아가야 할 경우
 		if (!mTargetObject.expired() && mbIsObjectReturnToStartTransform)
 		{
 			if (!mTargetObject.lock()->HasComponent<Transform>()) return;

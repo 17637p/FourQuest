@@ -76,6 +76,9 @@ namespace fq::client
 		std::vector<Quest> mMainQuests;
 		std::vector<Quest> mSubQuests;
 
+		std::vector<Quest> mClearEvents; // 이벤트 안에서 이벤트 호출이 안되어서 다음 틱에 처리
+		std::vector<int> mClearEventIndexes;
+
 		float mDistance;
 
 		// 스크립트 용

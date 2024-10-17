@@ -28,9 +28,14 @@ namespace fq::game_module
 		mTargetCameraObject = scene->GetObjectByName(info.targetCameraName);
 
 		if (!mCurrentCameraObject.expired() && !mTargetCameraObject.expired())
+		{
 			return true;
+		}
 		else
+		{
+			spdlog::warn("[Warrning] Scene do not have MainCamera Or TargetCamera");
 			return false;
+		}
 	}
 
 	void CameraChangeTrack::PlayEnter()

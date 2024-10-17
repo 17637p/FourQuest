@@ -139,4 +139,13 @@ namespace fq::game_module
 		float Intensity = 0.f;
 	};
 
+	struct FadeTrackInfo
+	{
+		float startTime = 0.f;
+		float totalPlayTime = 1.f;
+
+		std::string postProcessObjectName = {};
+		float blendTime = 1.f;
+		DirectX::SimpleMath::Color finalColor = {0.f, 0.f, 0.f, 1.f};
+	};
 }

@@ -410,6 +410,9 @@
     <ClInclude Include="Controller.h">
       <Filter>include\01.EntityComponent\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="FadeTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -669,6 +672,9 @@
     </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="FadeTrack.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

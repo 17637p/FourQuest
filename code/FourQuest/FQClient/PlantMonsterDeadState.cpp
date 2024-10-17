@@ -44,9 +44,8 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Death", false , fq::sound::EChannel::SE });
 
-	auto scene = animator.GetScene();
-
 	// 몬스터 죽음 이벤트
+	auto scene = animator.GetScene();
 	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
 		{ EMonsterType::Plant });
 
@@ -103,9 +102,5 @@ void fq::client::PlantMonsterDeadState::OnStateUpdate(game_module::Animator& ani
 	{
 		auto scene = animator.GetScene();
 		scene->DestroyGameObject(animator.GetGameObject());
-
-		// 몬스터 죽음 이벤트
-		scene->GetEventManager()->FireEvent<client::event::KillMonster>(
-			{ EMonsterType::Plant });
 	}
 }

@@ -16,6 +16,7 @@
 #include "SoundTrack.h"
 #include "ObjectAnimationTrack.h"
 #include "VibrationTrack.h"
+#include "FadeTrack.h"
 
 namespace fq::game_module
 {
@@ -30,6 +31,9 @@ namespace fq::game_module
 		virtual void OnDestroy() override;
 		virtual void OnTriggerEnter(const Collision& collision) override;
 
+		/// <summary>
+		/// 시퀀스를 어떻게 실행할 지 옵션입니다.
+		/// </summary>
 		bool GetIsPlay() const { return mbIsPlay; }
 		void SetIsPlay(bool isPlay) { mbIsPlay = isPlay; }
 		bool GetIsLoop() const { return mbIsLoop; }
@@ -75,15 +79,31 @@ namespace fq::game_module
 		void SetCameraShakeTrackInfo(const std::vector<CameraShakeTrackInfo>& info) { mCameraShakeTrackInfo = info; }
 		const std::vector<VibrationTrackInfo>& GetVibrationTrackInfo() const { return mVibrationTrackInfo; }
 		void SetVibrationTrackInfo(const std::vector<VibrationTrackInfo>& info) { mVibrationTrackInfo = info; }
+		const std::vector<FadeTrackInfo>& GetFadeTrackInfo() const { return mFadeTrackInfo; }
+		void SetFadeTrackInfo(const std::vector<FadeTrackInfo>& info) { mFadeTrackInfo = info; }
 
 		std::vector<std::shared_ptr<Track>>& GetTrackContainer() { return mTracks; }
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>>& GetAnimationContainer() { return mAnimationContainer; }
 		  
 	private:
+		/// <summary>
+		/// 다른 실행중인 시퀀스가 있나 체크하는 함수입니다.
+		/// </summary>
 		void checkSeqeunce();
+
+		/// <summary>
+		/// 시퀀스가 가지고 있는 트랙들을 실행시키는 함수입니다.
+		/// </summary>
 		void playTrack(float dt);
+
+		/// <summary>
+		/// 시간 정지 옵션을 체크했을 경우 시퀀스가 가지고 있는 오브젝트들을 따로 Update를 돌려주는 함수입니다.
+		/// </summary>
 		void updateSequenceObject(float dt);
 
+		/// <summary>
+		/// 트랙을 생성하는 템플릿 함수입니다.
+		/// </summary>
 		template<class ClassName, class TrackInfo, typename... Args>
 		void createTrack(const TrackInfo& trackInfoContainer, Args&... arg);
 
@@ -113,6 +133,7 @@ namespace fq::game_module
 		std::vector<TextPrintTrackInfo>			mTextPrintTrackInfo;
 		std::vector<CameraShakeTrackInfo>		mCameraShakeTrackInfo;
 		std::vector<VibrationTrackInfo>			mVibrationTrackInfo;
+		std::vector<FadeTrackInfo>				mFadeTrackInfo;
 
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>> mAnimationContainer;
 

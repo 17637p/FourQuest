@@ -19,6 +19,7 @@ namespace fq::game_module
 		VIBRATION,			// 컨트롤러 진동
 		PLAYER_TELEPORT,	// 플레이어 순간이동
 		PLAYER_MOVE,		// 플레이어 이동
+		FAID_IN_OUT,		// 페이드 인/아웃
 
 		END
 	};
