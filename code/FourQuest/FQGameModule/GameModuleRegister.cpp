@@ -102,7 +102,9 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::MagicCircle>("MagicCircle"_hs) // 17
 		.prop(fq::reflect::prop::Name, "MagicCircle")
 		.data<ETag::SafeZone>("SafeZone"_hs) // 18
-		.prop(fq::reflect::prop::Name, "SafeZone");
+		.prop(fq::reflect::prop::Name, "SafeZone")
+		.data<ETag::Shield>("Shield"_hs) // 19
+		.prop(fq::reflect::prop::Name, "Shield");
 
 	// GameObject
 	entt::meta<GameObject>()

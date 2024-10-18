@@ -20,6 +20,7 @@ namespace fq::game_engine
 	private:
 		void beginButton_Reset();
 		void beginCollisionMatrix();
+		void beginButton_Save();
 
 	private:
 		bool mbIsOpen;

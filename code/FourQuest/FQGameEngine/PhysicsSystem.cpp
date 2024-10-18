@@ -119,8 +119,8 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 {
 	CleanUp({});
 
-	auto scenePath = fq::path::GetScenePath() / event.sceneName / "collision_matrix.txt";
-	mCollisionMatrix.Load(scenePath);
+	auto path = fq::path::GetInternalPath() / "collision" / "collision_matrix.txt";
+	mCollisionMatrix.Load(path);
 
 	setPhysicsEngineinfo();
 

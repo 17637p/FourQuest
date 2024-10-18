@@ -13,7 +13,6 @@ namespace fq::client
 		, mGaugeSize{100.f, 100.f}
 		, mTransform(nullptr)
 		, mImageUI(nullptr)
-		, mMainCamera(nullptr)
 	{
 	}
 
@@ -25,18 +24,6 @@ namespace fq::client
 	{
 		mTransform = GetComponent<game_module::Transform>();
 		mImageUI = GetComponent<game_module::ImageUI>();
-
-		// MainCamera 가져오기 
-		auto view = GetScene()->GetComponentView<game_module::Camera>();
-		for (auto& object : view)
-		{
-			auto camera = object.GetComponent<game_module::Camera>();
-
-			if (object.GetName() == "MainCamera")
-			{
-				mMainCamera = camera;
-			}
-		}
 
 		auto infomations = mImageUI->GetUIInfomations();
 
@@ -71,7 +58,9 @@ namespace fq::client
 		float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
 		float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
 
-		auto viewProj = mMainCamera->GetViewProjection();
+		fq::game_module::Camera* mainCamera = nullptr;
+		GetScene()->GetEventManager()->FireEvent<fq::event::GetMainCamera>({ &mainCamera });
+		auto viewProj = mainCamera->GetViewProjection();
 		Vector3 screenPos = Vector3::Transform(pos, viewProj);
 		auto infomations = mImageUI->GetUIInfomations();
 

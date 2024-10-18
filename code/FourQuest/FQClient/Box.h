@@ -23,16 +23,18 @@ namespace fq::client
 		virtual void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 		virtual void OnFixedUpdate(float dt) override;
 
-		void breakBox();
-
+		void addbreakBoxPrefab();
 	private:
 		std::string mBrokenBoxPrefebPath;
+		game_module::PrefabResource mBrokenBoxPrefabPath;
 		std::shared_ptr<fq::game_module::GameObject> mObject;
 
 		DirectX::SimpleMath::Vector3 mRotation;
 		bool bIsBlock;
 		float mDeadTime;
 		float mDurationTime;
+
+		friend void RegisterMetaData();
 	};
 }
 

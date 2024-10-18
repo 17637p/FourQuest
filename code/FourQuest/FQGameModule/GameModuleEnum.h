@@ -24,6 +24,7 @@ namespace fq::game_module
 		PlayerMonsterIgnore = 16,
 		MagicCircle = 17,
 		SafeZone = 18,
-		End = 19,
+		Shield =19,
+		End = 20,
 	};
 }
