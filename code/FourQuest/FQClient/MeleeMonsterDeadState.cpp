@@ -14,6 +14,7 @@
 #include "../FQGameModule/Event.h"
 #include "MeleeMonsterExplosion.h"
 
+#include "MonsterGroup.h"
 #include "ArmourSpawner.h"
 #include "MonsterVariable.h"
 
@@ -60,6 +61,13 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 
 	// 몬스터 죽음 이벤트 발생
 	auto scene = animator.GetScene();
+	
+	auto monsterGroup = MonsterGroup::GetMonsterGroup(gameObject);
+	if (monsterGroup)
+	{
+		monsterGroup->DestroyMonster(gameObject);
+	}
+
 	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
 		{ EMonsterType::Melee });
 

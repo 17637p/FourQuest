@@ -23,6 +23,11 @@ namespace fq::client
 		void Register(fq::game_module::GameObject* monster);
 
 		/// <summary>
+		/// 몬스터 그룹에 몬스터 삭제를 알립니다 
+		/// </summary>
+		void DestroyMonster(fq::game_module::GameObject* destroyMonster);
+
+		/// <summary>
 		/// 몬스터들에게 타겟을 발견했다고 알립니다 
 		/// </summary>
 		void AnnounceFindedTarget(fq::game_module::GameObject* target);
@@ -57,7 +62,6 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		void OnAwake() override;
-		void OnUpdate(float dt) override;
 	private:
 		std::vector<std::shared_ptr<game_module::GameObject>> mMonsters;
 		std::shared_ptr<fq::game_module::GameObject> mTarget;

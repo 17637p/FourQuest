@@ -419,6 +419,7 @@ void fq::client::QuestManager::eventProcessKillMonster()
 						spdlog::trace("MonsterGroupKill Quest Clear!");
 					}
 				}
+
 			}
 		});
 }
@@ -699,7 +700,15 @@ void fq::client::QuestManager::eventProcessClearQuest()
 			{
 				for (int i = 0; i < sequenceStartListSize; i++)
 				{
-					GetScene()->GetObjectByName(sequenceStartList[i].name)->GetComponent<game_module::Sequence>()->SetIsPlay(true);
+					auto sequenceObject = GetScene()->GetObjectByName(sequenceStartList[i].name);
+					if (sequenceObject)
+					{
+						sequenceObject->GetComponent<game_module::Sequence>()->SetIsPlay(true);
+					}
+					else
+					{
+						spdlog::warn("[QuestManager] {} object does not exist", sequenceStartList[i].name);
+					}
 				}
 			}
 
@@ -1019,7 +1028,7 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		timerText->SetText(sec);
 		if (int(quest.mSeconds) <= 10)
 		{
-			auto textInfo = timerText->GetTextInfo(); 
+			auto textInfo = timerText->GetTextInfo();
 			textInfo.FontColor = { 1, 0, 0, 1 };
 			timerText->SetTextInfo(textInfo);
 		}
@@ -1145,7 +1154,7 @@ void fq::client::QuestManager::SpawnArmour(fq::game_module::PrefabResource armou
 			}
 			else
 			{
-				spdlog::warn("[QusetManager] {} Has not NavigationAgent" , GetGameObject()->GetName());
+				spdlog::warn("[QusetManager] {} Has not NavigationAgent", GetGameObject()->GetName());
 				return;
 			}
 			count++;
