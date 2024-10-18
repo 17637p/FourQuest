@@ -16,7 +16,7 @@ namespace fq::game_module
 		return DirectX::SimpleMath::Vector3(vecJson[0], vecJson[1], vecJson[2]);
 	}
 
-	void ClothDataLoader::Save(const std::shared_ptr<ClothData> data, const Path& path)
+	void ClothDataLoader::Save(const std::shared_ptr<fq::physics::Cloth::ClothData> data, const Path& path)
 	{
 		ordered_json clothJson;
 
@@ -49,12 +49,12 @@ namespace fq::game_module
 		}
 	}
 
-	std::shared_ptr<ClothData> ClothDataLoader::LoadArticulationData(const Path& path)
+	std::shared_ptr<fq::physics::Cloth::ClothData> ClothDataLoader::LoadArticulationData(const Path& path)
 	{
 		assert(fs::exists(path));
 		assert(path.extension() == ".cloth");
 
-		std::shared_ptr<ClothData> clothData = std::make_shared<ClothData>();
+		std::shared_ptr<fq::physics::Cloth::ClothData> clothData = std::make_shared<fq::physics::Cloth::ClothData>();
 
 		// 파일에서 JSON 데이터를 읽기
 		std::ifstream file(path);

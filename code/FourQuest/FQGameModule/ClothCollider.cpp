@@ -18,16 +18,8 @@ namespace fq::game_module
 	{
 		ClothDataLoader loader;
 
-		auto clothData = loader.LoadArticulationData(mClothPath);
-
-		mClothInfo->vertices = clothData->vertices.data();
-		mClothInfo->vertexSize = clothData->vertices.size();
-		mClothInfo->indices = clothData->indices.data();
-		mClothInfo->indexSize = clothData->indices.size();
-		mClothInfo->disableIndices = clothData->disableIndices.data();
-		mClothInfo->disableIndexSize = clothData->disableIndices.size();
+		mClothInfo->clothData = loader.LoadArticulationData(mClothPath);
 	}
-
 
 	entt::meta_handle fq::game_module::ClothCollider::GetHandle()
 	{

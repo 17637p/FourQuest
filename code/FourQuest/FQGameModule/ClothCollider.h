@@ -19,6 +19,7 @@ namespace fq::game_module
 		/// </summary>
 		void Load();
 
+		std::shared_ptr<ClothInfo> GetClothInfo() const { return mClothInfo; }
 		ClothPath GetClothPath() const { return mClothPath; }
 		float GetClothMass() const { return mClothInfo->clothMass; }
 		float GetRestOffset() const { return mClothInfo->restOffset; }
@@ -33,6 +34,12 @@ namespace fq::game_module
 		float GetDrag() const { return mClothInfo->materialInfo.drag; }
 		float GetCflCoefficient() const { return mClothInfo->materialInfo.cflCoefficient; }
 		float GetGravityScale() const { return mClothInfo->materialInfo.gravityScale; }
+		DirectX::SimpleMath::Vector3* GetVertex() const { return mClothInfo->clothData->vertices.data(); }
+		int GetVertexSize() const { return mClothInfo->clothData->vertices.size(); }
+		unsigned int* GetIndices() const { return mClothInfo->clothData->indices.data(); }
+		int GetIndexSize() const { return mClothInfo->clothData->indices.size(); }
+		unsigned int* GetDisableIndices() const { return mClothInfo->clothData->disableIndices.data(); }
+		int GetDisableIndexSize() const { return mClothInfo->clothData->indices.size(); }
 		void* GetVertexBuffer() const { return mClothInfo->vertexBuffer; }
 		void* GetIndexBuffer() const { return mClothInfo->indexBuffer; }
 		void SetClothPath(ClothPath path) { mClothPath = path; }

@@ -637,6 +637,29 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			triangleColliderInfo.vertexSize = mesh.Vertices.size();
 		}
 
+		if (bodyType == RigidBody::EBodyType::Static)
+		{
+			bool check = mPhysicsEngine->CreateStaticBody(triangleColliderInfo, triangleCollider->GetType());
+			assert(check);
+			mColliderContainer.insert({ id,
+				{mTriangleTypeID
+				, triangleCollider->shared_from_this()
+				, object->shared_from_this()
+				, triangleCollider, false} });
+
+		}
+		else
+		{
+			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
+
+			bool check = mPhysicsEngine->CreateDynamicBody(triangleColliderInfo, triangleCollider->GetType(), isKinematic);
+			assert(check);
+			mColliderContainer.insert({ id,
+				{mTriangleTypeID
+				, triangleCollider->shared_from_this()
+				, object->shared_from_this()
+				, triangleCollider, false} });
+		}
 	}
 
 	// 8. Cloth Collider
@@ -644,10 +667,12 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	{
 		ColliderID id = ++mLastColliderID;
 
+		// ClothCollider 컴포넌트 아이디 세팅하고 로드하기
 		auto clothCollider = object->GetComponent<ClothCollider>();
 		clothCollider->SetClothID(id);
 		clothCollider->Load();
 
+		// 그래픽스 엔진에서 스태틱 메시 및 스켈레탈 메시에서 VertexBuffer, IndexBuffer 포인터 가져오기
 		if (object->HasComponent<StaticMeshRenderer>())
 		{
 			auto staticMesh = object->GetComponent<StaticMeshRenderer>();
@@ -664,8 +689,20 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			clothCollider->SetIndexBuffer(indexBuffer);
 			clothCollider->SetVertexBuffer(vertexBuffer);
 		}
+		else
+		{
+			spdlog::warn("[Physics System(670) Warrning] Object Has not Mesh Component( ID : {} )", id);
+			return;
+		}
 
-		fq::physics::Cloth::CreateClothData data;
+		//// 물리 엔진에서 천 생성하기
+		//bool check = mPhysicsEngine->CreateCloth(*clothCollider->GetClothInfo().get());
+		//assert(check);
+		//mColliderContainer.insert({ id,
+		//	{mTriangleTypeID
+		//	, clothCollider->shared_from_this()
+		//	, object->shared_from_this()
+		//	, clothCollider, false} });
 	}
 }
 

@@ -349,6 +349,14 @@ namespace fq::physics
 #pragma region PhysicsCloth
 	namespace Cloth
 	{
+		struct ClothData
+		{
+			std::string modelPath;
+			std::vector<DirectX::SimpleMath::Vector3> vertices;
+			std::vector<unsigned int> indices;
+			std::vector<unsigned int> disableIndices;
+		};
+
 		struct PhysicsClothMaterialInfo
 		{
 			float friction = 0.2f;							// 마찰 계수 : 천의 표면과 다른 물체 간의 마찰 정도를 결정합니다.
@@ -375,12 +383,7 @@ namespace fq::physics
 			float clothMass = 1.f;
 			float restOffset = 1.f;
 
-			DirectX::SimpleMath::Vector3* vertices = nullptr;	// 모델 버텍스
-			int vertexSize = 0;									// 모델 버텍스 사이즈
-			unsigned int* indices = nullptr;					// 모델 인덱스
-			int indexSize = 0;									// 모델 인덱스 사이즈
-			unsigned int* disableIndices = nullptr;				// 모델 인덱스
-			int disableIndexSize = 0;							// 모델 인덱스 사이즈
+			std::shared_ptr<ClothData> clothData;
 
 			void* vertexBuffer = nullptr;							// D3D11Buffer*
 			void* indexBuffer = nullptr;							// D3D11Buffer*
