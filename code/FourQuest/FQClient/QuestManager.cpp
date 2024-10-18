@@ -378,7 +378,13 @@ void fq::client::QuestManager::eventProcessKillMonster()
 				monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
 				monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
 
-				if (monsterGroupKillList[0].curNumber >= monsterGroupKillList[0].groupMonsterNumber)
+				if (mCurMainQuest.mIndex == mViewMainQuest.mIndex)
+				{
+					mViewMainQuest.mclearConditionList.monsterGroupKillList[0].groupMonsterNumber = monsterGroupKillList[0].groupMonsterNumber;
+					mViewMainQuest.mclearConditionList.monsterGroupKillList[0].curNumber = monsterGroupKillList[0].curNumber;
+				}
+
+				if (monsterGroupKillList[0].curNumber == 0)
 				{
 					GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 						{ mCurMainQuest, 0 });
@@ -397,7 +403,16 @@ void fq::client::QuestManager::eventProcessKillMonster()
 					monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
 					spdlog::trace("total {}, cur {}", monsterGroup->GetAllMonsterSize(), monsterGroup->GetRemainMonsterSize());
 
-					if (monsterGroupKillList[0].curNumber >= monsterGroupKillList[0].groupMonsterNumber)
+					for (int j = 0; j < mViewSubQuest.size(); j++)
+					{
+						if (mViewSubQuest[j].mIndex == mCurSubQuest[i].mIndex)
+						{
+							mViewSubQuest[j].mclearConditionList.monsterGroupKillList[0].groupMonsterNumber = monsterGroupKillList[0].groupMonsterNumber;
+							mViewSubQuest[j].mclearConditionList.monsterGroupKillList[0].curNumber = monsterGroupKillList[0].curNumber;
+						}
+					}
+
+					if (monsterGroupKillList[0].curNumber == 0)
 					{
 						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 							{ mCurSubQuest[i], i });
