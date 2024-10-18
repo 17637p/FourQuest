@@ -105,6 +105,7 @@ bool fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 	{
 		player->SetSoulType(info.SoulType);
 		player->SetHp(mHp);
+		player->SetSoulGauge(info.SoulGauge);
 	}
 
 	// 위치 설정

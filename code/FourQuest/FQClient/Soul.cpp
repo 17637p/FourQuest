@@ -32,6 +32,8 @@ fq::client::Soul::Soul()
 	, mIsOverlayGoddessStatue(false)
 	, mbIsOnSummon(false)
 	, mSummonArmourOrNull(nullptr)
+	, mSoulGauge(0.f)
+	, mMaxSoulGauge(100.f)
 {}
 
 fq::client::Soul::~Soul()
@@ -239,7 +241,7 @@ void fq::client::Soul::selectArmour()
 				{
 					rigidbody->SetLinearVelocity({ 0,0,0 });
 				}
-				
+
 				// UI Á¦°Å
 				mBGaugeUI->SetVisible(false);
 				GetComponent<HpBar>()->SetVisible(false);
@@ -394,7 +396,7 @@ bool fq::client::Soul::handleOnSummon()
 	if (mbIsOnSummon)
 	{
 		assert(mSummonArmourOrNull != nullptr);
-		PlayerInfo info{ mController->GetControllerID(), mSoulType };
+		PlayerInfo info{ mController->GetControllerID(), mSoulType, mSoulGauge };
 		GetComponent<HpBar>()->SetVisible(false);
 
 		if (mSummonArmourOrNull->SummonLivingArmour(info))
