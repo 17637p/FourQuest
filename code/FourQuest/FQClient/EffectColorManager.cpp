@@ -7,6 +7,7 @@
 #include "../FQGameModule/Camera.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Decal.h"
 #include "../FQCommon/FQCommonGraphics.h"
 
 fq::client::EffectColorManager::EffectColorManager(const EffectColorManager& other)
@@ -105,6 +106,16 @@ void fq::client::EffectColorManager::OnGeneratePrefabInstance(const fq::event::O
 				materialInstanceInfo.EmissiveColor = applyEmissiveColor;
 
 				staticMeshRenderer->SetMaterialInstanceInfo(materialInstanceInfo);
+			}
+
+			auto decalOrNull = gameObject->GetComponent<fq::game_module::Decal>();
+
+			if (decalOrNull != nullptr)
+			{
+				auto materialInfo = decalOrNull->GetDecalMaterialInfo();
+				materialInfo.BaseColor = applyBaseColor;
+				materialInfo.EmissiveColor = applyEmissiveColor;
+				decalOrNull->SetDecalMaterialInfo(materialInfo);
 			}
 
 			for (auto child : gameObject->GetChildren())
