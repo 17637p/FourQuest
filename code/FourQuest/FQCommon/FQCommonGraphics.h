@@ -397,6 +397,7 @@ namespace fq::graphics
 		float Height = 1.f;
 		float Depth = 1.f;
 		DirectX::SimpleMath::Vector3 Pivot = { 0, 0, 0 };
+		float DecalRotation = 0.f;
 
 		float NormalThresholdInDegree = 180.f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
 

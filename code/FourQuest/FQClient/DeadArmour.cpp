@@ -15,6 +15,7 @@
 #include "ClientEvent.h"
 #include "SoulVariable.h"
 #include "PlayerInfoVariable.h"
+#include "EffectColorTransmitter.h"
 
 fq::client::DeadArmour::DeadArmour()
 	:mPlayerCount(0)
@@ -63,6 +64,12 @@ bool fq::client::DeadArmour::EnterSummonLivingArmour(PlayerInfo info)
 	}
 
 	mbIsOnSummon = true;
+
+	auto effectColorTransmitter = GetComponent<EffectColorTransmitter>();
+	if (effectColorTransmitter != nullptr)
+	{
+		effectColorTransmitter->SetSoulType(info.SoulType);
+	}
 
 	// ¿Ã∆Â∆Æ πÊ√‚ 
 	fq::event::OnCreateStateEvent stateEvent;

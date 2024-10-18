@@ -176,7 +176,8 @@ namespace fq::graphics
 
 				auto calcTransform =
 					DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Width, decalInfo.Depth, decalInfo.Height)
-					* DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Pivot.x, decalInfo.Pivot.z, decalInfo.Pivot.y)
+					* DirectX::SimpleMath::Matrix::CreateRotationY(decalInfo.DecalRotation)
+					* DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Pivot)
 					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
 					* DirectX::SimpleMath::Matrix::CreateTranslation(translation);
 				material->Bind(mDevice);

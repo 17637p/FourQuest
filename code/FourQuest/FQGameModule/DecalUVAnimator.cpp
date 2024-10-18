@@ -4,13 +4,13 @@
 using namespace fq::game_module;
 
 fq::game_module::DecalUVAnimator::DecalUVAnimator()
-	: mDecalOrNull(nullptr)
-	, mbIsLooping(false)
+	: mbIsLooping(false)
 	, mbIsUpdate(true)
 	, mPlaySpeed(1.f)
 	, mDuration(1.f)
 	, mAccumulationTime(0.f)
-	, mAdditiveTransform(DirectX::SimpleMath::Matrix::Identity)
+	, mDecalKeyframe{ DecalGeoKeyframe() }
+	, mDecalUVKeyframe{ DecalUVKeyframe() }
 {
 }
 
@@ -33,45 +33,31 @@ std::shared_ptr<Component> fq::game_module::DecalUVAnimator::Clone(std::shared_p
 
 void fq::game_module::DecalUVAnimator::OnStart()
 {
-	mDecalOrNull = GetComponent<Decal>();
-
 	mAccumulationTime = 0.f;
 
-	std::sort(mKeyframes.begin(), mKeyframes.end(), [](const DecalKeyframe& lhs, const DecalKeyframe& rhs)
+	std::sort(mDecalKeyframes.begin(), mDecalKeyframes.end(), [](const DecalGeoKeyframe& lhs, const DecalGeoKeyframe& rhs)
 		{
 			return lhs.TimePos < rhs.TimePos;
 		});
 
-	std::sort(mUVKeyframes.begin(), mUVKeyframes.end(), [](const DecalUVKeyframe& lhs, const DecalUVKeyframe& rhs)
+	std::sort(mDecalUVKeyframes.begin(), mDecalUVKeyframes.end(), [](const DecalUVKeyframe& lhs, const DecalUVKeyframe& rhs)
 		{
 			return lhs.TimePos < rhs.TimePos;
 		});
 
 
-	for (auto& keyframe : mKeyframes)
+	for (auto& keyframe : mDecalKeyframes)
 	{
-		const DirectX::SimpleMath::Vector3 ratotationInRadian =
-		{
-			keyframe.Rotation.x * 3.141592f / 180.f,
-			keyframe.Rotation.y * 3.141592f / 180.f,
-			keyframe.Rotation.z * 3.141592f / 180.f,
-		};
-
-		keyframe.RotationQuaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(keyframe.Rotation);
+		keyframe.Rotation *= (3.141592f / 180.f);
+	}
+	for (auto& uvKeyframe : mDecalUVKeyframes)
+	{
+		uvKeyframe.Rotation *= (3.141592f / 180.f);
 	}
 }
 
 void fq::game_module::DecalUVAnimator::OnUpdate(float dt)
 {
-	if (mDecalOrNull == nullptr)
-	{
-		return;
-	}
-	if (mKeyframes.empty())
-	{
-		return;
-	}
-
 	mAccumulationTime += dt * mPlaySpeed;
 
 	if (mbIsLooping)
@@ -82,101 +68,92 @@ void fq::game_module::DecalUVAnimator::OnUpdate(float dt)
 	{
 		mAccumulationTime = fmin(mAccumulationTime, mDuration);
 	}
+}
 
-	auto decalInfo = mDecalOrNull->GetDecalInfo();
-
-	// uv
-	if (!mUVKeyframes.empty())
+void fq::game_module::DecalUVAnimator::updateKeyframe()
+{
+	if (mDecalKeyframes.empty())
 	{
-		int index = 0u;
-		for (const auto& uvkeyframe : mUVKeyframes)
-		{
-			if (uvkeyframe.TimePos > mAccumulationTime)
-			{
-				break;
-			}
-
-			++index;
-		}
-
-		size_t prevIndex = std::min<size_t>(std::max<int>(index - 1, 0), mUVKeyframes.size() - 1);
-		size_t currIndex = std::min<size_t>(index, mKeyframes.size() - 1);
-
-		DirectX::SimpleMath::Vector2 scale;
-		float rotation;
-		DirectX::SimpleMath::Vector2 translation;
-
-		if (prevIndex == currIndex)
-		{
-			const auto& currFrame = mUVKeyframes[currIndex];
-
-			scale = currFrame.Scale;
-			rotation = currFrame.Rotation;
-			translation = currFrame.Translation;
-		}
-		else
-		{
-			const auto& prevFrame = mUVKeyframes[prevIndex];
-			const auto& currFrame = mUVKeyframes[currIndex];
-
-			float ratio = (mAccumulationTime - prevFrame.TimePos) / (currFrame.TimePos - prevFrame.TimePos);
-
-			scale = DirectX::SimpleMath::Vector2::Lerp(prevFrame.Scale, currFrame.Scale, ratio);
-			rotation = std::lerp(prevFrame.Rotation, currFrame.Rotation, ratio);
-			translation = DirectX::SimpleMath::Vector2::Lerp(prevFrame.Translation, currFrame.Translation, ratio);
-		}
-
-		decalInfo.Offset = translation;
-		decalInfo.Tiling = scale;
-		decalInfo.Rotation = rotation;
-
-		mDecalOrNull->SetDecalInfo(decalInfo);
+		return;
 	}
 
-	// transform
-	if (!mKeyframes.empty())
+	int index = 0u;
+	for (const auto& keyframe : mDecalKeyframes)
 	{
-		int index = 0u;
-		for (const auto& keyframe : mKeyframes)
+		if (keyframe.TimePos > mAccumulationTime)
 		{
-			if (keyframe.TimePos > mAccumulationTime)
-			{
-				break;
-			}
-
-			++index;
+			break;
 		}
 
-		size_t prevIndex = std::min<size_t>(std::max<int>(index - 1, 0), mKeyframes.size() - 1);
-		size_t currIndex = std::min<size_t>(index, mKeyframes.size() - 1);
-
-		DirectX::SimpleMath::Vector3 scale;
-		DirectX::SimpleMath::Quaternion rotation;
-		DirectX::SimpleMath::Vector3 translation;
-
-		if (prevIndex == currIndex)
-		{
-			const auto& currFrame = mKeyframes[currIndex];
-
-			scale = currFrame.Scale;
-			rotation = currFrame.RotationQuaternion;
-			translation = currFrame.Translation;
-		}
-		else
-		{
-			const auto& prevFrame = mKeyframes[prevIndex];
-			const auto& currFrame = mKeyframes[currIndex];
-
-			float ratio = (mAccumulationTime - prevFrame.TimePos) / (currFrame.TimePos - prevFrame.TimePos);
-
-			scale = DirectX::SimpleMath::Vector3::Lerp(prevFrame.Scale, currFrame.Scale, ratio);
-			rotation = DirectX::SimpleMath::Quaternion::Slerp(prevFrame.RotationQuaternion, currFrame.RotationQuaternion, ratio);
-			translation = DirectX::SimpleMath::Vector3::Lerp(prevFrame.Translation, currFrame.Translation, ratio);
-		}
-
-		mAdditiveTransform = DirectX::SimpleMath::Matrix::CreateScale(scale)
-			* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
-			* DirectX::SimpleMath::Matrix::CreateTranslation(translation);
+		++index;
 	}
 
+	size_t prevIndex = std::min<size_t>(std::max<int>(index - 1, 0), mDecalKeyframes.size() - 1);
+	size_t currIndex = std::min<size_t>(index, mDecalKeyframes.size() - 1);
+
+	if (prevIndex == currIndex)
+	{
+		const auto& currFrame = mDecalKeyframes[currIndex];
+
+		mDecalKeyframe.Scale = currFrame.Scale;
+		mDecalKeyframe.Rotation = currFrame.Rotation;
+		mDecalKeyframe.Translation = currFrame.Translation;
+	}
+	else
+	{
+		const auto& prevFrame = mDecalKeyframes[prevIndex];
+		const auto& currFrame = mDecalKeyframes[currIndex];
+
+		float ratio = (mAccumulationTime - prevFrame.TimePos) / (currFrame.TimePos - prevFrame.TimePos);
+
+		mDecalKeyframe.Scale = DirectX::SimpleMath::Vector3::Lerp(prevFrame.Scale, currFrame.Scale, ratio);
+		mDecalKeyframe.Rotation = std::lerp(prevFrame.Rotation, currFrame.Rotation, ratio);
+		mDecalKeyframe.Translation = DirectX::SimpleMath::Vector3::Lerp(prevFrame.Translation, currFrame.Translation, ratio);
+	}
+
+	mDecalKeyframe.TimePos = mAccumulationTime;
+}
+
+void fq::game_module::DecalUVAnimator::updateUVKeyframe()
+{
+	if (mDecalUVKeyframes.empty())
+	{
+		return;
+	}
+
+	int index = 0u;
+	for (const auto& uvkeyframe : mDecalUVKeyframes)
+	{
+		if (uvkeyframe.TimePos > mAccumulationTime)
+		{
+			break;
+		}
+
+		++index;
+	}
+
+	size_t prevIndex = std::min<size_t>(std::max<int>(index - 1, 0), mDecalUVKeyframes.size() - 1);
+	size_t currIndex = std::min<size_t>(index, mDecalUVKeyframes.size() - 1);
+
+	if (prevIndex == currIndex)
+	{
+		const auto& currFrame = mDecalUVKeyframes[currIndex];
+
+		mDecalUVKeyframe.Scale = currFrame.Scale;
+		mDecalUVKeyframe.Rotation = currFrame.Rotation;
+		mDecalUVKeyframe.Translation = currFrame.Translation;
+	}
+	else
+	{
+		const auto& prevFrame = mDecalUVKeyframes[prevIndex];
+		const auto& currFrame = mDecalUVKeyframes[currIndex];
+
+		float ratio = (mAccumulationTime - prevFrame.TimePos) / (currFrame.TimePos - prevFrame.TimePos);
+
+		mDecalUVKeyframe.Scale = DirectX::SimpleMath::Vector2::Lerp(prevFrame.Scale, currFrame.Scale, ratio);
+		mDecalUVKeyframe.Rotation = std::lerp(prevFrame.Rotation, currFrame.Rotation, ratio);
+		mDecalUVKeyframe.Translation = DirectX::SimpleMath::Vector2::Lerp(prevFrame.Translation, currFrame.Translation, ratio);
+	}
+
+	mDecalKeyframe.TimePos = mAccumulationTime;
 }

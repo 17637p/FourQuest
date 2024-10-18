@@ -100,6 +100,7 @@ void fq::client::EffectColorManager::OnGeneratePrefabInstance(const fq::event::O
 			if (staticMeshRenderer != nullptr)
 			{
 				auto materialInstanceInfo = staticMeshRenderer->GetMaterialInstanceInfo();
+
 				materialInstanceInfo.bUseBaseColor = true;
 				materialInstanceInfo.BaseColor = applyBaseColor;
 				materialInstanceInfo.bUseEmissiveColor = true;

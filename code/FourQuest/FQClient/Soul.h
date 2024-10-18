@@ -79,6 +79,9 @@ namespace fq::client
 		bool mbIsOnSummon;
 		DeadArmour* mSummonArmourOrNull;
 
+		// 영혼 게이지
+		float mSoulGauge;
+
 	private:
 		friend void RegisterMetaData();
 	};
