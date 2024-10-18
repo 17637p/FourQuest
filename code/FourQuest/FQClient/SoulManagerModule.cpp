@@ -71,6 +71,14 @@ namespace fq::client
 				// 위치 설정
 				soul->GetComponent<game_module::Transform>()->SetWorldMatrix(data.worldTransform);
 
+				// 소울 게이지 설정
+				auto soulComp = soul->GetComponent<Soul>();
+				if (soulComp != nullptr)
+				{
+					soulComp->SetSoulGauge(data.soulGauge);
+					soulComp->SetMaxSoulGauge(data.maxSoulGauge);
+				}
+
 				mScene->AddGameObject(soul);
 			}
 		}
@@ -83,7 +91,7 @@ namespace fq::client
 			}), mSoulSummonQueue.end());
 	}
 
-	void SoulManagerModule::SummonSoul(unsigned int id, ESoulType soulType, DirectX::SimpleMath::Matrix worldTransform, game_module::PrefabResource soulPrefab, bool isDestroy)
+	void SoulManagerModule::SummonSoul(unsigned int id, ESoulType soulType, DirectX::SimpleMath::Matrix worldTransform, game_module::PrefabResource soulPrefab, bool isDestroy, float soulGauge, float maxSoulGauge)
 	{
 		SoulData data;
 
@@ -91,6 +99,8 @@ namespace fq::client
 		data.soulType = soulType;
 		data.worldTransform = worldTransform;
 		data.soulPrefab = soulPrefab;
+		data.soulGauge = soulGauge;
+		data.maxSoulGauge = maxSoulGauge;
 
 		if (!isDestroy)
 			data.durationTime = SoulVariable::OutTime;

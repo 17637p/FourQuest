@@ -32,6 +32,14 @@ namespace fq::client
 
 		float GetSoulHpRatio()const;
 
+		float GetSoulGauge() const { return mSoulGauge; }
+		void SetSoulGauge(float soulGauge) { mSoulGauge = soulGauge; }
+
+		float GetMaxSoulGauge() const { return mMaxSoulGauge; }
+		void SetMaxSoulGauge(float maxSoulGauge) { mMaxSoulGauge = maxSoulGauge; }
+
+		float GetSoulGaugeRatio() const { if (mMaxSoulGauge == 0.f) { return 0; } return mSoulGauge / mMaxSoulGauge; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -81,6 +89,7 @@ namespace fq::client
 
 		// øµ»• ∞‘¿Ã¡ˆ
 		float mSoulGauge;
+		float mMaxSoulGauge;
 
 	private:
 		friend void RegisterMetaData();

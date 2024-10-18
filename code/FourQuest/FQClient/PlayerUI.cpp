@@ -223,7 +223,7 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 		else
 		{
 			SetHPBar(mSoul->GetSoulHpRatio());
-			SetSoulGauge(0);
+			SetSoulGauge(mSoul->GetSoulGaugeRatio());
 			resetSkillCoolTime();
 		}
 	}
