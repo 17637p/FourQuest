@@ -594,6 +594,15 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "DashHitVibrationIntensity")
 		.data<&KnightArmour::mDashHitVibrationDuration>("DashHitVibrationDuration"_hs)
 		.prop(reflect::prop::Name, "DashHitVibrationDuration")
+
+		.data<&KnightArmour::mShieldHitVibrationMode>("ShieldHitVibrationMode"_hs)
+		.prop(reflect::prop::Name, "ShieldHitVibrationMode")
+		.data<&KnightArmour::mShieldHitVibrationIntensity>("ShieldHitVibrationIntensity"_hs)
+		.prop(reflect::prop::Name, "ShieldHitVibrationIntensity")
+		.data<&KnightArmour::mShieldHitVibrationDuration>("ShieldHitVibrationDuration"_hs)
+		.prop(reflect::prop::Name, "ShieldHitVibrationDuration")
+
+
 		.data<&KnightArmour::mSwordAttack>("SwordAttack"_hs)
 		.prop(reflect::prop::Name, "SwordAttack")
 		.data<&KnightArmour::mSwordAttackEffect1>("SwordAttackEffect1"_hs)

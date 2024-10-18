@@ -37,12 +37,13 @@ fq::client::KnightArmour::KnightArmour()
 	, mDashHitVibrationDuration(0.1f)
 	, mDashHitVibrationIntensity(1000.f)
 	, mDashHitVibrationMode(EVibrationMode::Left)
+	, mShieldHitVibrationDuration(0.1f)
+	, mShieldHitVibrationIntensity(1000.f)
+	, mShieldHitVibrationMode(EVibrationMode::Right)
 {}
 
 fq::client::KnightArmour::~KnightArmour()
-{
-
-}
+{}
 
 std::shared_ptr<fq::game_module::Component> fq::client::KnightArmour::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -444,6 +445,12 @@ void fq::client::KnightArmour::EnterShieldState()
 				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
 				isIncrease = true;
 			}
+
+			auto input = GetScene()->GetInputManager();
+			input->SetVibration(mController->GetControllerID(),
+				mShieldHitVibrationMode,
+				mShieldHitVibrationIntensity,
+				mShieldHitVibrationDuration);
 		};
 	attackComponent->Set(attackInfo);
 
