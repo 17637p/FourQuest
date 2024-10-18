@@ -62,9 +62,12 @@ namespace fq::client
 		void eventProcessObjectInteraction();
 		void eventProcessClearGoddessStatue();
 		void eventProcessChangePlayerNumCollideTrigger();
+		void eventProcessInProgressDefence();
 
 		void playNew(float dt);
 		void playComplete(float dt);
+		void PlayFail(float dt);
+		void playTimer(int index, Quest& quest, float dt, bool isPlay); // isPlay: 연출 재생 
 
 		void setColliderTriggerChecker();
 		void setMonsterGroup();
@@ -100,6 +103,7 @@ namespace fq::client
 		game_module::EventHandler mObjectInteractionHandler;
 		game_module::EventHandler mClearGoddessStatueHandler;
 		game_module::EventHandler mChangePlayerNumCollideTriggereHandler;
+		game_module::EventHandler mInProgressDefenceHandler;
 
 		// TextUI
 		game_module::TextUI* mMainQuestText;
@@ -116,10 +120,17 @@ namespace fq::client
 		std::vector<bool> mIsFinishedCompleteAnimation;
 		std::vector<game_module::ImageUI*> mQuestBoxes;
 
+		std::vector<game_module::ImageUI*> mFailImages;
+		std::vector<float> mFailImageCounts;
+		std::vector<bool> mIsFinishedFailedAnimation;
+
 		// Gauge Width
 		int mGaugeMaxWidth;
 		int mFontSize;
 		game_module::ScreenManager* mScreenManager;
+
+		std::vector<bool> mIsInProgressDefence;
+		std::vector<bool> mIsInProgressDefenceView;
 
 		// 
 		int mDebug;
