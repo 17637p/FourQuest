@@ -1007,7 +1007,12 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		}
 		else if (colliderInfo.enttID == mClothTypeID)
 		{
+			auto clothCollider = colliderInfo.component->GetComponent<fq::game_module::ClothCollider>();
 
+			fq::physics::Cloth::GetSetClothData data;
+			mPhysicsEngine->GetClothData(id, data);
+
+			transform->SetWorldMatrix(data.worldTransform);
 		}
 		else
 		{
