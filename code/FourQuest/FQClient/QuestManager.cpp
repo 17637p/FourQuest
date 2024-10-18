@@ -378,6 +378,12 @@ void fq::client::QuestManager::eventProcessKillMonster()
 				monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
 				monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
 
+				if (mCurMainQuest.mIndex == mViewMainQuest.mIndex)
+				{
+					mViewMainQuest.mclearConditionList.monsterGroupKillList[0].groupMonsterNumber = monsterGroupKillList[0].groupMonsterNumber;
+					mViewMainQuest.mclearConditionList.monsterGroupKillList[0].curNumber = monsterGroupKillList[0].curNumber;
+				}
+
 				if (monsterGroupKillList[0].curNumber == 0)
 				{
 					GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
@@ -392,27 +398,28 @@ void fq::client::QuestManager::eventProcessKillMonster()
 				std::vector<MonsterGroupKill>& monsterGroupKillList = mCurSubQuest[i].mclearConditionList.monsterGroupKillList;
 				if (monsterGroupKillList.size() > 0)
 				{
-					auto monsterGroupObject = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName);
-					if (monsterGroupObject)
+					MonsterGroup* monsterGroup = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName)->GetComponent<MonsterGroup>();
+					monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
+					monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
+					spdlog::trace("total {}, cur {}", monsterGroup->GetAllMonsterSize(), monsterGroup->GetRemainMonsterSize());
+
+					for (int j = 0; j < mViewSubQuest.size(); j++)
 					{
-						auto monsterGroup = monsterGroupObject->GetComponent<MonsterGroup>();
-
-						monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
-						monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
-						spdlog::trace("total {}, cur {}", monsterGroup->GetAllMonsterSize(), monsterGroup->GetRemainMonsterSize());
-
-						if (monsterGroupKillList[0].curNumber == 0)
+						if (mViewSubQuest[j].mIndex == mCurSubQuest[i].mIndex)
 						{
-							GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
-								{ mCurSubQuest[i], i });
-							spdlog::trace("MonsterGroupKill Quest Clear!");
+							mViewSubQuest[j].mclearConditionList.monsterGroupKillList[0].groupMonsterNumber = monsterGroupKillList[0].groupMonsterNumber;
+							mViewSubQuest[j].mclearConditionList.monsterGroupKillList[0].curNumber = monsterGroupKillList[0].curNumber;
 						}
 					}
-					else
+
+					if (monsterGroupKillList[0].curNumber == 0)
 					{
-						spdlog::warn("[QusetManager] scene has not [{}] monster group ", monsterGroupKillList[0].monsterGroupName);
+						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+							{ mCurSubQuest[i], i });
+						spdlog::trace("MonsterGroupKill Quest Clear!");
 					}
 				}
+
 			}
 		});
 }
