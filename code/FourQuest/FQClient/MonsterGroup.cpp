@@ -43,18 +43,6 @@ std::shared_ptr<fq::game_module::Component> fq::client::MonsterGroup::Clone(std:
 	return cloneMonsterGroup;
 }
 
-void fq::client::MonsterGroup::OnUpdate(float dt)
-{
-	mMonsters.erase(std::remove_if(mMonsters.begin(), mMonsters.end(), [](const std::shared_ptr<game_module::GameObject>& monster)
-		{
-			return monster->IsDestroyed();
-		}), mMonsters.end());
-
-	if (mTarget && mTarget->IsDestroyed())
-	{
-		mTarget = nullptr;
-	}
-}
 
 void fq::client::MonsterGroup::Register(fq::game_module::GameObject* monster)
 {
@@ -113,5 +101,19 @@ void fq::client::MonsterGroup::OnAwake()
 		}
 	}
 
+	spdlog::trace("{} size {}", GetGameObject()->GetName(), mMonsterCount);
+}
+
+
+void fq::client::MonsterGroup::DestroyMonster(fq::game_module::GameObject* destroyMonster)
+{
+	spdlog::trace("before group size {}", mMonsters.size());
+
+	mMonsters.erase(std::remove_if(mMonsters.begin(), mMonsters.end(), [destroyMonster](const std::shared_ptr<game_module::GameObject>& monster)
+		{
+			return destroyMonster->GetID() == monster->GetID();
+		}), mMonsters.end());
+
+	spdlog::trace("after group size {}", mMonsters.size());
 }
 

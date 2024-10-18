@@ -103,8 +103,9 @@ void fq::game_engine::CollisionMatrixWindow::beginButton_Save()
 {
 	if (ImGui::Button("Save", ImVec2{ 133,25 }))
 	{
+		spdlog::trace("Save CollisionMatrix");
 		auto matrix = mPhysicsSystem->GetCollisionMatrix();
-		auto scenePath = fq::path::GetInternalPath() / "collision" / "collision_matrix.txt";
+		auto scenePath = fq::path::GetInternalPath() / "collision";
 		matrix.Save(scenePath);
 		mPhysicsSystem->SetCollisionMatrix(matrix);
 	}
