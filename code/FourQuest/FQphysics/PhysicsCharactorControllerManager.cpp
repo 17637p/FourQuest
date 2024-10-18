@@ -88,7 +88,7 @@ namespace fq::physics
 #pragma region CreateAndRemoveCCT
 	bool PhysicsCharactorControllerManager::CreateCCT(CharacterControllerInfo controllerInfo, CharacterMovementInfo movementInfo)
 	{
-		mUpComingCharacterControllerContainer.push_back(std::make_pair(controllerInfo, movementInfo));
+		mWaitCharacterControllerContainer.push_back(std::make_pair(controllerInfo, movementInfo));
 
 		return true;
 	}
@@ -106,12 +106,19 @@ namespace fq::physics
 		}
 		mUpComingCharacterControllerContainer.clear();
 
+		for (auto& characterControllerInfo : mWaitCharacterControllerContainer)
+		{
+			mUpComingCharacterControllerContainer.push_back(characterControllerInfo);
+		}
+		mWaitCharacterControllerContainer.clear();
+
 		return true;
 	}
 
 	bool PhysicsCharactorControllerManager::RemoveController(const unsigned int& id)
 	{
 		auto controllerIter = mCCTmap.find(id);
+
 		if (controllerIter != mCCTmap.end())
 		{
 			mCCTmap.erase(controllerIter);
@@ -123,6 +130,8 @@ namespace fq::physics
 	bool PhysicsCharactorControllerManager::RemoveAllController()
 	{
 		mCCTmap.clear();
+		mUpComingCharacterControllerContainer.clear();
+		mWaitCharacterControllerContainer.clear();
 		return true;
 	}
 #pragma endregion

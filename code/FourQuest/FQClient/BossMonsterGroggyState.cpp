@@ -23,6 +23,8 @@ void fq::client::BossMonsterGroggyState::OnStateEnter(game_module::Animator& ani
 	mGroggyElaspsedTime = 0.f;
 	auto agent = animator.GetComponent<game_module::NavigationAgent>();
 	agent->Stop();
+
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MB_Groggy", false ,  fq::sound::EChannel::SE });
 }
 
 void fq::client::BossMonsterGroggyState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

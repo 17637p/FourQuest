@@ -312,6 +312,9 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 					mAnimator->SetParameterTrigger("OnHit");
 					mInvincibleElapsedTime = mInvincibleTime;
 				}
+
+				// 피격 사운드 재생
+				monsterAtk->PlayHitSound();
 			}
 		}
 	}

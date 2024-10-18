@@ -674,7 +674,7 @@
       <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
     <ClCompile Include="FadeTrack.cpp">
-      <Filter>src</Filter>
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

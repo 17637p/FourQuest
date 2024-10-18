@@ -17,7 +17,6 @@ fq::client::HpBar::~HpBar()
 
 fq::client::HpBar::HpBar()
 	:mbIsVisible(true)
-	, mMainCamera(nullptr)
 	, mTransform(nullptr)
 	, mImageUI(nullptr)
 	, mHpRatio(1.f)
@@ -82,17 +81,6 @@ void fq::client::HpBar::OnStart()
 		spdlog::warn("{} has not ImageUI Component", GetGameObject()->GetName());
 
 	auto view = GetScene()->GetComponentView<game_module::Camera>();
-
-	// MainCamera 가져오기 
-	for (auto& object : view)
-	{
-		auto camera = object.GetComponent<game_module::Camera>();
-
-		if (object.GetName() == "MainCamera")
-		{
-			mMainCamera = camera;
-		}
-	}
 
 	auto infomations = mImageUI->GetUIInfomations();
 	assert(infomations.size() > 2);
@@ -165,7 +153,9 @@ void fq::client::HpBar::setUIInfo()
 	float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
 	float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
 
-	auto viewProj = mMainCamera->GetViewProjection();
+	fq::game_module::Camera* mainCamera = nullptr;
+	GetScene()->GetEventManager()->FireEvent<fq::event::GetMainCamera>({ &mainCamera });
+	auto viewProj = mainCamera->GetViewProjection();
 	Vector3 screenPos = Vector3::Transform(pos, viewProj);
 	auto infomations = mImageUI->GetUIInfomations();
 
