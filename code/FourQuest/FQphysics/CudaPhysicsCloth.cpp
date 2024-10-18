@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <spdlog\spdlog.h>
 
 #pragma comment (lib, "cudart.lib")
 
@@ -103,7 +104,7 @@ namespace fq::physics
 			info.materialInfo.cflCoefficient,
 			info.materialInfo.gravityScale);
 
-		createClothParticle(physics, scene, cudaContextManager, collisionMatrix, collisionData);
+		createClothParticle(info, physics, scene, cudaContextManager, collisionMatrix, collisionData);
 
 		return true;
 	}
@@ -176,6 +177,7 @@ namespace fq::physics
 	}
 
 	void CudaPhysicsCloth::createClothParticle(
+		const Cloth::CreateClothData& info,
 		physx::PxPhysics* physics, 
 		physx::PxScene* scene, 
 		physx::PxCudaContextManager* cudaContextManager,
@@ -188,7 +190,7 @@ namespace fq::physics
 		const physx::PxU32 numTriangles = mIndices.size() / 3;	// 삼각형 갯수
 
 		// 입자 시스템의 설정
-		const physx::PxReal particleMass = mClothMass / 100.f;
+		const physx::PxReal particleMass = mClothMass / mVertices.size();
 
 		// 입자 시스템 생성
 		mParticleSystem = physics->createPBDParticleSystem(*cudaContextManager);
@@ -221,13 +223,14 @@ namespace fq::physics
 		physx::PxVec4* velocity = cudaContextManager->allocPinnedHostBuffer<physx::PxVec4>(numParticles);
 
 		// cloth를 생성할 파티클과 스프링 데이터를 기반으로 하는 Cloth Particle Buffer 생성
-		settingParticleBuffer(numSprings, numTriangles, numParticles, particlePhase, particleMass, phase, positionInvMass, velocity);
+		settingParticleBuffer(info, numSprings, numTriangles, numParticles, particlePhase, particleMass, phase, positionInvMass, velocity);
 
 		// cloth 생성
 		createCloth(numParticles, cudaContextManager, phase, positionInvMass, velocity);
 	}
 
 	void CudaPhysicsCloth::settingParticleBuffer(
+		const Cloth::CreateClothData& info,
 		const physx::PxU32& numSprings,
 		const physx::PxU32& numTriangles,
 		const physx::PxU32& numParticles,
@@ -253,6 +256,12 @@ namespace fq::physics
 			positionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 1.f / particleMass);
 			phase[i] = particlePhase;
 			velocity[i] = physx::PxVec4(0.f);
+		}
+
+		// 고정할 입자 상태 세팅
+		for (unsigned int disableIndex : info.clothData.disableIndices)
+		{
+			positionInvMass[disableIndex].w = 0.f;							// 역질량을 0으로 설정하여 입자 고정
 		}
 
 		// 스프링 추가
@@ -340,7 +349,7 @@ namespace fq::physics
 		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaVertexResource, buffer, cudaGraphicsRegisterFlagsNone);
 		if (cudaStatus != cudaSuccess)
 		{
-			std::cerr << "Direct3D 리소스 등록 실패" << std::endl;
+			spdlog::warn("[CudaPhysicsCloth Warnning({})] CUDA Failed Direct3D Register Resource", __LINE__);
 			return false;
 		}
 		return true;
@@ -351,7 +360,7 @@ namespace fq::physics
 		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaIndexResource, buffer, cudaGraphicsRegisterFlagsNone);
 		if (cudaStatus != cudaSuccess)
 		{
-			std::cerr << "Direct3D 리소스 등록 실패" << std::endl;
+			spdlog::warn("[CudaPhysicsCloth Warnning({})] CUDA Failed Direct3D Register Resource", __LINE__);
 			return false;
 		}
 		return true;

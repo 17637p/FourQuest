@@ -637,6 +637,10 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			triangleColliderInfo.vertices = new DirectX::SimpleMath::Vector3[mesh.Vertices.size()];
 			triangleColliderInfo.vertexSize = mesh.Vertices.size();
 		}
+		else
+		{
+			spdlog::warn("[PhysicsSystem ({})] TriangleMesh Failed Connect Mesh", __LINE__);
+		}
 
 		if (bodyType == RigidBody::EBodyType::Static)
 		{
@@ -692,18 +696,18 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 		else
 		{
-			spdlog::warn("[Physics System(670) Warrning] Object Has not Mesh Component( ID : {} )", id);
+			spdlog::warn("[PhysicsSystem ({}) Warrning] Object Has not Mesh Component( ID : {} )", __LINE__, id);
 			return;
 		}
 
-		//// 물리 엔진에서 천 생성하기
-		//bool check = mPhysicsEngine->CreateCloth(*clothCollider->GetClothInfo().get());
-		//assert(check);
-		//mColliderContainer.insert({ id,
-		//	{mTriangleTypeID
-		//	, clothCollider->shared_from_this()
-		//	, object->shared_from_this()
-		//	, clothCollider, false} });
+		// 물리 엔진에서 천 생성하기
+		bool check = mPhysicsEngine->CreateCloth(*clothCollider->GetClothInfo().get());
+		assert(check);
+		mColliderContainer.insert({ id,
+			{mClothTypeID
+			, clothCollider->shared_from_this()
+			, object->shared_from_this()
+			, clothCollider, false} });
 	}
 }
 
@@ -753,7 +757,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
-	// 4. Controller
+	// 5. Controller
 	if (object->HasComponent<Controller>())
 	{
 		auto controller = object->GetComponent<Controller>();
@@ -763,7 +767,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
-	// 4. Mesh Collider
+	// 6. Mesh Collider
 	if (object->HasComponent<MeshCollider>())
 	{
 		auto meshCollider = object->GetComponent<MeshCollider>();
@@ -773,11 +777,31 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
-	// 5. TerrainCollider 
+	// 7. TerrainCollider 
 	if (object->HasComponent<TerrainCollider>())
 	{
 		auto terrainCollider = object->GetComponent<TerrainCollider>();
 		auto id = terrainCollider->GetColliderID();
+		assert(id != physics::unregisterID);
+
+		mColliderContainer.at(id).bIsDestroyed = true;
+	}
+
+	// 8. TriangleCollider
+	if (object->HasComponent<TriangleCollider>())
+	{
+		auto triangleCollider = object->GetComponent<TerrainCollider>();
+		auto id = triangleCollider->GetColliderID();
+		assert(id != physics::unregisterID);
+
+		mColliderContainer.at(id).bIsDestroyed = true;
+	}
+
+	// 9. Cloth
+	if (object->HasComponent<ClothCollider>())
+	{
+		auto clothCollider = object->GetComponent<ClothCollider>();
+		auto id = clothCollider->GetClothID();
 		assert(id != physics::unregisterID);
 
 		mColliderContainer.at(id).bIsDestroyed = true;
@@ -901,7 +925,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			}
 			transform->SetWorldMatrix(matrix);
 		}
-		else if (colliderInfo.enttID == mArticulationTypeID )
+		else if (colliderInfo.enttID == mArticulationTypeID)
 		{
 			if (!client::MonsterVariable::OnRagdoll)
 				continue;
@@ -933,7 +957,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				auto currentAnimationTime = animatorMesh->GetController().GetTimePos();
 
 				animatorMesh->SetStopAnimation(true);
-
 				nodeHierarchy.SetBindPose();
 
 				for (auto& linkData : data.linkData)
@@ -982,6 +1005,10 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				articulation->SetBlendTime(0.f);
 			}
 		}
+		else if (colliderInfo.enttID == mClothTypeID)
+		{
+
+		}
 		else
 		{
 			auto data = mPhysicsEngine->GetRigidBodyData(id);
@@ -1017,7 +1044,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		}
 	}
 }
-
 
 void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 {
@@ -1189,6 +1215,21 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			}
 
 			mPhysicsEngine->SetArticulationData(id, data);
+		}
+		else if (colliderInfo.enttID == mClothTypeID)
+		{
+			auto clothCollider = colliderInfo.component->GetComponent<fq::game_module::ClothCollider>();
+
+			fq::physics::Cloth::GetSetClothData data;
+			auto clothInfomation = clothCollider->GetClothInfo();
+
+			auto prevLayer = clothInfomation->layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+
+			data.myLayerNumber = currentLayer;
+			data.worldTransform = transform->GetWorldMatrix();
+
+			mPhysicsEngine->SetClothData(id, data);
 		}
 		else
 		{

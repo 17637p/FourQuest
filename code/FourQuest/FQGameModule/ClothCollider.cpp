@@ -18,7 +18,7 @@ namespace fq::game_module
 	{
 		ClothDataLoader loader;
 
-		mClothInfo->clothData = loader.LoadArticulationData(mClothPath);
+		loader.LoadArticulationData(mClothPath, mClothInfo->clothData);
 	}
 
 	entt::meta_handle fq::game_module::ClothCollider::GetHandle()

@@ -27,7 +27,7 @@ namespace fq::game_module
 		/// <summary>
 		/// Cloth Data를 로드합니다.
 		/// </summary>
-		std::shared_ptr<fq::physics::Cloth::ClothData> LoadArticulationData(const Path& path);
+		std::shared_ptr<fq::physics::Cloth::ClothData> LoadArticulationData(const Path& path, fq::physics::Cloth::ClothData& clothData);
 
 	private:
 		json Vector3ToJson(const DirectX::SimpleMath::Vector3& vec);

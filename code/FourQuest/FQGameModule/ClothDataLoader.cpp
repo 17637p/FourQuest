@@ -49,12 +49,10 @@ namespace fq::game_module
 		}
 	}
 
-	std::shared_ptr<fq::physics::Cloth::ClothData> ClothDataLoader::LoadArticulationData(const Path& path)
+	std::shared_ptr<fq::physics::Cloth::ClothData> ClothDataLoader::LoadArticulationData(const Path& path, fq::physics::Cloth::ClothData& clothData)
 	{
 		assert(fs::exists(path));
 		assert(path.extension() == ".cloth");
-
-		std::shared_ptr<fq::physics::Cloth::ClothData> clothData = std::make_shared<fq::physics::Cloth::ClothData>();
 
 		// 파일에서 JSON 데이터를 읽기
 		std::ifstream file(path);
@@ -71,7 +69,7 @@ namespace fq::game_module
 		file.close();
 
 		// modelPath 읽기
-		clothData->modelPath = clothJson["modelPath"];
+		clothData.modelPath = clothJson["modelPath"];
 
 		// vertices 읽기
 		if (clothJson.contains("vertices") && clothJson["vertices"].is_array())
@@ -80,7 +78,7 @@ namespace fq::game_module
 			{
 				if (vertexJson.is_array() && vertexJson.size() == 3)
 				{
-					clothData->vertices.push_back(JsonToVector3(vertexJson));
+					clothData.vertices.push_back(JsonToVector3(vertexJson));
 				}
 			}
 		}
@@ -88,15 +86,13 @@ namespace fq::game_module
 		// indices 읽기
 		if (clothJson.contains("indices") && clothJson["indices"].is_array())
 		{
-			clothData->indices = clothJson["indices"].get<std::vector<unsigned int>>();
+			clothData.indices = clothJson["indices"].get<std::vector<unsigned int>>();
 		}
 
 		// disableIndices 읽기
 		if (clothJson.contains("disableIndices") && clothJson["disableIndices"].is_array())
 		{
-			clothData->disableIndices = clothJson["disableIndices"].get<std::vector<unsigned int>>();
+			clothData.disableIndices = clothJson["disableIndices"].get<std::vector<unsigned int>>();
 		}
-
-		return clothData;
 	}
 }

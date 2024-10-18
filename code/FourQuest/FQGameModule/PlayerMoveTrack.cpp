@@ -68,7 +68,7 @@ namespace fq::game_module
 		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
 		if (mTargetObject.expired())
 		{
-			spdlog::warn("[Warrning] Do not Have TargetObject");
+			spdlog::warn("[PlayerMoveTrack Warrning ({})] Do not Have TargetObject", __LINE__);
 		}
 	}
 

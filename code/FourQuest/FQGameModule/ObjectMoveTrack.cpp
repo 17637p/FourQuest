@@ -32,14 +32,14 @@ namespace fq::game_module
 		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
 		if (mTargetObject.expired())
 		{
-			spdlog::warn("[Warrning] Do not Have TargetObject");
+			spdlog::warn("[ObjectMoveTrack Warrning({})] Do not Have TargetObject", __LINE__);
 			return false;
 		}
 
 		// 해당 오브젝트가 Transform을 가지고 있지 않으면 로그 띄우기
 		if (!mTargetObject.lock()->HasComponent<Transform>())
 		{
-			spdlog::warn("[Warrning] TargetObject Have not Trasfrom Component");
+			spdlog::warn("[ObjectMoveTrack Warrning({})] TargetObject Have not Trasfrom Component", __LINE__);
 			return false;
 		}
 

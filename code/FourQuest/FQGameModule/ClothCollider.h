@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "ICollider.h"
 
 #include "../FQCommon/FQCommonPhysics.h"
 
@@ -8,7 +9,7 @@ namespace fq::game_module
 	using ClothPath = std::string;
 	using ClothInfo = fq::physics::Cloth::CreateClothData;
 
-	class ClothCollider : public Component
+	class ClothCollider : public Component, public ICollider
 	{
 	public:
 		ClothCollider();
@@ -19,6 +20,9 @@ namespace fq::game_module
 		/// </summary>
 		void Load();
 
+		/// <summary>
+		/// Cloth 값들을 세팅합니다.
+		/// </summary>
 		std::shared_ptr<ClothInfo> GetClothInfo() const { return mClothInfo; }
 		ClothPath GetClothPath() const { return mClothPath; }
 		float GetClothMass() const { return mClothInfo->clothMass; }
@@ -34,12 +38,12 @@ namespace fq::game_module
 		float GetDrag() const { return mClothInfo->materialInfo.drag; }
 		float GetCflCoefficient() const { return mClothInfo->materialInfo.cflCoefficient; }
 		float GetGravityScale() const { return mClothInfo->materialInfo.gravityScale; }
-		DirectX::SimpleMath::Vector3* GetVertex() const { return mClothInfo->clothData->vertices.data(); }
-		int GetVertexSize() const { return mClothInfo->clothData->vertices.size(); }
-		unsigned int* GetIndices() const { return mClothInfo->clothData->indices.data(); }
-		int GetIndexSize() const { return mClothInfo->clothData->indices.size(); }
-		unsigned int* GetDisableIndices() const { return mClothInfo->clothData->disableIndices.data(); }
-		int GetDisableIndexSize() const { return mClothInfo->clothData->indices.size(); }
+		DirectX::SimpleMath::Vector3* GetVertex() const { return mClothInfo->clothData.vertices.data(); }
+		int GetVertexSize() const { return mClothInfo->clothData.vertices.size(); }
+		unsigned int* GetIndices() const { return mClothInfo->clothData.indices.data(); }
+		int GetIndexSize() const { return mClothInfo->clothData.indices.size(); }
+		unsigned int* GetDisableIndices() const { return mClothInfo->clothData.disableIndices.data(); }
+		int GetDisableIndexSize() const { return mClothInfo->clothData.indices.size(); }
 		void* GetVertexBuffer() const { return mClothInfo->vertexBuffer; }
 		void* GetIndexBuffer() const { return mClothInfo->indexBuffer; }
 		void SetClothPath(ClothPath path) { mClothPath = path; }
@@ -59,8 +63,22 @@ namespace fq::game_module
 		void SetVertexBuffer(void* vertexBuffer) const { mClothInfo->vertexBuffer = vertexBuffer; }
 		void SetIndexBuffer(void* indexBuffer) const { mClothInfo->indexBuffer = indexBuffer; }
 
-		unsigned int GetClothID() { mClothInfo->id; }
+		/// <summary>
+		/// Cloth Component의 ID를 세팅합니다.
+		/// </summary>
+		/// <returns></returns>
+		unsigned int GetClothID() { return mClothInfo->id; }
 		void SetClothID(unsigned int id) { mClothInfo->id = id; }
+
+		/// <summary>
+		/// 콜라이더의 오프셋을 반환합니다.
+		/// </summary>
+		DirectX::SimpleMath::Vector3 GetOffset() const override { return mOffset; };
+
+		/// <summary>
+		/// 콜라이더의 오프셋을 설정합니다.
+		/// </summary>
+		void SetOffset(DirectX::SimpleMath::Vector3 offset) override { mOffset = offset; };
 
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -69,6 +87,8 @@ namespace fq::game_module
 	private:
 		ClothPath mClothPath;
 		std::shared_ptr<ClothInfo> mClothInfo;
+
+		DirectX::SimpleMath::Vector3 mOffset;
 	};
 }
 

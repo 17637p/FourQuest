@@ -383,7 +383,7 @@ namespace fq::physics
 			float clothMass = 1.f;
 			float restOffset = 1.f;
 
-			std::shared_ptr<ClothData> clothData;
+			ClothData clothData;
 
 			void* vertexBuffer = nullptr;							// D3D11Buffer*
 			void* indexBuffer = nullptr;							// D3D11Buffer*

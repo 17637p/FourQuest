@@ -61,6 +61,38 @@ namespace fq::physics
 		}
 	}
 
+	physx::PxFilterFlags CustomGpuSimulationFilterShader(
+		physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+		physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+		physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
+	{
+		/// <summary>
+		/// 쌍에 대해 CCD를 활성화하고 초기 및 CCD 연락처에 대한 연락처 보고서를 요청합니다.
+		/// 또한 접점별 정보를 제공하고 행위자에게 정보를 제공합니다
+		/// 접촉할 때 포즈를 취합니다.
+		/// <summary>
+
+		// 필터 셰이더 로직 ( 트리거 )
+		if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
+		{
+			pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT
+				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST;
+			return physx::PxFilterFlag::eDEFAULT;
+		}
+
+		// 필터 데이터 충돌 체크 ( 시뮬레이션 )
+		pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT
+			| physx::PxPairFlag::eDETECT_CCD_CONTACT
+			| physx::PxPairFlag::eNOTIFY_TOUCH_CCD
+			| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+			| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
+			| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS
+			| physx::PxPairFlag::eCONTACT_EVENT_POSE
+			| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+		return physx::PxFilterFlag::eDEFAULT;
+	}
+
 	FQPhysics::FQPhysics()
 		: mPhysics(std::make_shared<Physics>())
 		, mRigidBodyManager(std::make_shared<PhysicsRigidBodyManager>())
@@ -131,6 +163,7 @@ namespace fq::physics
 		mScene = physics->createScene(sceneDesc);
 
 		// PhysX Physics에서 GPU로 작동하는 Scene을 생성합니다 ( Cloth 입자를 위한 )
+		sceneDesc.filterShader = CustomGpuSimulationFilterShader;
 		sceneDesc.cudaContextManager = mCudaContextManager;
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
@@ -146,27 +179,27 @@ namespace fq::physics
 		// 매니저 초기화
 		if (!mResourceManager->Initialize(mPhysics->GetPhysics()))
 		{
-			spdlog::warn("[Physics Warrning] ResourceManager Failed Init");
+			spdlog::warn("[Physics Warrning ({})] ResourceManager Failed Init", __LINE__);
 			return false;
 		}
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager))
 		{
-			spdlog::warn("[Physics Warrning] RigidBodyManager Failed Init");
+			spdlog::warn("[Physics Warrning ({})] RigidBodyManager Failed Init", __LINE__);
 			return false;
 		}
 		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager, mCollisionMatrix))
 		{
-			spdlog::warn("[Physics Warrning] CCTManager Failed Init");
+			spdlog::warn("[Physics Warrning ({})] CCTManager Failed Init", __LINE__);
 			return false;
 		}
 		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene, mCollisionDataManager))
 		{
-			spdlog::warn("[Physics Warrning] CharacterPhysics Failed Init");
+			spdlog::warn("[Physics Warrning ({})] CharacterPhysics Failed Init", __LINE__);
 			return false;
 		}
 		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mGpuScene, mCudaContextManager))
 		{
-			spdlog::warn("[Physics Warrning] ClothManager Failed Init");
+			spdlog::warn("[Physics Warrning ({})] ClothManager Failed Init", __LINE__);
 			return false;
 		}
 
@@ -331,7 +364,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create StaticBody(Box) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(Box) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -343,7 +376,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create StaticBody(Sphere) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(Sphere) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -355,7 +388,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create StaticBody(Capsule) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(Capsule) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -367,7 +400,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create StaticBody(ConvexMesh) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(ConvexMesh) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -379,7 +412,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create StaticBody(TriangleMesh) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(TriangleMesh) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -391,7 +424,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create StaticBody(HeightField) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(HeightField) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -403,7 +436,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create DynamicBody(Box) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(Box) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -415,7 +448,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create DynamicBody(Sphere) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(Sphere) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -427,7 +460,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create DynamicBody(Capsule) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(Capsule) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -439,7 +472,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create DynamicBody(ConvexMesh) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(ConvexMesh) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -451,7 +484,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create DynamicBody(TriangleMesh) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(TriangleMesh) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -463,7 +496,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Create DynamicBody(HeightField) ID : {}", info.colliderInfo.id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(HeightField) ID : {}", __LINE__, info.colliderInfo.id);
 			return false;
 		}
 	}
@@ -475,7 +508,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Remove RigidBody ID : {}", id);
+			spdlog::warn("[Physics Warrning ({})] : Failed Remove RigidBody ID : {}", __LINE__, id);
 			return false;
 		}
 	}
@@ -487,7 +520,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] : Failed Remove All RigidBody");
+			spdlog::warn("[Physics Warrning ({})] : Failed Remove All RigidBody", __LINE__);
 			return false;
 		}
 	}
@@ -506,7 +539,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] Failed SetRigidBodyData ID : {}", id);
+			spdlog::warn("[Physics Warrning ({})] Failed SetRigidBodyData ID : {}", __LINE__, id);
 			return false;
 		}
 	}
@@ -542,7 +575,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Phyiscs Warrning] Failed Create CCT(Character Controller) ID : {}", controllerInfo.id);
+			spdlog::warn("[Phyiscs Warrning ({})] Failed Create CCT(Character Controller) ID : {}", __LINE__, controllerInfo.id);
 			return false;
 		}
 	}
@@ -554,7 +587,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] Failed Remove CCT(Character Controller) ID : {}", id);
+			spdlog::warn("[Physics Warrning ({})] Failed Remove CCT(Character Controller) ID : {}", __LINE__, id);
 			return false;
 		}
 	}
@@ -566,7 +599,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] Failed Remove All CCT(Character Controller)");
+			spdlog::warn("[Physics Warrning ({})] Failed Remove All CCT(Character Controller)", __LINE__);
 			return false;
 		}
 	}
@@ -578,7 +611,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] Failed Input. Input ID : {}", info.id);
+			spdlog::warn("[Physics Warrning ({})] Failed Input. Input ID : {}", __LINE__, info.id);
 			return false;
 		}
 	}
@@ -657,7 +690,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] Failed Create Cloth ID : {}", info.id);
+			spdlog::warn("[Physics Warrning ({})] Failed Create Cloth ID : {}", __LINE__, info.id);
 			return false;
 		}
 	}
@@ -669,7 +702,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] Failed Get Cloth Data! ID : {}", id);
+			spdlog::warn("[Physics Warrning ({})] Failed Get Cloth Data! ID : {}", __LINE__, id);
 			return false;
 		}
 	}
@@ -681,7 +714,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] Failed Set Cloth Data! ID : {}", id);
+			spdlog::warn("[Physics Warrning ({})] Failed Set Cloth Data! ID : {}", __LINE__, id);
 			return false;
 		}
 	}
@@ -693,7 +726,7 @@ namespace fq::physics
 		}
 		else
 		{
-			spdlog::warn("[Physics Warrning] Failed Remove Cloth ID : {}", id);
+			spdlog::warn("[Physics Warrning ({})] Failed Remove Cloth ID : {}", __LINE__, id);
 			return false;
 		}
 	}

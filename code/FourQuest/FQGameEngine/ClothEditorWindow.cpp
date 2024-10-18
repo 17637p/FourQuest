@@ -47,7 +47,7 @@ namespace fq::game_engine
 		mEditorProcess = editor;
 
 		mScene = mGameProcess->mSceneManager->GetCurrentScene();
-		mClothData = std::make_shared<fq::game_module::ClothData>();
+		mClothData = std::make_shared<fq::physics::Cloth::ClothData>();
 	}
 
 	void ClothEditorWindow::Finalize()
