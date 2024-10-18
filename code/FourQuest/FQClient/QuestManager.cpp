@@ -1335,27 +1335,29 @@ void fq::client::QuestManager::playComplete(float dt)
 
 					mIsFinishedCompleteAnimation[i] = false;
 
-					int subQuestSize = mCurSubQuest.size();
-					if (mViewSubQuest.size() != subQuestSize)
+					int nextSubQuestSize = mNextSubQuests.size() + 1;
+					for (int j = 1; j < nextSubQuestSize; j++)
 					{
-						mViewSubQuest = mCurSubQuest;
+						// 다음 퀘스트 추가
+						mViewSubQuest.push_back(mNextSubQuests.front());
+						mNextSubQuests.pop_front();
 
 						// New 연출
-						mNewImageCounts[subQuestSize] = 3.0f;
-						auto uiInfo = mNewImages[subQuestSize]->GetUIInfomation(0);
+						mNewImageCounts[j] = 3.0f;
+						auto uiInfo = mNewImages[j]->GetUIInfomation(0);
 						uiInfo.isRender = true;
 						uiInfo.Alpha = 1;
-						mNewImages[subQuestSize]->SetUIInfomation(0, uiInfo);
+						mNewImages[j]->SetUIInfomation(0, uiInfo);
 					}
-					for (int i = 0; i < 3; i++)
+					for (int j = 0; j < 3; j++)
 					{
-						if (i < mViewSubQuest.size())
+						if (j < mViewSubQuest.size())
 						{
-							RenderOnSubQuest(i, true);
+							RenderOnSubQuest(j, true);
 						}
 						else
 						{
-							RenderOnSubQuest(i, false);
+							RenderOnSubQuest(j, false);
 						}
 					}
 				}
