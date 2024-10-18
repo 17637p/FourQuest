@@ -125,7 +125,7 @@ void fq::client::GameManager::OnUpdate(float dt)
 	// 모든 영혼이 파괴되었을 때, GameOver 씬으로 이동
 	if (mSoulManagerModule->CheckGameOver())
 	{
-		GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({"TitleUI", true});
+		GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({ "TitleUI", true });
 	}
 }
 
@@ -144,149 +144,149 @@ void fq::client::GameManager::OnStart()
 		ESoulType playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player1SoulType);
 		switch (PlayerInfoVariable::Player1State)
 		{
-			case 0:
-			{
-				auto player = SpawnPlayer(mSoul, playerID);
-				player->GetComponent<Soul>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 1:
-			{
-				auto player = SpawnPlayer(mKnight, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 2:
-			{
-				auto player = SpawnPlayer(mMagic, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 3:
-			{
-				auto player = SpawnPlayer(mArcher, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 4:
-			{
-				auto player = SpawnPlayer(mWarrior, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			default:
-				break;
+		case 0:
+		{
+			auto player = SpawnPlayer(mSoul, playerID);
+			player->GetComponent<Soul>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 1:
+		{
+			auto player = SpawnPlayer(mKnight, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 2:
+		{
+			auto player = SpawnPlayer(mMagic, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 3:
+		{
+			auto player = SpawnPlayer(mArcher, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 4:
+		{
+			auto player = SpawnPlayer(mWarrior, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		default:
+			break;
 		}
 		playerID = 1;
 		playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player2SoulType);
 		switch (PlayerInfoVariable::Player2State)
 		{
-			case 0:
-			{
-				auto player = SpawnPlayer(mSoul, playerID);
-				player->GetComponent<Soul>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 1:
-			{
-				auto player = SpawnPlayer(mKnight, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 2:
-			{
-				auto player = SpawnPlayer(mMagic, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 3:
-			{
-				auto player = SpawnPlayer(mArcher, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 4:
-			{
-				auto player = SpawnPlayer(mWarrior, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			default:
-				break;
+		case 0:
+		{
+			auto player = SpawnPlayer(mSoul, playerID);
+			player->GetComponent<Soul>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 1:
+		{
+			auto player = SpawnPlayer(mKnight, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 2:
+		{
+			auto player = SpawnPlayer(mMagic, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 3:
+		{
+			auto player = SpawnPlayer(mArcher, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 4:
+		{
+			auto player = SpawnPlayer(mWarrior, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		default:
+			break;
 		}
 		playerID = 2;
 		playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player3SoulType);
 		switch (PlayerInfoVariable::Player3State)
 		{
-			case 0:
-			{
-				auto player = SpawnPlayer(mSoul, playerID);
-				player->GetComponent<Soul>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 1:
-			{
-				auto player = SpawnPlayer(mKnight, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 2:
-			{
-				auto player = SpawnPlayer(mMagic, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 3:
-			{
-				auto player = SpawnPlayer(mArcher, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 4:
-			{
-				auto player = SpawnPlayer(mWarrior, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			default:
-				break;
+		case 0:
+		{
+			auto player = SpawnPlayer(mSoul, playerID);
+			player->GetComponent<Soul>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 1:
+		{
+			auto player = SpawnPlayer(mKnight, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 2:
+		{
+			auto player = SpawnPlayer(mMagic, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 3:
+		{
+			auto player = SpawnPlayer(mArcher, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 4:
+		{
+			auto player = SpawnPlayer(mWarrior, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		default:
+			break;
 		}
 		playerID = 3;
 		playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player4SoulType);
 		switch (PlayerInfoVariable::Player4State)
 		{
-			case 0:
-			{
-				auto player = SpawnPlayer(mSoul, playerID);
-				player->GetComponent<Soul>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 1:
-			{
-				auto player = SpawnPlayer(mKnight, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 2:
-			{
-				auto player = SpawnPlayer(mMagic, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 3:
-			{
-				auto player = SpawnPlayer(mArcher, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			case 4:
-			{
-				auto player = SpawnPlayer(mWarrior, playerID);
-				player->GetComponent<Player>()->SetSoulType(playerSoulType);
-				break;
-			}
-			default:
-				break;
+		case 0:
+		{
+			auto player = SpawnPlayer(mSoul, playerID);
+			player->GetComponent<Soul>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 1:
+		{
+			auto player = SpawnPlayer(mKnight, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 2:
+		{
+			auto player = SpawnPlayer(mMagic, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 3:
+		{
+			auto player = SpawnPlayer(mArcher, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		case 4:
+		{
+			auto player = SpawnPlayer(mWarrior, playerID);
+			player->GetComponent<Player>()->SetSoulType(playerSoulType);
+			break;
+		}
+		default:
+			break;
 		}
 	}
 }
@@ -311,7 +311,7 @@ void fq::client::GameManager::OnAwake()
 	mDestroyArmourHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::SummonSoul>(
 		[this](const client::event::SummonSoul& event)
 		{
-			mSoulManagerModule->SummonSoul(event.id, event.soulType, event.worldTransform, event.soulPrefab, event.isDestroyArmour);
+			mSoulManagerModule->SummonSoul(event.id, event.soulType, event.worldTransform, event.soulPrefab, event.isDestroyArmour, event.SoulGauge, event.MaxSoulGauge);
 			mSoulManagerModule->SetPlayerType(event.id, EPlayerType::ArmourDestroyed);
 
 			if (event.isDestroyArmour)
@@ -369,7 +369,7 @@ void fq::client::GameManager::testKey()
 	if (input->IsKeyState(EKey::F2, EKeyState::Tap))
 	{
 		SavePlayerState();
-		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene2", true});
+		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene2", true });
 	}
 	if (input->IsKeyState(EKey::F3, EKeyState::Tap))
 	{
@@ -379,7 +379,7 @@ void fq::client::GameManager::testKey()
 	if (input->IsKeyState(EKey::F4, EKeyState::Tap))
 	{
 		SavePlayerState();
-		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene4", true });	
+		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene4", true });
 	}
 
 	// 캐릭터 설정
@@ -601,23 +601,23 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::GameManager::SpawnPlaye
 	newObject->GetComponent<game_module::CharacterController>()->SetControllerID(index);
 
 	DirectX::SimpleMath::Vector3 spawnPos;
-	
+
 	switch (index)
 	{
-		case 0:
-			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player1SpawnPosObject)->GetTransform()->GetLocalPosition();
-			break;
-		case 1:
-			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player2SpawnPosObject)->GetTransform()->GetLocalPosition();
-			break;
-		case 2:
-			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player3SpawnPosObject)->GetTransform()->GetLocalPosition();
-			break;
-		case 3:
-			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player4SpawnPosObject)->GetTransform()->GetLocalPosition();
-			break;
-		default:
-			break;
+	case 0:
+		spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player1SpawnPosObject)->GetTransform()->GetLocalPosition();
+		break;
+	case 1:
+		spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player2SpawnPosObject)->GetTransform()->GetLocalPosition();
+		break;
+	case 2:
+		spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player3SpawnPosObject)->GetTransform()->GetLocalPosition();
+		break;
+	case 3:
+		spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player4SpawnPosObject)->GetTransform()->GetLocalPosition();
+		break;
+	default:
+		break;
 	}
 
 	newObject->GetTransform()->SetLocalPosition(spawnPos);

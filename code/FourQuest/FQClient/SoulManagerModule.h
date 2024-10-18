@@ -11,6 +11,8 @@ namespace fq::client
 		DirectX::SimpleMath::Matrix worldTransform;
 		game_module::PrefabResource soulPrefab;
 		float durationTime = 0.f;
+		float soulGauge = 0.f;
+		float maxSoulGauge = 100.f;
 	};
 
 	class SoulManagerModule
@@ -28,7 +30,7 @@ namespace fq::client
 		/// <summary>
 		/// 갑옷 파괴 및 갑옷 해체 시에 상태에 따라 영혼 생성
 		/// </summary>
-		void SummonSoul(unsigned int id, ESoulType soulType, DirectX::SimpleMath::Matrix worldTransform, game_module::PrefabResource soulPrefab, bool isDestroy);
+		void SummonSoul(unsigned int id, ESoulType soulType, DirectX::SimpleMath::Matrix worldTransform, game_module::PrefabResource soulPrefab, bool isDestroy, float soulGauge, float maxSoulGauge);
 
 		/// <summary>
 		/// 플레이어 상태 체크해서 현재 게임 오버 상태인지 체크

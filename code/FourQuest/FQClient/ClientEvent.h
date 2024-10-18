@@ -36,6 +36,8 @@ namespace fq::client::event
 		DirectX::SimpleMath::Matrix worldTransform;
 		game_module::PrefabResource soulPrefab;
 		bool isDestroyArmour;
+		float SoulGauge;
+		float MaxSoulGauge;
 	};
 
 	/// <summary>
