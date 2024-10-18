@@ -150,6 +150,7 @@ void fq::client::MeleeMonster::EmitAttack()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = mAttackPower;
 	attackInfo.attackDirection = foward;
+	attackInfo.hitSound = "MM_Attack_hit";
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);

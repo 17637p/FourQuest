@@ -83,6 +83,9 @@ namespace fq::client
 		EVibrationMode mDashHitVibrationMode;
 		float mDashHitVibrationIntensity;
 		float mDashHitVibrationDuration;
+		EVibrationMode mShieldHitVibrationMode;
+		float mShieldHitVibrationIntensity;
+		float mShieldHitVibrationDuration;
 
 		float mShieldDashPower;
 		float mXAttackDashPower;

@@ -51,7 +51,6 @@ namespace fq::client
 		DirectX::SimpleMath::Vector2 mOffset;
 		game_module::Transform* mTransform;
 		game_module::ImageUI* mImageUI;
-		game_module::Camera* mMainCamera;
 
 		friend void RegisterMetaData();
 	};

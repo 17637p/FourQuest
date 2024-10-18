@@ -178,4 +178,14 @@ namespace fq::client::event
 		int playerID;
 		float ratio;
 	};
+
+	/// <summary>
+	/// CoolTime 다 됐을 때 알림
+	/// </summary>
+	struct InitCoolTime
+	{
+		int playerID;
+		EArmourType mArmourType;
+		char skillKey; // 'X' 'A' 'R'
+	};
 }

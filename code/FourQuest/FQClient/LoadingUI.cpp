@@ -125,8 +125,6 @@ void fq::client::LoadingUI::SetProgressBar(float progress)
 	uiInfo.Width = mProgressBarMaxWidth * progress;
 	uiInfo.XRatio = progress;
 
-	spdlog::trace("UIInfo.Width: {}", uiInfo.Width);
-
 	mProgressBar->SetUIInfomation(0, uiInfo);
 
 	// Soul Position Setting

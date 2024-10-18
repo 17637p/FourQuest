@@ -9,7 +9,6 @@
 
 fq::client::GaugeBar::GaugeBar()
 	:mbIsVisible(false)
-	, mMainCamera(nullptr)
 	, mTransform(nullptr)
 	, mImageUI(nullptr)
 	, mGaugeRatio(1.f)
@@ -46,17 +45,6 @@ void fq::client::GaugeBar::OnStart()
 {
 	mTransform = GetComponent<game_module::Transform>();
 	mImageUI = GetComponent<game_module::ImageUI>();
-
-	// MainCamera 가져오기 
-	auto view = GetScene()->GetComponentView<game_module::Camera>();
-	for (auto& object : view)
-	{
-		auto camera = object.GetComponent<game_module::Camera>();
-		if (camera->IsMain())
-		{
-			mMainCamera = camera;
-		}
-	}
 
 	auto infomations = mImageUI->GetUIInfomations();
 	// OutBar
@@ -107,7 +95,9 @@ void fq::client::GaugeBar::setUIInfo()
 	float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
 	float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
 
-	auto viewProj = mMainCamera->GetViewProjection();
+	fq::game_module::Camera* mainCamera = nullptr;
+	GetScene()->GetEventManager()->FireEvent<fq::event::GetMainCamera>({ &mainCamera });
+	auto viewProj = mainCamera->GetViewProjection();
 	Vector3 screenPos = Vector3::Transform(pos, viewProj);
 	auto infomations = mImageUI->GetUIInfomations();
 

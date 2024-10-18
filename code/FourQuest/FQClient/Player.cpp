@@ -65,6 +65,9 @@ fq::client::Player::Player()
 	, mGBDecreaseCooltime(1)
 	, mGBIncreaseSpeed(0)
 	, mbCanCreateDummy(false)
+	, mPreRSkillCoolTimeRatio(0.f)
+	, mPreASkillCoolTimeRatio(0.f)
+	, mPreXSkillCoolTimeRatio(0.f)
 {
 }
 
@@ -98,6 +101,7 @@ void fq::client::Player::OnUpdate(float dt)
 	processDebuff(dt);
 
 	checkPoisonDuration(dt);
+	checkCoolTime();
 }
 
 void fq::client::Player::OnLateUpdate(float dt)
@@ -308,6 +312,9 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 					mAnimator->SetParameterTrigger("OnHit");
 					mInvincibleElapsedTime = mInvincibleTime;
 				}
+
+				// 피격 사운드 재생
+				monsterAtk->PlayHitSound();
 			}
 		}
 	}
@@ -1025,5 +1032,37 @@ void fq::client::Player::RemainDeadArmour()
 	}
 
 	GetScene()->AddGameObject(soul);
+}
+
+void fq::client::Player::checkCoolTime()
+{
+	if (mPreRSkillCoolTimeRatio > 0)
+	{
+		if (mRSkillCoolTimeRatio <= 0)
+		{
+			GetScene()->GetEventManager()->FireEvent<client::event::InitCoolTime>(
+				{ GetPlayerID(), mArmourType, 'R'});
+		}
+	}
+	if (mPreASkillCoolTimeRatio > 0)
+	{
+		if (mASkillCoolTimeRatio <= 0)
+		{
+			GetScene()->GetEventManager()->FireEvent<client::event::InitCoolTime>(
+				{ GetPlayerID(), mArmourType, 'A' });
+		}
+	}
+	if (mPreXSkillCoolTimeRatio > 0)
+	{
+		if (mXSkillCoolTimeRatio <= 0)
+		{
+			GetScene()->GetEventManager()->FireEvent<client::event::InitCoolTime>(
+				{ GetPlayerID(), mArmourType, 'X' });
+		}
+	}
+
+	mPreRSkillCoolTimeRatio = mRSkillCoolTimeRatio;
+	mPreASkillCoolTimeRatio = mASkillCoolTimeRatio;
+	mPreXSkillCoolTimeRatio = mXSkillCoolTimeRatio;
 }
 

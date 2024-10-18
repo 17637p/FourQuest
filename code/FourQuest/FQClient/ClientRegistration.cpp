@@ -98,6 +98,7 @@
 #include "PlantMonsterHitState.h"
 #include "PlantMonsterIdleState.h"
 #include "PlantMonsterStareState.h"
+#include "MonsterSpawnState.h"
 
 // MonsterSpawner
 #include "MonsterSpawner.h"
@@ -131,6 +132,7 @@
 #include "SpeechBubbleUI.h"
 #include "BGaugeUI.h"
 #include "PlayerCheckUI.h"
+#include "CoolTimeIcon.h"
 
 #include "CameraMoving.h"
 
@@ -593,6 +595,15 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "DashHitVibrationIntensity")
 		.data<&KnightArmour::mDashHitVibrationDuration>("DashHitVibrationDuration"_hs)
 		.prop(reflect::prop::Name, "DashHitVibrationDuration")
+
+		.data<&KnightArmour::mShieldHitVibrationMode>("ShieldHitVibrationMode"_hs)
+		.prop(reflect::prop::Name, "ShieldHitVibrationMode")
+		.data<&KnightArmour::mShieldHitVibrationIntensity>("ShieldHitVibrationIntensity"_hs)
+		.prop(reflect::prop::Name, "ShieldHitVibrationIntensity")
+		.data<&KnightArmour::mShieldHitVibrationDuration>("ShieldHitVibrationDuration"_hs)
+		.prop(reflect::prop::Name, "ShieldHitVibrationDuration")
+
+
 		.data<&KnightArmour::mSwordAttack>("SwordAttack"_hs)
 		.prop(reflect::prop::Name, "SwordAttack")
 		.data<&KnightArmour::mSwordAttackEffect1>("SwordAttackEffect1"_hs)
@@ -1476,6 +1487,11 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PlantMonsterIdleState")
 		.base<fq::game_module::IStateBehaviour>();
 
+	entt::meta<MonsterSpawnState>()
+		.type("MonsterSpawnState"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterSpawnState")
+		.base<fq::game_module::IStateBehaviour>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             몬스터 그룹	 							//
 	//////////////////////////////////////////////////////////////////////////
@@ -1887,6 +1903,20 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mOffset")
 		.data<&PlayerCheckUI::mWorldOffset>("mWorldOffset"_hs)
 		.prop(fq::reflect::prop::Name, "mWorldOffset")
+		.base<fq::game_module::Component>();
+
+	entt::meta<CoolTimeIcon>()
+		.type("CoolTimeIcon"_hs)
+		.prop(fq::reflect::prop::Name, "CoolTimeIcon")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&CoolTimeIcon::mSpeed>("Speed"_hs)
+		.prop(fq::reflect::prop::Name, "Speed")
+		.data<&CoolTimeIcon::mWorldOffset>("WorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldOffset")
+		.data<&CoolTimeIcon::mScreenOffset>("ScreenOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ScreenOffset")
+		.data<&CoolTimeIcon::mPlaytime>("PlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "PlayTime")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

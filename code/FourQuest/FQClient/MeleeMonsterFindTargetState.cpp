@@ -26,7 +26,7 @@ void fq::client::MeleeMonsterFindTargetState::OnStateEnter(game_module::Animator
 {
 	mElapsedTime = 0.f;
 
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Grawl", false , fq::sound::EChannel::SE });
+	 animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Grawl", false , fq::sound::EChannel::SE });
 }
 
 void fq::client::MeleeMonsterFindTargetState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

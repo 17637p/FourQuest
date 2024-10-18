@@ -512,6 +512,7 @@ namespace fq::physics
 	}
 	bool FQPhysics::ChangeScene()
 	{
+		RemoveAllController();
 		return false;
 	}
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()

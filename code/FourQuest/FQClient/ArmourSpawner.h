@@ -17,7 +17,9 @@ namespace fq::client
 		// 여신상 용
 		void SpawnArmourAll();
 
+
 		virtual void OnUpdate(float dt) override;
+		virtual void OnStart() override;
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

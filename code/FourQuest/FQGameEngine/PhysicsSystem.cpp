@@ -111,6 +111,7 @@ void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 
 	PostUpdate();
 	mPhysicsEngine->RemoveAllRigidBody();
+	mPhysicsEngine->ChangeScene();
 	mPhysicsEngine->Update(1.f);
 	mPhysicsEngine->FinalUpdate();
 	mCallbacks.clear();

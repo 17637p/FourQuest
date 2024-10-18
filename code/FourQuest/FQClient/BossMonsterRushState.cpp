@@ -14,6 +14,8 @@ void fq::client::BossMonsterRushState::OnStateEnter(game_module::Animator& anima
 {
 	animator.GetGameObject()->SetTag(game_module::ETag::Dash);
 	mRushHitBox = animator.GetComponent<BossMonster>()->Rush();
+
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MB_Rush", false , fq::sound::EChannel::SE });
 }
 
 void fq::client::BossMonsterRushState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

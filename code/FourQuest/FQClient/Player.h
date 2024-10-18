@@ -198,6 +198,7 @@ namespace fq::client
 		void setDecalColor();
 		void linkSoulTypeHead();
 		void checkPoisonDuration(float dt); // 독 림라이트 지속시간 체크해서 off
+		void checkCoolTime();
 
 		void OnStart() override;
 		void OnDestroy() override;
@@ -241,6 +242,10 @@ namespace fq::client
 		float mRSkillCoolTimeRatio; // R 버튼 쿨타임  
 		float mASkillCoolTimeRatio; // A 버튼 쿨타임
 		float mXSkillCoolTimeRatio; // X 버튼 쿨타임
+
+		float mPreRSkillCoolTimeRatio; // R 버튼 쿨타임  
+		float mPreASkillCoolTimeRatio; // A 버튼 쿨타임
+		float mPreXSkillCoolTimeRatio; // X 버튼 쿨타임
 
 		float mUnequipArmourDurationTime;	// 갑옷 벗고 있는 시간
 		bool mbIsUnequipArmourButton;			// 갑옷 벗는 버튼 클릭
