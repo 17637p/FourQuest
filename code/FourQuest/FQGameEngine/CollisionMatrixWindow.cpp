@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include "ImGuiColor.h"
 
+#include "../FQCommon/FQPath.h"
 #include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
 #include "PhysicsSystem.h"
@@ -22,6 +23,7 @@ void fq::game_engine::CollisionMatrixWindow::Render()
 
 	if (ImGui::Begin("CollisionMatrix",&mbIsOpen))
 	{
+		beginButton_Save();
 		beginButton_Reset();
 		beginCollisionMatrix();
 	}
@@ -95,4 +97,15 @@ void fq::game_engine::CollisionMatrixWindow::beginCollisionMatrix()
 	}
 
 	mPhysicsSystem->SetCollisionMatrix(matrix);
+}
+
+void fq::game_engine::CollisionMatrixWindow::beginButton_Save()
+{
+	if (ImGui::Button("Save", ImVec2{ 133,25 }))
+	{
+		auto matrix = mPhysicsSystem->GetCollisionMatrix();
+		auto scenePath = fq::path::GetInternalPath() / "collision" / "collision_matrix.txt";
+		matrix.Save(scenePath);
+		mPhysicsSystem->SetCollisionMatrix(matrix);
+	}
 }
