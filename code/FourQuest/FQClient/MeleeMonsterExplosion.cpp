@@ -38,8 +38,6 @@ void fq::client::MeleeMonsterExplosion::OnStart()
 {
 	auto animator = GetComponent<game_module::Animator>();
 	animator->SetParameterBoolean("OnExplosion", true);
-
-
 }
 
 void fq::client::MeleeMonsterExplosion::Explode()

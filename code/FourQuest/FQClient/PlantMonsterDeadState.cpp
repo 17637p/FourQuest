@@ -9,8 +9,8 @@
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/Event.h"
 #include "HpBar.h"
-
 #include "ClientEvent.h"
+#include "MonsterGroup.h"
 
 #include "ArmourSpawner.h"
 
@@ -46,6 +46,11 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 
 	// 몬스터 죽음 이벤트
 	auto scene = animator.GetScene();
+	auto monsterGroup = MonsterGroup::GetMonsterGroup(gameObject);
+	if (monsterGroup)
+	{
+		monsterGroup->DestroyMonster(gameObject);
+	}
 	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
 		{ EMonsterType::Plant });
 
