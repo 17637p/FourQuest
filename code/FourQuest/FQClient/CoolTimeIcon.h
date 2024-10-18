@@ -11,49 +11,61 @@ namespace fq::game_module
 
 namespace fq::client
 {
-	class SpeechBubbleUI : public game_module::Component
+	class CoolTimeIcon : public game_module::Component
 	{
 	public:
-		SpeechBubbleUI();
-		~SpeechBubbleUI();
+		CoolTimeIcon();
+		~CoolTimeIcon();
 
-		SpeechBubbleUI(const SpeechBubbleUI& other);
-		SpeechBubbleUI& operator=(const SpeechBubbleUI& other);
+		CoolTimeIcon(const CoolTimeIcon& other);
+		CoolTimeIcon& operator=(const CoolTimeIcon& other);
 
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 		virtual void OnDestroy() override;
 
-		void play();
-		void SetName(std::string name) { mName = name; }
-
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void eventProcessSequenceEnterSpeech();
-		void eventProcessSequenceExitSpeech();
+		void eventProcesInitCoolTime();
+		void setIcon(bool isOn);
 
 	private:
-		std::string mName;
+		int mPlayerID;
+		int mPlayingIcon; // 재생중인 아이콘 인덱스
 
 		DirectX::SimpleMath::Vector3 mWorldOffset;
 		float mScreenOffset;
 
-		game_module::EventHandler mSequenceSpeechEnterHandler;
-		game_module::EventHandler mSequenceSpeechExitHandler;
-
-		bool mIsOn;
-
 		float mCurTime;
 		float mPlaytime;
-		int mCurIndex;
-		std::vector<game_module::ImageUI*> mImageUIs;
+		float mSpeed;
+
+		std::vector<game_module::ImageUI*> mSkillIconImages;
+
 		game_module::ScreenManager* mScreenManager;
 		game_module::Camera* mMainCamera;
+
+		game_module::EventHandler mInitCoolTimeHandler;
 
 	private:
 		friend void RegisterMetaData();
 	};
 }
 
+/*
+
+전사 A 대시
+전사 R 방패
+
+마법사 A 마법진
+마법사 R 레이저
+
+워리어 A 휘두르기
+워리어 R 기모아 대시
+
+궁수 X 강공격
+궁수 A 구르기
+
+*/

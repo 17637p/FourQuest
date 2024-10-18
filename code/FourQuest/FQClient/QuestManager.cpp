@@ -1351,41 +1351,66 @@ void fq::client::QuestManager::setColliderTriggerChecker()
 	for (int i = 0; i < mMainQuests.size(); i++)
 	{
 		std::vector<QuestColliderTrigger>& joinColliderTriggerList = mMainQuests[i].mJoinConditionList.colliderTriggerList;
-		if (joinColliderTriggerList.size() > 0 && (joinColliderTriggerList[0].isAll || joinColliderTriggerList[0].playerNumber != -1))
+		if (joinColliderTriggerList.size() > 0)
 		{
-			QuestColliderTriggerChecker* questColliderTriggerChecker =
-				GetScene()->GetObjectByName(joinColliderTriggerList[0].colliderName)->GetComponent<QuestColliderTriggerChecker>();
-			questColliderTriggerChecker->SetRequestPlayerNum(joinColliderTriggerList[0].isAll, joinColliderTriggerList[0].playerNumber);
+			// hascomponent로 검사하고 밑에 거 실행하기
+			auto object = GetScene()->GetObjectByName(joinColliderTriggerList[0].colliderName);
+			if (object != nullptr)
+			{
+				QuestColliderTriggerChecker* questColliderTriggerChecker = object->GetComponent<QuestColliderTriggerChecker>();
+				if (questColliderTriggerChecker != nullptr)
+				{
+					questColliderTriggerChecker->SetRequestPlayerNum(joinColliderTriggerList[0].isAll, joinColliderTriggerList[0].playerNumber);
+				}
+			}
 		}
 		
 		std::vector<QuestColliderTrigger>& clearColliderTriggerList = mMainQuests[i].mclearConditionList.colliderTriggerList;
-		if (clearColliderTriggerList.size() > 0 && (clearColliderTriggerList[0].isAll || clearColliderTriggerList[0].playerNumber != -1))
+		if (clearColliderTriggerList.size() > 0)
 		{
-			QuestColliderTriggerChecker* questColliderTriggerChecker =
-				GetScene()->GetObjectByName(clearColliderTriggerList[0].colliderName)->GetComponent<QuestColliderTriggerChecker>();
-			questColliderTriggerChecker->SetRequestPlayerNum(clearColliderTriggerList[0].isAll, clearColliderTriggerList[0].playerNumber);
-			clearColliderTriggerList[0].maxPlayer = questColliderTriggerChecker->GetMaxPlayer();
+			auto object = GetScene()->GetObjectByName(clearColliderTriggerList[0].colliderName);
+			if (object != nullptr)
+			{
+				QuestColliderTriggerChecker* questColliderTriggerChecker = object->GetComponent<QuestColliderTriggerChecker>();
+				if (questColliderTriggerChecker != nullptr)
+				{
+					questColliderTriggerChecker->SetRequestPlayerNum(clearColliderTriggerList[0].isAll, clearColliderTriggerList[0].playerNumber);
+					clearColliderTriggerList[0].maxPlayer = questColliderTriggerChecker->GetMaxPlayer();
+				}
+			}
 		}
 	}
 	for (int i = 0; i < mSubQuests.size(); i++)
 	{
 		std::vector<QuestColliderTrigger>& joinColliderTriggerList = mSubQuests[i].mJoinConditionList.colliderTriggerList;
-		if (joinColliderTriggerList.size() > 0 && (joinColliderTriggerList[0].isAll || joinColliderTriggerList[0].playerNumber != -1))
+		if (joinColliderTriggerList.size() > 0)
 		{
-			QuestColliderTriggerChecker* questColliderTriggerChecker =
-				GetScene()->GetObjectByName(joinColliderTriggerList[0].colliderName)->GetComponent<QuestColliderTriggerChecker>();
-			questColliderTriggerChecker->SetRequestPlayerNum(joinColliderTriggerList[0].isAll, joinColliderTriggerList[0].playerNumber);
+			auto object = GetScene()->GetObjectByName(joinColliderTriggerList[0].colliderName);
+			if (object != nullptr)
+			{
+				QuestColliderTriggerChecker* questColliderTriggerChecker = object->GetComponent<QuestColliderTriggerChecker>();
+				if (questColliderTriggerChecker != nullptr)
+				{
+					questColliderTriggerChecker->SetRequestPlayerNum(joinColliderTriggerList[0].isAll, joinColliderTriggerList[0].playerNumber);
+				}
+			}
 
 			//spdlog::trace("QuestManager requestPlayerNum {}, {}, {}",joinColliderTriggerList[0].playerNumber, (int)joinColliderTriggerList[0].isAll);
 		}
 
 		std::vector<QuestColliderTrigger>& clearColliderTriggerList = mSubQuests[i].mclearConditionList.colliderTriggerList;
-		if (clearColliderTriggerList.size() > 0 && (clearColliderTriggerList[0].isAll || clearColliderTriggerList[0].playerNumber != -1))
+		if (clearColliderTriggerList.size() > 0)
 		{
-			QuestColliderTriggerChecker* questColliderTriggerChecker =
-				GetScene()->GetObjectByName(clearColliderTriggerList[0].colliderName)->GetComponent<QuestColliderTriggerChecker>();
-			questColliderTriggerChecker->SetRequestPlayerNum(clearColliderTriggerList[0].isAll, clearColliderTriggerList[0].playerNumber);
-			clearColliderTriggerList[0].maxPlayer = questColliderTriggerChecker->GetMaxPlayer();
+			auto object = GetScene()->GetObjectByName(clearColliderTriggerList[0].colliderName);
+			if (object != nullptr)
+			{
+				QuestColliderTriggerChecker* questColliderTriggerChecker = object->GetComponent<QuestColliderTriggerChecker>();
+				if (questColliderTriggerChecker != nullptr)
+				{
+					questColliderTriggerChecker->SetRequestPlayerNum(clearColliderTriggerList[0].isAll, clearColliderTriggerList[0].playerNumber);
+					clearColliderTriggerList[0].maxPlayer = questColliderTriggerChecker->GetMaxPlayer();
+				}
+			}
 		}
 	}
 }

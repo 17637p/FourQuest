@@ -596,6 +596,9 @@
     <ClInclude Include="DestroyWhenCollisionToWall.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
+    <ClInclude Include="CoolTimeIcon.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1026,6 +1029,9 @@
     </ClCompile>
     <ClCompile Include="DestroyWhenCollisionToWall.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="CoolTimeIcon.cpp">
+      <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
