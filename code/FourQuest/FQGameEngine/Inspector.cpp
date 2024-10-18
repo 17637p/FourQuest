@@ -653,6 +653,8 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 		std::string deleteText = "Delete##DelteButton" + std::to_string(mImguiID++);
 		if (ImGui::Button(deleteText.c_str()))
 		{
+	
+
 			if (view.size() != 0)
 			{
 				auto last = view.end();
@@ -1709,13 +1711,13 @@ bool fq::game_engine::Inspector::beginSequenceContainerPOD(entt::meta_data data,
 
 	if (ImGui::Button(deleteText.c_str()))
 	{
-		auto last = view.begin();
-
-		if (last != view.end())
+		if (view.size() != 0)
 		{
-			isChanged = true;
+			auto last = view.end();
+			last--;
 			view.erase(last);
 			data.set(pod, val);
+			isChanged = true;
 		}
 	}
 
