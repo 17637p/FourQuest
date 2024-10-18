@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/Transform.h"
 
+#include <spdlog/stopwatch.h>
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/PrefabManager.h"
 #include "../FQGameModule/Animator.h"
@@ -16,6 +17,7 @@ namespace fq::client
 {
 	Box::Box()
 		: mBrokenBoxPrefebPath()
+		, mBrokenBoxPrefabPath{}
 		, bIsBlock(false)
 		, mRotation()
 		, mDeadTime(1.f)
@@ -34,38 +36,28 @@ namespace fq::client
 
 		if (!bIsBlock)
 		{
-			breakBox();
-
 			bIsBlock = true;
 			mRotation = collision.other->GetRootObject()->GetTransform()->GetWorldRotation().ToEuler();
 
-			// 기존 오브젝트의 스태틱 메시는 그리지 않고 콜리전 삭제
-			auto staticMesh = GetComponent<fq::game_module::StaticMeshRenderer>();
+			addbreakBoxPrefab();
+
+			// 콜리전 삭제
 			GetGameObject()->RemoveComponent<fq::game_module::RigidBody>();
 			GetGameObject()->RemoveComponent<fq::game_module::BoxCollider>();
-
+		
+			// 기존 오브젝트의 스태틱 메시는 Off
+			auto staticMesh = GetComponent<fq::game_module::StaticMeshRenderer>();
 			if (staticMesh != nullptr)
 			{
 				staticMesh->SetIsRender(false);
 			}
-
-			for (const auto& object : collision.object->GetChildren())
+			for (auto& child : GetGameObject()->GetChildren())
 			{
-				auto childStaticMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
-
-				if (childStaticMesh != nullptr)
+				auto staticMesh = child->GetComponent<game_module::StaticMeshRenderer>();
+				if (staticMesh)
 				{
-					childStaticMesh->SetIsRender(false);
+					staticMesh->SetIsRender(false);
 				}
-			}
-
-			// 부서지는 항아리 오브젝트를 생성하고 위치를 해당 위치로 세팅
-			for (const auto& object : mObject->GetChildren())
-			{
-				auto prefabObjectMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
-
-				if (prefabObjectMesh != nullptr)
-					prefabObjectMesh->SetIsRender(true);
 			}
 		}
 	}
@@ -144,6 +136,9 @@ namespace fq::client
 			*cloneController = *this;
 		}
 
+		// 이전버전 호환하기 위한 꼼수입니다. 
+		cloneController->mBrokenBoxPrefabPath = cloneController->mBrokenBoxPrefebPath;
+
 		return cloneController;
 	}
 
@@ -152,36 +147,19 @@ namespace fq::client
 		return *this;
 	}
 
-	void Box::breakBox()
+	void Box::addbreakBoxPrefab()
 	{
 		auto transform = GetComponent<fq::game_module::Transform>();
 
 		// 부서지는 항아리 오브젝트를 생성하고 위치를 해당 위치로 세팅
-		auto objects = GetScene()->GetPrefabManager()->LoadPrefab(mBrokenBoxPrefebPath);
+		auto objects = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mBrokenBoxPrefabPath);
 		assert(!objects.empty());
 
-		for (const auto& object : objects)
-		{
-			if (object->GetParent() == nullptr)
-			{
-				mObject = object;
-
-				auto objectTransform = object->GetComponent<fq::game_module::Transform>();
-
-				objectTransform->SetWorldMatrix(transform->GetWorldMatrix());
-				objectTransform->SetWorldScale(transform->GetWorldScale());
-
-				GetScene()->AddGameObject(object);
-			}
-
-			auto prefabObjectMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
-
-			if (prefabObjectMesh != nullptr)
-			{
-				prefabObjectMesh->SetIsRender(false);
-				prefabObjectMesh->SetIsStatic(false);
-			}
-		}
+		mObject = objects[0];
+		auto objectTransform = mObject->GetComponent<fq::game_module::Transform>();
+		objectTransform->SetWorldMatrix(transform->GetWorldMatrix());
+		objectTransform->SetWorldScale(transform->GetWorldScale());
+		GetScene()->AddGameObject(mObject);
 	}
 
 }
