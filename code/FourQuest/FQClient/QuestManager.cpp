@@ -97,6 +97,7 @@ void fq::client::QuestManager::OnStart()
 	eventProcessObjectInteraction();
 	eventProcessClearGoddessStatue();
 	eventProcessChangePlayerNumCollideTrigger();
+	eventProcessInProgressDefence();
 
 	for (int i = 0; i < mMainQuests.size(); i++)
 	{
@@ -150,6 +151,8 @@ void fq::client::QuestManager::OnStart()
 	mNewImageCounts.clear();
 	mCompleteImages.clear();
 	mCompleteImageCounts.clear();
+	mFailImages.clear();
+	mFailImageCounts.clear();
 	mNextSubQuests.clear();
 
 	mQuestBoxes.clear();
@@ -161,6 +164,12 @@ void fq::client::QuestManager::OnStart()
 	{
 		mNewImages.push_back(children[3]->GetChildren()[i]->GetChildren()[4]->GetChildren()[0]->GetComponent<game_module::ImageUI>());
 		mCompleteImages.push_back(children[3]->GetChildren()[i]->GetChildren()[4]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
+		mFailImages.push_back(children[3]->GetChildren()[i]->GetChildren()[4]->GetChildren()[2]->GetComponent<game_module::ImageUI>());
+		mFailImages[i]->SetIsRender(0, false);
+		mFailImageCounts.push_back(0);
+		mIsFinishedFailedAnimation.push_back(0);
+		mIsInProgressDefence.push_back(false);
+		mIsInProgressDefenceView.push_back(false);
 		mQuestBoxes.push_back(children[3]->GetChildren()[i]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
 	}
 	for (int i = 0; i < 4; i++)
@@ -220,6 +229,18 @@ void fq::client::QuestManager::OnUpdate(float dt)
 		textInfo.Text = mViewSubQuest[i].mName;
 		mSubQuestTexts[i]->SetTextInfo(textInfo);
 		ViewQuestInformation(mViewSubQuest[i], mSubQuestTexts[i]);
+		if (!mIsInProgressDefenceView[i])
+		{
+			playTimer(i, mViewSubQuest[i], dt, true);
+		}
+	}
+
+	for (int i = 0; i < mCurSubQuest.size(); i++)
+	{
+		if (!mIsInProgressDefence[i])
+		{
+			playTimer(i, mCurSubQuest[i], dt, false);
+		}
 	}
 
 	GetScene()->GetEventManager()->FireEvent<client::event::CurrentQuest>({ true, mCurMainQuest.mIndex });
@@ -230,6 +251,13 @@ void fq::client::QuestManager::OnUpdate(float dt)
 
 	playNew(dt);
 	playComplete(dt);
+	PlayFail(dt);
+
+	for (int i = 0; i < 3; i++)
+	{
+		mIsInProgressDefence[i] = false;
+		mIsInProgressDefenceView[i] = false;
+	}
 }
 
 void fq::client::QuestManager::OnDestroy()
@@ -242,6 +270,7 @@ void fq::client::QuestManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mObjectInteractionHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mClearGoddessStatueHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mChangePlayerNumCollideTriggereHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mInProgressDefenceHandler);
 }
 
 void fq::client::QuestManager::eventProcessKillMonster()
@@ -349,7 +378,13 @@ void fq::client::QuestManager::eventProcessKillMonster()
 				monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
 				monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
 
-				if (monsterGroupKillList[0].curNumber >= monsterGroupKillList[0].groupMonsterNumber)
+				if (mCurMainQuest.mIndex == mViewMainQuest.mIndex)
+				{
+					mViewMainQuest.mclearConditionList.monsterGroupKillList[0].groupMonsterNumber = monsterGroupKillList[0].groupMonsterNumber;
+					mViewMainQuest.mclearConditionList.monsterGroupKillList[0].curNumber = monsterGroupKillList[0].curNumber;
+				}
+
+				if (monsterGroupKillList[0].curNumber == 0)
 				{
 					GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 						{ mCurMainQuest, 0 });
@@ -368,7 +403,16 @@ void fq::client::QuestManager::eventProcessKillMonster()
 					monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
 					spdlog::trace("total {}, cur {}", monsterGroup->GetAllMonsterSize(), monsterGroup->GetRemainMonsterSize());
 
-					if (monsterGroupKillList[0].curNumber >= monsterGroupKillList[0].groupMonsterNumber)
+					for (int j = 0; j < mViewSubQuest.size(); j++)
+					{
+						if (mViewSubQuest[j].mIndex == mCurSubQuest[i].mIndex)
+						{
+							mViewSubQuest[j].mclearConditionList.monsterGroupKillList[0].groupMonsterNumber = monsterGroupKillList[0].groupMonsterNumber;
+							mViewSubQuest[j].mclearConditionList.monsterGroupKillList[0].curNumber = monsterGroupKillList[0].curNumber;
+						}
+					}
+
+					if (monsterGroupKillList[0].curNumber == 0)
 					{
 						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 							{ mCurSubQuest[i], i });
@@ -901,9 +945,14 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 	game_module::TextUI* monsterKillText =
 		textUI->GetGameObject()->GetParent()->GetChildren()[2]->GetComponent<game_module::TextUI>();
 
+	game_module::TextUI* timerText =
+		textUI->GetGameObject()->GetParent()->GetChildren()[5]->GetComponent<game_module::TextUI>();
+
 	auto text = monsterKillText->GetTextInfo();
 	text.IsRender = false;
 	monsterKillText->SetTextInfo(text);
+
+	timerText->SetIsRender(false);
 
 	game_module::ImageUI* gaugeBar = textUI->GetGameObject()->GetParent()->GetChildren()[3]->GetComponent<game_module::ImageUI>();
 	gaugeBar->SetIsRender(0, false);
@@ -962,6 +1011,25 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 			gaugeBarBack->SetIsRender(0, true);
 		}
 	}
+
+	if (quest.mIsTime && !quest.mIsClear)
+	{
+		timerText->SetIsRender(true);
+		std::string sec = std::to_string(((int)quest.mSeconds + 1) / 60) + ":" + std::to_string(((int)quest.mSeconds + 1) % 60);
+		timerText->SetText(sec);
+		if (int(quest.mSeconds) <= 10)
+		{
+			auto textInfo = timerText->GetTextInfo(); 
+			textInfo.FontColor = { 1, 0, 0, 1 };
+			timerText->SetTextInfo(textInfo);
+		}
+		else
+		{
+			auto textInfo = timerText->GetTextInfo();
+			textInfo.FontColor = { 1, 1, 1, 1 };
+			timerText->SetTextInfo(textInfo);
+		}
+	}
 }
 
 void fq::client::QuestManager::RenderOnSubQuest(int i, bool isOn)
@@ -979,14 +1047,16 @@ void fq::client::QuestManager::RenderOnSubQuest(int i, bool isOn)
 	if (!isOn)
 	{
 		auto text2 = subQuest[2]->GetComponent<game_module::TextUI>();
-		auto image2 = subQuest[3]->GetComponent<game_module::ImageUI>();
+		auto image3 = subQuest[3]->GetComponent<game_module::ImageUI>();
+		auto text5 = subQuest[5]->GetComponent<game_module::TextUI>();
+		auto image3child = subQuest[3]->GetChildren()[0]->GetComponent<game_module::ImageUI>();
 
-		textInfo = text2->GetTextInfo();
-		textInfo.IsRender = isOn;
-		text2->SetTextInfo(textInfo);
+		text2->SetIsRender(isOn);
+		text5->SetIsRender(isOn);
 
 		image1->SetIsRender(0, isOn);
-		image2->SetIsRender(0, isOn);
+		image3->SetIsRender(0, isOn);
+		image3child->SetIsRender(0, isOn);
 	}
 
 	auto uiInfo = mQuestBoxes[i + 1]->GetUIInfomation(0);
@@ -1168,6 +1238,10 @@ void fq::client::QuestManager::playComplete(float dt)
 			game_module::TextUI* monsterKillText =
 				textUI->GetGameObject()->GetParent()->GetChildren()[2]->GetComponent<game_module::TextUI>();
 			monsterKillText->SetIsRender(false);
+
+			game_module::TextUI* timerText =
+				textUI->GetGameObject()->GetParent()->GetChildren()[5]->GetComponent<game_module::TextUI>();
+			timerText->SetIsRender(false);
 
 			if (mCompleteImageCounts[i] > 2.5f)
 			{
@@ -1445,5 +1519,131 @@ void fq::client::QuestManager::setMonsterGroup()
 			monsterGroupKillList[0].curNumber = monsterGroup->GetAllMonsterSize();
 		}
 	}
+}
+
+void fq::client::QuestManager::playTimer(int index, Quest& quest, float dt, bool isPlay)
+{
+	if (quest.mIsTime)
+	{
+		quest.mSeconds -= dt;
+
+		if (quest.mSeconds <= 0)
+		{
+			if (isPlay)
+			{
+				if (mViewSubQuest[index].mSeconds <= 0)
+				{
+					if (!quest.mIsClear)
+					{
+						mSubQuestTexts[index]->GetGameObject()->GetParent()->GetChildren()[5]->GetComponent<game_module::TextUI>()->SetIsRender(false);
+						mFailImageCounts[index] = 2.0f; // 계속 실행중
+						mFailImages[index]->SetIsRender(0, true);
+						quest.mIsClear = true;
+						for (int i = 0; i < mCurSubQuest.size(); i++)
+						{
+							if (quest.mIndex == mCurSubQuest[i].mIndex)
+							{
+								mCurSubQuest.erase(mCurSubQuest.begin() + i);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void fq::client::QuestManager::PlayFail(float dt)
+{
+	// 페이드 아웃 처리 
+	for (int i = 0; i < mFailImageCounts.size(); i++)
+	{
+		if (mFailImageCounts[i] > 0)
+		{
+			if (mFailImageCounts[i] < 1.0f)
+			{
+				auto uiInfo = mFailImages[i]->GetUIInfomation(0);
+				uiInfo.Alpha = mFailImageCounts[i];
+				mFailImages[i]->SetUIInfomation(0, uiInfo);
+
+				auto textInfo = mSubQuestTexts[i]->GetTextInfo();
+				textInfo.FontColor.A(mFailImageCounts[i]);
+				mSubQuestTexts[i]->SetTextInfoPlay(textInfo);
+
+				auto questBox = mSubQuestTexts[i]->GetGameObject()->GetParent()->GetChildren()[1]->GetComponent<game_module::ImageUI>();
+				uiInfo = questBox->GetUIInfomation(0);
+				uiInfo.Alpha = mFailImageCounts[i];
+				questBox->SetUIInfomation(0, uiInfo);
+
+				game_module::ImageUI* gaugeBar = mSubQuestTexts[i]->GetGameObject()->GetParent()->GetChildren()[3]->GetComponent<game_module::ImageUI>();
+				gaugeBar->SetIsRender(0, false);
+
+				game_module::ImageUI* gaugeBarBack = nullptr;
+				if (gaugeBar->GetGameObject()->GetChildren().size() > 0)
+				{
+					gaugeBarBack = gaugeBar->GetGameObject()->GetChildren()[0]->GetComponent<game_module::ImageUI>();
+					gaugeBarBack->SetIsRender(0, false);
+				}
+
+				game_module::TextUI* monsterKillText =
+					mSubQuestTexts[i]->GetGameObject()->GetParent()->GetChildren()[2]->GetComponent<game_module::TextUI>();
+				monsterKillText->SetIsRender(false);
+			}
+			mFailImageCounts[i] -= dt;
+			mIsFinishedFailedAnimation[i] = true;
+		}
+		else
+		{
+			mFailImages[i]->SetIsRender(0, false);
+			if (mIsFinishedFailedAnimation[i])
+			{
+				mIsFinishedFailedAnimation[i] = false;
+				mViewSubQuest.erase(mViewSubQuest.begin() + i);
+
+				for (int i = 0; i < 3; i++)
+				{
+					if (i < mViewSubQuest.size())
+					{
+						RenderOnSubQuest(i, true);
+					}
+					else
+					{
+						RenderOnSubQuest(i, false);
+					}
+				}
+			}
+		}
+	}
+}
+
+void fq::client::QuestManager::eventProcessInProgressDefence()
+{
+	mInProgressDefenceHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::InProgressDefenceUp>(
+		[this](const client::event::InProgressDefenceUp& event)
+		{
+			for (int i = 0; i < mCurSubQuest.size(); i++)
+			{
+				auto& defenceList = mCurSubQuest[i].mclearConditionList.defenceList;
+				if (defenceList.size() > 0)
+				{
+					if (defenceList[0].colliderName == event.colliderName)
+					{
+						mIsInProgressDefence[i] = true;
+					}
+				}
+			}
+			for (int i = 0; i < mViewSubQuest.size(); i++)
+			{
+				auto& defenceList = mViewSubQuest[i].mclearConditionList.defenceList;
+				if (defenceList.size() > 0)
+				{
+					if (defenceList[0].colliderName == event.colliderName)
+					{
+						mIsInProgressDefenceView[i] = true;
+					}
+				}
+			}
+		});
 }
 

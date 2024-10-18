@@ -117,6 +117,9 @@ namespace fq::client
 		bool mIsMain; // QuestType
 		bool mIsClear = false;
 
+		bool mIsTime = false;
+		float mSeconds = 0;
+
 		QuestJoinCondition mJoinConditionList;
 		QuestClearCondition mclearConditionList;
 		QuestReward mRewardList;

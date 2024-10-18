@@ -74,6 +74,14 @@ namespace fq::client::event
 	};
 
 	/// <summary>
+	/// 디펜스 게이지가 차고있을때
+	/// </summary>
+	struct InProgressDefenceUp
+	{
+		std::string colliderName;
+	};
+
+	/// <summary>
 	/// 디펜스를 완료했을 때 발생하는 이벤트
 	/// </summary>
 	struct CompleteDefence

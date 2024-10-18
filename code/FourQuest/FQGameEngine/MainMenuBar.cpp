@@ -243,9 +243,6 @@ void fq::game_engine::MainMenuBar::SaveScene()
 		}
 	}
 
-	// 2. CollisionMatrix 저장
-	mGameProcess->mPhysicsSystem->GetCollisionMatrix().Save(scenePath);
-
 	// 3. AnimatorController 저장
 	mEditorProcess->mAnimatorWindow->SaveAnimatorController();
 

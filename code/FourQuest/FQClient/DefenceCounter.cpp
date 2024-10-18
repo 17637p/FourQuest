@@ -48,6 +48,12 @@ void fq::client::DefenceCounter::OnUpdate(float dt)
 		GetScene()->GetEventManager()->FireEvent<client::event::InProgressDefence>(
 			{ GetGameObject()->GetName(), (int)mCurCount });
 
+		if (mCollidingPlayerNum > 0)
+		{
+			GetScene()->GetEventManager()->FireEvent<client::event::InProgressDefenceUp>(
+				{ GetGameObject()->GetName()});
+		}
+
 		mCurCount += dt * mCountSpeed * mCollidingPlayerNum;
 
 		if (mCurCount > mRequestCount)
