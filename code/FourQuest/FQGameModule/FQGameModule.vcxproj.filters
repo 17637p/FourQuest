@@ -5,9 +5,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="include\03.Scene">
-      <UniqueIdentifier>{a3ec320c-8625-4813-8bff-03f15e6d67fa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\05.Input">
       <UniqueIdentifier>{0c912d72-6fa1-440d-98f9-c0e2eae0cd6f}</UniqueIdentifier>
     </Filter>
@@ -123,13 +120,16 @@
     <Filter Include="src\11.SkyBox">
       <UniqueIdentifier>{947423a8-15e7-4f92-bc5f-0b2b56a9f551}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\01.EntityComponent\03.Scene">
+      <UniqueIdentifier>{a3ec320c-8625-4813-8bff-03f15e6d67fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
       <Filter>include\01.EntityComponent</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>include\03.Scene</Filter>
+      <Filter>include\01.EntityComponent\03.Scene</Filter>
     </ClInclude>
     <ClInclude Include="EventManager.h">
       <Filter>include\04.Event</Filter>
@@ -150,7 +150,7 @@
       <Filter>include\04.Event</Filter>
     </ClInclude>
     <ClInclude Include="SceneManager.h">
-      <Filter>include\03.Scene</Filter>
+      <Filter>include\01.EntityComponent\03.Scene</Filter>
     </ClInclude>
     <ClInclude Include="InputEnum.h">
       <Filter>include\05.Input</Filter>
@@ -183,7 +183,7 @@
       <Filter>include\06.ObjectManager</Filter>
     </ClInclude>
     <ClInclude Include="SceneHelper.h">
-      <Filter>include\03.Scene</Filter>
+      <Filter>include\01.EntityComponent\03.Scene</Filter>
     </ClInclude>
     <ClInclude Include="GameModuleRegister.h">
       <Filter>include\00.Define</Filter>

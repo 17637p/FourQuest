@@ -665,8 +665,8 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			clothCollider->SetVertexBuffer(vertexBuffer);
 		}
 
+		fq::physics::Cloth::CreateClothData data;
 	}
-
 }
 
 void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject* object)
