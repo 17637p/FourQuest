@@ -56,6 +56,7 @@
     <ClInclude Include="LookingObjectHelper.h" />
     <ClInclude Include="MaterialManagedGroup.h" />
     <ClInclude Include="MeleeMonsterVariable.h" />
+    <ClInclude Include="MonsterHP.h" />
     <ClInclude Include="MonsterSpawnState.h" />
     <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="MultiPlayerObjectCreator.h" />
@@ -218,6 +219,7 @@
     <ClCompile Include="LevelHepler.cpp" />
     <ClCompile Include="LookingObjectHelper.cpp" />
     <ClCompile Include="MaterialManagedGroup.cpp" />
+    <ClCompile Include="MonsterHP.cpp" />
     <ClCompile Include="MonsterSpawnState.cpp" />
     <ClCompile Include="MultiPlayerObjectCreator.cpp" />
     <ClCompile Include="ParabolaAttack.cpp" />

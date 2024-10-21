@@ -26,7 +26,6 @@ void fq::client::MeleeMonsterExplosionState::OnStateEnter(game_module::Animator&
 
 	// 몬스터 죽음 이벤트 발생
 	auto scene = animator.GetScene();
-
 	auto gameObject = animator.GetGameObject();
 	auto monsterGroup = MonsterGroup::GetMonsterGroup(gameObject);
 	if (monsterGroup)

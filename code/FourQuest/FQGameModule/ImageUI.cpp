@@ -70,7 +70,7 @@ void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics:
 	mImageObjects[index]->SetStartY(infomation.StartY);
 
 	mImageObjects[index]->SetWidth(infomation.Width);
-	mImageObjects[index]->SetHeight(infomation.Height);
+	mImageObjects[index]->SetHeight(infomation.Height);	
 
 	mImageObjects[index]->SetAlpha(infomation.Alpha);
 	mImageObjects[index]->SetLayer(infomation.Layer);

@@ -102,40 +102,90 @@ dcl_output o3.xyz
 dcl_output o4.xy
 dcl_output o4.zw
 dcl_temps 3
+//
+// Initial variable locations:
+//   vpc0.x <- patchTess.EdgeTess[0]; 
+//   vpc1.x <- patchTess.EdgeTess[1]; 
+//   vpc2.x <- patchTess.EdgeTess[2]; 
+//   vpc3.x <- patchTess.EdgeTess[3]; 
+//   vpc4.x <- patchTess.InsideTess[0]; 
+//   vpc5.x <- patchTess.InsideTess[1]; 
+//   vDomain.x <- uv.x; vDomain.y <- uv.y; 
+//   o4.x <- <main return value>.UV.x; o4.y <- <main return value>.UV.y; o4.z <- <main return value>.TiledTex.x; o4.w <- <main return value>.TiledTex.y; 
+//   o3.x <- <main return value>.TangentW.x; o3.y <- <main return value>.TangentW.y; o3.z <- <main return value>.TangentW.z; 
+//   o2.x <- <main return value>.NormalW.x; o2.y <- <main return value>.NormalW.y; o2.z <- <main return value>.NormalW.z; 
+//   o1.x <- <main return value>.PositionW.x; o1.y <- <main return value>.PositionW.y; o1.z <- <main return value>.PositionW.z; o1.w <- <main return value>.ClipSpacePosZ; 
+//   o0.x <- <main return value>.PositionH.x; o0.y <- <main return value>.PositionH.y; o0.z <- <main return value>.PositionH.z; o0.w <- <main return value>.PositionH.w; 
+//   vicp[0][0].x <- quad[0].PositionW.x; vicp[0][0].y <- quad[0].PositionW.y; vicp[0][0].z <- quad[0].PositionW.z; 
+//   vicp[0][1].x <- quad[0].NormalW.x; vicp[0][1].y <- quad[0].NormalW.y; vicp[0][1].z <- quad[0].NormalW.z; 
+//   vicp[0][2].x <- quad[0].TangentW.x; vicp[0][2].y <- quad[0].TangentW.y; vicp[0][2].z <- quad[0].TangentW.z; 
+//   vicp[0][3].x <- quad[0].UV.x; vicp[0][3].y <- quad[0].UV.y; vicp[0][3].z <- quad[0].BoundsY.x; vicp[0][3].w <- quad[0].BoundsY.y; 
+//   vicp[1][0].x <- quad[1].PositionW.x; vicp[1][0].y <- quad[1].PositionW.y; vicp[1][0].z <- quad[1].PositionW.z; 
+//   vicp[1][1].x <- quad[1].NormalW.x; vicp[1][1].y <- quad[1].NormalW.y; vicp[1][1].z <- quad[1].NormalW.z; 
+//   vicp[1][2].x <- quad[1].TangentW.x; vicp[1][2].y <- quad[1].TangentW.y; vicp[1][2].z <- quad[1].TangentW.z; 
+//   vicp[1][3].x <- quad[1].UV.x; vicp[1][3].y <- quad[1].UV.y; vicp[1][3].z <- quad[1].BoundsY.x; vicp[1][3].w <- quad[1].BoundsY.y; 
+//   vicp[2][0].x <- quad[2].PositionW.x; vicp[2][0].y <- quad[2].PositionW.y; vicp[2][0].z <- quad[2].PositionW.z; 
+//   vicp[2][1].x <- quad[2].NormalW.x; vicp[2][1].y <- quad[2].NormalW.y; vicp[2][1].z <- quad[2].NormalW.z; 
+//   vicp[2][2].x <- quad[2].TangentW.x; vicp[2][2].y <- quad[2].TangentW.y; vicp[2][2].z <- quad[2].TangentW.z; 
+//   vicp[2][3].x <- quad[2].UV.x; vicp[2][3].y <- quad[2].UV.y; vicp[2][3].z <- quad[2].BoundsY.x; vicp[2][3].w <- quad[2].BoundsY.y; 
+//   vicp[3][0].x <- quad[3].PositionW.x; vicp[3][0].y <- quad[3].PositionW.y; vicp[3][0].z <- quad[3].PositionW.z; 
+//   vicp[3][1].x <- quad[3].NormalW.x; vicp[3][1].y <- quad[3].NormalW.y; vicp[3][1].z <- quad[3].NormalW.z; 
+//   vicp[3][2].x <- quad[3].TangentW.x; vicp[3][2].y <- quad[3].TangentW.y; vicp[3][2].z <- quad[3].TangentW.z; 
+//   vicp[3][3].x <- quad[3].UV.x; vicp[3][3].y <- quad[3].UV.y; vicp[3][3].z <- quad[3].BoundsY.x; vicp[3][3].w <- quad[3].BoundsY.y
+//
+#line 49 "C:\Users\user\Desktop\Project\code\FourQuest\FQGraphics\TerrainDS.hlsl"
 add r0.xy, -vicp[2][0].xzxx, vicp[3][0].xzxx
 mad r0.xy, vDomain.xxxx, r0.xyxx, vicp[2][0].xzxx
 add r0.zw, -vicp[0][0].xxxz, vicp[1][0].xxxz
 mad r0.zw, vDomain.xxxx, r0.zzzw, vicp[0][0].xxxz
 add r0.xy, -r0.zwzz, r0.xyxx
-mad r0.xz, vDomain.yyyy, r0.xxyx, r0.zzwz
+mad r0.xz, vDomain.yyyy, r0.xxyx, r0.zzwz  // r0.x <- dout.PositionW.x; r0.z <- dout.PositionW.z
+
+#line 54
 add r1.xy, -vicp[2][3].xyxx, vicp[3][3].xyxx
 mad r1.xy, vDomain.xxxx, r1.xyxx, vicp[2][3].xyxx
 add r1.zw, -vicp[0][3].xxxy, vicp[1][3].xxxy
 mad r1.zw, vDomain.xxxx, r1.zzzw, vicp[0][3].xxxy
 add r1.xy, -r1.zwzz, r1.xyxx
-mad r1.xy, vDomain.yyyy, r1.xyxx, r1.zwzz
-sample_l_indexable(texture2d)(float,float,float,float) r1.z, r1.xyxx, t0.yzxw, s0, l(0.000000)
-add r0.y, r1.z, cb0[1].w
+mad r1.xy, vDomain.yyyy, r1.xyxx, r1.zwzz  // r1.x <- dout.UV.x; r1.y <- dout.UV.y
+
+#line 61
+sample_l_indexable(texture2d)(float,float,float,float) r1.z, r1.xyxx, t0.yzxw, s0, l(0.000000)  // r1.z <- dout.PositionW.y
+
+#line 62
+add r0.y, r1.z, cb0[1].w  // r0.y <- dout.PositionW.y
+
+#line 64
 mov r0.w, l(1.000000)
 dp4 o0.x, r0.xyzw, cb1[4].xyzw
 dp4 o0.y, r0.xyzw, cb1[5].xyzw
 dp4 o0.z, r0.xyzw, cb1[6].xyzw
-dp4 r0.w, r0.xyzw, cb1[7].xyzw
+dp4 r0.w, r0.xyzw, cb1[7].xyzw  // r0.w <- dout.PositionH.w
+
+#line 77
 mov o0.w, r0.w
 mov o1.xyzw, r0.xyzw
+
+#line 68
 add r0.xyz, -vicp[2][1].xyzx, vicp[3][1].xyzx
 mad r0.xyz, vDomain.xxxx, r0.xyzx, vicp[2][1].xyzx
 add r2.xyz, -vicp[0][1].xyzx, vicp[1][1].xyzx
 mad r2.xyz, vDomain.xxxx, r2.xyzx, vicp[0][1].xyzx
 add r0.xyz, r0.xyzx, -r2.xyzx
 mad o2.xyz, vDomain.yyyy, r0.xyzx, r2.xyzx
+
+#line 72
 add r0.xyz, -vicp[2][2].xyzx, vicp[3][2].xyzx
 mad r0.xyz, vDomain.xxxx, r0.xyzx, vicp[2][2].xyzx
 add r2.xyz, -vicp[0][2].xyzx, vicp[1][2].xyzx
 mad r2.xyz, vDomain.xxxx, r2.xyzx, vicp[0][2].xyzx
 add r0.xyz, r0.xyzx, -r2.xyzx
 mad o3.xyz, vDomain.yyyy, r0.xyzx, r2.xyzx
+
+#line 59
 mul o4.zw, r1.xxxy, cb2[0].xxxy
+
+#line 77
 mov o4.xy, r1.xyxx
 ret 
 // Approximately 36 instruction slots used

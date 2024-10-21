@@ -12,6 +12,7 @@
 #include "Player.h"
 #include "PlayerInfoVariable.h"
 #include "PlayerDummy.h"
+#include "MonsterHP.h"
 #include "ClientHelper.h"
 
 #include <spdlog/spdlog.h>
@@ -30,6 +31,7 @@ fq::client::PlantMonster::PlantMonster()
 	, mAttackElapsedTime(0.f)
 	, mRotationSpeed(0.1f)
 	, mbIsAOEAttacker(false)
+	, mMonsterHpUI(nullptr)
 {
 }
 
@@ -64,6 +66,20 @@ void fq::client::PlantMonster::OnStart()
 	mAttackPower = mAttackPower * LevelHepler::GetDamageRatio();
 	mHp = mHp * LevelHepler::GetHpRatio();
 	mMaxHp = mHp;
+
+	for (auto child : GetTransform()->GetChildren())
+	{
+		auto hpBar = child->GetComponent<MonsterHP>();
+		if (hpBar)
+		{
+			mMonsterHpUI = hpBar;
+		}
+	}
+
+	if (mMonsterHpUI == nullptr)
+	{
+		spdlog::warn("name:{} plant monster has not MonsterHPUI", GetGameObject()->GetName());
+	}
 }
 
 
@@ -189,7 +205,8 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 			float attackPower = playerAttack->GetAttackPower();
 			mHp -= attackPower;
 
-			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
+			if (mMonsterHpUI)
+				mMonsterHpUI->DecreaseHp(attackPower / mMaxHp);
 
 			// 타겟을 자신을 때린 사람으로 바꿉니다 
 			SetTarget(playerAttack->GetAttacker());
@@ -410,5 +427,18 @@ void fq::client::PlantMonster::FindTarget()
 	if (target)
 	{
 		SetTarget(target);
+	}
+}
+
+void fq::client::PlantMonster::DestroyMonsterHPUI()
+{
+	if (mMonsterHpUI)
+	{
+		GetScene()->DestroyGameObject(mMonsterHpUI->GetGameObject());
+		mMonsterHpUI = nullptr;
+	}
+	else
+	{
+		spdlog::warn("PlantMonster has not monster ui");
 	}
 }
