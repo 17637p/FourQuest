@@ -11,6 +11,16 @@
 
 #include "../FQCommon/FQCommonGraphics.h"
 
+// Video
+#include <mfapi.h>
+#include <mfplay.h>
+#include <mfreadwrite.h>  // IMFSourceReader를 포함하는 헤더
+#include <mfidl.h>
+
+#pragma comment(lib, "mfplat.lib")
+#pragma comment(lib, "mfreadwrite.lib")
+#pragma comment(lib, "mfuuid.lib")
+
 struct ID2D1Factory;
 struct ID2D1HwndRenderTarget;
 struct IDWriteFactory;
@@ -83,6 +93,11 @@ namespace fq::graphics
 		ISpriteAnimationObject* CreateSpriteAniamtion(SpriteInfo spriteInfo);
 		void DeleteSpriteAniamtion(ISpriteAnimationObject* spriteAniamtionObject);
 
+		// Video
+		bool LoadVideo(const std::wstring& path);
+		bool CreateVideoBitmap(UINT width, UINT height);
+		bool UpdateVideoBitmap();
+
 		void SetIsRenderObjects(bool isRenderObjects) { mIsRenderObjects = isRenderObjects; }
 
 	private:
@@ -136,6 +151,30 @@ namespace fq::graphics
 		bool mIsSortedImage;
 		bool mIsSortedText;
 		bool mIsSortedAll;
+
+		// video
+		//IMFSourceReader* mVideoReader = nullptr;
+		ID2D1Bitmap* mVideoBitmap = nullptr;
+		bool mIsDrawVideo;
+		UINT mVideoWidth;
+		UINT mVideoHeight;
+		LONGLONG   llVideoTimeStamp = 0;
+		DWORD in = 0;
+
+		IMFSourceResolver* pSourceResolver = NULL;
+		MF_OBJECT_TYPE     ObjectType = MF_OBJECT_INVALID;
+		IUnknown* uSource = NULL;
+		IMFMediaSource* mediaFileSource = NULL;
+		IMFAttributes* pVideoReaderAttributes = NULL;
+		IMFSourceReader* pSourceReader = NULL;
+		IMFMediaType* pReaderOutputType = NULL;
+		IMFMediaType* pFirstOutputType = NULL;
+
+		uint32_t  width = 0;
+		uint32_t  height = 0;
+
+		uint32_t xres = 0;
+		uint32_t yres = 0;
 	};
 }
 
