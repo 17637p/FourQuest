@@ -153,9 +153,6 @@
     <ClInclude Include="RaycastQueryFileter.h">
       <Filter>Filter</Filter>
     </ClInclude>
-    <ClInclude Include="HelperCudaSpdlog.h">
-      <Filter>Tool\Header</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IFQPhysics.cpp">

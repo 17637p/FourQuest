@@ -131,14 +131,17 @@ namespace fq::physics
 
 		mWorldTransform = data.worldTransform;
 		mClothMass = data.clothMass;
+		mVertices = data.clothData.vertices;
+		mIndices = data.clothData.indices;
+		mUV = data.clothData.uvs;
 		 
-		bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);
-		if (!isSucced)
-			return false;
+		//bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);
+		//if (!isSucced)
+		//	return false;
 
-		isSucced = CudaClothTool::copyIndexFromGPUToCPU(mIndices, mCudaIndexResource);
-		if (!isSucced)
-			return false;
+		//isSucced = CudaClothTool::copyIndexFromGPUToCPU(mIndices, mCudaIndexResource);
+		//if (!isSucced)
+		//	return false;
 
 		return true;
 	}

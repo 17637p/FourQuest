@@ -228,7 +228,6 @@
     <ClInclude Include="CharacterJoint.h" />
     <ClInclude Include="CharacterLink.h" />
     <ClInclude Include="HeightFieldResource.h" />
-    <ClInclude Include="HelperCudaSpdlog.h" />
     <ClInclude Include="PhysicsCCTHitCallback.h" />
     <ClInclude Include="PhysicsCharacterPhysicsManager.h" />
     <ClInclude Include="PhysicsCharactorControllerManager.h" />

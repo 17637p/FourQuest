@@ -4,7 +4,6 @@
 #include <cuda_d3d11_interop.h>
 #include <device_launch_parameters.h>
 
-#include "HelperCudaSpdlog.h"
 #include <iostream>
 
 __device__ physx::PxVec2 Sub(const physx::PxVec2& lhs, const physx::PxVec2& rhs) {
