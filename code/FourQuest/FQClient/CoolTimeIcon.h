@@ -39,7 +39,8 @@ namespace fq::client
 		float mScreenOffset;
 
 		float mCurTime;
-		float mPlaytime;
+		float mFadeInTime;
+		float mFadeOutTime;
 		float mSpeed;
 
 		std::vector<game_module::ImageUI*> mSkillIconImages;

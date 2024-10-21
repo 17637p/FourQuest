@@ -33,10 +33,11 @@ fq::client::CoolTimeIcon::CoolTimeIcon()
 	mWorldOffset(),
 	mScreenOffset(),
 	mCurTime(0),
-	mPlaytime(1),
 	mSpeed(1),
 	mScreenManager(nullptr),
-	mMainCamera(nullptr)
+	mMainCamera(nullptr),
+	mFadeInTime(1),
+	mFadeOutTime(2)
 {
 }
 
@@ -44,7 +45,8 @@ fq::client::CoolTimeIcon::CoolTimeIcon(const CoolTimeIcon& other)
 	:mWorldOffset(other.mWorldOffset),
 	mScreenOffset(other.mScreenOffset),
 	mSpeed(other.mSpeed),
-	mPlaytime(other.mPlaytime)
+	mFadeInTime(other.mFadeInTime),
+	mFadeOutTime(other.mFadeOutTime)
 {
 }
 
@@ -57,7 +59,8 @@ fq::client::CoolTimeIcon& fq::client::CoolTimeIcon::operator=(const CoolTimeIcon
 	mWorldOffset = other.mWorldOffset;
 	mScreenOffset = other.mScreenOffset;
 	mSpeed = other.mSpeed;
-	mPlaytime = other.mPlaytime;
+	mFadeInTime = other.mFadeInTime;
+	mFadeOutTime = other.mFadeOutTime;
 
 	return *this;
 }
@@ -93,13 +96,15 @@ void fq::client::CoolTimeIcon::OnStart()
 
 void fq::client::CoolTimeIcon::OnUpdate(float dt)
 {
-	if (mCurTime < mPlaytime)
+	if (mCurTime < mFadeInTime)
 	{
+		// 시간 설정
 		mCurTime += dt;
 
+		// 위치 설정
 		DirectX::SimpleMath::Vector3 pos = GetTransform()->GetWorldPosition();
 		pos += mWorldOffset;
-		pos.y += mSpeed * (mCurTime - (mPlaytime / 2) + 1);
+		pos.y += mSpeed * mCurTime;
 
 		float width = mScreenManager->GetFixScreenWidth();
 		float height = mScreenManager->GetFixScreenHeight();
@@ -107,13 +112,39 @@ void fq::client::CoolTimeIcon::OnUpdate(float dt)
 		auto viewProj = mMainCamera->GetViewProjection();
 		DirectX::SimpleMath::Vector3 screenPos = DirectX::SimpleMath::Vector3::Transform(pos, viewProj);
 
-		//GetTransform()->SetLocalPosition({ screenPos.x * width * 0.5f, screenPos.y * height * 0.5f, 0 });
 		float posX = width * 0.5f + (screenPos.x * width * 0.5f);
 		float posY = height * 0.5f - (screenPos.y * height * 0.5f);
 
+		// 아이콘 이미지 설정
 		mSkillIconImages[mPlayingIcon]->GetTransform()->SetWorldPosition({ posX, posY, 0 });
 		auto uiInfo = mSkillIconImages[mPlayingIcon]->GetUIInfomation(0);
-		uiInfo.Alpha = 1 - mCurTime / mPlaytime;
+		uiInfo.Alpha = mCurTime / mFadeInTime;
+		uiInfo.isRender = true;
+		mSkillIconImages[mPlayingIcon]->SetUIInfomation(0, uiInfo);
+	}
+	else if (mCurTime < mFadeOutTime)
+	{
+		// 시간 설정
+		mCurTime += dt;
+
+		// 위치 설정
+		DirectX::SimpleMath::Vector3 pos = GetTransform()->GetWorldPosition();
+		pos += mWorldOffset;
+		pos.y += mSpeed * mFadeInTime;
+
+		float width = mScreenManager->GetFixScreenWidth();
+		float height = mScreenManager->GetFixScreenHeight();
+
+		auto viewProj = mMainCamera->GetViewProjection();
+		DirectX::SimpleMath::Vector3 screenPos = DirectX::SimpleMath::Vector3::Transform(pos, viewProj);
+
+		float posX = width * 0.5f + (screenPos.x * width * 0.5f);
+		float posY = height * 0.5f - (screenPos.y * height * 0.5f);
+
+		// 아이콘 이미지 설정
+		mSkillIconImages[mPlayingIcon]->GetTransform()->SetWorldPosition({ posX, posY, 0 });
+		auto uiInfo = mSkillIconImages[mPlayingIcon]->GetUIInfomation(0);
+		uiInfo.Alpha = 1 - ((mCurTime - mFadeInTime) / (mFadeOutTime - mFadeInTime));
 		uiInfo.isRender = true;
 		mSkillIconImages[mPlayingIcon]->SetUIInfomation(0, uiInfo);
 	}

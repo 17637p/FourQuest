@@ -1915,8 +1915,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "WorldOffset")
 		.data<&CoolTimeIcon::mScreenOffset>("ScreenOffset"_hs)
 		.prop(fq::reflect::prop::Name, "ScreenOffset")
-		.data<&CoolTimeIcon::mPlaytime>("PlayTime"_hs)
-		.prop(fq::reflect::prop::Name, "PlayTime")
+		.data<&CoolTimeIcon::mFadeInTime>("FadeInTime"_hs)
+		.prop(fq::reflect::prop::Name, "FadeInTime")
+		.data<&CoolTimeIcon::mFadeOutTime>("FadeOutTime"_hs)
+		.prop(fq::reflect::prop::Name, "FadeOutTime")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
