@@ -175,6 +175,7 @@
 #include "DynamicLightHelper.h"
 #include "ArmourDestroyer.h"
 #include "DestroyWhenCollisionToWall.h"
+#include "ScreenBlending.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -409,6 +410,25 @@ void fq::client::RegisterMetaData()
 	entt::meta<DestroyWhenCollisionToWall>()
 		.type("DestroyWhenCollisionToWall"_hs)
 		.prop(reflect::prop::Name, "DestroyWhenCollisionToWall")
+		.base<game_module::Component>();
+
+	entt::meta<ScreenBlending>()
+		.type("ScreenBlending"_hs)
+		.prop(reflect::prop::Name, "ScreenBlending")
+		.data<&ScreenBlending::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.prop(fq::reflect::prop::Comment, u"블렌딩 지속 시간")
+		.data<&ScreenBlending::mTexturePath>("TexturePath"_hs)
+		.prop(fq::reflect::prop::Name, "TexturePath")
+		.prop(fq::reflect::prop::Comment, u"블렌딩할 텍스처 경로")
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.prop(fq::reflect::prop::RelativePath)
+		.data<&ScreenBlending::mStartBlendColor>("StartBlendColor"_hs)
+		.prop(fq::reflect::prop::Name, "StartBlendColor")
+		.prop(fq::reflect::prop::Comment, u"시작 색상")
+		.data<&ScreenBlending::mEndBlendColor>("EndBlendColor"_hs)
+		.prop(fq::reflect::prop::Name, "EndBlendColor")
+		.prop(fq::reflect::prop::Comment, u"종료 색상")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1915,8 +1935,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "WorldOffset")
 		.data<&CoolTimeIcon::mScreenOffset>("ScreenOffset"_hs)
 		.prop(fq::reflect::prop::Name, "ScreenOffset")
-		.data<&CoolTimeIcon::mPlaytime>("PlayTime"_hs)
-		.prop(fq::reflect::prop::Name, "PlayTime")
+		.data<&CoolTimeIcon::mFadeInTime>("FadeInTime"_hs)
+		.prop(fq::reflect::prop::Name, "FadeInTime")
+		.data<&CoolTimeIcon::mFadeOutTime>("FadeOutTime"_hs)
+		.prop(fq::reflect::prop::Name, "FadeOutTime")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -2121,8 +2143,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SubQuest")
 		.data<&QuestManager::mPortalPrefab>("PortalPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "PortalPrefab")
-		.data<&QuestManager::mDistance>("Distance"_hs)
-		.prop(fq::reflect::prop::Name, "Distance")
+		.data<&QuestManager::mArmourSpawnDistance>("ArmourSpawnDistance"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
 		.base<fq::game_module::Component>();
 
 	entt::meta<DefenceCounter>()

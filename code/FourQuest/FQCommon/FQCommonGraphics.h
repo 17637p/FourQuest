@@ -765,6 +765,11 @@ namespace fq::graphics
 		// Color Blend
 		bool bUseBlendColor = false;
 		DirectX::SimpleMath::Color BlendColor = { 0, 0, 0, 0 };
+
+		// Texture Blend
+		bool bUseBlendTexture = false;
+		DirectX::SimpleMath::Color BlendTextureColor = { 1, 1, 1, 1 };
+		std::wstring BlendTextureName;
 	};
 
 	struct DebugInfo

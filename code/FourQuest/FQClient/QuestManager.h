@@ -46,6 +46,7 @@ namespace fq::client
 
 		void ViewQuestInformation(Quest quest, game_module::TextUI* textUI);
 		void RenderOnSubQuest(int i, bool isOn);
+		void RenderOnAllSubQuest();
 		void SpawnArmour(fq::game_module::PrefabResource armour);
 
 	private:
@@ -72,6 +73,11 @@ namespace fq::client
 		void setColliderTriggerChecker();
 		void setMonsterGroup();
 
+		// Refactoring
+		void initSTL();
+		void startNew(int index);
+		void startComplete(int index);
+
 	private:
 		// 인스펙터 용
 		StartQuests mStartQuests;
@@ -79,10 +85,8 @@ namespace fq::client
 		std::vector<Quest> mMainQuests;
 		std::vector<Quest> mSubQuests;
 
-		std::vector<Quest> mClearEvents; // 이벤트 안에서 이벤트 호출이 안되어서 다음 틱에 처리
-		std::vector<int> mClearEventIndexes;
-
-		float mDistance;
+		float mArmourSpawnDistance;
+		fq::game_module::PrefabResource mPortalPrefab;
 
 		// 스크립트 용
 		Quest mCurMainQuest;
@@ -90,8 +94,6 @@ namespace fq::client
 		std::vector<Quest> mCurSubQuest;
 		std::vector<Quest> mViewSubQuest; // 연출용 UI 보여줄 서브 퀘스트 목록 
 		std::list<Quest> mNextSubQuests;
-
-		fq::game_module::PrefabResource mPortalPrefab;
 
 		/// OnStart 시 채워주는 것들 (복사 안해도 되는 거)
 		// 각종 이벤트 처리
@@ -105,9 +107,19 @@ namespace fq::client
 		game_module::EventHandler mChangePlayerNumCollideTriggereHandler;
 		game_module::EventHandler mInProgressDefenceHandler;
 
+		// ClearCondition - ClearQuest 전용
+		std::vector<Quest> mClearEvents; // 이벤트 안에서 이벤트 호출이 안되어서 다음 틱에 처리
+		std::vector<int> mClearEventIndexes;
+
+		// SubQuest Timer Defence 진행중일 때는 멈추도록 설정
+		std::vector<bool> mIsInProgressDefence;
+		std::vector<bool> mIsInProgressDefenceView;
+
 		// TextUI
 		game_module::TextUI* mMainQuestText;
 		std::vector<game_module::TextUI*> mSubQuestTexts;
+
+		std::vector<game_module::ImageUI*> mQuestBoxes;
 
 		// 신규 퀘스트 연출
 		std::vector<game_module::ImageUI*> mNewImages;
@@ -118,8 +130,8 @@ namespace fq::client
 		std::vector<game_module::ImageUI*> mLeftChecks;
 		std::vector<game_module::ImageUI*> mRightChecks;
 		std::vector<bool> mIsFinishedCompleteAnimation;
-		std::vector<game_module::ImageUI*> mQuestBoxes;
 
+		// Fail은 서브 퀘스트만 사용
 		std::vector<game_module::ImageUI*> mFailImages;
 		std::vector<float> mFailImageCounts;
 		std::vector<bool> mIsFinishedFailedAnimation;
@@ -128,14 +140,6 @@ namespace fq::client
 		int mGaugeMaxWidth;
 		int mFontSize;
 		game_module::ScreenManager* mScreenManager;
-
-		std::vector<bool> mIsInProgressDefence;
-		std::vector<bool> mIsInProgressDefenceView;
-
-		// 
-		int mDebug;
-
-		std::vector<std::shared_ptr<game_module::GameObject>> mAddedArmourObjects;
 
 		friend void RegisterMetaData();
 	};

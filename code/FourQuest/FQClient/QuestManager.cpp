@@ -29,8 +29,7 @@ fq::client::QuestManager::QuestManager()
 	mCurSubQuest(),
 	mGaugeMaxWidth(0),
 	mPortalPrefab(),
-	mAddedArmourObjects(),
-	mDistance(5)
+	mArmourSpawnDistance(5)
 {
 }
 
@@ -41,7 +40,7 @@ fq::client::QuestManager::QuestManager(const QuestManager& other)
 	mCurMainQuest(other.mCurMainQuest),
 	mCurSubQuest(other.mCurSubQuest),
 	mPortalPrefab(other.mPortalPrefab),
-	mDistance(other.mDistance)
+	mArmourSpawnDistance(other.mArmourSpawnDistance)
 {
 }
 
@@ -53,7 +52,7 @@ fq::client::QuestManager& fq::client::QuestManager::operator=(const QuestManager
 	mCurMainQuest = other.mCurMainQuest;
 	mCurSubQuest = other.mCurSubQuest;
 	mPortalPrefab = other.mPortalPrefab;
-	mDistance = other.mDistance;
+	mArmourSpawnDistance = other.mArmourSpawnDistance;
 
 	return *this;
 }
@@ -82,11 +81,10 @@ std::shared_ptr<fq::game_module::Component> fq::client::QuestManager::Clone(std:
 
 void fq::client::QuestManager::OnStart()
 {
-	mClearEvents.clear();
-	mClearEventIndexes.clear();
+	initSTL(); // STL 초기화
 
-	setMonsterGroup();
-	setColliderTriggerChecker();
+	setMonsterGroup(); // Quest 마다 monster Group Max 값 설정
+	setColliderTriggerChecker(); // QuestColliderTrigger 마다 questManager에 설정된 값 설정
 
 	// 이벤트 핸들러 등록
 	eventProcessKillMonster();
@@ -99,6 +97,7 @@ void fq::client::QuestManager::OnStart()
 	eventProcessChangePlayerNumCollideTrigger();
 	eventProcessInProgressDefence();
 
+	// Quest 마다 isMain 설정
 	for (int i = 0; i < mMainQuests.size(); i++)
 	{
 		mMainQuests[i].mIsMain = true;
@@ -109,10 +108,6 @@ void fq::client::QuestManager::OnStart()
 	}
 
 	// 시작 퀘스트 등록
-	mCurSubQuest.clear();
-	mViewSubQuest.clear();
-
-	//mCurMainQuest = mMainQuests[mStartQuests.startMainQuestIndex];
 	auto it = std::find_if(mMainQuests.begin(), mMainQuests.end(), [this](Quest quest)
 		{
 			return quest.mIndex == mStartQuests.startMainQuestIndex;
@@ -130,7 +125,7 @@ void fq::client::QuestManager::OnStart()
 	}
 	mViewSubQuest = mCurSubQuest;
 
-	// 
+	// 오브젝트 설정
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren();
 	mMainQuestText = children[1]->GetChildren()[0]->GetComponent<game_module::TextUI>();
 	for (int i = 0; i < 3; i++)
@@ -138,25 +133,14 @@ void fq::client::QuestManager::OnStart()
 		mSubQuestTexts.push_back(children[3]->GetChildren()[i]->GetChildren()[0]->GetComponent<game_module::TextUI>());
 	}
 
+	/// Scale 설정
+	mScreenManager = GetScene()->GetScreenManager();
 	// GaugeMaxWidth 설정
 	mGaugeMaxWidth = mMainQuestText->GetGameObject()->GetParent()->GetChildren()[3]->GetComponent<game_module::ImageUI>()->GetUIInfomation(0).Width;
 	// 기본 FontSize 설정
 	mFontSize = mMainQuestText->GetTextInfo().FontSize;
 
-	mScreenManager = GetScene()->GetScreenManager();
-
 	/// 연출용 UI
-	// New, Complete
-	mNewImages.clear();
-	mNewImageCounts.clear();
-	mCompleteImages.clear();
-	mCompleteImageCounts.clear();
-	mFailImages.clear();
-	mFailImageCounts.clear();
-	mNextSubQuests.clear();
-
-	mQuestBoxes.clear();
-
 	mNewImages.push_back(children[1]->GetChildren()[4]->GetChildren()[0]->GetComponent<game_module::ImageUI>());
 	mCompleteImages.push_back(children[1]->GetChildren()[4]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
 	mQuestBoxes.push_back(children[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
@@ -181,9 +165,6 @@ void fq::client::QuestManager::OnStart()
 		mIsFinishedCompleteAnimation.push_back(false);
 	}
 
-	mLeftChecks.clear();
-	mRightChecks.clear();
-
 	mLeftChecks.push_back(children[1]->GetChildren()[1]->GetChildren()[0]->GetComponent<game_module::ImageUI>());
 	mRightChecks.push_back(children[1]->GetChildren()[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
 
@@ -193,11 +174,8 @@ void fq::client::QuestManager::OnStart()
 		mRightChecks.push_back(children[3]->GetChildren()[i]->GetChildren()[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>());
 	}
 
-	// 마지막에
-	for (int i = 0; i < 3 - mCurSubQuest.size(); i++)
-	{
-		RenderOnSubQuest(2 - i, false);
-	}
+	// 시작 서브퀘스트 개수 만큼만 QuestUI Render 하기 
+	RenderOnAllSubQuest();
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
@@ -496,26 +474,11 @@ void fq::client::QuestManager::eventProcessPlayerCollideTrigger()
 								mCurSubQuest.push_back(mSubQuests[i]);
 								mViewSubQuest.push_back(mSubQuests[i]);
 
-								// new Sub quest Render
-								for (int j = 0; j < 3; j++)
-								{
-									if (j < mViewSubQuest.size())
-									{
-										RenderOnSubQuest(j, true);
-									}
-									else
-									{
-										RenderOnSubQuest(j, false);
-									}
-								}
+								RenderOnAllSubQuest();
 
 								// New 연출
 								int newSubQuestIndex = mViewSubQuest.size();
-								mNewImageCounts[newSubQuestIndex] = 3.0f;
-								auto uiInfo = mNewImages[newSubQuestIndex]->GetUIInfomation(0);
-								uiInfo.isRender = true;
-								uiInfo.Alpha = 1;
-								mNewImages[newSubQuestIndex]->SetUIInfomation(0, uiInfo);
+								startNew(newSubQuestIndex);
 
 								spdlog::trace("Complete Collider Trigger Join Condition");
 							}
@@ -740,27 +703,7 @@ void fq::client::QuestManager::eventProcessClearQuest()
 						if (mViewSubQuest[i].mIndex == event.clearQuest.mIndex)
 						{
 							int questUIindex = event.index + 1;
-							mCompleteImageCounts[questUIindex] = 3.0f;
-							auto uiInfo = mCompleteImages[questUIindex]->GetUIInfomation(0);
-							uiInfo.isRender = true;
-							uiInfo.Alpha = 1;
-							mCompleteImages[questUIindex]->SetUIInfomation(0, uiInfo);
-
-							uiInfo = mLeftChecks[questUIindex]->GetUIInfomation(0);
-							uiInfo.Width = 100;
-							uiInfo.Height = 100;
-							uiInfo.Alpha = 1;
-							uiInfo.isRender = true;
-							mLeftChecks[questUIindex]->SetUIInfomation(0, uiInfo);
-
-							uiInfo = mRightChecks[questUIindex]->GetUIInfomation(0);
-							uiInfo.Width = 100;
-							uiInfo.Height = 100;
-							uiInfo.Alpha = 1;
-							uiInfo.isRender = true;
-							mRightChecks[questUIindex]->SetUIInfomation(0, uiInfo);
-
-							mNewImages[questUIindex]->SetIsRender(0, false);
+							startComplete(questUIindex);
 						}
 					}
 				}
@@ -769,27 +712,7 @@ void fq::client::QuestManager::eventProcessClearQuest()
 			{
 				// Complete 연출
 				int questUIindex = 0;
-				mCompleteImageCounts[questUIindex] = 3.0f;
-				auto uiInfo = mCompleteImages[questUIindex]->GetUIInfomation(0);
-				uiInfo.isRender = true;
-				uiInfo.Alpha = 1;
-				mCompleteImages[questUIindex]->SetUIInfomation(0, uiInfo);
-
-				uiInfo = mLeftChecks[questUIindex]->GetUIInfomation(0);
-				uiInfo.Width = 100;
-				uiInfo.Height = 100;
-				uiInfo.Alpha = 1;
-				uiInfo.isRender = true;
-				mLeftChecks[questUIindex]->SetUIInfomation(0, uiInfo);
-
-				uiInfo = mRightChecks[questUIindex]->GetUIInfomation(0);
-				uiInfo.Width = 100;
-				uiInfo.Height = 100;
-				uiInfo.Alpha = 1;
-				uiInfo.isRender = true;
-				mRightChecks[questUIindex]->SetUIInfomation(0, uiInfo);
-
-				mNewImages[questUIindex]->SetIsRender(0, false);
+				startComplete(questUIindex);
 			}
 
 			for (int i = 0; i < mSubQuests.size(); i++)
@@ -887,26 +810,11 @@ void fq::client::QuestManager::eventProcessAllColliderTrigger()
 							mCurSubQuest.push_back(mSubQuests[i]);
 							mViewSubQuest.push_back(mSubQuests[i]);
 
-							// new Sub quest Render
-							for (int j = 0; j < 3; j++)
-							{
-								if (j < mViewSubQuest.size())
-								{
-									RenderOnSubQuest(j, true);
-								}
-								else
-								{
-									RenderOnSubQuest(j, false);
-								}
-							}
+							RenderOnAllSubQuest();
 
 							// New 연출
 							int newSubQuestIndex = mViewSubQuest.size();
-							mNewImageCounts[newSubQuestIndex] = 3.0f;
-							auto uiInfo = mNewImages[newSubQuestIndex]->GetUIInfomation(0);
-							uiInfo.isRender = true;
-							uiInfo.Alpha = 1;
-							mNewImages[newSubQuestIndex]->SetUIInfomation(0, uiInfo);
+							startNew(newSubQuestIndex);
 
 							spdlog::trace("Complete Collider Trigger Join Condition");
 						}
@@ -1132,7 +1040,7 @@ void fq::client::QuestManager::SpawnArmour(fq::game_module::PrefabResource armou
 		// 랜덤 위치 설정
 		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 		std::mt19937 generator(seed);
-		std::uniform_real_distribution<float> distanceDistribution(0, mDistance);
+		std::uniform_real_distribution<float> distanceDistribution(0, mArmourSpawnDistance);
 		std::uniform_real_distribution<float> degreeDistribution(0, 360);
 
 		float randomDistance = distanceDistribution(generator);
@@ -1326,14 +1234,8 @@ void fq::client::QuestManager::playComplete(float dt)
 
 				if (mIsFinishedCompleteAnimation[i])
 				{
-					// New 연출
-					mNewImageCounts[i] = 3.0f;
-					auto uiInfo = mNewImages[i]->GetUIInfomation(0);
-					uiInfo.isRender = true;
-					uiInfo.Alpha = 1;
-					mNewImages[i]->SetUIInfomation(0, uiInfo);
-
 					mIsFinishedCompleteAnimation[i] = false;
+					startNew(i);
 
 					int nextSubQuestSize = mNextSubQuests.size() + 1;
 					for (int j = 1; j < nextSubQuestSize; j++)
@@ -1342,24 +1244,9 @@ void fq::client::QuestManager::playComplete(float dt)
 						mViewSubQuest.push_back(mNextSubQuests.front());
 						mNextSubQuests.pop_front();
 
-						// New 연출
-						mNewImageCounts[j] = 3.0f;
-						auto uiInfo = mNewImages[j]->GetUIInfomation(0);
-						uiInfo.isRender = true;
-						uiInfo.Alpha = 1;
-						mNewImages[j]->SetUIInfomation(0, uiInfo);
+						startNew(j);
 					}
-					for (int j = 0; j < 3; j++)
-					{
-						if (j < mViewSubQuest.size())
-						{
-							RenderOnSubQuest(j, true);
-						}
-						else
-						{
-							RenderOnSubQuest(j, false);
-						}
-					}
+					RenderOnAllSubQuest();
 				}
 			}
 			// Sub
@@ -1371,6 +1258,7 @@ void fq::client::QuestManager::playComplete(float dt)
 
 				if (mIsFinishedCompleteAnimation[i])
 				{
+					mIsFinishedCompleteAnimation[i] = false;
 					if (mViewSubQuest.size() > 0)
 					{
 						mViewSubQuest.erase(mViewSubQuest.begin() + i - 1);
@@ -1382,26 +1270,11 @@ void fq::client::QuestManager::playComplete(float dt)
 						mNextSubQuests.pop_front();
 
 						// New 연출
-						mNewImageCounts[i] = 3.0f;
-						auto uiInfo = mNewImages[i]->GetUIInfomation(0);
-						uiInfo.isRender = true;
-						uiInfo.Alpha = 1;
-						mNewImages[i]->SetUIInfomation(0, uiInfo);
+						startNew(i);
 					}
 
-					for (int i = 0; i < 3; i++)
-					{
-						if (i < mViewSubQuest.size())
-						{
-							RenderOnSubQuest(i, true);
-						}
-						else
-						{
-							RenderOnSubQuest(i, false);
-						}
-					}
+					RenderOnAllSubQuest();
 
-					mIsFinishedCompleteAnimation[i] = false;
 				}
 			}
 		}
@@ -1612,17 +1485,7 @@ void fq::client::QuestManager::PlayFail(float dt)
 				mIsFinishedFailedAnimation[i] = false;
 				mViewSubQuest.erase(mViewSubQuest.begin() + i);
 
-				for (int i = 0; i < 3; i++)
-				{
-					if (i < mViewSubQuest.size())
-					{
-						RenderOnSubQuest(i, true);
-					}
-					else
-					{
-						RenderOnSubQuest(i, false);
-					}
-				}
+				RenderOnAllSubQuest();
 			}
 		}
 	}
@@ -1656,5 +1519,77 @@ void fq::client::QuestManager::eventProcessInProgressDefence()
 				}
 			}
 		});
+}
+
+void fq::client::QuestManager::initSTL()
+{
+	mCurSubQuest.clear();
+	mViewSubQuest.clear();
+	mNextSubQuests.clear();
+	mClearEvents.clear();
+	mClearEventIndexes.clear();
+	mIsInProgressDefence.clear();
+	mIsInProgressDefenceView.clear();
+	mSubQuestTexts.clear();
+	mQuestBoxes.clear();
+	mNewImages.clear();
+	mNewImageCounts.clear();
+	mCompleteImages.clear();
+	mCompleteImageCounts.clear();
+	mLeftChecks.clear();
+	mRightChecks.clear();
+	mIsFinishedCompleteAnimation.clear();
+	mFailImages.clear();
+	mFailImageCounts.clear();
+	mIsFinishedFailedAnimation.clear();
+}
+
+void fq::client::QuestManager::RenderOnAllSubQuest()
+{
+	for (int i = 0; i < 3; i++)
+	{
+		if (i < mViewSubQuest.size())
+		{
+			RenderOnSubQuest(i, true);
+		}
+		else
+		{
+			RenderOnSubQuest(i, false);
+		}
+	}
+}
+
+void fq::client::QuestManager::startNew(int index)
+{
+	mNewImageCounts[index] = 3.0f;
+	auto uiInfo = mNewImages[index]->GetUIInfomation(0);
+	uiInfo.isRender = true;
+	uiInfo.Alpha = 1;
+	mNewImages[index]->SetUIInfomation(0, uiInfo);
+}
+
+void fq::client::QuestManager::startComplete(int index)
+{
+	mCompleteImageCounts[index] = 3.0f;
+	auto uiInfo = mCompleteImages[index]->GetUIInfomation(0);
+	uiInfo.isRender = true;
+	uiInfo.Alpha = 1;
+	mCompleteImages[index]->SetUIInfomation(0, uiInfo);
+
+	uiInfo = mLeftChecks[index]->GetUIInfomation(0);
+	uiInfo.Width = 100;
+	uiInfo.Height = 100;
+	uiInfo.Alpha = 1;
+	uiInfo.isRender = true;
+	mLeftChecks[index]->SetUIInfomation(0, uiInfo);
+
+	uiInfo = mRightChecks[index]->GetUIInfomation(0);
+	uiInfo.Width = 100;
+	uiInfo.Height = 100;
+	uiInfo.Alpha = 1;
+	uiInfo.isRender = true;
+	mRightChecks[index]->SetUIInfomation(0, uiInfo);
+
+	mNewImages[index]->SetIsRender(0, false);
 }
 
