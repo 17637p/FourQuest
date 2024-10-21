@@ -11,6 +11,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11CameraManager> cameraManager,
 		unsigned short width, unsigned short height)
 	{
+		mDevice = device;
+		mResourceManager = resourceManager;
 		mCameraManager = cameraManager;
 
 		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(D3D11VertexBuffer::CreateFullScreenVertexBuffer(device));
@@ -129,6 +131,16 @@ namespace fq::graphics
 		//mSwapChainRTV->Bind(device, mNoneDSV);
 	}
 
+	void D3D11PostProcessingManager::SetPostProcessingInfo(const PostProcessingInfo& postProcessingInfo)
+	{
+		if (mPostProcessingInfo.BlendTextureName != postProcessingInfo.BlendTextureName)
+		{
+			mBlendTextureOrNull = mResourceManager->Create<D3D11Texture>(postProcessingInfo.BlendTextureName);
+		}
+
+		mPostProcessingInfo = postProcessingInfo;
+	}
+
 	void D3D11PostProcessingManager::Excute(std::shared_ptr<D3D11Device> device)
 	{
 		if (mPostProcessingInfo.bUseBloom)
@@ -174,6 +186,7 @@ namespace fq::graphics
 		postProcessingBuffer.HighlightColor = mPostProcessingInfo.HighlightColor;
 		postProcessingBuffer.VignettColor = mPostProcessingInfo.VignettColor;
 		postProcessingBuffer.BlendColor = mPostProcessingInfo.BlendColor;
+		postProcessingBuffer.BlendTextureColor = mPostProcessingInfo.BlendTextureColor;
 
 		postProcessingBuffer.Exposure = mPostProcessingInfo.Exposure;
 		postProcessingBuffer.Contrast = mPostProcessingInfo.Contrast;
@@ -193,9 +206,10 @@ namespace fq::graphics
 		postProcessingBuffer.bUseVignett = mPostProcessingInfo.bUseVignett;
 		postProcessingBuffer.bUseToneMapping = mPostProcessingInfo.bUseToneMapping;
 		postProcessingBuffer.bUseFog = mPostProcessingInfo.bUseFog;
-		
+
 		postProcessingBuffer.bUseGrayScale = mPostProcessingInfo.bUseGrayScale;
 		postProcessingBuffer.bUseBlendColor = mPostProcessingInfo.bUseBlendColor;
+		postProcessingBuffer.bUseBlendTexture = mPostProcessingInfo.bUseBlendTexture;
 
 		// Fog
 		Fog fog;
@@ -221,6 +235,12 @@ namespace fq::graphics
 		}
 		mExtractBrightSRV[mDownScaleUAVIndex]->Bind(device, 1, ED3D11ShaderType::PixelShader);
 		mDSVSRV->Bind(device, 3, ED3D11ShaderType::PixelShader);
+		
+		if (mBlendTextureOrNull != nullptr)
+		{
+			mBlendTextureOrNull->Bind(device, 4, ED3D11ShaderType::PixelShader);
+		}
+
 		mPointClampSS->Bind(device, 0, ED3D11ShaderType::PixelShader);
 		mLinearClampSS->Bind(device, 1, ED3D11ShaderType::PixelShader);
 
