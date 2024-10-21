@@ -4,6 +4,8 @@
 #include "FQCommonPhysics.h"
 #include "PhysicsCollisionDataManager.h"
 
+#include <spdlog\spdlog.h>
+
 namespace fq::physics
 {
 	PhysicsClothManager::PhysicsClothManager()
@@ -43,7 +45,10 @@ namespace fq::physics
 		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
 
 		if (!cloth->Initialize(info, mPhysics, mScene, mCudaContextManager, collisionData, collisionMatrix))
+		{
+			spdlog::error("[PhysicsClothManager ({})] Failed Create Cloth", __LINE__);
 			return false;
+		}
 
 		mPhysicsClothContainer.insert(std::make_pair(info.id, cloth));
 		mCollisionDataManager.lock()->Create(info.id, collisionData);

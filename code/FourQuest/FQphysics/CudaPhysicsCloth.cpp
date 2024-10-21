@@ -74,21 +74,26 @@ namespace fq::physics
 		int deviceCount;
 		cudaError_t cudaStatus = cudaGetDeviceCount(&deviceCount);
 		if (cudaStatus != cudaSuccess || deviceCount == 0) {
-			std::cerr << "CUDA 디바이스 초기화 실패" << std::endl;
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Initlize the Device", __LINE__);
 			return false;
 		}
 
 		cudaStatus = cudaSetDevice(0); // 첫 번째 CUDA 디바이스 사용
 		if (cudaStatus != cudaSuccess) {
-			std::cerr << "CUDA 디바이스 설정 실패" << std::endl;
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Setting the Device", __LINE__);
 			return false;
 		}
 
 		if (cudaContextManager == nullptr)
+		{
+			spdlog::error("[CudaPhysicsCloth ({})] CudaContextManager Is \'nullptr\'", __LINE__);
 			return false;
+		}
 
-		settingInfoData(info);
-		extractSpringsData();
+		if (!settingInfoData(info))
+			return false;
+		if (!extractSpringsData())
+			return false;
 
 		// 재료(Material) 설정
 		mPBDMaterial = physics->createPBDMaterial(
@@ -119,18 +124,23 @@ namespace fq::physics
 		return true;
 	}
 
-	void CudaPhysicsCloth::settingInfoData(const Cloth::CreateClothData& data)
+	bool CudaPhysicsCloth::settingInfoData(const Cloth::CreateClothData& data)
 	{
 		RegisterD3D11VertexBufferWithCUDA((ID3D11Buffer*)data.vertexBuffer);
 		RegisterD3D11IndexBufferWithCUDA((ID3D11Buffer*)data.indexBuffer);
 
 		mWorldTransform = data.worldTransform;
 		mClothMass = data.clothMass;
-
+		 
 		bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);
-		assert(isSucced);
+		if (!isSucced)
+			return false;
+
 		isSucced = CudaClothTool::copyIndexFromGPUToCPU(mIndices, mCudaIndexResource);
-		assert(isSucced);
+		if (!isSucced)
+			return false;
+
+		return true;
 	}
 
 	bool areVerticesEqual(const DirectX::SimpleMath::Vector3& vertex1, const DirectX::SimpleMath::Vector3& vertex2, float epsilon = 1e-6)
@@ -140,8 +150,14 @@ namespace fq::physics
 			(std::abs(vertex1.z - vertex2.z) < epsilon);
 	}
 
-	void CudaPhysicsCloth::extractSpringsData()
+	bool CudaPhysicsCloth::extractSpringsData()
 	{
+		if (mIndices.size() == 0 || mVertices.size() == 0)
+		{
+			spdlog::error("[CudaPhysicsCloth ({})] Indices Or Vertices Size is Zero", __LINE__);
+			return false;
+		}
+
 		// 삼각형 단위로 인덱스를 순회
 		for (size_t i = 0; i < mIndices.size(); i += 3)
 		{
@@ -174,9 +190,11 @@ namespace fq::physics
 				}
 			}
 		}
+
+		return true;
 	}
 
-	void CudaPhysicsCloth::createClothParticle(
+	bool CudaPhysicsCloth::createClothParticle(
 		const Cloth::CreateClothData& info,
 		physx::PxPhysics* physics, 
 		physx::PxScene* scene, 
@@ -196,9 +214,9 @@ namespace fq::physics
 		mParticleSystem = physics->createPBDParticleSystem(*cudaContextManager);
 
 		mParticleSystem->setRestOffset(0.1f);
-		mParticleSystem->setContactOffset(mRestOffset + 0.02f);
-		mParticleSystem->setParticleContactOffset(mRestOffset + 0.02f);
-		mParticleSystem->setSolidRestOffset(mRestOffset);
+		mParticleSystem->setContactOffset(0.001 + 0.02f);
+		mParticleSystem->setParticleContactOffset(0.001 + 0.02f);
+		mParticleSystem->setSolidRestOffset(0.001);
 
 		physx::PxFilterData filterdata;
 		filterdata.word0 = mLayerNumber;
@@ -223,13 +241,14 @@ namespace fq::physics
 		physx::PxVec4* velocity = cudaContextManager->allocPinnedHostBuffer<physx::PxVec4>(numParticles);
 
 		// cloth를 생성할 파티클과 스프링 데이터를 기반으로 하는 Cloth Particle Buffer 생성
-		settingParticleBuffer(info, numSprings, numTriangles, numParticles, particlePhase, particleMass, phase, positionInvMass, velocity);
+		if (!settingParticleBuffer(info, numSprings, numTriangles, numParticles, particlePhase, particleMass, phase, positionInvMass, velocity))
+			return false;
 
 		// cloth 생성
 		createCloth(numParticles, cudaContextManager, phase, positionInvMass, velocity);
 	}
 
-	void CudaPhysicsCloth::settingParticleBuffer(
+	bool CudaPhysicsCloth::settingParticleBuffer(
 		const Cloth::CreateClothData& info,
 		const physx::PxU32& numSprings,
 		const physx::PxU32& numTriangles,
@@ -280,11 +299,21 @@ namespace fq::physics
 		}
 
 		// 생성된 스프링 및 삼각형 수가 예상대로 생성되었는지 확인
-		PX_ASSERT(numSprings == springs.size());
-		PX_ASSERT(numTriangles == triangles.size() / 3);
+		if (!(numSprings == springs.size()))
+		{
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Create Cloth Spring", __LINE__);
+			return false;
+		}
+		if (!(numTriangles == triangles.size() / 3))
+		{
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Create Cloth Spring", __LINE__);
+			return false;
+		}
 
 		// 천막의 버퍼에 데이터 추가
 		mClothBufferHelper->addCloth(0.f, 0.f, 0.f, triangles.begin(), numTriangles, springs.begin(), numSprings, positionInvMass, numParticles);
+
+		return true;
 	}
 
 	void CudaPhysicsCloth::createCloth(
@@ -349,7 +378,7 @@ namespace fq::physics
 		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaVertexResource, buffer, cudaGraphicsRegisterFlagsNone);
 		if (cudaStatus != cudaSuccess)
 		{
-			spdlog::warn("[CudaPhysicsCloth Warnning({})] CUDA Failed Direct3D Register Resource", __LINE__);
+			spdlog::error("[CudaPhysicsCloth Warnning({})] CUDA Failed Direct3D Register Resource", __LINE__);
 			return false;
 		}
 		return true;
@@ -360,7 +389,7 @@ namespace fq::physics
 		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaIndexResource, buffer, cudaGraphicsRegisterFlagsNone);
 		if (cudaStatus != cudaSuccess)
 		{
-			spdlog::warn("[CudaPhysicsCloth Warnning({})] CUDA Failed Direct3D Register Resource", __LINE__);
+			spdlog::error("[CudaPhysicsCloth Warnning({})] CUDA Failed Direct3D Register Resource", __LINE__);
 			return false;
 		}
 		return true;

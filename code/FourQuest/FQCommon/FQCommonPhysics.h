@@ -353,6 +353,7 @@ namespace fq::physics
 		{
 			std::string modelPath;
 			std::vector<DirectX::SimpleMath::Vector3> vertices;
+			std::vector<DirectX::SimpleMath::Vector2> uvs;
 			std::vector<unsigned int> indices;
 			std::vector<unsigned int> disableIndices;
 		};
@@ -381,7 +382,7 @@ namespace fq::physics
 
 			DirectX::SimpleMath::Matrix worldTransform = {};
 			float clothMass = 1.f;
-			float restOffset = 1.f;
+			float restOffset = 0.001f;
 
 			ClothData clothData;
 

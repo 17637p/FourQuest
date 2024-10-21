@@ -18,7 +18,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 가지고 있는 경로를 통해 Cloth를 로드합니다.
 		/// </summary>
-		void Load();
+		bool Load();
 
 		/// <summary>
 		/// Cloth 값들을 세팅합니다.

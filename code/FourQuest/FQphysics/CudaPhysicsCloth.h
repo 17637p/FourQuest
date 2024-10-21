@@ -67,9 +67,9 @@ namespace fq::physics
 
 
 	private:
-		void settingInfoData(const Cloth::CreateClothData& info);
-		void extractSpringsData();
-		void createClothParticle(
+		bool settingInfoData(const Cloth::CreateClothData& info);
+		bool extractSpringsData();
+		bool createClothParticle(
 			const Cloth::CreateClothData& info,
 			physx::PxPhysics* physics, 
 			physx::PxScene* scene, 
@@ -77,7 +77,7 @@ namespace fq::physics
 			int* collisionMatrix, 
 			std::shared_ptr<CollisionData> collisionData);
 
-		void settingParticleBuffer(
+		bool settingParticleBuffer(
 			const Cloth::CreateClothData& info,
 			const physx::PxU32& numSprings,
 			const physx::PxU32& numTriangles,

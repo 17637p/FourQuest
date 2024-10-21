@@ -4,6 +4,9 @@
 #include <cuda_d3d11_interop.h>
 #include <device_launch_parameters.h>
 
+#include "HelperCudaSpdlog.h"
+#include <iostream>
+
 __device__ physx::PxVec2 Sub(const physx::PxVec2& lhs, const physx::PxVec2& rhs) {
 	return { lhs.x - rhs.x, lhs.y - rhs.y };
 }
@@ -231,12 +234,22 @@ namespace fq::physics
 		cudaGraphicsResource* ID3D11VertexBuffer)
 	{
 		// CUDA 리소스를 매핑
-		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer); assert(cudaStatus == cudaSuccess);
+		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer); 
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyVertexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		// CUDA 포인터 가져오기
 		void* devPtr = nullptr;
 		size_t vertexSize = 0;
-		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &vertexSize, ID3D11VertexBuffer); assert(cudaStatus == cudaSuccess);
+		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &vertexSize, ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyVertexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		int threadsPerBlock = 256;
 		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
@@ -252,13 +265,23 @@ namespace fq::physics
 
 		// CUDA 함수 실행
 		CopyVertexDataToCPU << < blocksPerGrid, threadsPerBlock >> > (d_vertices, d_uvs, Trnasform, (Vertex*)devPtr, vertexSize);
-		cudaStatus = cudaDeviceSynchronize(); assert(cudaStatus == cudaSuccess);
+		cudaStatus = cudaDeviceSynchronize(); 
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyVertexFromGPUToCPU Error(Error Code : "<< cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		// 복사한 데이터 값을 CPU 메모리로 복사
 		cudaMemcpy(vertices.data(), d_vertices, vertexSize * sizeof(DirectX::SimpleMath::Vector3), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 		cudaMemcpy(uvs.data(), d_uvs, vertexSize * sizeof(DirectX::SimpleMath::Vector2), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 
-		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11VertexBuffer); assert(cudaStatus == cudaSuccess);
+		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyVertexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		cudaFree(d_vertices);
 		cudaFree(d_uvs);
@@ -271,16 +294,31 @@ namespace fq::physics
 		cudaGraphicsResource* ID3D11IndexBuffer)
 	{
 		// CUDA 리소스를 매핑
-		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11IndexBuffer); assert(cudaStatus == cudaSuccess);
+		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11IndexBuffer); 
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		// CUDA 포인터 가져오기
 		void* devPtr = nullptr;
 		size_t indexSize = 0;
-		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &indexSize, ID3D11IndexBuffer); assert(cudaStatus == cudaSuccess);
+		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &indexSize, ID3D11IndexBuffer); 
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		cudaMemcpy(indices.data(), devPtr, indexSize * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 
-		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11IndexBuffer); assert(cudaStatus == cudaSuccess);
+		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11IndexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		return true;
 	}
@@ -297,13 +335,21 @@ namespace fq::physics
 
 		// CUDA 리소스를 매핑
 		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer);
-		assert(cudaStatus == cudaSuccess);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		// CUDA 포인터 가져오기
 		void* devPtr = nullptr;
 		size_t size = 0;
 		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &size, ID3D11VertexBuffer);
-		assert(cudaStatus == cudaSuccess);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		unsigned int vertexSize = vertices.size();
 		unsigned int indexSize = indices.size();
@@ -322,11 +368,19 @@ namespace fq::physics
 		UpdateVertex << <blocksPerGrid, threadsPerBlock >> > (
 			particle, d_uvs, vertexSize, d_indices, indexSize, (Vertex*)devPtr);
 		cudaStatus = cudaDeviceSynchronize();
-		assert(cudaStatus == cudaSuccess);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		// CUDA 리소스를 언매핑
 		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11VertexBuffer);
-		assert(cudaStatus == cudaSuccess);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		// 메모리 해제
 		cudaFree(d_uvs);
@@ -344,12 +398,22 @@ namespace fq::physics
 		int blocksPerGrid = (sameVertices.size() + threadsPerBlock - 1) / threadsPerBlock;
 
 		// CUDA 리소스를 매핑
-		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer); assert(cudaStatus == cudaSuccess);
+		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer); 
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateNormalToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		// CUDA 포인터 가져오기
 		void* devPtr = nullptr;
 		size_t size = 0;
-		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &size, ID3D11VertexBuffer); assert(cudaStatus == cudaSuccess);
+		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &size, ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateNormalToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		// 같은 위치의 버텍스 세팅
 		std::vector<unsigned int> firstVertex;
@@ -372,10 +436,21 @@ namespace fq::physics
 
 		// CUDA 함수 실행
 		processVerticesKernel << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (Vertex*)devPtr, vertexSize);
-		cudaStatus = cudaDeviceSynchronize(); assert(cudaStatus == cudaSuccess);
+		cudaStatus = cudaDeviceSynchronize(); 
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateNormalToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
+
 
 		// CUDA 리소스를 언매핑
-		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11VertexBuffer); assert(cudaStatus == cudaSuccess);
+		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11VertexBuffer); 
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateNormalToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		// 메모리 해제
 		cudaFree(d_firstVertex);
@@ -436,7 +511,12 @@ namespace fq::physics
 		//nextMatrix.m[3][3] = nextTransform._44;
 
 		TransformVertices << <blocksPerGrid, threadsPerBlock >> > (particle, prevMatrix, nextMatrix, vertexSize);
-		cudaDeviceSynchronize();
+		cudaError_t cudaStatus = cudaDeviceSynchronize();
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateWorldTransformToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		return true;
 	}

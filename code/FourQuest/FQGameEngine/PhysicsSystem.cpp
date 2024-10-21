@@ -645,7 +645,12 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		if (bodyType == RigidBody::EBodyType::Static)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(triangleColliderInfo, triangleCollider->GetType());
-			assert(check);
+			if (!check)
+			{
+				spdlog::error("[PhysicsSystem ({})] Failed Create StaticBody(TriangleMesh)", __LINE__);
+				return;
+			}
+
 			mColliderContainer.insert({ id,
 				{mTriangleTypeID
 				, triangleCollider->shared_from_this()
@@ -658,7 +663,12 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
 
 			bool check = mPhysicsEngine->CreateDynamicBody(triangleColliderInfo, triangleCollider->GetType(), isKinematic);
-			assert(check);
+			if (!check)
+			{
+				spdlog::error("[PhysicsSystem ({})] Failed Create DynamicBody(TriangleMesh)", __LINE__);
+				return;
+			}
+
 			mColliderContainer.insert({ id,
 				{mTriangleTypeID
 				, triangleCollider->shared_from_this()
@@ -675,7 +685,12 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		// ClothCollider 컴포넌트 아이디 세팅하고 로드하기
 		auto clothCollider = object->GetComponent<ClothCollider>();
 		clothCollider->SetClothID(id);
-		clothCollider->Load();
+		if (!clothCollider->Load())
+		{
+			spdlog::warn("[PhysicsSystem ({}) Warrning] Failed load Cloth File( ID : {} )", __LINE__, id);
+			return;
+		}
+
 
 		// 그래픽스 엔진에서 스태틱 메시 및 스켈레탈 메시에서 VertexBuffer, IndexBuffer 포인터 가져오기
 		if (object->HasComponent<StaticMeshRenderer>())
@@ -702,7 +717,12 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		// 물리 엔진에서 천 생성하기
 		bool check = mPhysicsEngine->CreateCloth(*clothCollider->GetClothInfo().get());
-		assert(check);
+		if (!check)
+		{
+			spdlog::error("[PhysicsSystem ({})] Failed Create Cloth", __LINE__);
+			return;
+		}
+
 		mColliderContainer.insert({ id,
 			{mClothTypeID
 			, clothCollider->shared_from_this()

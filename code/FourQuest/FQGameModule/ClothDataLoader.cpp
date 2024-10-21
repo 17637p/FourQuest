@@ -11,9 +11,19 @@ namespace fq::game_module
 		return json{ vec.x, vec.y, vec.z };
 	}
 
+	json ClothDataLoader::Vector2ToJson(const DirectX::SimpleMath::Vector2& vec)
+	{
+		return json{ vec.x, vec.y };
+	}
+
 	DirectX::SimpleMath::Vector3 ClothDataLoader::JsonToVector3(const json& vecJson)
 	{
 		return DirectX::SimpleMath::Vector3(vecJson[0], vecJson[1], vecJson[2]);
+	}
+
+	DirectX::SimpleMath::Vector2 ClothDataLoader::JsonToVector2(const json& vecJson)
+	{
+		return DirectX::SimpleMath::Vector2(vecJson[0], vecJson[1]);
 	}
 
 	void ClothDataLoader::Save(const std::shared_ptr<fq::physics::Cloth::ClothData> data, const Path& path)
@@ -27,6 +37,13 @@ namespace fq::game_module
 		for (const auto& vertex : data->vertices)
 		{
 			clothJson["vertices"].push_back(Vector3ToJson(vertex));
+		}
+
+		// uv를 JSON 배열로 변환
+		clothJson["uvs"] = json::array();
+		for (const auto& uv : data->uvs)
+		{
+			clothJson["uvs"].push_back(Vector2ToJson(uv));
 		}
 
 		clothJson["indices"] = data->indices;
@@ -49,10 +66,18 @@ namespace fq::game_module
 		}
 	}
 
-	std::shared_ptr<fq::physics::Cloth::ClothData> ClothDataLoader::LoadArticulationData(const Path& path, fq::physics::Cloth::ClothData& clothData)
+	bool ClothDataLoader::LoadArticulationData(const Path& path, fq::physics::Cloth::ClothData& clothData)
 	{
-		assert(fs::exists(path));
-		assert(path.extension() == ".cloth");
+		if (!fs::exists(path))
+		{
+			spdlog::error("[ClothDataLoader ({})] ClothPath is Null", __LINE__);
+			return false;
+		}
+		if (!(path.extension() == ".cloth"))
+		{
+			spdlog::error("[ClothDataLoader ({})] File is not \'.cloth\' file", __LINE__);
+			return false;
+		}
 
 		// 파일에서 JSON 데이터를 읽기
 		std::ifstream file(path);
@@ -60,8 +85,8 @@ namespace fq::game_module
 
 		if (!file.is_open())
 		{
-			spdlog::error("[Fail] Open \'{}\' File!!", filePath);
-			return nullptr;
+			spdlog::error("[ClothDataLoader ({})] Failed Open \'{}\' File!!", __LINE__, filePath);
+			return false;
 		}
 
 		ordered_json clothJson;
@@ -83,6 +108,18 @@ namespace fq::game_module
 			}
 		}
 
+		// uvs 읽기
+		if (clothJson.contains("uvs") && clothJson["uvs"].is_array())
+		{
+			for (const auto& uvJson : clothJson["uvs"])
+			{
+				if (uvJson.is_array() && uvJson.size() == 3)
+				{
+					clothData.uvs.push_back(JsonToVector2(uvJson));
+				}
+			}
+		}
+
 		// indices 읽기
 		if (clothJson.contains("indices") && clothJson["indices"].is_array())
 		{
@@ -94,5 +131,7 @@ namespace fq::game_module
 		{
 			clothData.disableIndices = clothJson["disableIndices"].get<std::vector<unsigned int>>();
 		}
+
+		return true;
 	}
 }

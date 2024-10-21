@@ -14,11 +14,11 @@ namespace fq::game_module
 	{
 	}
 
-	void ClothCollider::Load()
+	bool ClothCollider::Load()
 	{
 		ClothDataLoader loader;
 
-		loader.LoadArticulationData(mClothPath, mClothInfo->clothData);
+		return loader.LoadArticulationData(mClothPath, mClothInfo->clothData);
 	}
 
 	entt::meta_handle fq::game_module::ClothCollider::GetHandle()
