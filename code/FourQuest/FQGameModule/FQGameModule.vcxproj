@@ -224,6 +224,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BlendUVAnimator.h" />
     <ClInclude Include="ClothCollider.h" />
     <ClInclude Include="ClothDataLoader.h" />
     <ClInclude Include="CameraShakeTrack.h" />
@@ -322,6 +323,7 @@
     <ClInclude Include="VibrationTrack.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BlendUVAnimator.cpp" />
     <ClCompile Include="ClothCollider.cpp" />
     <ClCompile Include="ClothDataLoader.cpp" />
     <ClCompile Include="CameraShakeTrack.cpp" />

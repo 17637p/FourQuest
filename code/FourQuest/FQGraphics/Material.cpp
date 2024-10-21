@@ -43,6 +43,7 @@ namespace fq::graphics
 		mEmissive = createTextureOrNull(mInfo.EmissiveFileName, mResourceManager);
 		mMetalnessSmoothness = createTextureOrNull(mInfo.MetalnessSmoothnessFileName, mResourceManager);
 		mNoise = createTextureOrNull(mInfo.NoiseFileName, mResourceManager);
+		mBlend = createTextureOrNull(mInfo.BlendTextureName, mResourceManager);
 	}
 
 	void Material::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
@@ -54,6 +55,7 @@ namespace fq::graphics
 		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::PixelShader);
 		if (GetHasMetalnessSmoothness()) mMetalnessSmoothness->Bind(d3d11Device, 5, ED3D11ShaderType::PixelShader);
 		if (GetHasNoise()) mNoise->Bind(d3d11Device, 10, ED3D11ShaderType::PixelShader);
+		if (GetHasBlend()) mBlend->Bind(d3d11Device, 11, ED3D11ShaderType::PixelShader);
 	}
 
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device,

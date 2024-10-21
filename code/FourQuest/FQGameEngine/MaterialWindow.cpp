@@ -216,6 +216,14 @@ void fq::game_engine::MaterialWindow::Render()
 
 		// mul emissive Alpha
 		ImGui::Checkbox("Use Mul Emissive Alpha", &materialInfo.bUseMulEmissiveAlpha);
+
+		// blend texture
+		ImGui::Checkbox("Use Blend Texture", &materialInfo.bUseBlendTexture);
+		getFilePath(materialInfo.BlendTextureName, "Blend Texture Name");
+		ImGui::Checkbox("Blend BaseColor", &materialInfo.bIsBlendBaseColor);
+		ImGui::Checkbox("Blend Emissive", &materialInfo.bIsBlendEmissive);
+		ImGui::InputFloat2("Blend Tiling", reinterpret_cast<float*>(&materialInfo.BlendTiling));
+		ImGui::InputFloat2("Blend Offset", reinterpret_cast<float*>(&materialInfo.BlendOffset));
 	}
 
 	if (mMaterialInterface != nullptr)

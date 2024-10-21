@@ -569,6 +569,7 @@ struct ModelMaterial
     float4 DissolveOutlineEndEmissive;
     float4 RimColor;
     float4 InvRimColor;
+    float4 BlendScaleOffset;
     
     float Metalness;
     float Roughness;
@@ -594,6 +595,10 @@ struct ModelMaterial
     float InvRimPow;
     float InvRimIntensity;
     bool UseMulEmissiveAlpha;
+    
+    bool bUseBlendTexture;
+    bool bIsBlendBaseColor;
+    bool bIsBlendEmissive;
 };
 
 #define DISSOLVE_ADDITIVE 0

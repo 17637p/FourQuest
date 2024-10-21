@@ -150,6 +150,10 @@ namespace fq::graphics
 		CBMaterialData.InvRimIntensity = info.InvRimIntensity;
 		CBMaterialData.bUseMulEmissiveAlpha = info.bUseMulEmissiveAlpha;
 
+		CBMaterialData.bUseBlendTexture = info.bUseBlendTexture;
+		CBMaterialData.bIsBlendBaseColor = info.bIsBlendBaseColor;
+		CBMaterialData.bIsBlendEmissive = info.bIsBlendEmissive;
+
 		if (!materialInstanceInfo.bUseInstanceing)
 		{
 			if (materialInstanceInfo.bUseBaseColor)
@@ -194,6 +198,15 @@ namespace fq::graphics
 				CBMaterialData.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(materialInstanceInfo.UVScale.x, materialInstanceInfo.UVScale.y, 0)
 					* DirectX::SimpleMath::Matrix::CreateTranslation(materialInstanceInfo.UVOffset.x, materialInstanceInfo.UVOffset.y, 0)
 					* texTransform).Transpose();
+			}
+
+			if (materialInstanceInfo.bUseBlendUV)
+			{
+				CBMaterialData.BlendScaleOffset = materialInstanceInfo.BlendUVScaleOffset;
+			}
+			else
+			{
+				CBMaterialData.BlendScaleOffset = { info.BlendTiling.x, info.BlendTiling.y, info.BlendOffset.x, info.BlendOffset.y };
 			}
 		}
 

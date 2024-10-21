@@ -213,6 +213,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector4 DissolveEndEmissive;
 		DirectX::SimpleMath::Vector4 RimLightColor;
 		DirectX::SimpleMath::Vector4 InvRimLightColor;
+		DirectX::SimpleMath::Vector4 BlendScaleOffset;
 
 		float Metalness;
 		float Roughness;
@@ -238,6 +239,11 @@ namespace fq::graphics
 		float InvRimPow = 2.f;
 		float InvRimIntensity = 1.f;
 		int bUseMulEmissiveAlpha = false;
+		
+		int bUseBlendTexture = false;
+		int bIsBlendBaseColor = false;
+		int bIsBlendEmissive = false;
+		float unused[1];
 	};
 
 	struct CBDecalObject
@@ -263,7 +269,8 @@ namespace fq::graphics
 		float NormalBlend;
 
 		float AlphaCutoff;
-		float unused[3];
+		int bUseEmissiveAlpha;
+		float unused[2];
 	};
 
 	struct ParticleFrameData
