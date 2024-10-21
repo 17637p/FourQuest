@@ -2,8 +2,10 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include <memory>
 
+#include "../FQGameModule/PrefabResource.h"
 #include "IEditorWindow.h"
 
 namespace fq::game_module
@@ -25,12 +27,26 @@ namespace fq::game_engine
 		void Render()override;
 		void Initialize(GameProcess* game, EditorProcess* editor);
 
+
+		bool& IsWindowOpen() { return mbIsOpen; }
+
+	private:
+		void beginPrefabWindow();
+		void beginSearchWindow();
+		void beginChangeWindow();
+
+		std::vector<std::shared_ptr<game_module::GameObject>> loadClonePrefabResource();
+		void change();
+
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
+		bool mbIsOpen = false;
 
-		std::string mPrefabPath;
-		std::vector<std::shared_ptr<game_module::GameObject>> mPrefabInstance;
-		std::vector<std::shared_ptr<game_module::GameObject>> mChangeObjects;
+		game_module::PrefabResource mPrefabPath;
+
+		std::string mSearchName;
+		std::vector<std::shared_ptr<game_module::GameObject>> mSearchList;
+		std::map<unsigned int ,std::shared_ptr<game_module::GameObject>> mChangeList;;
 	};
 }

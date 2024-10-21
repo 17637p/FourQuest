@@ -266,17 +266,17 @@
     <ClInclude Include="ClothEditorWindow.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
-    <ClInclude Include="StateEventSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="ChangeWindow.h">
-      <Filter>include</Filter>
+      <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="GameVariableWindow.h">
-      <Filter>include</Filter>
+      <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="RenderingDebugWindow.h">
-      <Filter>include</Filter>
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="StateEventSystem.h">
+      <Filter>include\03.GameSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -463,17 +463,17 @@
     <ClCompile Include="ClothEditorWindow.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
-    <ClCompile Include="StateEventSystem.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="ChangeWindow.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="GameVariableWindow.cpp">
-      <Filter>src</Filter>
+      <Filter>src\11.Window</Filter>
     </ClCompile>
     <ClCompile Include="RenderingDebugWindow.cpp">
-      <Filter>src</Filter>
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="GameVariableWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="StateEventSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
