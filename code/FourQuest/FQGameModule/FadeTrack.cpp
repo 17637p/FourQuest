@@ -69,7 +69,17 @@ namespace fq::game_module
 		{
 			auto postProcessing = mPostProcessObject.lock()->GetComponent<PostProcessing>();
 
-			float blendTime = 1.f - ((mBlendTime - mElapsedTime) / mBlendTime);
+			float blendTime;
+
+			if (mBlendTime == 0.f)
+			{
+				blendTime = 1.f;
+			}
+			else
+			{
+				blendTime = 1.f - ((mBlendTime - mElapsedTime) / mBlendTime);
+			}
+
 			DirectX::SimpleMath::Color currentColor = DirectX::SimpleMath::Color::Lerp(mPrevColor, mFinalColor, blendTime);
 
 			auto info = postProcessing->GetPostProcessingInfo();

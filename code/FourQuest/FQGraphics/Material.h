@@ -31,18 +31,18 @@ namespace fq::graphics
 		inline bool GetHasRoughness() const { return mRoughness != nullptr; }
 		inline bool GetHasNormal() const { return mNormal != nullptr; }
 		inline bool GetHasEmissive() const { return mEmissive != nullptr; }
-		inline bool GetHasOpacity() const { return mOpacity != nullptr; }
 		inline bool GetHasMetalnessSmoothness() const { return mMetalnessSmoothness != nullptr; }
 		inline bool GetHasNoise() const { return mNoise != nullptr; }
+		inline bool GetHasBlend() const { return mBlend != nullptr; }
 
 		std::shared_ptr<D3D11Texture> GetBaseColor() const { return mBaseColor; }
 		std::shared_ptr<D3D11Texture> GetMetalness() const { return mMetalness; }
 		std::shared_ptr<D3D11Texture> GetRoughness() const { return mRoughness; }
 		std::shared_ptr<D3D11Texture> GetNormal() const { return mNormal; }
 		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
-		std::shared_ptr<D3D11Texture> GetOpacity() const { return mOpacity; }
 		std::shared_ptr<D3D11Texture> GetMetalnessSmoothness() const { return mMetalnessSmoothness; }
 		std::shared_ptr<D3D11Texture> GetNoise() const { return mNoise; }
+		std::shared_ptr<D3D11Texture> GetBlend() const { return mBlend; }
 
 		const std::string& GetName() const override { return mName; }
 
@@ -59,9 +59,9 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Texture> mRoughness;
 		std::shared_ptr<D3D11Texture> mNormal;
 		std::shared_ptr<D3D11Texture> mEmissive;
-		std::shared_ptr<D3D11Texture> mOpacity;
 		std::shared_ptr<D3D11Texture> mMetalnessSmoothness;
 		std::shared_ptr<D3D11Texture> mNoise;
+		std::shared_ptr<D3D11Texture> mBlend;
 	};
 
 	class TerrainMaterial

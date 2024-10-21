@@ -29,18 +29,7 @@ namespace fq::game_module
 		mTotalPlayTime = info.totalPlayTime;
 		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;
 		mPlayerID = info.playerID;
-
-		if (mTargetObject.expired())
-			return false;
-
-		if (!mTargetObject.lock()->HasComponent<Transform>()) return false;
-
 		mKeys = info.keys;
-
-		auto transform = mTargetObject.lock()->GetComponent<Transform>();
-		mPrevPosition = transform->GetWorldPosition();
-		mPrevRotation = transform->GetWorldRotation();
-		mPrevScale = transform->GetWorldScale();
 
 		return true;
 	}
@@ -70,6 +59,15 @@ namespace fq::game_module
 		{
 			spdlog::warn("[Warrning] Do not Have TargetObject");
 		}
+
+		auto transform = mTargetObject.lock()->GetComponent<Transform>();
+		mPrevPosition = transform->GetWorldPosition();
+		mPrevRotation = transform->GetWorldRotation();
+		mPrevScale = transform->GetWorldScale();
+
+		transform->SetWorldPosition(mKeys[0].position);
+		transform->SetWorldRotation(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(mKeys[0].rotation));
+		transform->SetWorldScale(mKeys[0].scale);
 	}
 
 	void PlayerMoveTrack::PlayOn()

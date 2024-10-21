@@ -187,7 +187,7 @@ namespace fq::game_module
 		if (!mbIsTimeStop)
 			return;
 
-		GetScene()->GetTimeManager()->SetTimeScale(0.01f);
+		GetScene()->GetTimeManager()->SetTimeScale(0.f);
 
 		// 시간 정지 했을 경우에 시퀀스가 가지고 있는 오브젝트 업데이트 ( 단, 텍스트UI는 제외(오류 뜸) )
 		for (const auto& track : mTracks)

@@ -31,9 +31,10 @@ struct VertexOut
     float DepthView : TEXCOORD3;
     float3 NormalV : TEXCOORD4;
     float3 TangentV : TEXCOORD5;
+    float2 BlendUV : TEXCOORD6;
 #ifdef STATIC
-    float2 UV1 : TEXCOORD6;    
-    uint LightmapIndex : TEXCOORD7;
+    float2 UV1 : TEXCOORD7;    
+    uint LightmapIndex : TEXCOORD8;
 #endif
 #ifdef VERTEX_COLOR
     float4 Color : COLOR0;
@@ -102,6 +103,8 @@ VertexOut main(VertexIn vin)
     vout.TangentV = normalize(mul(vout.TangentW, (float3x3) cView));
     
     vout.UV = mul(float4(vin.UV, 0, 1), gModelMaterial.TexTransform);
+    
+    vout.BlendUV = vin.UV * gModelMaterial.BlendScaleOffset.xy + gModelMaterial.BlendScaleOffset.zw;
     
     vout.ClipSpacePosZ = vout.PositionH.z;
     

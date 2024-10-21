@@ -943,6 +943,41 @@ namespace fq::loader
 			materialInfoJson.at("bUseMulEmissiveAlpha").get_to(materialInfo.bUseMulEmissiveAlpha);
 		}
 
+		find = materialInfoJson.find("bUseBlendTexture");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("bUseBlendTexture").get_to(materialInfo.bUseBlendTexture);
+		}
+		find = materialInfoJson.find("BlendTextureName");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("BlendTextureName").get_to(temp);
+			materialInfo.BlendTextureName = std::wstring(temp.begin(), temp.end());
+			materialInfo.BlendTextureName = fq::path::GetAbsolutePath(materialInfo.BlendTextureName);
+		}
+		find = materialInfoJson.find("bIsBlendBaseColor");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("bIsBlendBaseColor").get_to(materialInfo.bIsBlendBaseColor);
+		}
+		find = materialInfoJson.find("bIsBlendEmissive");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("bIsBlendEmissive").get_to(materialInfo.bIsBlendEmissive);
+		}
+		find = materialInfoJson.find("BlendTiling");
+		if (find != materialInfoJson.end())
+		{
+			materialInfo.BlendTiling.x = materialInfoJson.at("BlendTiling")[0].get<float>();
+			materialInfo.BlendTiling.y = materialInfoJson.at("BlendTiling")[1].get<float>();
+		}
+		find = materialInfoJson.find("BlendOffset");
+		if (find != materialInfoJson.end())
+		{
+			materialInfo.BlendOffset.x = materialInfoJson.at("BlendOffset")[0].get<float>();
+			materialInfo.BlendOffset.y = materialInfoJson.at("BlendOffset")[1].get<float>();
+		}
+
 		return materialInfo;
 	}
 	void MaterialLoader::Write(const std::filesystem::path& filePath, const fq::graphics::MaterialInfo& material)
@@ -1021,6 +1056,13 @@ namespace fq::loader
 			{"InvRimIntensity", material.InvRimIntensity },
 
 			{"bUseMulEmissiveAlpha", material.bUseMulEmissiveAlpha },
+
+			{"bUseBlendTexture", material.bUseBlendTexture },
+			{"BlendTextureName", fq::path::GetRelativePath(std::string(material.BlendTextureName.begin(), material.BlendTextureName.end())).string() },
+			{"bIsBlendBaseColor", material.bIsBlendBaseColor },
+			{"bIsBlendEmissive", material.bIsBlendEmissive },
+			{"BlendTiling", { material.BlendTiling.x, material.BlendTiling.y } },
+			{"BlendOffset", { material.BlendOffset.x, material.BlendOffset.y } },
 		};
 
 		const std::filesystem::path parentPath = filePath.parent_path();

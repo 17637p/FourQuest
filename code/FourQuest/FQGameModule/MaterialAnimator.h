@@ -51,7 +51,6 @@ namespace fq::game_module
 	};
 
 	// 자식 계층 이어서 처리
-
 	class MaterialAnimator : public Component
 	{
 		using ControllerPath = std::string;
@@ -63,7 +62,7 @@ namespace fq::game_module
 
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void UpdateTimePos(float dt);
+		void OnUpdate(float dt);
 
 		void SetAlphaAnimatorInfo(const AlphaAnimatorInfo& alphaAnimatorInfo) { mAlphaAnimatorInfo = alphaAnimatorInfo; }
 		const AlphaAnimatorInfo& GetAlphaAnimatorInfo() const { return mAlphaAnimatorInfo; }
