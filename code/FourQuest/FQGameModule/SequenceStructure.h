@@ -20,6 +20,7 @@ namespace fq::game_module
 	struct AnimationTrackKey
 	{
 		float time = 0.f;
+		float speed = 1.f;
 		std::string animationPath = {};
 	};
 

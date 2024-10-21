@@ -188,18 +188,6 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 				nodeHierarchyInstance.UpdateByLocalTransform(lowerStartIndex, lowerEndIndex);
 			}
 		});
-
-	mScene->ViewComponents<UVAnimator>(
-		[dt](GameObject& object, UVAnimator& animator)
-		{
-			animator.UpdateTimePos(dt);
-		});
-
-	mScene->ViewComponents<MaterialAnimator>(
-		[dt](GameObject& object, MaterialAnimator& animator)
-		{
-			animator.UpdateTimePos(dt);
-		});
 }
 
 bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)

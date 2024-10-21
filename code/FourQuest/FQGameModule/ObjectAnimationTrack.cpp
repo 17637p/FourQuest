@@ -88,11 +88,11 @@ namespace fq::game_module
 			{
 				float animationTotalTime = mAnimationContainer[keyNumber]->GetAnimationClip().Duration;
 
-				while (time >= animationTotalTime)
-					time -= animationTotalTime;
+				while (time >= animationTotalTime / mAnimationTrackKeys[keyNumber].speed)
+					time -= animationTotalTime / mAnimationTrackKeys[keyNumber].speed;
 			}
 
-			nodeHierarchyInstance.Update(time, mAnimationContainer[keyNumber]);
+			nodeHierarchyInstance.Update(time * mAnimationTrackKeys[keyNumber].speed, mAnimationContainer[keyNumber]);
 		}
 	}
 

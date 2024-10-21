@@ -48,7 +48,6 @@ void fq::game_engine::FileDialog::Render()
 	if (ImGui::Begin("FileDialog", &mbIsOpen))
 	{
 		beginWindow_FilePathWindow();
-
 		beginWindow_FileList();
 	}
 	ImGui::End();
@@ -78,7 +77,6 @@ void fq::game_engine::FileDialog::beginWindow_FilePathWindow()
 		beginDirectory(mResourcePath);
 	}
 	ImGui::EndChild();
-
 	ImGui::SameLine();
 }
 
