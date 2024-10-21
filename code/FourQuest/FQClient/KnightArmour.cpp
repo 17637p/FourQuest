@@ -355,6 +355,7 @@ void fq::client::KnightArmour::checkSkillCoolTime(float dt)
 		float shieldSkiilCoolTime = (mShieldCoolTime - mShieldCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
 		mPlayer->SetASkillCoolTimeRatio(mDashElapsedTime / dashSkillCoolTime);
 		mPlayer->SetRSkillCoolTimeRatio(mShieldElapsedTime / shieldSkiilCoolTime);
+
 	}
 	else
 	{

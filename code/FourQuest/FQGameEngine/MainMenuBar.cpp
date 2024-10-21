@@ -344,6 +344,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& onRenderingDebugWindow = mEditorProcess->mRenderingDebugWindow->IsWindowOpen();
 		ImGui::Checkbox("RenderingDeubgWindow", &onRenderingDebugWindow);
 
+		bool& onChangeWindow = mEditorProcess->mChangeWindow->IsWindowOpen();
+		ImGui::Checkbox("ChangeWindow", &onChangeWindow);
+
 		ImGui::EndMenu();
 	}
 }
