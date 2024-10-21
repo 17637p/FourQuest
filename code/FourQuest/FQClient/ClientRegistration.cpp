@@ -2123,8 +2123,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SubQuest")
 		.data<&QuestManager::mPortalPrefab>("PortalPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "PortalPrefab")
-		.data<&QuestManager::mDistance>("Distance"_hs)
-		.prop(fq::reflect::prop::Name, "Distance")
+		.data<&QuestManager::mArmourSpawnDistance>("ArmourSpawnDistance"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
 		.base<fq::game_module::Component>();
 
 	entt::meta<DefenceCounter>()
