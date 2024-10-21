@@ -21,7 +21,7 @@ namespace fq::game_module
 		return cloneAnimator;
 	}
 
-	void fq::game_module::MaterialAnimator::UpdateTimePos(float dt)
+	void fq::game_module::MaterialAnimator::OnUpdate(float dt)
 	{
 		updateAlpha(dt);
 		updateDissolve(dt);
@@ -62,7 +62,7 @@ namespace fq::game_module
 		info.DissolveCutoff = std::min<float>(info.DissolveCutoff, info.MaxDissolveCutoff);
 		info.DissolveCutoff = std::max<float>(info.DissolveCutoff, info.MinDissolveCutoff);
 	}
-	
+
 	void MaterialAnimator::updateAlpha(float dt)
 	{
 		auto& info = mAlphaAnimatorInfo;
@@ -83,7 +83,7 @@ namespace fq::game_module
 
 		float timePos = std::max<float>(info.TimePos - info.DelayTime, 0.f);
 
-		switch (info. AnimationMode)
+		switch (info.AnimationMode)
 		{
 		case EAnimationMode::Increase:
 			info.Alpha = info.InitAlpha + timePos * info.Speed;

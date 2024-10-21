@@ -34,7 +34,7 @@ std::shared_ptr<Component> fq::game_module::UVAnimator::Clone(std::shared_ptr<Co
 	return cloneAnimator;
 }
 
-void fq::game_module::UVAnimator::UpdateTimePos(float dt)
+void fq::game_module::UVAnimator::OnUpdate(float dt)
 {
 	if (!mbIsUpdate)
 	{
@@ -60,9 +60,4 @@ void fq::game_module::UVAnimator::UpdateTimePos(float dt)
 	{
 		mIUVAnimationInstance->SetTimePos(std::min<float>(timePos + dt * mPlaySpeed, duration));
 	}
-}
-
-void fq::game_module::UVAnimator::SetTimePos(float timePos)
-{
-	mIUVAnimationInstance->SetTimePos(timePos);
 }

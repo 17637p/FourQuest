@@ -18,8 +18,7 @@ namespace fq::game_module
 
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void UpdateTimePos(float dt);
-		void SetTimePos(float dt);
+		void OnUpdate(float dt);
 
 		void SetUVAnimationPath(const std::string& path) { mUVAnimationPath = path; }
 		const std::string GetUVAnimationPath() const { return mUVAnimationPath; }
