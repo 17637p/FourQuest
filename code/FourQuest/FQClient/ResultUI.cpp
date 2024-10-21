@@ -193,32 +193,44 @@ void fq::client::ResultUI::setTotal()
 	mUseWarriorCount.push_back(0);
 
 	int playerSoulType = PlayerInfoVariable::Player1SoulType;
-	mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player1Monster;
-	mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player1Knight;
-	mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player1Magic;
-	mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player1Archer;
-	mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player1Warrior;
+	if (playerSoulType > 0)
+	{
+		mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player1Monster;
+		mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player1Knight;
+		mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player1Magic;
+		mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player1Archer;
+		mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player1Warrior;
+	}
 
 	playerSoulType = PlayerInfoVariable::Player2SoulType;
-	mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player2Monster;
-	mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player2Knight;
-	mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player2Magic;
-	mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player2Archer;
-	mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player2Warrior;
+	if (playerSoulType > 0)
+	{
+		mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player2Monster;
+		mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player2Knight;
+		mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player2Magic;
+		mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player2Archer;
+		mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player2Warrior;
+	}
 
 	playerSoulType = PlayerInfoVariable::Player3SoulType;
-	mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player3Monster;
-	mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player3Knight;
-	mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player3Magic;
-	mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player3Archer;
-	mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player3Warrior;
+	if (playerSoulType > 0)
+	{
+		mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player3Monster;
+		mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player3Knight;
+		mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player3Magic;
+		mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player3Archer;
+		mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player3Warrior;
+	}
 
 	playerSoulType = PlayerInfoVariable::Player4SoulType;
-	mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player4Monster;
-	mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player4Knight;
-	mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player4Magic;
-	mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player4Archer;
-	mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player4Warrior;
+	if (playerSoulType > 0)
+	{
+		mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player4Monster;
+		mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player4Knight;
+		mUseMagicCount[playerSoulType] = PlayerInfoVariable::Player4Magic;
+		mUseArcherCount[playerSoulType] = PlayerInfoVariable::Player4Archer;
+		mUseWarriorCount[playerSoulType] = PlayerInfoVariable::Player4Warrior;
+	}
 
 	for (int i = 0; i < 4; i++)
 	{
