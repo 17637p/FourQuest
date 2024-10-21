@@ -67,6 +67,7 @@ fq::client::CoolTimeIcon& fq::client::CoolTimeIcon::operator=(const CoolTimeIcon
 
 void fq::client::CoolTimeIcon::OnStart()
 {
+	mCurTime = mFadeInTime + mFadeOutTime + 1; // mFadeInTime + mFadeOutTime 보다 커야함
 	mPlayingIcon = 0;
 	mPlayerID = GetGameObject()->GetParent()->GetComponent<game_module::CharacterController>()->GetControllerID();
 
