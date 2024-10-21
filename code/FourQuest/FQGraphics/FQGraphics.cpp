@@ -404,6 +404,7 @@ bool FQGraphics::BeginRender()
 
 	mRenderManager->BeginRender();
 
+	//mUIManager->UpdateVideoBitmap();
 	return true;
 }
 

@@ -43,7 +43,7 @@ bool UIDemo::Init(HINSTANCE hInstance)
 	mTimeManager.Init();
 
 	mTestGraphics = mEngineExporter->GetEngine();
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
 	/// Terrain »ý¼º
 	const std::string planeModelPath = "./resource/Graphics/TerrainDemo/Plane.model";
@@ -295,8 +295,8 @@ void UIDemo::createImage()
 	uiInfo.RotationAngle = 0;
 	uiInfo.isCenter = true;
 
-	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
-	mImageObjects.push_back(tempImageObject);
+	//auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
+	//mImageObjects.push_back(tempImageObject);
 
 	//uiInfo.StartX = 500;
 	//uiInfo.StartY = 500;

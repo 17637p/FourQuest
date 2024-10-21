@@ -78,6 +78,9 @@ void fq::graphics::UIManager::Initialize(HWND hWnd, std::shared_ptr<D3D11Device>
 
 	initializeText();
 	initializeImage();
+
+	MFStartup(MF_VERSION);
+	//LoadVideo(L"C:\\Users\\user\\Videos\\Captures\\GamePlay.mp4");
 }
 
 HRESULT fq::graphics::UIManager::createRenderTarget(std::shared_ptr<D3D11Device> device, const short width, const short height)
@@ -558,6 +561,11 @@ void fq::graphics::UIManager::draw()
 			spriteAnimationIndex++;
 		}
 	}
+
+	if (mIsDrawVideo)
+	{
+		//mRenderTarget->DrawBitmap(mVideoBitmap, D2D1::RectF(0, 0, 800, 600));
+	}
 }
 
 void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
@@ -978,5 +986,128 @@ void fq::graphics::UIManager::drawSpriteAnimation(ISpriteAnimationObject* sprite
 	);
 
 	mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
+}
+
+bool fq::graphics::UIManager::LoadVideo(const std::wstring& path)
+{
+	//HRESULT hr = S_OK;
+	//if (SUCCEEDED(hr)) {
+	//	// Source Reader 생성
+	//	IMFAttributes* pAttributes = nullptr;
+	//	hr = MFCreateAttributes(&pAttributes, 1);
+	//	if (SUCCEEDED(hr)) {
+	//		hr = pAttributes->SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING, TRUE);
+	//		if (SUCCEEDED(hr)) {
+	//			hr = MFCreateSourceReaderFromURL(path.c_str(), pAttributes, &mVideoReader);
+	//		}
+	//		pAttributes->Release();
+	//	}
+	//
+	//	// 비디오 정보 가져오기
+	//	if (SUCCEEDED(hr)) {
+	//		IMFMediaType* pType = nullptr;
+	//		hr = mVideoReader->GetNativeMediaType((DWORD)MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &pType);
+	//		if (SUCCEEDED(hr)) {
+	//			MFGetAttributeSize(pType, MF_MT_FRAME_SIZE, &mVideoWidth, &mVideoHeight);
+	//			pType->Release();
+	//		}
+	//	}
+	//}
+	MFCreateSourceResolver(&pSourceResolver);
+
+	pSourceResolver->CreateObjectFromURL(
+		path.c_str(),		        // URL of the source.
+		MF_RESOLUTION_MEDIASOURCE,  // Create a source object.
+		NULL,                       // Optional property store.
+		&ObjectType,				        // Receives the created object type. 
+		&uSource					          // Receives a pointer to the media source.
+	);
+
+	uSource->QueryInterface(IID_PPV_ARGS(&mediaFileSource));
+
+	MFCreateAttributes(&pVideoReaderAttributes, 2);
+
+	pVideoReaderAttributes->SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE, MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
+
+	pVideoReaderAttributes->SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING, 1);
+
+	pVideoReaderAttributes->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32);
+
+	MFCreateSourceReaderFromMediaSource(mediaFileSource, pVideoReaderAttributes, &pSourceReader);
+
+	MFCreateMediaType(&pReaderOutputType);
+	pReaderOutputType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+	pReaderOutputType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32);
+
+	pSourceReader->SetCurrentMediaType((DWORD)MF_SOURCE_READER_FIRST_VIDEO_STREAM, NULL, pReaderOutputType);
+
+	IMFMediaType* pNativeType = nullptr;
+	pSourceReader->GetNativeMediaType((DWORD)MF_SOURCE_READER_FIRST_VIDEO_STREAM, MF_SOURCE_READER_CURRENT_TYPE_INDEX, &pNativeType);
+	pSourceReader->GetCurrentMediaType((DWORD)MF_SOURCE_READER_FIRST_VIDEO_STREAM, &pFirstOutputType);
+
+	// The sample uses the pNativeType here, but we want the resolution required to 'render' the texture as if the height is not x16 the conversion
+	// YUV to RGB has problems
+	MFGetAttributeSize(pFirstOutputType, MF_MT_FRAME_SIZE, &width, &height);
+
+	// Read fps
+	uint64_t Val;
+	//hr = pNativeType->GetUINT64(MF_MT_FRAME_RATE, &Val);
+	//fps = (float)HI32(Val) / (float)LO32(Val);
+
+	pSourceReader->SetStreamSelection(MF_SOURCE_READER_ALL_STREAMS, FALSE);
+	pSourceReader->SetStreamSelection(MF_SOURCE_READER_FIRST_VIDEO_STREAM, TRUE);
+
+	//clock_time = 0.0f;
+
+	return true;
+}
+
+bool fq::graphics::UIManager::CreateVideoBitmap(UINT width, UINT height)
+{
+	return true;
+}
+
+bool fq::graphics::UIManager::UpdateVideoBitmap()
+{
+	HRESULT hr = S_OK;
+	IMFSample* pSample = nullptr;
+
+	// 비디오 샘플 읽기
+
+	DWORD dwFlags = 0;
+	hr = pSourceReader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &in, &dwFlags, &llVideoTimeStamp, &pSample);
+	if (SUCCEEDED(hr) && pSample) {
+		IMFMediaBuffer* pBuffer = nullptr;
+		hr = pSample->ConvertToContiguousBuffer(&pBuffer);
+
+		if (SUCCEEDED(hr)) {
+			BYTE* pData = nullptr;
+			DWORD bufferLength = 0;
+
+			// 버퍼 잠금
+			hr = pBuffer->Lock(&pData, nullptr, &bufferLength);
+			if (SUCCEEDED(hr)) {
+				// 비디오 데이터를 Direct2D 비트맵으로 변환
+				if (mVideoBitmap) {
+					mVideoBitmap->Release();
+					mVideoBitmap = nullptr;
+				}
+
+				D2D1_BITMAP_PROPERTIES properties = D2D1::BitmapProperties();
+				properties.pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE);
+
+				hr = mRenderTarget->CreateBitmap(D2D1::SizeU(width, height), pData, width *4, properties, &mVideoBitmap);
+
+				// 버퍼 잠금 해제
+				pBuffer->Unlock();
+			}
+
+			pBuffer->Release();
+		}
+
+		pSample->Release();
+	}
+
+	return true;
 }
 
