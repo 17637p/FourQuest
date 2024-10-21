@@ -12,6 +12,7 @@ namespace fq::game_module
 namespace fq::client
 {
 	class GameManager;
+	class MonsterHP;
 
 	/// <summary>
 	/// 원거리 몬스터 
@@ -54,6 +55,11 @@ namespace fq::client
 		/// 타겟을 찾습니다
 		/// </summary>
 		void FindTarget();
+
+		/// <summary>
+		/// HP UI를 삭제합니다.
+		/// </summary>
+		void DestroyMonsterHPUI();
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -64,7 +70,7 @@ namespace fq::client
 
 	private:
 		GameManager* mGameManager;
-
+		MonsterHP* mMonsterHpUI;
 		game_module::Animator* mAnimator;
 		std::shared_ptr<game_module::GameObject> mTarget;
 		float mAttackElapsedTime;

@@ -8,9 +8,9 @@
 #include "../FQGameModule/RigidBody.h"
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/Event.h"
-#include "HpBar.h"
 #include "ClientEvent.h"
 #include "MonsterGroup.h"
+#include "PlantMonster.h"
 
 #include "ArmourSpawner.h"
 
@@ -38,9 +38,10 @@ void fq::client::PlantMonsterDeadState::OnStateExit(game_module::Animator& anima
 void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	auto gameObject = animator.GetGameObject();
+
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
-	gameObject->RemoveComponent<game_module::ImageUI>();
-	gameObject->RemoveComponent<HpBar>();
+	animator.GetComponent<PlantMonster>()->DestroyMonsterHPUI();
+
 
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Death", false , fq::sound::EChannel::SE });
 

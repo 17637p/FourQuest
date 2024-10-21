@@ -18,6 +18,7 @@
 #include "PlayerInfoVariable.h"
 #include "PlayerDummy.h"
 #include "ClientHelper.h"
+#include "MonsterHP.h"
 
 fq::client::MeleeMonster::MeleeMonster()
 	:mMaxHp(0.f)
@@ -31,6 +32,7 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mAttackCoolTime(3.f)
 	, mAttackElapsedTime(0.f)
 	, mGameManager(nullptr)
+	, mMonsterHpUI(nullptr)
 	, mAnimator(nullptr)
 	, mTarget(nullptr)
 	, mKnockBack(nullptr)
@@ -64,8 +66,6 @@ std::shared_ptr<fq::game_module::Component> fq::client::MeleeMonster::Clone(std:
 		*cloneMonster = *this;
 	}
 
-
-
 	return cloneMonster;
 }
 
@@ -87,7 +87,7 @@ void fq::client::MeleeMonster::SetTarget(game_module::GameObject* target)
 
 	// 더미 타겟인지 체크
 	mIsDummyTarget = target->GetComponent<PlayerDummy>() != nullptr;
-	if (mIsDummyTarget) 
+	if (mIsDummyTarget)
 	{
 		mDummyTraceElapsedTime = 0.f;
 		float random = helper::RandomGenerator::GetInstance().GetRandomNumber(mDummyDurationRandomRangeMin, mDummyDurationRandomRangeMax);
@@ -104,6 +104,20 @@ void fq::client::MeleeMonster::OnStart()
 	mStartPosition = mTransform->GetWorldPosition();
 	mAnimator = GetComponent<game_module::Animator>();
 	mKnockBack = GetComponent<KnockBack>();
+
+	for (auto child : mTransform->GetChildren())
+	{
+		auto hpBar = child->GetComponent<MonsterHP>();
+		if (hpBar)
+		{
+			mMonsterHpUI = hpBar;
+		}
+	}
+
+	if (mMonsterHpUI == nullptr)
+	{
+		spdlog::warn("name:{} meleee monster has not monster hp ui", GetGameObject()->GetName());
+	}
 
 	// 난이도에 따른 공격력 HP 설정
 	mAttackPower = mAttackPower * LevelHepler::GetDamageRatio();
@@ -283,7 +297,8 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 
 			// HP 설정
 			mHp -= attackPower;
-			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
+			if (mMonsterHpUI)
+				mMonsterHpUI->DecreaseHp(attackPower / mMaxHp);
 
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
@@ -523,5 +538,19 @@ void fq::client::MeleeMonster::LookAtTarget()
 		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, RotationSpeed);
 
 	mTransform->SetWorldRotation(result);
+}
+
+void fq::client::MeleeMonster::DestroyMonsterHPUI()
+{
+	if (mMonsterHpUI)
+	{
+		GetScene()->DestroyGameObject(mMonsterHpUI->GetGameObject());
+		mMonsterHpUI = nullptr;
+	}
+	else
+	{
+		spdlog::warn("MeleeMonster has not monster ui");
+	}
+
 }
 

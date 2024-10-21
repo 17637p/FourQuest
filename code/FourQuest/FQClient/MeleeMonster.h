@@ -13,6 +13,7 @@ namespace fq::game_module
 namespace fq::client
 {
 	class KnockBack;
+	class MonsterHP;
 	class GameManager;
 
 	/// <summary>
@@ -56,6 +57,8 @@ namespace fq::client
 		/// </summary>
 		void LookAtTarget();
 
+		void DestroyMonsterHPUI();
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -67,6 +70,7 @@ namespace fq::client
 		GameManager* mGameManager;
 		fq::game_module::Transform* mTransform;
 		fq::game_module::Animator* mAnimator;
+		MonsterHP* mMonsterHpUI;
 		KnockBack* mKnockBack;
 		std::shared_ptr<game_module::GameObject> mTarget;
 

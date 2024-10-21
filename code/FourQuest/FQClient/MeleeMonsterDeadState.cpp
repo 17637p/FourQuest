@@ -17,6 +17,7 @@
 #include "MonsterGroup.h"
 #include "ArmourSpawner.h"
 #include "MonsterVariable.h"
+#include "MeleeMonster.h"
 
 fq::client::MeleeMonsterDeadState::MeleeMonsterDeadState()
 	: mEraseTime()
@@ -53,9 +54,8 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	auto gameObject = animator.GetGameObject();
 
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
-	gameObject->RemoveComponent<game_module::ImageUI>();
-	gameObject->RemoveComponent<HpBar>();
-
+	gameObject->GetComponent<MeleeMonster>()->DestroyMonsterHPUI();
+	
 	// 사운드 재생
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Death", false , fq::sound::EChannel::SE });
 
