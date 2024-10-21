@@ -13,9 +13,10 @@ struct VertexOut
     float DepthView : TEXCOORD3;
     float3 NormalV : TEXCOORD4;
     float3 TangentV : TEXCOORD5;
+    float2 BlendUV : TEXCOORD6;
 #ifdef STATIC
-    float2 UV1 : TEXCOORD6;
-    uint LightmapIndex : TEXCOORD7;
+    float2 UV1 : TEXCOORD7;    
+    uint LightmapIndex : TEXCOORD8;
 #endif
 #ifdef VERTEX_COLOR
     float4 Color : COLOR0;
@@ -75,6 +76,7 @@ Texture2DArray gLightMapArray : register(t6);
 Texture2DArray gDirectionArray : register(t7);
 
 Texture2D gNoiseMap : register(t10);
+Texture2D gBlendMap : register(t11);
 
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
 SamplerState gPointWrap : register(s1); //	D3D11_FILTER_POINT, D3D11_TEXTURE_ADDRESS_WRAP
@@ -215,6 +217,23 @@ PixelOut main(VertexOut pin) : SV_TARGET
         float rim = saturate(dot(pout.Normal, toEye));
         rim = pow(rim, gModelMaterial.InvRimPow);
         pout.Emissive.rgb += rim * gModelMaterial.InvRimColor.rgb * gModelMaterial.InvRimIntensity;
+    }
+
+    if (gModelMaterial.bUseBlendTexture)
+    {
+        float4 blendColor = gBlendMap.Sample(gSamplerAnisotropic, pin.BlendUV);
+
+        if (gModelMaterial.bIsBlendBaseColor)    
+        {
+            pout.Albedo *= blendColor;
+        }
+
+        if (gModelMaterial.bIsBlendEmissive)    
+        {
+            pout.Emissive *= blendColor;
+        }
+
+        clip(pout.Albedo.a - gModelMaterial.AlphaCutoff);
     }
 
     return pout;

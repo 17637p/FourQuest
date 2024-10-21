@@ -62,11 +62,16 @@ PixelOut main(VertexOut pin) : SV_Target
         pout.Normal = float4(0, 0, 0, 0);
     }
     
-    pout.Emissive.rgb = gEmissiveColor.rgb;
+    pout.Emissive = gEmissiveColor;
     
     if (gUseEmissiveMap)
     {
-        pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, sampledPosTex, 0).rgb;
+        pout.Emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, sampledPosTex, 0);
+    }
+    
+    if (!gUseEmissiveAlpha)
+    {
+        pout.Emissive.a = 1.f;
     }
     
     return pout;

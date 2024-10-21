@@ -12,6 +12,11 @@ struct VertexOut
     float DepthView : TEXCOORD3;
     float3 NormalV : TEXCOORD4;
     float3 TangentV : TEXCOORD5;
+    float2 BlendUV : TEXCOORD6;
+#ifdef STATIC
+    float2 UV1 : TEXCOORD7;    
+    uint LightmapIndex : TEXCOORD8;
+#endif
 #ifdef VERTEX_COLOR
     float4 Color : COLOR0;
 #endif
@@ -86,6 +91,7 @@ Texture2D gSpecularBRDF_LUT : register(t8);
 Texture2DArray gDirectionalShadowMap : register(t9);
 
 Texture2D gNoiseMap : register(t10);
+Texture2D gBlendMap : register(t11);
 
 SamplerState gSamplerAnisotropic : register(s0); 
 SamplerComparisonState gShadowSampler : register(s1);
@@ -279,6 +285,25 @@ PixelOut main(VertexOut pin) : SV_TARGET
         emissive.rgb += rim * gModelMaterial.InvRimColor.rgb * gModelMaterial.InvRimIntensity;
     }
 
+    if (gModelMaterial.bUseBlendTexture)
+    {
+        float4 blendColor = gBlendMap.Sample(gSamplerAnisotropic, pin.BlendUV);
+
+        if (gModelMaterial.bIsBlendBaseColor)    
+        {
+            directLighting *= blendColor.rgb;
+            ambientLighting *= blendColor.rgb   ;
+            opacity *= blendColor.a;
+        }
+
+        if (gModelMaterial.bIsBlendEmissive)    
+        {
+            emissive *= blendColor;
+        }
+
+        clip(opacity - gModelMaterial.AlphaCutoff);
+    }
+
     float4 color = float4(directLighting + ambientLighting + emissive, opacity);
 
     float z = pin.PositionH.z;
@@ -288,6 +313,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
     pout.Accum = float4(color.rgb * color.a, color.a) * weight;
     pout.Reveal = color.a;
     
+
     return pout;
 }
 

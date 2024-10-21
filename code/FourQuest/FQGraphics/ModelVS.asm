@@ -42,28 +42,32 @@
 //       float4 DissolveOutlineEndEmissive;// Offset:  144
 //       float4 RimColor;               // Offset:  160
 //       float4 InvRimColor;            // Offset:  176
-//       float Metalness;               // Offset:  192
-//       float Roughness;               // Offset:  196
-//       bool UseAlbedoMap;             // Offset:  200
-//       bool UseMetalnessMap;          // Offset:  204
-//       bool UseRoughnessMap;          // Offset:  208
-//       bool UseNormalMap;             // Offset:  212
-//       bool UseEmissiveMap;           // Offset:  216
-//       float AlphaCutoff;             // Offset:  220
-//       float EmissiveIntensity;       // Offset:  224
-//       bool UseMetalnessSmoothness;   // Offset:  228
-//       bool UseDissolve;              // Offset:  232
-//       float OutlineThickness;        // Offset:  236
-//       float DissolveCutoff;          // Offset:  240
-//       bool bUseRimLight;             // Offset:  244
-//       float RimPow;                  // Offset:  248
-//       float RimIntensity;            // Offset:  252
-//       bool bUseInvRimLight;          // Offset:  256
-//       float InvRimPow;               // Offset:  260
-//       float InvRimIntensity;         // Offset:  264
-//       bool UseMulEmissiveAlpha;      // Offset:  268
+//       float4 BlendScaleOffset;       // Offset:  192
+//       float Metalness;               // Offset:  208
+//       float Roughness;               // Offset:  212
+//       bool UseAlbedoMap;             // Offset:  216
+//       bool UseMetalnessMap;          // Offset:  220
+//       bool UseRoughnessMap;          // Offset:  224
+//       bool UseNormalMap;             // Offset:  228
+//       bool UseEmissiveMap;           // Offset:  232
+//       float AlphaCutoff;             // Offset:  236
+//       float EmissiveIntensity;       // Offset:  240
+//       bool UseMetalnessSmoothness;   // Offset:  244
+//       bool UseDissolve;              // Offset:  248
+//       float OutlineThickness;        // Offset:  252
+//       float DissolveCutoff;          // Offset:  256
+//       bool bUseRimLight;             // Offset:  260
+//       float RimPow;                  // Offset:  264
+//       float RimIntensity;            // Offset:  268
+//       bool bUseInvRimLight;          // Offset:  272
+//       float InvRimPow;               // Offset:  276
+//       float InvRimIntensity;         // Offset:  280
+//       bool UseMulEmissiveAlpha;      // Offset:  284
+//       bool bUseBlendTexture;         // Offset:  288
+//       bool bIsBlendBaseColor;        // Offset:  292
+//       bool bIsBlendEmissive;         // Offset:  296
 //
-//   } gModelMaterial;                  // Offset:    0 Size:   272
+//   } gModelMaterial;                  // Offset:    0 Size:   300
 //
 // }
 //
@@ -104,13 +108,14 @@
 // TEXCOORD                 2     z         4     NONE   float     z 
 // TEXCOORD                 4   xyz         5     NONE   float   xyz 
 // TEXCOORD                 5   xyz         6     NONE   float   xyz 
+// TEXCOORD                 6   xy          7     NONE   float   xy  
 //
 vs_5_0
 dcl_globalFlags refactoringAllowed
 dcl_constantbuffer CB0[4], immediateIndexed
 dcl_constantbuffer CB1[8], immediateIndexed
 dcl_constantbuffer CB2[512], dynamicIndexed
-dcl_constantbuffer CB3[2], immediateIndexed
+dcl_constantbuffer CB3[13], immediateIndexed
 dcl_input v0.xyz
 dcl_input v1.xyz
 dcl_input v2.xyz
@@ -126,6 +131,7 @@ dcl_output o4.xy
 dcl_output o4.z
 dcl_output o5.xyz
 dcl_output o6.xyz
+dcl_output o7.xy
 dcl_temps 20
 ishl r0.xyzw, v4.xyzw, l(2, 2, 2, 2)
 mul r1.x, v5.x, cb2[r0.x + 0].w
@@ -273,5 +279,6 @@ dp3 r0.z, r1.xyzx, cb1[2].xyzx
 dp3 r0.w, r0.xyzx, r0.xyzx
 rsq r0.w, r0.w
 mul o6.xyz, r0.wwww, r0.xyzx
+mad o7.xy, v3.xyxx, cb3[12].xyxx, cb3[12].zwzz
 ret 
-// Approximately 147 instruction slots used
+// Approximately 148 instruction slots used

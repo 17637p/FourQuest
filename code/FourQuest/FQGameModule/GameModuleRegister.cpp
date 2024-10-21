@@ -44,6 +44,7 @@
 #include "Animator.h"
 #include "UVAnimator.h"
 #include "DecalUVAnimator.h"
+#include "BlendUVAnimator.h"
 #include "MaterialAnimator.h"
 #include "LogStateBehaviour.h"
 #include "SoundEmitter.h"
@@ -1481,6 +1482,35 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "DecalUVKeyframes")
 		.base<Component>();
 
+	entt::meta<BlendUVKeyframe>()
+		.type("BlendUVKeyframe"_hs)
+		.prop(fq::reflect::prop::POD)
+		.prop(fq::reflect::prop::Name, "UVKeyframe")
+		.data<&BlendUVKeyframe::TimePos>("TimePos"_hs)
+		.prop(fq::reflect::prop::Name, "TimePos")
+		.data<&BlendUVKeyframe::Translation>("Translation"_hs)
+		.prop(fq::reflect::prop::Name, "Translation")
+		.data<&BlendUVKeyframe::Scale>("Scale"_hs)
+		.prop(fq::reflect::prop::Name, "Scale");
+
+	entt::meta<BlendUVAnimator>()
+		.type("BlendUVAnimator"_hs)
+		.prop(fq::reflect::prop::Name, "BlendUVAnimator")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&BlendUVAnimator::mbIsLooping>("bIsLooping"_hs)
+		.prop(fq::reflect::prop::Name, "bIsLooping")
+		.data<&BlendUVAnimator::mbIsUpdate>("bIsUpdate"_hs)
+		.prop(fq::reflect::prop::Name, "bIsUpdate")
+		.data<&BlendUVAnimator::mPlaySpeed>("PlaySpeed"_hs)
+		.prop(fq::reflect::prop::Name, "PlaySpeed")
+		.data<&BlendUVAnimator::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.data<&BlendUVAnimator::mAccumulationTime>("AccumulationTime"_hs)
+		.prop(fq::reflect::prop::Name, "AccumulationTime")
+		.data<&BlendUVAnimator::mKeyframes>("Keyframes"_hs)
+		.prop(fq::reflect::prop::Name, "Keyframes")
+		.base<Component>();
+
 	entt::meta<LogStateBehaviour>()
 		.type("LogStateBehaviour"_hs)
 		.prop(fq::reflect::prop::Name, "LogStateBehaviour")
@@ -2268,7 +2298,10 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "NormalBlend")
 		.data<&fq::graphics::DecalMaterialInfo::AlphaCutoff>("AlphaCutoff"_hs)
 		.prop(fq::reflect::prop::Comment, u8"알파 클립(알파 테스팅)에 사용할 알파값")
-		.prop(fq::reflect::prop::Name, "AlphaCutoff");
+		.prop(fq::reflect::prop::Name, "AlphaCutoff")
+		.data<&fq::graphics::DecalMaterialInfo::bUseEmissiveBlend>("bUseEmissiveBlend"_hs)
+		.prop(fq::reflect::prop::Comment, u8"이미시브 블렌딩 여부")
+		.prop(fq::reflect::prop::Name, "bUseEmissiveBlend");
 
 	entt::meta<NavigationMeshLoader>()
 		.type("NavigationMeshLoader"_hs)
