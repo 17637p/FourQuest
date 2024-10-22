@@ -35,10 +35,12 @@
 #include "GamePlayWindow.h"
 
 #include "LightmapWindow.h"
+#include "LogWindow.h"
 
 fq::game_engine::GameEngine::GameEngine()
 	:mGameProcess(std::make_unique<GameProcess>())
 	,mLightMap(std::make_unique<LightmapWindow>())
+	,mLogWindow(std::make_unique<LogWindow>())
 {
 }
 
@@ -114,6 +116,7 @@ bool fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mResourceSystem->Initialize(mGameProcess.get());
 	mGameProcess->mStateEventSystem->Initialize(mGameProcess.get());
 
+	mLogWindow->Initialize(mGameProcess.get());
 	mLightMap->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
