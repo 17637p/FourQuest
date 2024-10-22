@@ -113,7 +113,7 @@ namespace fq::game_module
 		{
 			for (const auto& uvJson : clothJson["uvs"])
 			{
-				if (uvJson.is_array() && uvJson.size() == 3)
+				if (uvJson.is_array() && uvJson.size() == 2)
 				{
 					clothData.uvs.push_back(JsonToVector2(uvJson));
 				}
