@@ -177,6 +177,7 @@
 #include "ArmourDestroyer.h"
 #include "DestroyWhenCollisionToWall.h"
 #include "ScreenBlending.h"
+#include "ScaleAnimation.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -430,6 +431,20 @@ void fq::client::RegisterMetaData()
 		.data<&ScreenBlending::mEndBlendColor>("EndBlendColor"_hs)
 		.prop(fq::reflect::prop::Name, "EndBlendColor")
 		.prop(fq::reflect::prop::Comment, u"종료 색상")
+		.base<game_module::Component>();
+
+	entt::meta<ScaleAnimation>()
+		.type("ScaleAnimation"_hs)
+		.prop(reflect::prop::Name, "ScaleAnimation")
+		.data<&ScaleAnimation::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.prop(fq::reflect::prop::Comment, u"지속 시간")
+		.data<&ScaleAnimation::mStartScale>("StartScale"_hs)
+		.prop(fq::reflect::prop::Name, "StartScale")
+		.prop(fq::reflect::prop::Comment, u"시작 스케일")
+		.data<&ScaleAnimation::mEndScale>("EndScale"_hs)
+		.prop(fq::reflect::prop::Name, "EndScale")
+		.prop(fq::reflect::prop::Comment, u"종료 스케일")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
