@@ -27,5 +27,5 @@ namespace fq::client
 		friend void RegisterMetaData();
 	};
 
-
+	
 }
