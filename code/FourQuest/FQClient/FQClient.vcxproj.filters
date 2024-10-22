@@ -608,6 +608,9 @@
     <ClInclude Include="MonsterHP.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="ScaleAnimation.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1049,6 +1052,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="MonsterHP.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ScaleAnimation.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

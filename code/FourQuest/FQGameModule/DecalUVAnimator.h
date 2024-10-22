@@ -39,8 +39,11 @@ namespace fq::game_module
 		void OnStart() override;
 		void OnUpdate(float dt) override;
 
+		void SetPlaySpeed(float playSpeed) { mPlaySpeed = playSpeed; }
+
 		const DecalGeoKeyframe& GetDecalKeyframe() { updateKeyframe();  return mDecalKeyframe; }
 		const DecalUVKeyframe& GetDecalUVKeyframe() { updateUVKeyframe(); return mDecalUVKeyframe; }
+
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

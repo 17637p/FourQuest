@@ -38,7 +38,7 @@ void fq::game_module::AnimationStateNode::OnStateUpdate(float dt)
 		}
 	}
 
-	mAccumulationTime += dt;
+	mAccumulationTime += dt * mPlayBackSpeed;
 }
 
 void fq::game_module::AnimationStateNode::ProcessAnimationEvent(class GameObject* gameObject, EventManager* eventManager)

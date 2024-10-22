@@ -9,6 +9,7 @@
 #include "../FQGameModule/SoundManager.h"
 #include "../FQGameModule/UVAnimator.h"
 #include "../FQGameModule/Animator.h"
+#include "../FQGameModule/DecalUVAnimator.h"
 
 fq::game_engine::StateEventSystem::StateEventSystem()
 	: mGameProcess(nullptr)
@@ -216,6 +217,12 @@ void fq::game_engine::StateEventSystem::OnCreateStateEvent(const fq::event::OnCr
 						{
 							animator->SetPlaySpeed(instantiatePrefab.PlayBackSpeed);
 						}
+
+						auto decalUVAnimator = effectObject->GetComponent < fq::game_module::DecalUVAnimator>();
+						if (decalUVAnimator != nullptr)
+						{
+							decalUVAnimator->SetPlaySpeed(instantiatePrefab.PlayBackSpeed);
+						}
 					}
 					else
 					{
@@ -231,6 +238,12 @@ void fq::game_engine::StateEventSystem::OnCreateStateEvent(const fq::event::OnCr
 								if (animator != nullptr)
 								{
 									animator->SetPlaySpeed(playBackSpeed);
+								}
+
+								auto decalUVAnimator = gameObject->GetComponent<fq::game_module::DecalUVAnimator>();
+								if (decalUVAnimator != nullptr)
+								{
+									decalUVAnimator->SetPlaySpeed(playBackSpeed);
 								}
 
 								for (auto child : gameObject->GetChildren())

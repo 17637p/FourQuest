@@ -20,13 +20,12 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterPrepare
 void fq::client::BossMonsterPrepareAttackState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	animator.GetComponent<game_module::NavigationAgent>()->Stop();
-
 	mHomingElapsedTime = 0.f;
 }
 
 void fq::client::BossMonsterPrepareAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
-	mHomingElapsedTime += dt;
+	mHomingElapsedTime += dt * state.GetPlayBackSpeed();
 
 	if (mHomingElapsedTime < mHomingTime)	
 	{
