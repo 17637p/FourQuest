@@ -20,11 +20,12 @@ namespace fq::physics
 	{
 	}
 
-	bool PhysicsClothManager::Initialize(physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager)
+	bool PhysicsClothManager::Initialize(physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager)
 	{
 		mPhysics = physics;
 		mScene = scene;
 		mCudaContextManager = cudaContextManager;
+		mCollisionDataManager = collisionDataManager;
 
 		return true;
 	}
@@ -53,7 +54,7 @@ namespace fq::physics
 		mPhysicsClothContainer.insert(std::make_pair(info.id, cloth));
 		mCollisionDataManager.lock()->Create(info.id, collisionData);
 
-		return true;
+ 		return true;
 	}
 
 	bool PhysicsClothManager::GetClothData(unsigned int id, Cloth::GetSetClothData& data)
@@ -87,12 +88,22 @@ namespace fq::physics
 
 		if (clothIter != mPhysicsClothContainer.end())
 		{
-			removeActorList.push_back(clothIter->second->GetPBDParticleSystem());
+			mScene->removeActor(*clothIter->second->GetPBDParticleSystem());
 			mPhysicsClothContainer.erase(clothIter);
 
 			return true;
 		}
 
 		return false;
+	}
+	bool PhysicsClothManager::RemoveAllCloth(std::vector<physx::PxActor*>& removeActorList)
+	{
+		for (auto [id, actor] : mPhysicsClothContainer)
+		{
+			mScene->removeActor(*actor->GetPBDParticleSystem());
+		}
+		mPhysicsClothContainer.clear();
+
+		return true;
 	}
 }

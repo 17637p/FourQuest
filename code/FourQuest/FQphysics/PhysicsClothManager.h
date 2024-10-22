@@ -21,7 +21,7 @@ namespace fq::physics
 		/// <summary>
 		/// 천 시뮬레이션 매니저 초기화입니다.
 		/// </summary>
-		bool Initialize(physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager);
+		bool Initialize(physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
 		/// <summary>
 		/// 천 시뮬레이션 업데이트 합니다. ( 그래픽 데이터 전송 )
@@ -47,6 +47,11 @@ namespace fq::physics
 		/// 천을 삭제합니다.
 		/// </summary>
 		bool RemoveCloth(unsigned int id, std::vector<physx::PxActor*>& removeActorList);
+
+		/// <summary>
+		/// 모든 천을 삭제합니다.
+		/// </summary>
+		bool RemoveAllCloth(std::vector<physx::PxActor*>& removeActorList);
 
 	private:
 		std::weak_ptr<PhysicsCollisionDataManager> mCollisionDataManager;

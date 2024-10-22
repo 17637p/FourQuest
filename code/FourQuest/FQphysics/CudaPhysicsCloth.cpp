@@ -57,7 +57,25 @@ namespace fq::physics
 	{
 		PX_RELEASE(mPBDMaterial);
 		PX_RELEASE(mClothBuffer);
-		PX_RELEASE(mClothBufferHelper);
+
+		if (mCudaIndexResource)
+		{
+			cudaError_t err = cudaGraphicsUnregisterResource(mCudaIndexResource);
+			if (err != cudaSuccess)
+			{
+				spdlog::error("[CudaPhysics ({})] CUDA Failed Direct3D UnRegister VertexResource", __LINE__);
+			}
+		}
+		if (mCudaVertexResource)
+		{
+			cudaError_t err = cudaGraphicsUnregisterResource(mCudaVertexResource);
+			if (err != cudaSuccess)
+			{
+				spdlog::error("[CudaPhysics ({})] CUDA Failed Direct3D UnRegister VertexResource", __LINE__);
+			}
+		}
+		mCudaIndexResource = nullptr;
+		mCudaVertexResource = nullptr;
 
 		CollisionData* data = (CollisionData*)mParticleSystem->userData;
 		data->isDead = true;
@@ -71,6 +89,8 @@ namespace fq::physics
 		std::shared_ptr<CollisionData> collisionData,
 		int* collisionMatrix)
 	{
+		static int deviceNumber = 0;
+
 		int deviceCount;
 		cudaError_t cudaStatus = cudaGetDeviceCount(&deviceCount);
 		if (cudaStatus != cudaSuccess || deviceCount == 0) {
@@ -109,7 +129,7 @@ namespace fq::physics
 			info.materialInfo.cflCoefficient,
 			info.materialInfo.gravityScale);
 
-		createClothParticle(info, physics, scene, cudaContextManager, collisionMatrix, collisionData);
+		createClothParticle(physics, scene, cudaContextManager, collisionMatrix, collisionData);
 
 		return true;
 	}
@@ -134,7 +154,8 @@ namespace fq::physics
 		mVertices = data.clothData.vertices;
 		mIndices = data.clothData.indices;
 		mUV = data.clothData.uvs;
-		 
+		mDisableIndicesIndices = data.clothData.disableIndices;
+		
 		//bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);
 		//if (!isSucced)
 		//	return false;
@@ -198,7 +219,6 @@ namespace fq::physics
 	}
 
 	bool CudaPhysicsCloth::createClothParticle(
-		const Cloth::CreateClothData& info,
 		physx::PxPhysics* physics, 
 		physx::PxScene* scene, 
 		physx::PxCudaContextManager* cudaContextManager,
@@ -244,7 +264,7 @@ namespace fq::physics
 		physx::PxVec4* velocity = cudaContextManager->allocPinnedHostBuffer<physx::PxVec4>(numParticles);
 
 		// cloth를 생성할 파티클과 스프링 데이터를 기반으로 하는 Cloth Particle Buffer 생성
-		if (!settingParticleBuffer(info, numSprings, numTriangles, numParticles, particlePhase, particleMass, phase, positionInvMass, velocity))
+		if (!settingParticleBuffer(numSprings, numTriangles, numParticles, particlePhase, particleMass, phase, positionInvMass, velocity))
 			return false;
 
 		// cloth 생성
@@ -252,7 +272,6 @@ namespace fq::physics
 	}
 
 	bool CudaPhysicsCloth::settingParticleBuffer(
-		const Cloth::CreateClothData& info,
 		const physx::PxU32& numSprings,
 		const physx::PxU32& numTriangles,
 		const physx::PxU32& numParticles,
@@ -281,7 +300,7 @@ namespace fq::physics
 		}
 
 		// 고정할 입자 상태 세팅
-		for (unsigned int disableIndex : info.clothData.disableIndices)
+		for (unsigned int disableIndex : mDisableIndicesIndices)
 		{
 			positionInvMass[disableIndex].w = 0.f;							// 역질량을 0으로 설정하여 입자 고정
 		}
@@ -350,7 +369,7 @@ namespace fq::physics
 		mParticleSystem->addParticleBuffer(mClothBuffer);
 
 		// 버파 해제
-		mClothBufferHelper->release();
+		PX_RELEASE(mClothBufferHelper);
 
 		// 할당된 메모리 해제
 		cudaContextManager->freePinnedHostBuffer(positionInvMass);
@@ -381,7 +400,7 @@ namespace fq::physics
 		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaVertexResource, buffer, cudaGraphicsRegisterFlagsNone);
 		if (cudaStatus != cudaSuccess)
 		{
-			spdlog::error("[CudaPhysicsCloth Warnning({})] CUDA Failed Direct3D Register Resource", __LINE__);
+			spdlog::error("[CudaPhysicsCloth Warnning({})] Failed Register Vertex ( Error : {} )", __LINE__, cudaGetErrorString(cudaStatus));
 			return false;
 		}
 		return true;
@@ -392,7 +411,7 @@ namespace fq::physics
 		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaIndexResource, buffer, cudaGraphicsRegisterFlagsNone);
 		if (cudaStatus != cudaSuccess)
 		{
-			spdlog::error("[CudaPhysicsCloth Warnning({})] CUDA Failed Direct3D Register Resource", __LINE__);
+			spdlog::error("[CudaPhysicsCloth Warnning({})] Failed Register Index ( Error : {} )", __LINE__, cudaGetErrorString(cudaStatus));
 			return false;
 		}
 		return true;

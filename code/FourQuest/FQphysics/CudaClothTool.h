@@ -5,13 +5,13 @@
 #include <PxPhysicsAPI.h>
 #include <cuda_runtime.h>
 
-struct Vertex
-{
-	DirectX::SimpleMath::Vector3 Pos;
-	DirectX::SimpleMath::Vector3 Normal;
-	DirectX::SimpleMath::Vector3 Tangent;
-	DirectX::SimpleMath::Vector2 Tex;
-};
+//struct Vertex
+//{
+//	DirectX::SimpleMath::Vector3 Pos;
+//	DirectX::SimpleMath::Vector3 Normal;
+//	DirectX::SimpleMath::Vector3 Tangent;
+//	DirectX::SimpleMath::Vector2 Tex;
+//};
 
 namespace fq::physics
 {

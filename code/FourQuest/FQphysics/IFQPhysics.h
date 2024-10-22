@@ -222,6 +222,11 @@ extern "C" {
 			/// 천을 삭제합니다.
 			/// </summary>
 			virtual FQ_PHYSICS bool RemoveCloth(unsigned int id) abstract;
+
+			/// <summary>
+			/// 모든 천을 삭제합니다.
+			/// </summary>
+			virtual FQ_PHYSICS bool RemoveAllCloth() abstract;
 #pragma endregion
 
 #pragma region ResourceManager

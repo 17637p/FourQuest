@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include "../FQCommon/FQCommonGraphics.h"
+
 __device__ physx::PxVec2 Sub(const physx::PxVec2& lhs, const physx::PxVec2& rhs) {
 	return { lhs.x - rhs.x, lhs.y - rhs.y };
 }
@@ -39,7 +41,7 @@ __global__ void UpdateVertex(
 	unsigned int vertexSize,
 	unsigned int* indices,
 	unsigned int indexSize,
-	Vertex* buffer)
+	fq::common::Mesh::Vertex* buffer)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx >= indexSize / 3) return;
@@ -112,7 +114,7 @@ __global__ void UpdateVertex(
 #pragma endregion
 
 #pragma region SetID3D11BufferVertexNormal
-__global__ void processVerticesKernel(unsigned int* sameVerticesFirst, unsigned int* sameVerticesSecond, Vertex* buffer, int size)
+__global__ void processVerticesKernel(unsigned int* sameVerticesFirst, unsigned int* sameVerticesSecond, fq::common::Mesh::Vertex* buffer, int size)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -200,7 +202,7 @@ __global__ void CopyVertexDataToCPU(
 	physx::PxVec3* vertices,
 	physx::PxVec2* uvs,
 	SimpleMatrix worldTransform,
-	Vertex* ID3D11VertexBuffer,
+	fq::common::Mesh::Vertex* ID3D11VertexBuffer,
 	unsigned int vertexSize)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -263,7 +265,7 @@ namespace fq::physics
 		memcpy(&Trnasform, &worldTransform, sizeof(SimpleMatrix));
 
 		// CUDA 함수 실행
-		CopyVertexDataToCPU << < blocksPerGrid, threadsPerBlock >> > (d_vertices, d_uvs, Trnasform, (Vertex*)devPtr, vertexSize);
+		CopyVertexDataToCPU << < blocksPerGrid, threadsPerBlock >> > (d_vertices, d_uvs, Trnasform, (fq::common::Mesh::Vertex*)devPtr, vertexSize);
 		cudaStatus = cudaDeviceSynchronize(); 
 		if (!(cudaStatus == cudaSuccess))
 		{
@@ -336,7 +338,7 @@ namespace fq::physics
 		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer);
 		if (!(cudaStatus == cudaSuccess))
 		{
-			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
 			return false;
 		}
 
@@ -346,7 +348,7 @@ namespace fq::physics
 		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &size, ID3D11VertexBuffer);
 		if (!(cudaStatus == cudaSuccess))
 		{
-			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
 			return false;
 		}
 
@@ -365,7 +367,7 @@ namespace fq::physics
 
 		// CUDA 함수 실행
 		UpdateVertex << <blocksPerGrid, threadsPerBlock >> > (
-			particle, d_uvs, vertexSize, d_indices, indexSize, (Vertex*)devPtr);
+			particle, d_uvs, vertexSize, d_indices, indexSize, (fq::common::Mesh::Vertex*)devPtr);
 		cudaStatus = cudaDeviceSynchronize();
 		if (!(cudaStatus == cudaSuccess))
 		{
@@ -434,7 +436,7 @@ namespace fq::physics
 		cudaMemcpy(d_secondVertex, secondVertex.data(), secondVertex.size() * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
 		// CUDA 함수 실행
-		processVerticesKernel << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (Vertex*)devPtr, vertexSize);
+		processVerticesKernel << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (fq::common::Mesh::Vertex*)devPtr, vertexSize);
 		cudaStatus = cudaDeviceSynchronize(); 
 		if (!(cudaStatus == cudaSuccess))
 		{
@@ -475,39 +477,6 @@ namespace fq::physics
 
 		std::memcpy(&prevMatrix, &prevTransform, sizeof(prevMatrix));
 		std::memcpy(&nextMatrix, &nextTransform, sizeof(prevMatrix));
-		//prevMatrix.m[0][0] = prevTransform._11;
-		//prevMatrix.m[0][1] = prevTransform._12;
-		//prevMatrix.m[0][2] = prevTransform._13;
-		//prevMatrix.m[0][3] = prevTransform._14;
-		//prevMatrix.m[1][0] = prevTransform._21;
-		//prevMatrix.m[1][1] = prevTransform._22;
-		//prevMatrix.m[1][2] = prevTransform._23;
-		//prevMatrix.m[1][3] = prevTransform._24;
-		//prevMatrix.m[2][0] = prevTransform._31;
-		//prevMatrix.m[2][1] = prevTransform._32;
-		//prevMatrix.m[2][2] = prevTransform._33;
-		//prevMatrix.m[2][3] = prevTransform._34;
-		//prevMatrix.m[3][0] = prevTransform._41;
-		//prevMatrix.m[3][1] = prevTransform._42;
-		//prevMatrix.m[3][2] = prevTransform._43;
-		//prevMatrix.m[3][3] = prevTransform._44;
-
-		//nextMatrix.m[0][0] = nextTransform._11;
-		//nextMatrix.m[0][1] = nextTransform._12;
-		//nextMatrix.m[0][2] = nextTransform._13;
-		//nextMatrix.m[0][3] = nextTransform._14;
-		//nextMatrix.m[1][0] = nextTransform._21;
-		//nextMatrix.m[1][1] = nextTransform._22;
-		//nextMatrix.m[1][2] = nextTransform._23;
-		//nextMatrix.m[1][3] = nextTransform._24;
-		//nextMatrix.m[2][0] = nextTransform._31;
-		//nextMatrix.m[2][1] = nextTransform._32;
-		//nextMatrix.m[2][2] = nextTransform._33;
-		//nextMatrix.m[2][3] = nextTransform._34;
-		//nextMatrix.m[3][0] = nextTransform._41;
-		//nextMatrix.m[3][1] = nextTransform._42;
-		//nextMatrix.m[3][2] = nextTransform._43;
-		//nextMatrix.m[3][3] = nextTransform._44;
 
 		TransformVertices << <blocksPerGrid, threadsPerBlock >> > (particle, prevMatrix, nextMatrix, vertexSize);
 		cudaError_t cudaStatus = cudaDeviceSynchronize();

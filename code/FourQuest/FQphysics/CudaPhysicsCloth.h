@@ -70,7 +70,6 @@ namespace fq::physics
 		bool settingInfoData(const Cloth::CreateClothData& info);
 		bool extractSpringsData();
 		bool createClothParticle(
-			const Cloth::CreateClothData& info,
 			physx::PxPhysics* physics, 
 			physx::PxScene* scene, 
 			physx::PxCudaContextManager* cudaContextManager, 
@@ -78,7 +77,6 @@ namespace fq::physics
 			std::shared_ptr<CollisionData> collisionData);
 
 		bool settingParticleBuffer(
-			const Cloth::CreateClothData& info,
 			const physx::PxU32& numSprings,
 			const physx::PxU32& numTriangles,
 			const physx::PxU32& numParticles,
@@ -105,6 +103,7 @@ namespace fq::physics
 		float mClothMass;
 		float mRestOffset;
 		std::vector<unsigned int> mIndices;
+		std::vector<unsigned int> mDisableIndicesIndices;
 		std::set<std::pair<unsigned int, unsigned int>>		mSprings;
 		std::vector<std::pair<unsigned int, unsigned int>>	mSameVertices;
 

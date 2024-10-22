@@ -181,7 +181,7 @@ namespace fq::game_engine
 
 				for (int i = 0; i < mesh.Vertices.size(); ++i)
 				{
-					mClothData->vertices[i] = mesh.Vertices[i].Pos;
+					mClothData->vertices[i] = DirectX::SimpleMath::Vector3::Transform(mesh.Vertices[i].Pos, transform->GetWorldMatrix());
 				}
 				for (int i = 0; i < mesh.Vertices.size(); ++i)
 				{

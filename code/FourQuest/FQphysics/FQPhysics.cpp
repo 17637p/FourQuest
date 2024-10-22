@@ -173,7 +173,7 @@ namespace fq::physics
 
 		// PVD 클라이언트에 PhysX Scene 연결 ( Debug )
 #ifdef _DEBUG
-		mPhysics->SettingPVDClient(mScene);
+		mPhysics->SettingPVDClient(mGpuScene);
 #endif
 
 		// 매니저 초기화
@@ -197,7 +197,7 @@ namespace fq::physics
 			spdlog::warn("[Physics Warrning ({})] CharacterPhysics Failed Init", __LINE__);
 			return false;
 		}
-		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mGpuScene, mCudaContextManager))
+		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mGpuScene, mCudaContextManager, mCollisionDataManager))
 		{
 			spdlog::warn("[Physics Warrning ({})] ClothManager Failed Init", __LINE__);
 			return false;
@@ -546,6 +546,7 @@ namespace fq::physics
 	bool FQPhysics::ChangeScene()
 	{
 		RemoveAllController();
+		RemoveAllCloth();
 		return false;
 	}
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
@@ -731,6 +732,19 @@ namespace fq::physics
 		}
 	}
 #pragma endregion
+
+	bool FQPhysics::RemoveAllCloth()
+	{
+		if (mClothManager->RemoveAllCloth(mActorsToRemove))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] Failed Remove All Cloth", __LINE__);
+			return false;
+		}
+	}
 
 	bool FQPhysics::HasConvexMeshResource(const unsigned int& hash)
 	{
