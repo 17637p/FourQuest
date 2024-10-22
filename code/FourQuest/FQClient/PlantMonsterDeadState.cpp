@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/BoxCollider.h"
 #include "../FQGameModule/MaterialAnimator.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/ImageUI.h"
@@ -40,8 +41,8 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	auto gameObject = animator.GetGameObject();
 
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
+	gameObject->RemoveComponent<game_module::BoxCollider>();
 	animator.GetComponent<PlantMonster>()->DestroyMonsterHPUI();
-
 
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Death", false , fq::sound::EChannel::SE });
 

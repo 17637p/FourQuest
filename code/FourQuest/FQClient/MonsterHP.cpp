@@ -38,12 +38,12 @@ void fq::client::MonsterHP::DecreaseHp(float ratio)
 
 	if (decreaseHpRatio >= 0.f)
 	{
-		mDecreaseRatio += ratio;
+		mDecreaseRatio = ratio;
 		mHpRatio = decreaseHpRatio;
 	}
 	else
 	{
-		mDecreaseRatio += mHpRatio;
+		mDecreaseRatio = mHpRatio;
 		mHpRatio = 0.f;
 	}
 

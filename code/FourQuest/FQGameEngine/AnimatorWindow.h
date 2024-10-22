@@ -22,7 +22,6 @@ namespace fq::game_engine
 		using PinID = unsigned int;
 		using LinkID = unsigned int;
 		using LinkPair = std::pair<std::string, std::string>;
-
 		using EventHandler = fq::game_module::EventHandler;
 	public:
 		AnimatorWindow();
