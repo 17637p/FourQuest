@@ -157,6 +157,9 @@ void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision
 
 void fq::client::Soul::OnUpdate(float dt)
 {
+	mbIsVisibleBGaugeUI = false;
+	mBGaugeFillAmount = 0.f;
+
 	if (!handleOnSummon())
 	{
 		selectGoddessStatue(dt);
@@ -165,6 +168,9 @@ void fq::client::Soul::OnUpdate(float dt)
 		updateSoulHP(dt);
 		checkReleaseGoddessStatue();
 	}
+
+	mBGaugeUI->SetVisible(mbIsVisibleBGaugeUI);
+	mBGaugeUI->SetRatio(mBGaugeFillAmount);
 }
 
 void fq::client::Soul::OnLateUpdate(float dt)
@@ -174,6 +180,13 @@ void fq::client::Soul::OnLateUpdate(float dt)
 
 void fq::client::Soul::selectArmour()
 {
+	// 오염된 여신상과 상호작용 중 갑옷 빙의 불가능함
+	if (mSelectGoddessStatue != nullptr
+		&& mSelectGoddessStatue->GetIsCorrupt())
+	{
+		return;
+	}
+
 	auto input = GetScene()->GetInputManager();
 
 	if (!mSelectArmours.empty())
@@ -201,21 +214,21 @@ void fq::client::Soul::selectArmour()
 		if (closestArmour == nullptr)
 		{
 			return;
-			mBGaugeUI->SetVisible(false);
 		}
 
-		// 갑옷을 입을 수 있는지 쿨타임 체크 ( UI 노출 )
+		// 갑옷을 입을 수 있는지 쿨타임 체크 ( UI 변수 제어 )
 		if (mBGaugeUI)
 		{
-			mBGaugeUI->SetVisible(true);
+			mbIsVisibleBGaugeUI = true;
 
 			if (closestArmour->GetUnequippedPlayerId() == mController->GetControllerID())
 			{
-				mBGaugeUI->SetRatio((closestArmour->GetPlayerArmourCoolTime() / SoulVariable::ArmourCoolTime) * 360.f);
+				float ratio = closestArmour->GetPlayerArmourCoolTime() / SoulVariable::ArmourCoolTime * 360.f;
+				mBGaugeFillAmount = ratio;
 			}
 			else
 			{
-				mBGaugeUI->SetRatio(360.f);
+				mBGaugeFillAmount = 360.f;
 			}
 		}
 
@@ -242,15 +255,9 @@ void fq::client::Soul::selectArmour()
 					rigidbody->SetLinearVelocity({ 0,0,0 });
 				}
 
-				// UI 제거
-				mBGaugeUI->SetVisible(false);
 				GetComponent<HpBar>()->SetVisible(false);
 			}
 		}
-	}
-	else if (mBGaugeUI)
-	{
-		mBGaugeUI->SetVisible(false);
 	}
 }
 
@@ -421,38 +428,51 @@ void fq::client::Soul::SetSoulType(fq::client::ESoulType type)
 
 void fq::client::Soul::selectGoddessStatue(float dt)
 {
+	// 충돌된 여신상이 없거나 정화된 여신상이라면 빠른 종료
+	if (mSelectGoddessStatue == nullptr
+		|| !mSelectGoddessStatue->GetIsCorrupt())
+	{
+		mCurHoldB = 0;
+		return;
+	}
+
+	// 입력 처리
 	auto input = GetScene()->GetInputManager();
+
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Hold))
 	{
 		mCurHoldB += dt;
+
 		if (mCurHoldB > mNeedHoldB)
 		{
 			mCurHoldB = 0;
-			if (mSelectGoddessStatue != nullptr && mSelectGoddessStatue->GetIsCorrupt())
+			bool isSuccessOverlay = mSelectGoddessStatue->SetOverlaySoul(true, this);
+
+			if (isSuccessOverlay)
 			{
-				bool isSuccessOverlay = mSelectGoddessStatue->SetOverlaySoul(true, this);
+				mIsOverlayGoddessStatue = true;
+				// 빙의하면 못 움직이게 처리 
+				GetComponent<game_module::CharacterController>()->SetCanMoveCharater(false);
+				GetComponent<HpBar>()->SetVisible(false);
 
-				if (isSuccessOverlay)
-				{
-					mIsOverlayGoddessStatue = true;
-					// 빙의하면 못 움직이게 처리 
-					GetComponent<game_module::CharacterController>()->SetCanMoveCharater(false);
-					GetComponent<HpBar>()->SetVisible(false);
+				// 소울 위치를 여신상 위치로 해서 숨기기 
+				auto soulT = GetComponent<game_module::Transform>();
+				auto goddessStatuePos = mSelectGoddessStatue->GetComponent<game_module::Transform>()->GetWorldPosition();
 
-					// 소울 위치를 여신상 위치로 해서 숨기기 
-					auto soulT = GetComponent<game_module::Transform>();
-					auto goddessStatuePos = mSelectGoddessStatue->GetComponent<game_module::Transform>()->GetWorldPosition();
-
-					goddessStatuePos.y += 2.0f;
-					soulT->SetWorldPosition(goddessStatuePos);
-				}
+				goddessStatuePos.y += 2.0f;
+				soulT->SetWorldPosition(goddessStatuePos);
 			}
 		}
+		
 	}
 	else
 	{
 		mCurHoldB = 0;
 	}
+	
+	// 게이지 UI 변수 제어
+	mbIsVisibleBGaugeUI = true;
+	mBGaugeFillAmount = mCurHoldB / mNeedHoldB * 360.f;
 }
 
 void fq::client::Soul::ReleaseGoddessStatue()
@@ -486,6 +506,9 @@ void fq::client::Soul::checkReleaseGoddessStatue()
 			// 영혼 최대 체력으로 
 			ReleaseGoddessStatue();
 		}
+
+		// 게이지 UI 변수 제어
+		mbIsVisibleBGaugeUI = false;
 	}
 }
 
