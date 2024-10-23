@@ -55,8 +55,12 @@ namespace fq::physics
 
 	CudaPhysicsCloth::~CudaPhysicsCloth()
 	{
+		CollisionData* data = (CollisionData*)mParticleSystem->userData;
+		data->isDead = true;
+
 		PX_RELEASE(mPBDMaterial);
 		PX_RELEASE(mClothBuffer);
+		PX_RELEASE(mParticleSystem);
 
 		if (mCudaIndexResource)
 		{
@@ -76,9 +80,6 @@ namespace fq::physics
 		}
 		mCudaIndexResource = nullptr;
 		mCudaVertexResource = nullptr;
-
-		CollisionData* data = (CollisionData*)mParticleSystem->userData;
-		data->isDead = true;
 	}
 
 	bool CudaPhysicsCloth::Initialize(
@@ -89,8 +90,6 @@ namespace fq::physics
 		std::shared_ptr<CollisionData> collisionData,
 		int* collisionMatrix)
 	{
-		static int deviceNumber = 0;
-
 		int deviceCount;
 		cudaError_t cudaStatus = cudaGetDeviceCount(&deviceCount);
 		if (cudaStatus != cudaSuccess || deviceCount == 0) {
@@ -140,6 +139,31 @@ namespace fq::physics
 
 		if (!CudaClothTool::UpdatePhysXDataToID3DBuffer(mVertices, mIndices, mUV, mCudaVertexResource, paticle)) return false;
 		if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource)) return false;
+		if (!updateDebugVertex()) return false;
+
+		return true;
+	}
+
+	bool CudaPhysicsCloth::updateDebugVertex()
+	{
+		physx::PxVec4* particle = mClothBuffer->getPositionInvMasses();
+
+		// 예시로, particles가 GPU 메모리에 있다면, cudaMemcpy를 사용하여 복사합니다.
+		physx::PxVec4* hostParticleData = new physx::PxVec4[mVertices.size()];
+
+		// GPU에서 CPU로 복사합니다. (GPU의 메모리 주소에서 CPU의 메모리로)
+		cudaMemcpy(hostParticleData, particle, sizeof(physx::PxVec4) * mVertices.size(), cudaMemcpyDeviceToHost);
+
+		// 복사한 데이터를 mVertices에 저장
+		for (int i = 0; i < mVertices.size(); i++)
+		{
+			mVertices[i].x = hostParticleData[i].x;
+			mVertices[i].y = hostParticleData[i].y;
+			mVertices[i].z = hostParticleData[i].z;
+		}
+
+		// 메모리 해제
+		delete[] hostParticleData;
 
 		return true;
 	}
@@ -151,11 +175,16 @@ namespace fq::physics
 
 		mWorldTransform = data.worldTransform;
 		mClothMass = data.clothMass;
-		mVertices = data.clothData.vertices;
 		mIndices = data.clothData.indices;
 		mUV = data.clothData.uvs;
 		mDisableIndicesIndices = data.clothData.disableIndices;
 		
+		mVertices.resize(data.clothData.vertices.size());
+		for (int i = 0; i < mVertices.size(); i++)
+		{
+			mVertices[i] = DirectX::SimpleMath::Vector3::Transform(data.clothData.vertices[i], mWorldTransform);
+		}
+
 		//bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);
 		//if (!isSucced)
 		//	return false;

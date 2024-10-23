@@ -53,6 +53,16 @@ namespace fq::physics
 		/// </summary>
 		bool RemoveAllCloth(std::vector<physx::PxActor*>& removeActorList);
 
+		/// <summary>
+		/// 천의 버텍스를 반환합니다.
+		/// </summary>
+		const std::vector<DirectX::SimpleMath::Vector3>& GetClothVertex(unsigned int id);
+
+		/// <summary>
+		/// 천의 인덱스를 반환합니다.
+		/// </summary>
+		const std::vector<unsigned int>& GetClothIndices(unsigned int id);
+
 	private:
 		std::weak_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
 

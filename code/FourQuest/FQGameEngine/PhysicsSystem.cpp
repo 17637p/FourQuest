@@ -691,13 +691,12 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			return;
 		}
 
-
 		// 그래픽스 엔진에서 스태틱 메시 및 스켈레탈 메시에서 VertexBuffer, IndexBuffer 포인터 가져오기
 		if (object->HasComponent<StaticMeshRenderer>())
 		{
 			auto staticMesh = object->GetComponent<StaticMeshRenderer>();
-			void* indexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetVertexBuffer();
-			void* vertexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetIndexBuffer();
+			void* indexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetIndexBuffer();
+			void* vertexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetVertexBuffer();
 			clothCollider->SetIndexBuffer(indexBuffer);
 			clothCollider->SetVertexBuffer(vertexBuffer);
 		}
@@ -1031,7 +1030,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 
 			fq::physics::Cloth::GetSetClothData data;
 			mPhysicsEngine->GetClothData(id, data);
-
 			transform->SetWorldMatrix(data.worldTransform);
 		}
 		else

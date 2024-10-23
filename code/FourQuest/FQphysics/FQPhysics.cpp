@@ -746,6 +746,16 @@ namespace fq::physics
 		}
 	}
 
+	const std::vector<DirectX::SimpleMath::Vector3>& FQPhysics::GetClothVertex(unsigned int id)
+	{
+		return mClothManager->GetClothVertex(id);
+	}
+
+	const std::vector<unsigned int>& FQPhysics::GetClothIndices(unsigned int id)
+	{
+		return mClothManager->GetClothIndices(id);
+	}
+
 	bool FQPhysics::HasConvexMeshResource(const unsigned int& hash)
 	{
 		auto resource = mResourceManager->Find<ConvexMeshResource>(hash);

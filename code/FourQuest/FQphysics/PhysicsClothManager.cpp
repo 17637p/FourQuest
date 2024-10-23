@@ -106,4 +106,30 @@ namespace fq::physics
 
 		return true;
 	}
+
+	const std::vector<DirectX::SimpleMath::Vector3>& PhysicsClothManager::GetClothVertex(unsigned int id)
+	{
+		auto clothIter = mPhysicsClothContainer.find(id);
+
+		if (clothIter != mPhysicsClothContainer.end())
+		{
+			auto cloth = clothIter->second;
+			return cloth->GetVertices();
+		}
+
+		return std::vector<DirectX::SimpleMath::Vector3>();
+	}
+
+	const std::vector<unsigned int>& PhysicsClothManager::GetClothIndices(unsigned int id)
+	{
+		auto clothIter = mPhysicsClothContainer.find(id);
+
+		if (clothIter != mPhysicsClothContainer.end())
+		{
+			auto cloth = clothIter->second;
+			return cloth->GetIndices();
+		}
+
+		return std::vector<unsigned int>();
+	}
 }

@@ -196,7 +196,7 @@ namespace fq::game_engine
 				triangleMeshInfo.indices = mClothData->indices.data();
 			}
 
-			mGameProcess->mPhysics->CreateDynamicBody(triangleMeshInfo, fq::physics::EColliderType::COLLISION, true);
+			mGameProcess->mPhysics->CreateStaticBody(triangleMeshInfo, fq::physics::EColliderType::COLLISION);
 		}
 	}
 
@@ -213,7 +213,7 @@ namespace fq::game_engine
 			DirectX::SimpleMath::Vector3 vertex = mClothData->vertices[i];
 
 			info.Sphere.Center = vertex;
-			info.Sphere.Radius = 0.002f;
+			info.Sphere.Radius = 0.005f;
 			info.bUseDepthTest = true;
 			
 			if (mObjectDisableIndices.find(i) != mObjectDisableIndices.end())
@@ -270,7 +270,7 @@ namespace fq::game_engine
 			info.distance = 100.f;
 			info.layerNumber = 0;
 
-			fq::physics::RayCastOutput raycastOutput = mGameProcess->mPhysics->RayCast(info, false, true);
+			fq::physics::RayCastOutput raycastOutput = mGameProcess->mPhysics->RayCast(info, true, true);
 
 			for (int i = 0; i < raycastOutput.hitSize; i++)
 			{

@@ -227,6 +227,16 @@ extern "C" {
 			/// 모든 천을 삭제합니다.
 			/// </summary>
 			virtual FQ_PHYSICS bool RemoveAllCloth() abstract;
+
+			/// <summary>
+			/// 천의 버텍스를 반환합니다.
+			/// </summary>
+			virtual FQ_PHYSICS const std::vector<DirectX::SimpleMath::Vector3>& GetClothVertex(unsigned int id) abstract;
+
+			/// <summary>
+			/// 천의 인덱스를 반환합니다.
+			/// </summary>
+			virtual FQ_PHYSICS const std::vector<unsigned int>& GetClothIndices(unsigned int id) abstract;
 #pragma endregion
 
 #pragma region ResourceManager

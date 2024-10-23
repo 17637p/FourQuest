@@ -41,7 +41,7 @@ __global__ void UpdateVertex(
 	unsigned int vertexSize,
 	unsigned int* indices,
 	unsigned int indexSize,
-	fq::common::Mesh::Vertex* buffer)
+	Vertex* buffer)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx >= indexSize / 3) return;
@@ -114,7 +114,7 @@ __global__ void UpdateVertex(
 #pragma endregion
 
 #pragma region SetID3D11BufferVertexNormal
-__global__ void processVerticesKernel(unsigned int* sameVerticesFirst, unsigned int* sameVerticesSecond, fq::common::Mesh::Vertex* buffer, int size)
+__global__ void processVerticesKernel(unsigned int* sameVerticesFirst, unsigned int* sameVerticesSecond, Vertex* buffer, int size)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -202,7 +202,7 @@ __global__ void CopyVertexDataToCPU(
 	physx::PxVec3* vertices,
 	physx::PxVec2* uvs,
 	SimpleMatrix worldTransform,
-	fq::common::Mesh::Vertex* ID3D11VertexBuffer,
+	Vertex* ID3D11VertexBuffer,
 	unsigned int vertexSize)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -265,7 +265,7 @@ namespace fq::physics
 		memcpy(&Trnasform, &worldTransform, sizeof(SimpleMatrix));
 
 		// CUDA 함수 실행
-		CopyVertexDataToCPU << < blocksPerGrid, threadsPerBlock >> > (d_vertices, d_uvs, Trnasform, (fq::common::Mesh::Vertex*)devPtr, vertexSize);
+		CopyVertexDataToCPU << < blocksPerGrid, threadsPerBlock >> > (d_vertices, d_uvs, Trnasform, (Vertex*)devPtr, vertexSize);
 		cudaStatus = cudaDeviceSynchronize(); 
 		if (!(cudaStatus == cudaSuccess))
 		{
@@ -355,6 +355,12 @@ namespace fq::physics
 		unsigned int vertexSize = vertices.size();
 		unsigned int indexSize = indices.size();
 
+		if (size < sizeof(Vertex) * vertexSize) 
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] Mapped size is smaller than expected!" << std::endl;
+			return false;
+		}
+
 		// GPU Memory를 할당할 변수
 		physx::PxVec2* d_uvs;
 		unsigned int* d_indices;
@@ -367,7 +373,7 @@ namespace fq::physics
 
 		// CUDA 함수 실행
 		UpdateVertex << <blocksPerGrid, threadsPerBlock >> > (
-			particle, d_uvs, vertexSize, d_indices, indexSize, (fq::common::Mesh::Vertex*)devPtr);
+			particle, d_uvs, vertexSize, d_indices, indexSize, (Vertex*)devPtr);
 		cudaStatus = cudaDeviceSynchronize();
 		if (!(cudaStatus == cudaSuccess))
 		{
@@ -436,7 +442,7 @@ namespace fq::physics
 		cudaMemcpy(d_secondVertex, secondVertex.data(), secondVertex.size() * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
 		// CUDA 함수 실행
-		processVerticesKernel << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (fq::common::Mesh::Vertex*)devPtr, vertexSize);
+		processVerticesKernel << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (Vertex*)devPtr, vertexSize);
 		cudaStatus = cudaDeviceSynchronize(); 
 		if (!(cudaStatus == cudaSuccess))
 		{
