@@ -178,6 +178,7 @@
 #include "DestroyWhenCollisionToWall.h"
 #include "ScreenBlending.h"
 #include "ScaleAnimation.h"
+#include "RotationAnimation.h"
 #include "DebugService.h"
 
 void fq::client::RegisterMetaData()
@@ -452,6 +453,35 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "EndScale")
 		.prop(fq::reflect::prop::Comment, u"종료 스케일")
 		.base<game_module::Component>();
+	
+	entt::meta<RotationAnimation>()
+		.type("RotationAnimation"_hs)
+		.prop(reflect::prop::Name, "RotationAnimation")
+		.data<&RotationAnimation::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.prop(fq::reflect::prop::Comment, u"지속 시간")
+		.data<&RotationAnimation::mbUseLooping>("bUseLooping"_hs)
+		.prop(fq::reflect::prop::Name, "bUseLooping")
+		.prop(fq::reflect::prop::Comment, u"지속 시간")
+		.data<&RotationAnimation::mbUseEuler>("bUseEuler"_hs)
+		.prop(fq::reflect::prop::Name, "bUseEuler")
+		.prop(fq::reflect::prop::Comment, u"오일러각 사용여부")
+		.data<&RotationAnimation::mStartRotationInEuler>("StartRotationInEuler"_hs)
+		.prop(fq::reflect::prop::Name, "StartRotationInEuler")
+		.prop(fq::reflect::prop::Comment, u"시작 회전값(오일러)")
+		.data<&RotationAnimation::mEndRotationInEuler>("mEndRotationInEuler"_hs)
+		.prop(fq::reflect::prop::Name, "mEndRotationInEuler")
+		.prop(fq::reflect::prop::Comment, u"종료 회전값(오일러)")
+		.data<&RotationAnimation::mbUseQuaternion>("bUseQuaternion"_hs)
+		.prop(fq::reflect::prop::Name, "bUseQuaternion")
+		.prop(fq::reflect::prop::Comment, u"사원수 사용여부")
+		.data<&RotationAnimation::mStartRotationInQuaternion>("mStartRotationInQuaternion"_hs)
+		.prop(fq::reflect::prop::Name, "mStartRotationInQuaternion")
+		.prop(fq::reflect::prop::Comment, u"시작 회전값(사원수)")
+		.data<&RotationAnimation::mEndRotationInQuaternion>("mEndRotationInQuaternion"_hs)
+		.prop(fq::reflect::prop::Name, "mEndRotationInQuaternion")
+		.prop(fq::reflect::prop::Comment, u"종료 회전값(사원수)")
+		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             플레이어 관련								//
@@ -542,6 +572,9 @@ void fq::client::RegisterMetaData()
 		.data<&DeadArmour::mSummonDuration>("SummonDuration"_hs)
 		.prop(reflect::prop::Name, "SummonDuration")
 		.prop(reflect::prop::Comment, u8"갑옷 입기까지 걸리는 시간")
+		.data<&DeadArmour::mUIOffset>("UIOffset"_hs)
+		.prop(reflect::prop::Name, "UIOffset")
+		.prop(reflect::prop::Comment, u8"UI Offset 값")
 		.base<game_module::Component>();
 
 	entt::meta<MagicArmour>()
