@@ -178,6 +178,7 @@
 #include "DestroyWhenCollisionToWall.h"
 #include "ScreenBlending.h"
 #include "ScaleAnimation.h"
+#include "DebugService.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -220,6 +221,11 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Size")
 		.data<&MonsterManager::mRes>("mRes"_hs)
 		.prop(fq::reflect::prop::Name, "mRes")
+		.base<game_module::Component>();
+
+	entt::meta<DebugService>()
+		.type("DebugService"_hs)
+		.prop(reflect::prop::Name, "DebugService")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

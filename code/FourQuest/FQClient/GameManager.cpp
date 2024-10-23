@@ -120,8 +120,6 @@ void fq::client::GameManager::OnUpdate(float dt)
 		}
 	}
 
-	testKey();
-
 	// 모든 영혼이 파괴되었을 때, GameOver 씬으로 이동
 	if (mSoulManagerModule->CheckGameOver())
 	{
@@ -347,94 +345,6 @@ void fq::client::GameManager::EventProcessOffPopupSetting()
 			mIsStop = false;
 			GetScene()->GetTimeManager()->SetTimeScale(1);
 		});
-}
-
-void fq::client::GameManager::testKey()
-{
-	auto input = GetScene()->GetInputManager();
-
-	if (input->IsKeyState(EKey::F1, EKeyState::Tap))
-	{
-		for (auto& player : mPlayers)
-		{
-			auto playerComponent = player->GetComponent<Player>();
-			if (playerComponent != nullptr)
-			{
-				playerComponent->SetMaxHp(100000.f);
-				playerComponent->SetHp(100000.f);
-			}
-		}
-	}
-
-	if (input->IsKeyState(EKey::F2, EKeyState::Tap))
-	{
-		SavePlayerState();
-		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene2", true });
-	}
-	if (input->IsKeyState(EKey::F3, EKeyState::Tap))
-	{
-		SavePlayerState();
-		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene3", true });
-	}
-	if (input->IsKeyState(EKey::F4, EKeyState::Tap))
-	{
-		SavePlayerState();
-		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene4", true });
-	}
-
-	// 캐릭터 설정
-	if (input->IsKeyState(EKey::Num1, EKeyState::Tap))
-	{
-		if (PlayerInfoVariable::Player1State == -1)
-		{
-			PlayerInfoVariable::Player1State = 0;
-			PlayerInfoVariable::Player1SoulType = 0;
-		}
-		else
-		{
-			PlayerInfoVariable::Player1State = -1;
-			PlayerInfoVariable::Player1SoulType = -1;
-		}
-	}
-	if (input->IsKeyState(EKey::Num2, EKeyState::Tap))
-	{
-		if (PlayerInfoVariable::Player2State == -1)
-		{
-			PlayerInfoVariable::Player2State = 0;
-			PlayerInfoVariable::Player2SoulType = 1;
-		}
-		else
-		{
-			PlayerInfoVariable::Player2State = -1;
-			PlayerInfoVariable::Player2SoulType = -1;
-		}
-	}
-	if (input->IsKeyState(EKey::Num3, EKeyState::Tap))
-	{
-		if (PlayerInfoVariable::Player3State == -1)
-		{
-			PlayerInfoVariable::Player3State = 0;
-			PlayerInfoVariable::Player3SoulType = 2;
-		}
-		else
-		{
-			PlayerInfoVariable::Player3State = -1;
-			PlayerInfoVariable::Player3SoulType = -1;
-		}
-	}
-	if (input->IsKeyState(EKey::Num4, EKeyState::Tap))
-	{
-		if (PlayerInfoVariable::Player4State == -1)
-		{
-			PlayerInfoVariable::Player4State = 0;
-			PlayerInfoVariable::Player4SoulType = 3;
-		}
-		else
-		{
-			PlayerInfoVariable::Player4State = -1;
-			PlayerInfoVariable::Player4SoulType = -1;
-		}
-	}
 }
 
 void fq::client::GameManager::SavePlayerState()

@@ -611,6 +611,9 @@
     <ClInclude Include="ScaleAnimation.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="DebugService.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1056,6 +1059,9 @@
     </ClCompile>
     <ClCompile Include="ScaleAnimation.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugService.cpp">
+      <Filter>src\06.ETC</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
