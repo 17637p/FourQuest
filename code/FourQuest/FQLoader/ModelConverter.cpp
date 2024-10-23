@@ -33,6 +33,7 @@ namespace fq::loader
 			aiProcess_CalcTangentSpace |
 			aiProcess_LimitBoneWeights |
 			aiProcess_GenBoundingBoxes |
+			aiProcess_JoinIdenticalVertices |
 			aiProcess_ConvertToLeftHanded;
 
 		mAiScene = mImpoter->ReadFile(path.string(), importFlags);

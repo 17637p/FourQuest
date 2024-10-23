@@ -40,6 +40,12 @@ std::shared_ptr<fq::game_module::Component> fq::client::StaffSoulAttack::Clone(s
 
 void fq::client::StaffSoulAttack::OnUpdate(float dt)
 {
+	// 프리팹 임시로 띄워보고 싶을 때 터져서 예외처리 추가_홍지환
+	if (mPlayerObject == nullptr)
+	{
+		return;
+	}
+
 	if (mPlayerObject->IsDestroyed())
 	{
 		GetScene()->DestroyGameObject(GetGameObject());
