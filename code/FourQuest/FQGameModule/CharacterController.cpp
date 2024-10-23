@@ -26,7 +26,8 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::CharacterController
 
 	cloneController->mControllerInfo.id = fq::physics::unregisterID;
 	cloneController->mCollisionCount = 0;
-
+	cloneController->mMovementInfo.jumpXZAcceleration = cloneController->mMovementInfo.dynamicFriction;
+	cloneController->mMovementInfo.jumpXZDeceleration = cloneController->mMovementInfo.dynamicFriction;
 	return cloneController;
 }
 
@@ -52,7 +53,6 @@ fq::game_module::CharacterController::~CharacterController()
 void fq::game_module::CharacterController::SetControllerInfo(fq::physics::CharacterControllerInfo info)
 {
 	mControllerInfo = info;
-
 	mControllerInfo.contactOffset = std::max(mControllerInfo.contactOffset, 0.0001f);
 }
 

@@ -70,7 +70,6 @@ void fq::client::DebugService::updateUI()
 
 	int fps = GetScene()->GetTimeManager()->GetFPS();
 	std::string sFPS = "FPS " + std::to_string(fps);
-	spdlog::trace("{}", sFPS);
 	mFPSUI->SetText(sFPS);
 }
 
