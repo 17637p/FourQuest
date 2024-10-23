@@ -45,6 +45,7 @@ namespace fq::client
 		// result 스코어 초기화 
 		void resetResult();
 		void setPlayerName();
+		void spawnPlayers();
 		std::string wstringToString(std::wstring wStr);
 
 		// temp alpha
