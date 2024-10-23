@@ -168,6 +168,7 @@
     <ClInclude Include="RepauseUI.h" />
     <ClInclude Include="ResetPopupUI.h" />
     <ClInclude Include="ResultUI.h" />
+    <ClInclude Include="RotationAnimation.h" />
     <ClInclude Include="SavePopupUI.h" />
     <ClInclude Include="ScaleAnimation.h" />
     <ClInclude Include="ScreenBlending.h" />
@@ -320,6 +321,7 @@
     <ClCompile Include="RepauseUI.cpp" />
     <ClCompile Include="ResetPopupUI.cpp" />
     <ClCompile Include="ResultUI.cpp" />
+    <ClCompile Include="RotationAnimation.cpp" />
     <ClCompile Include="SavePopupUI.cpp" />
     <ClCompile Include="ScaleAnimation.cpp" />
     <ClCompile Include="ScreenBlending.cpp" />

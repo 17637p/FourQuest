@@ -68,7 +68,7 @@ void fq::client::BerserkerRushState::OnStateExit(game_module::Animator& animator
 
 	if (mAttackObjectOrNull != nullptr)
 	{
-		mAttackObjectOrNull->OnDestroy();
+		mAttackObjectOrNull = nullptr;
 	}
 
 	auto playerOrNull = animator.GetComponent<Player>();
