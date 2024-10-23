@@ -28,7 +28,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::PlayerUIManager::Clone(s
 fq::client::PlayerUIManager::PlayerUIManager()
 	:mPlayerUIPrefab{},
 	mPlayerUIs{},
-	mHeightRatio(0.85f)
+	mHeightRatio(0.90f)
 {
 }
 

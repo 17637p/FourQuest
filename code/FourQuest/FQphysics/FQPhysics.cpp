@@ -61,6 +61,38 @@ namespace fq::physics
 		}
 	}
 
+	physx::PxFilterFlags CustomGpuSimulationFilterShader(
+		physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+		physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+		physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
+	{
+		/// <summary>
+		/// 쌍에 대해 CCD를 활성화하고 초기 및 CCD 연락처에 대한 연락처 보고서를 요청합니다.
+		/// 또한 접점별 정보를 제공하고 행위자에게 정보를 제공합니다
+		/// 접촉할 때 포즈를 취합니다.
+		/// <summary>
+
+		// 필터 셰이더 로직 ( 트리거 )
+		if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
+		{
+			pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT
+				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST;
+			return physx::PxFilterFlag::eDEFAULT;
+		}
+
+		// 필터 데이터 충돌 체크 ( 시뮬레이션 )
+		pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT
+			| physx::PxPairFlag::eDETECT_CCD_CONTACT
+			| physx::PxPairFlag::eNOTIFY_TOUCH_CCD
+			| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+			| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
+			| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS
+			| physx::PxPairFlag::eCONTACT_EVENT_POSE
+			| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+		return physx::PxFilterFlag::eDEFAULT;
+	}
+
 	FQPhysics::FQPhysics()
 		: mPhysics(std::make_shared<Physics>())
 		, mRigidBodyManager(std::make_shared<PhysicsRigidBodyManager>())
@@ -131,6 +163,7 @@ namespace fq::physics
 		mScene = physics->createScene(sceneDesc);
 
 		// PhysX Physics에서 GPU로 작동하는 Scene을 생성합니다 ( Cloth 입자를 위한 )
+		sceneDesc.filterShader = CustomGpuSimulationFilterShader;
 		sceneDesc.cudaContextManager = mCudaContextManager;
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
@@ -140,15 +173,37 @@ namespace fq::physics
 
 		// PVD 클라이언트에 PhysX Scene 연결 ( Debug )
 #ifdef _DEBUG
-		mPhysics->SettingPVDClient(mScene);
+		mPhysics->SettingPVDClient(mGpuScene);
 #endif
 
 		// 매니저 초기화
-		if (!mResourceManager->Initialize(mPhysics->GetPhysics())) return false;
-		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager)) return false;
-		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager, mCollisionMatrix)) return false;
-		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene, mCollisionDataManager)) return false;
-		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mGpuScene, mCudaContextManager)) return false;
+		if (!mResourceManager->Initialize(mPhysics->GetPhysics()))
+		{
+			spdlog::warn("[Physics Warrning ({})] ResourceManager Failed Init", __LINE__);
+			return false;
+		}
+		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager))
+		{
+			spdlog::warn("[Physics Warrning ({})] RigidBodyManager Failed Init", __LINE__);
+			return false;
+		}
+		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager, mCollisionMatrix))
+		{
+			spdlog::warn("[Physics Warrning ({})] CCTManager Failed Init", __LINE__);
+			return false;
+		}
+		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene, mCollisionDataManager))
+		{
+			spdlog::warn("[Physics Warrning ({})] CharacterPhysics Failed Init", __LINE__);
+			return false;
+		}
+		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mGpuScene, mCudaContextManager, mCollisionDataManager))
+		{
+			spdlog::warn("[Physics Warrning ({})] ClothManager Failed Init", __LINE__);
+			return false;
+		}
+
+		// 콜백 함수 등록
 		mMyEventCallback->Initialize(mCollisionDataManager);
 
 		return true;
@@ -303,59 +358,171 @@ namespace fq::physics
 #pragma region RigidBodyManager
 	bool FQPhysics::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType)
 	{
-		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+		if (mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(Box) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType)
 	{
-		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+		if (mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(Sphere) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType)
 	{
-		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+		if (mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(Capsule) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
 	{
-		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+		if (mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(ConvexMesh) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType)
 	{
-		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+		if (mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(TriangleMesh) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType)
 	{
-		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+		if (mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create StaticBody(HeightField) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+		if (mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(Box) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+		if (mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(Sphere) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+		if (mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(Capsule) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+		if (mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(ConvexMesh) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+		if (mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(TriangleMesh) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+		if (mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Create DynamicBody(HeightField) ID : {}", __LINE__, info.colliderInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::RemoveRigidBody(const unsigned int& id)
 	{
-		return mRigidBodyManager->RemoveRigidBody(id, mScene, mActorsToRemove);
+		if (mRigidBodyManager->RemoveRigidBody(id, mScene, mActorsToRemove))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Remove RigidBody ID : {}", __LINE__, id);
+			return false;
+		}
 	}
 	bool FQPhysics::RemoveAllRigidBody()
 	{
-		return mRigidBodyManager->RemoveAllRigidBody(mScene, mActorsToRemove);
+		if (mRigidBodyManager->RemoveAllRigidBody(mScene, mActorsToRemove))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Remove All RigidBody", __LINE__);
+			return false;
+		}
 	}
 	RigidBodyGetSetData FQPhysics::GetRigidBodyData(const unsigned int& id)
 	{
@@ -366,11 +533,20 @@ namespace fq::physics
 	}
 	bool FQPhysics::SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData)
 	{
-		return mRigidBodyManager->SetRigidBodyData(id, rigidBodyData, mCollisionMatrix);
+		if (mRigidBodyManager->SetRigidBodyData(id, rigidBodyData, mCollisionMatrix))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] Failed SetRigidBodyData ID : {}", __LINE__, id);
+			return false;
+		}
 	}
 	bool FQPhysics::ChangeScene()
 	{
 		RemoveAllController();
+		RemoveAllCloth();
 		return false;
 	}
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
@@ -394,19 +570,51 @@ namespace fq::physics
 #pragma region CCTManager
 	bool FQPhysics::CreateCCT(const CharacterControllerInfo& controllerInfo, const CharacterMovementInfo& movementInfo)
 	{
-		return mCCTManager->CreateCCT(controllerInfo, movementInfo);
+		if (mCCTManager->CreateCCT(controllerInfo, movementInfo))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Phyiscs Warrning ({})] Failed Create CCT(Character Controller) ID : {}", __LINE__, controllerInfo.id);
+			return false;
+		}
 	}
 	bool FQPhysics::RemoveController(const unsigned int& id)
 	{
-		return mCCTManager->RemoveController(id);
+		if (mCCTManager->RemoveController(id))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] Failed Remove CCT(Character Controller) ID : {}", __LINE__, id);
+			return false;
+		}
 	}
 	bool FQPhysics::RemoveAllController()
 	{
-		return mCCTManager->RemoveAllController();
+		if (mCCTManager->RemoveAllController())
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] Failed Remove All CCT(Character Controller)", __LINE__);
+			return false;
+		}
 	}
 	bool FQPhysics::AddInputMove(const CharacterControllerInputInfo& info)
 	{
-		return mCCTManager->AddInputMove(info);
+		if (mCCTManager->AddInputMove(info))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] Failed Input. Input ID : {}", __LINE__, info.id);
+			return false;
+		}
 	}
 
 	CharacterControllerGetSetData FQPhysics::GetCharacterControllerData(const unsigned int& id)
@@ -477,21 +685,76 @@ namespace fq::physics
 #pragma region PhysicsClothManager
 	bool FQPhysics::CreateCloth(const Cloth::CreateClothData& info)
 	{
-		return mClothManager->CreateCloth(info, mCollisionMatrix);
+		if (mClothManager->CreateCloth(info, mCollisionMatrix))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] Failed Create Cloth ID : {}", __LINE__, info.id);
+			return false;
+		}
 	}
 	bool FQPhysics::GetClothData(unsigned int id, Cloth::GetSetClothData& data)
 	{
-		return mClothManager->GetClothData(id, data);
+		if (mClothManager->GetClothData(id, data))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] Failed Get Cloth Data! ID : {}", __LINE__, id);
+			return false;
+		}
 	}
 	bool FQPhysics::SetClothData(unsigned int id, const Cloth::GetSetClothData& data)
 	{
-		return mClothManager->SetClothData(id, data);
+		if (mClothManager->SetClothData(id, data))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] Failed Set Cloth Data! ID : {}", __LINE__, id);
+			return false;
+		}
 	}
 	bool FQPhysics::RemoveCloth(unsigned int id)
 	{
-		return mClothManager->RemoveCloth(id, mActorsToRemove);
+		if (mClothManager->RemoveCloth(id, mActorsToRemove))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] Failed Remove Cloth ID : {}", __LINE__, id);
+			return false;
+		}
 	}
 #pragma endregion
+
+	bool FQPhysics::RemoveAllCloth()
+	{
+		if (mClothManager->RemoveAllCloth(mActorsToRemove))
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] Failed Remove All Cloth", __LINE__);
+			return false;
+		}
+	}
+
+	const std::vector<DirectX::SimpleMath::Vector3>& FQPhysics::GetClothVertex(unsigned int id)
+	{
+		return mClothManager->GetClothVertex(id);
+	}
+
+	const std::vector<unsigned int>& FQPhysics::GetClothIndices(unsigned int id)
+	{
+		return mClothManager->GetClothIndices(id);
+	}
 
 	bool FQPhysics::HasConvexMeshResource(const unsigned int& hash)
 	{
@@ -523,5 +786,4 @@ namespace fq::physics
 		mActorsToRemove.clear();
 	}
 #pragma endregion
-
 }

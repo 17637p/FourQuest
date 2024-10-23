@@ -14,13 +14,18 @@ namespace fq::physics
 		: mPhysics(nullptr)
 		, mMaterial(nullptr)
 		, mCCTManager(nullptr)
-		, mCCTmap()
+		, mCollisionMatrix(nullptr)
+		, mCCTmap{}
+		, mWaitCharacterControllerContainer{}
+		, mUpComingCharacterControllerContainer{}
 	{
 	}
 
 	PhysicsCharactorControllerManager::~PhysicsCharactorControllerManager()
 	{
 		mCCTmap.clear();
+		mWaitCharacterControllerContainer.clear();
+		mUpComingCharacterControllerContainer.clear();
 		PX_RELEASE(mMaterial);
 		PX_RELEASE(mCCTManager);
 	}
@@ -44,20 +49,26 @@ namespace fq::physics
 
 	bool PhysicsCharactorControllerManager::Update(float deltaTime)
 	{
+		if (!updateCCT(deltaTime)) 
+			return false;
+		if (!CreateCCT())
+			return false;
+
+		return true;
+	}
+
+	bool PhysicsCharactorControllerManager::updateCCT(float deltaTime)
+	{
 		for (const auto& controller : mCCTmap)
 		{
 			if (!controller.second->Update(deltaTime))
 				return false;
 		}
-
-		CreateCCT();
-
 		return true;
 	}
 
 	bool PhysicsCharactorControllerManager::FinalUpdate()
 	{
-
 		return true;
 	}
 
@@ -73,6 +84,9 @@ namespace fq::physics
 
 	void PhysicsCharactorControllerManager::UpdateCollisionMatrix(int* collisionMatrix)
 	{
+		mCollisionMatrix = collisionMatrix;
+
+		// 수정된 충돌 매트릭스 세팅
 		for (auto& controller : mCCTmap)
 		{
 			physx::PxFilterData filterData;
@@ -89,12 +103,12 @@ namespace fq::physics
 	bool PhysicsCharactorControllerManager::CreateCCT(CharacterControllerInfo controllerInfo, CharacterMovementInfo movementInfo)
 	{
 		mWaitCharacterControllerContainer.push_back(std::make_pair(controllerInfo, movementInfo));
-
 		return true;
 	}
 
 	bool PhysicsCharactorControllerManager::CreateCCT()
 	{
+		// 캐릭터 컨트롤러 생성
 		for (auto& [controllerInfo, movementInfo] : mUpComingCharacterControllerContainer)
 		{
 			std::shared_ptr<PlayerCharacterController> controller = std::make_shared<PlayerCharacterController>();
@@ -106,6 +120,7 @@ namespace fq::physics
 		}
 		mUpComingCharacterControllerContainer.clear();
 
+		// 한턴 뒤 생성할 캐릭터 컨트롤러 보관
 		for (auto& characterControllerInfo : mWaitCharacterControllerContainer)
 		{
 			mUpComingCharacterControllerContainer.push_back(characterControllerInfo);
@@ -117,6 +132,7 @@ namespace fq::physics
 
 	bool PhysicsCharactorControllerManager::RemoveController(const unsigned int& id)
 	{
+		// 캐릭터 컨트롤러 삭제
 		auto controllerIter = mCCTmap.find(id);
 
 		if (controllerIter != mCCTmap.end())
@@ -139,6 +155,7 @@ namespace fq::physics
 #pragma region GetSetFunction
 	void PhysicsCharactorControllerManager::GetCharacterControllerData(const unsigned int& id, CharacterControllerGetSetData& data)
 	{
+		// 생성했거나 생성할 캐릭터 컨트롤러 데이터 반환
 		if (mCCTmap.find(id) != mCCTmap.end())
 		{
 			auto& controller = mCCTmap.find(id)->second;
@@ -153,6 +170,16 @@ namespace fq::physics
 				if (controllor.id == id)
 				{
 					data.position = controllor.position;
+					return;
+				}
+			}
+
+			for (auto& [controller, movement] : mWaitCharacterControllerContainer)
+			{
+				if (controller.id == id)
+				{
+					data.position = controller.position;
+					return;
 				}
 			}
 		}
@@ -173,6 +200,7 @@ namespace fq::physics
 	}
 	void PhysicsCharactorControllerManager::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
 	{
+		// 생성했거나 생성할 캐릭터 컨트롤러 데이터 세팅
 		if (mCCTmap.find(id) != mCCTmap.end())
 		{
 			auto& controller = mCCTmap.find(id)->second;
@@ -188,6 +216,15 @@ namespace fq::physics
 				if (controllor.id == id)
 				{
 					controllor.position = controllerData.position;
+				}
+			}
+
+			for (auto& [controller, movement] : mWaitCharacterControllerContainer)
+			{
+				if (controller.id == id)
+				{
+					controller.position = controllerData.position;
+					return;
 				}
 			}
 		}

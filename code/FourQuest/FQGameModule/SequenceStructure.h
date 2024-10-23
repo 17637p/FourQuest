@@ -57,6 +57,7 @@ namespace fq::game_module
 	struct PlayerMoveTrackInfo
 	{
 		bool isObjectReturnToStartTransform = true;
+		bool isPlayerCurrentTransformSetting = false;
 		float startTime = 0.f;
 		float totalPlayTime = 1.f;
 

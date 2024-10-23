@@ -25,6 +25,7 @@ namespace fq::game_module
 
 		unsigned int					mPlayerID;
 		bool							mbIsObjectReturnToStartTransform;
+		bool							mbIsPlayerCurrentTransformSetting;
 		DirectX::SimpleMath::Vector3	mPrevPosition;
 		DirectX::SimpleMath::Quaternion mPrevRotation;
 		DirectX::SimpleMath::Vector3	mPrevScale;
