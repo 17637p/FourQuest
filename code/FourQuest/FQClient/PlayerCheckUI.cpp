@@ -92,6 +92,7 @@ void fq::client::PlayerCheckUI::OnUpdate(float dt)
 		checkUI.StartX = width * 0.5f + (screenPos.x * width * 0.5f) + mOffset.x - infomations[0].Width * 0.5f;
 		checkUI.StartY = height * 0.5f - (screenPos.y * height * 0.5f) + mOffset.y;
 		checkUI.isRender = true;
+		checkUI.Layer = 200;
 		mImageUI->SetUIInfomations(infomations);
 	}
 }

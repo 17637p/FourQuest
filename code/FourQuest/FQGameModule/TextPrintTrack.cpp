@@ -98,6 +98,7 @@ namespace fq::game_module
 		textInfo.FontColor = mNameFontColor;
 		textInfo.CenterX = 960.f;
 		textInfo.CenterY = 1080.f - mTextFontCenterY;
+		textInfo.Layer = 150;
 		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
 		std::string font = boost::locale::conv::from_utf(L"던파 연단된 칼날", "UTF-8");
 		textInfo.FontPath = font;
@@ -106,6 +107,7 @@ namespace fq::game_module
 		textInfo.Text = mText;
 		textInfo.FontSize = mTextFontSize;
 		textInfo.FontColor = mTextFontColor;
+		textInfo.Layer = 150;
 		textInfo.CenterX = 960.f;
 		textInfo.CenterY = 1080.f - mTextFontCenterY;
 		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
