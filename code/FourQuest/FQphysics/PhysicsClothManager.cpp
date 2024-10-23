@@ -40,12 +40,12 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsClothManager::CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix)
+	bool PhysicsClothManager::CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix, bool isSkinnedMesh)
 	{
 		std::shared_ptr<CudaPhysicsCloth> cloth = std::make_shared<CudaPhysicsCloth>(info.id, info.layerNumber);
 		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
 
-		if (!cloth->Initialize(info, mPhysics, mScene, mCudaContextManager, collisionData, collisionMatrix))
+		if (!cloth->Initialize(info, mPhysics, mScene, mCudaContextManager, collisionData, collisionMatrix, isSkinnedMesh))
 		{
 			spdlog::error("[PhysicsClothManager ({})] Failed Create Cloth", __LINE__);
 			return false;

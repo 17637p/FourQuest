@@ -225,6 +225,19 @@ __global__ void CopyVertexDataToCPU(
 }
 #pragma endregion
 
+#pragma region UpdateSkinnedMeshToPhysXVertex
+__global__ void UpdateVertices(Vertex* vertices, physx::PxVec4* particleData, size_t vertexCount)
+{
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	if (idx < vertexCount)
+	{
+		// 애니메이션 데이터를 기반으로 정점 좌표 업데이트
+		particleData[idx].x = vertices[idx].Pos.x;
+		particleData[idx].y = vertices[idx].Pos.y;
+		particleData[idx].z = vertices[idx].Pos.z;
+	}
+}
+#pragma endregion
 
 namespace fq::physics
 {
@@ -489,6 +502,51 @@ namespace fq::physics
 		if (!(cudaStatus == cudaSuccess))
 		{
 			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateWorldTransformToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
+
+		return true;
+	}
+	bool CudaClothTool::UpdateSkinnedAnimationVertexToPhysicsVertex(cudaGraphicsResource* ID3D11VertexBuffer, physx::PxVec4* particle, unsigned int vertexSize)
+	{
+		// CUDA 리소스를 매핑
+		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateNormalToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
+
+		// CUDA 포인터 가져오기
+		void* devPtr = nullptr;
+		size_t size = 0;
+		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &size, ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateNormalToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
+
+		// 블록 갯수, 스레드 갯수 설정
+		int threadsPerBlock = 256;
+		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
+
+		// CUDA 함수 실행
+		UpdateVertices << <blocksPerGrid, threadsPerBlock >> > ((Vertex*)devPtr, particle, vertexSize);
+
+		cudaStatus = cudaDeviceSynchronize();
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateNormalToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
+
+
+		// CUDA 리소스를 언매핑
+		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateNormalToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
 			return false;
 		}
 

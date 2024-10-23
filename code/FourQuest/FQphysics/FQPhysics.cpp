@@ -683,9 +683,9 @@ namespace fq::physics
 #pragma endregion
 
 #pragma region PhysicsClothManager
-	bool FQPhysics::CreateCloth(const Cloth::CreateClothData& info)
+	bool FQPhysics::CreateCloth(const Cloth::CreateClothData& info, bool isSkinnedMesh)
 	{
-		if (mClothManager->CreateCloth(info, mCollisionMatrix))
+		if (mClothManager->CreateCloth(info, mCollisionMatrix, isSkinnedMesh))
 		{
 			return true;
 		}

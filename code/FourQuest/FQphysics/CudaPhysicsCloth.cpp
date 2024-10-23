@@ -88,8 +88,11 @@ namespace fq::physics
 		physx::PxScene* scene,
 		physx::PxCudaContextManager* cudaContextManager, 
 		std::shared_ptr<CollisionData> collisionData,
-		int* collisionMatrix)
+		int* collisionMatrix,
+		bool isSkinnedMesh)
 	{
+		mbIsSkinnedMesh = isSkinnedMesh;
+
 		int deviceCount;
 		cudaError_t cudaStatus = cudaGetDeviceCount(&deviceCount);
 		if (cudaStatus != cudaSuccess || deviceCount == 0) {
@@ -137,10 +140,19 @@ namespace fq::physics
 	{
 		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
 
-		if (!CudaClothTool::UpdatePhysXDataToID3DBuffer(mVertices, mIndices, mUV, mCudaVertexResource, paticle)) return false;
-		if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource)) return false;
-		if (!updateDebugVertex()) return false;
+		if (mbIsSkinnedMesh)
+		{
+			if (!CudaClothTool::UpdateSkinnedAnimationVertexToPhysicsVertex(mCudaVertexResource, paticle, mVertices.size())) return false;
+		}
+		else
+		{
+			if (!CudaClothTool::UpdatePhysXDataToID3DBuffer(mVertices, mIndices, mUV, mCudaVertexResource, paticle)) return false;
+			if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource)) return false;
+		}
 
+#ifdef _DEBUG
+		if (!updateDebugVertex()) return false;
+#endif
 		return true;
 	}
 
@@ -323,7 +335,11 @@ namespace fq::physics
 		// 입자 상태 저장
 		for (int i = 0; i < numParticles; i++)
 		{
-			positionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 1.f / particleMass);
+			if (mbIsSkinnedMesh)
+				positionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 0.f);
+			else
+				positionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 1.f / particleMass);
+
 			phase[i] = particlePhase;
 			velocity[i] = physx::PxVec4(0.f);
 		}

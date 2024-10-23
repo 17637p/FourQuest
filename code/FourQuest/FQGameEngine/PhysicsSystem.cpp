@@ -699,6 +699,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			void* vertexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetVertexBuffer();
 			clothCollider->SetIndexBuffer(indexBuffer);
 			clothCollider->SetVertexBuffer(vertexBuffer);
+			clothCollider->SetIsSkinnedMesh(false);
 		}
 		else if (object->HasComponent<SkinnedMeshRenderer>())
 		{
@@ -707,6 +708,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			void* vertexBuffer = skeletalMesh->GetSkinnedMeshObject()->GetSkinnedMesh()->GetVertexBuffer();
 			clothCollider->SetIndexBuffer(indexBuffer);
 			clothCollider->SetVertexBuffer(vertexBuffer);
+			clothCollider->SetIsSkinnedMesh(true);
 		}
 		else
 		{
@@ -715,7 +717,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 
 		// 물리 엔진에서 천 생성하기
-		bool check = mPhysicsEngine->CreateCloth(*clothCollider->GetClothInfo().get());
+		bool check = mPhysicsEngine->CreateCloth(*clothCollider->GetClothInfo().get(), clothCollider->GetIsSkinnedMesh());
 		if (!check)
 		{
 			spdlog::error("[PhysicsSystem ({})] Failed Create Cloth", __LINE__);

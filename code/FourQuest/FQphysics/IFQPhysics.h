@@ -206,7 +206,7 @@ extern "C" {
 			/// <summary>
 			/// 천을 생성합니다.
 			/// </summary>
-			virtual FQ_PHYSICS bool CreateCloth(const Cloth::CreateClothData& info) abstract;
+			virtual FQ_PHYSICS bool CreateCloth(const Cloth::CreateClothData& info, bool isSkinnedMesh) abstract;
 
 			/// <summary>
 			/// 천 데이터를 얻습니다.
