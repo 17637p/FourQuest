@@ -20,7 +20,7 @@ namespace fq::game_engine
 
 	private:
 		void beginVariable(entt::meta_type type);
-
+		void beginIsItemHovered_Comment(entt::meta_data data);
 	private:
 		bool mbIsOpen;
 
