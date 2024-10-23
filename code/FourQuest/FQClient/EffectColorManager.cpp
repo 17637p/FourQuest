@@ -93,6 +93,7 @@ void fq::client::EffectColorManager::OnGeneratePrefabInstance(const fq::event::O
 		break;
 	}
 
+	// 알파값은 기존의 값을 유지함
 	std::function<void(fq::game_module::GameObject*)> setColor = [&setColor, applyBaseColor, applyEmissiveColor](fq::game_module::GameObject* gameObject)
 		{
 			auto staticMeshRenderer = gameObject->GetComponent<fq::game_module::StaticMeshRenderer>();
@@ -102,9 +103,13 @@ void fq::client::EffectColorManager::OnGeneratePrefabInstance(const fq::event::O
 				auto materialInstanceInfo = staticMeshRenderer->GetMaterialInstanceInfo();
 
 				materialInstanceInfo.bUseBaseColor = true;
-				materialInstanceInfo.BaseColor = applyBaseColor;
+				materialInstanceInfo.BaseColor.x = applyBaseColor.x;
+				materialInstanceInfo.BaseColor.y = applyBaseColor.y;
+				materialInstanceInfo.BaseColor.z = applyBaseColor.z;
 				materialInstanceInfo.bUseEmissiveColor = true;
-				materialInstanceInfo.EmissiveColor = applyEmissiveColor;
+				materialInstanceInfo.EmissiveColor.x = applyEmissiveColor.x;
+				materialInstanceInfo.EmissiveColor.y = applyEmissiveColor.y;
+				materialInstanceInfo.EmissiveColor.z = applyEmissiveColor.z;
 
 				staticMeshRenderer->SetMaterialInstanceInfo(materialInstanceInfo);
 			}
@@ -114,8 +119,12 @@ void fq::client::EffectColorManager::OnGeneratePrefabInstance(const fq::event::O
 			if (decalOrNull != nullptr)
 			{
 				auto materialInfo = decalOrNull->GetDecalMaterialInfo();
-				materialInfo.BaseColor = applyBaseColor;
-				materialInfo.EmissiveColor = applyEmissiveColor;
+				materialInfo.BaseColor.x = applyBaseColor.x;
+				materialInfo.BaseColor.y = applyBaseColor.y;
+				materialInfo.BaseColor.z = applyBaseColor.z;
+				materialInfo.EmissiveColor.x = applyEmissiveColor.x;
+				materialInfo.EmissiveColor.y = applyEmissiveColor.y;
+				materialInfo.EmissiveColor.z = applyEmissiveColor.z;
 				decalOrNull->SetDecalMaterialInfo(materialInfo);
 			}
 
