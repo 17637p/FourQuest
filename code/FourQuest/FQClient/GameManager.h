@@ -41,7 +41,7 @@ namespace fq::client
 
 		void EventProcessOffPopupPause();
 		void EventProcessOffPopupSetting();
-		void testKey();
+
 		// result 스코어 초기화 
 		void resetResult();
 		void setPlayerName();
