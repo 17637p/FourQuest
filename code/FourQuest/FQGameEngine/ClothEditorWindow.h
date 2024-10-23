@@ -77,8 +77,8 @@ namespace fq::game_engine
 		bool mbIsDeleteBrush;
 		float mBrushRadian;
 
-		std::shared_ptr<fq::game_module::ClothData> mClothData;
-		std::set<unsigned int> mObjectDisableIndiecs;
+		std::shared_ptr<fq::physics::Cloth::ClothData> mClothData;
+		std::set<unsigned int> mObjectDisableIndices;
 		std::string mModelPath;
 		std::string mFileName;
 		fq::game_module::ClothDataLoader mClothDataLoader;

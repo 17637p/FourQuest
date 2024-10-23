@@ -47,7 +47,7 @@ namespace fq::game_engine
 		mEditorProcess = editor;
 
 		mScene = mGameProcess->mSceneManager->GetCurrentScene();
-		mClothData = std::make_shared<fq::game_module::ClothData>();
+		mClothData = std::make_shared<fq::physics::Cloth::ClothData>();
 	}
 
 	void ClothEditorWindow::Finalize()
@@ -92,7 +92,7 @@ namespace fq::game_engine
 
 			// 고정하는 인덱스 값 업데이트 후 저장
 			mClothData->disableIndices.clear();
-			for (auto disableIndices : mObjectDisableIndiecs)
+			for (auto disableIndices : mObjectDisableIndices)
 			{
 				mClothData->disableIndices.push_back(disableIndices);
 			}
@@ -152,8 +152,6 @@ namespace fq::game_engine
 		{
 			auto transform = mGameObject->GetComponent<fq::game_module::Transform>();
 			fq::physics::TriangleMeshColliderInfo triangleMeshInfo;
-			std::vector<DirectX::SimpleMath::Vector3> vertices;
-			std::vector<unsigned int> indices;
 
 			unsigned int id = mGameObject->GetID();
 			triangleMeshInfo.colliderInfo.id = id;
@@ -175,29 +173,30 @@ namespace fq::game_engine
 				const auto& mesh = ModelSystem::GetMesh(model, meshName);
 
 				// 물리 엔진에 전달할 메쉬의 버텍스와 인덱스 값을 저장
-				vertices.resize(mesh.Vertices.size());
+				mClothData->vertices.resize(mesh.Vertices.size());
+				mClothData->uvs.resize(mesh.Vertices.size());
+				mClothData->indices.resize(mesh.Indices.size());
 				triangleMeshInfo.vertexSize = mesh.Vertices.size();
-				indices.resize(mesh.Indices.size());
 				triangleMeshInfo.indexSize = mesh.Indices.size();
 
 				for (int i = 0; i < mesh.Vertices.size(); ++i)
 				{
-					vertices[i] = mesh.Vertices[i].Pos;
+					mClothData->vertices[i] = DirectX::SimpleMath::Vector3::Transform(mesh.Vertices[i].Pos, transform->GetWorldMatrix());
+				}
+				for (int i = 0; i < mesh.Vertices.size(); ++i)
+				{
+					mClothData->uvs[i] = mesh.Vertices[i].Tex;
 				}
 				for (int i = 0; i < mesh.Indices.size(); ++i)
 				{
-					indices[i] = mesh.Indices[i];
+					mClothData->indices[i] = mesh.Indices[i];
 				}
 
-				triangleMeshInfo.vertices = vertices.data();
-				triangleMeshInfo.indices = indices.data();
-
-				// 멤버 변수에 버텍스 값 저장
-				mClothData->vertices = vertices;
-				mClothData->indices = indices;
+				triangleMeshInfo.vertices = mClothData->vertices.data();
+				triangleMeshInfo.indices = mClothData->indices.data();
 			}
 
-			mGameProcess->mPhysics->CreateDynamicBody(triangleMeshInfo, fq::physics::EColliderType::COLLISION, true);
+			mGameProcess->mPhysics->CreateStaticBody(triangleMeshInfo, fq::physics::EColliderType::COLLISION);
 		}
 	}
 
@@ -206,16 +205,18 @@ namespace fq::game_engine
 		if (mGameObject == nullptr)
 			return;
 
-
 		fq::graphics::debug::SphereInfo info;
 
+		// 고정할 버텍스는 빨간색으로, 동적인 버텍스들은 노란색으로 디버그 렌더링
 		for (int i = 0; i < mClothData->vertices.size(); i++)
 		{
-			info.Sphere.Center = DirectX::SimpleMath::Vector3::Transform(mClothData->vertices[i], mGameObject->GetTransform()->GetWorldMatrix());
-			info.Sphere.Radius = 0.003f;
+			DirectX::SimpleMath::Vector3 vertex = mClothData->vertices[i];
+
+			info.Sphere.Center = vertex;
+			info.Sphere.Radius = 0.005f;
 			info.bUseDepthTest = true;
 			
-			if (mObjectDisableIndiecs.find(i) != mObjectDisableIndiecs.end())
+			if (mObjectDisableIndices.find(i) != mObjectDisableIndices.end())
 			{
 				info.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
 			}
@@ -269,7 +270,7 @@ namespace fq::game_engine
 			info.distance = 100.f;
 			info.layerNumber = 0;
 
-			fq::physics::RayCastOutput raycastOutput = mGameProcess->mPhysics->RayCast(info, false, true);
+			fq::physics::RayCastOutput raycastOutput = mGameProcess->mPhysics->RayCast(info, true, true);
 
 			for (int i = 0; i < raycastOutput.hitSize; i++)
 			{
@@ -291,20 +292,21 @@ namespace fq::game_engine
 					float z = mClothData->vertices[j].z - radiusPos.z;
 
 					float distanceSquared = (x * x) + (y * y) + (z * z);
+					float brushRadiusSquared = mBrushRadian * mBrushRadian;
 
-					if (distanceSquared <= mBrushRadian * mBrushRadian)
+					if (distanceSquared <= brushRadiusSquared)
 					{
 						if (mbIsDeleteBrush)
 						{
-							auto it = mObjectDisableIndiecs.find(j);
-							if (it != mObjectDisableIndiecs.end())
+							auto it = mObjectDisableIndices.find(j);
+							if (it != mObjectDisableIndices.end())
 							{
-								mObjectDisableIndiecs.erase(it);
+								mObjectDisableIndices.erase(it);
 							}
 						}
 						else
 						{
-							mObjectDisableIndiecs.insert(j);
+							mObjectDisableIndices.insert(j);
 						}
 					}
 				}

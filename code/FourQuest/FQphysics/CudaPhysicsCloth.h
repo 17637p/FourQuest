@@ -20,6 +20,7 @@
 
 namespace fq::physics
 {
+
 	class CudaPhysicsCloth
 	{
 	public:
@@ -63,20 +64,23 @@ namespace fq::physics
 		inline const float& GetClothMass();
 		inline const float& GetRestOffset();
 		inline physx::PxPBDParticleSystem* GetPBDParticleSystem();
+		inline const std::vector<DirectX::SimpleMath::Vector3>& GetVertices();
+		inline const std::vector<unsigned int>& GetIndices();
 		inline void SetLayerNumber(const unsigned int& layerNumber);
 
 
 	private:
-		void settingInfoData(const Cloth::CreateClothData& info);
-		void extractSpringsData();
-		void createClothParticle(
+		bool updateDebugVertex();
+		bool settingInfoData(const Cloth::CreateClothData& info);
+		bool extractSpringsData();
+		bool createClothParticle(
 			physx::PxPhysics* physics, 
 			physx::PxScene* scene, 
 			physx::PxCudaContextManager* cudaContextManager, 
 			int* collisionMatrix, 
 			std::shared_ptr<CollisionData> collisionData);
 
-		void settingParticleBuffer(
+		bool settingParticleBuffer(
 			const physx::PxU32& numSprings,
 			const physx::PxU32& numTriangles,
 			const physx::PxU32& numParticles,
@@ -103,6 +107,7 @@ namespace fq::physics
 		float mClothMass;
 		float mRestOffset;
 		std::vector<unsigned int> mIndices;
+		std::vector<unsigned int> mDisableIndicesIndices;
 		std::set<std::pair<unsigned int, unsigned int>>		mSprings;
 		std::vector<std::pair<unsigned int, unsigned int>>	mSameVertices;
 
@@ -143,6 +148,14 @@ namespace fq::physics
 	void CudaPhysicsCloth::SetLayerNumber(const unsigned int& layerNumber)
 	{
 		mLayerNumber = layerNumber;
+	}
+	const std::vector<DirectX::SimpleMath::Vector3>& CudaPhysicsCloth::GetVertices()
+	{
+		return mVertices;
+	}
+	const std::vector<unsigned int>& CudaPhysicsCloth::GetIndices()
+	{
+		return mIndices;
 	}
 #pragma endregion
 
