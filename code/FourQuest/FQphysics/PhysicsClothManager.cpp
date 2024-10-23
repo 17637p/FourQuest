@@ -4,6 +4,8 @@
 #include "FQCommonPhysics.h"
 #include "PhysicsCollisionDataManager.h"
 
+#include <spdlog\spdlog.h>
+
 namespace fq::physics
 {
 	PhysicsClothManager::PhysicsClothManager()
@@ -18,11 +20,12 @@ namespace fq::physics
 	{
 	}
 
-	bool PhysicsClothManager::Initialize(physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager)
+	bool PhysicsClothManager::Initialize(physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager)
 	{
 		mPhysics = physics;
 		mScene = scene;
 		mCudaContextManager = cudaContextManager;
+		mCollisionDataManager = collisionDataManager;
 
 		return true;
 	}
@@ -43,12 +46,15 @@ namespace fq::physics
 		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
 
 		if (!cloth->Initialize(info, mPhysics, mScene, mCudaContextManager, collisionData, collisionMatrix))
+		{
+			spdlog::error("[PhysicsClothManager ({})] Failed Create Cloth", __LINE__);
 			return false;
+		}
 
 		mPhysicsClothContainer.insert(std::make_pair(info.id, cloth));
 		mCollisionDataManager.lock()->Create(info.id, collisionData);
 
-		return true;
+ 		return true;
 	}
 
 	bool PhysicsClothManager::GetClothData(unsigned int id, Cloth::GetSetClothData& data)
@@ -82,12 +88,48 @@ namespace fq::physics
 
 		if (clothIter != mPhysicsClothContainer.end())
 		{
-			removeActorList.push_back(clothIter->second->GetPBDParticleSystem());
+			mScene->removeActor(*clothIter->second->GetPBDParticleSystem());
 			mPhysicsClothContainer.erase(clothIter);
 
 			return true;
 		}
 
 		return false;
+	}
+	bool PhysicsClothManager::RemoveAllCloth(std::vector<physx::PxActor*>& removeActorList)
+	{
+		for (auto [id, actor] : mPhysicsClothContainer)
+		{
+			mScene->removeActor(*actor->GetPBDParticleSystem());
+		}
+		mPhysicsClothContainer.clear();
+
+		return true;
+	}
+
+	const std::vector<DirectX::SimpleMath::Vector3>& PhysicsClothManager::GetClothVertex(unsigned int id)
+	{
+		auto clothIter = mPhysicsClothContainer.find(id);
+
+		if (clothIter != mPhysicsClothContainer.end())
+		{
+			auto cloth = clothIter->second;
+			return cloth->GetVertices();
+		}
+
+		return std::vector<DirectX::SimpleMath::Vector3>();
+	}
+
+	const std::vector<unsigned int>& PhysicsClothManager::GetClothIndices(unsigned int id)
+	{
+		auto clothIter = mPhysicsClothContainer.find(id);
+
+		if (clothIter != mPhysicsClothContainer.end())
+		{
+			auto cloth = clothIter->second;
+			return cloth->GetIndices();
+		}
+
+		return std::vector<unsigned int>();
 	}
 }

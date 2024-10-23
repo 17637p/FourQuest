@@ -6,6 +6,7 @@ namespace fq::game_module
 {
 	ClothCollider::ClothCollider()
 		: mClothPath{}
+		, mClothInfo(std::make_shared<ClothInfo>())
 	{
 	}
 
@@ -13,20 +14,12 @@ namespace fq::game_module
 	{
 	}
 
-	void ClothCollider::Load()
+	bool ClothCollider::Load()
 	{
 		ClothDataLoader loader;
 
-		auto clothData = loader.LoadArticulationData(mClothPath);
-
-		mClothInfo->vertices = clothData->vertices.data();
-		mClothInfo->vertexSize = clothData->vertices.size();
-		mClothInfo->indices = clothData->indices.data();
-		mClothInfo->indexSize = clothData->indices.size();
-		mClothInfo->disableIndices = clothData->disableIndices.data();
-		mClothInfo->disableIndexSize = clothData->disableIndices.size();
+		return loader.LoadArticulationData(mClothPath, mClothInfo->clothData);
 	}
-
 
 	entt::meta_handle fq::game_module::ClothCollider::GetHandle()
 	{

@@ -208,6 +208,21 @@ namespace fq::physics
 		/// 천을 삭제합니다.
 		/// </summary>
 		virtual bool RemoveCloth(unsigned int id) override;
+
+		/// <summary>
+		/// 모든 천을 삭제합니다.
+		/// </summary>
+		virtual bool RemoveAllCloth() override;
+
+		/// <summary>
+		/// 천의 버텍스를 반환합니다.
+		/// </summary>
+		virtual const std::vector<DirectX::SimpleMath::Vector3>& GetClothVertex(unsigned int id) override;
+
+		/// <summary>
+		/// 천의 인덱스를 반환합니다.
+		/// </summary>
+		virtual const std::vector<unsigned int>& GetClothIndices(unsigned int id) override;
 #pragma endregion
 
 		virtual bool HasConvexMeshResource(const unsigned int& hash) override;

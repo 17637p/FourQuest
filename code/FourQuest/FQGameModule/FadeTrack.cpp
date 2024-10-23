@@ -35,7 +35,7 @@ namespace fq::game_module
 		// 포스트 프로세스 오브젝트가 씬에 존재하지 않으면 실패 반환
 		if (mPostProcessObject.expired())
 		{
-			spdlog::warn("[Warrning] Do not have PostProcessObject");
+			spdlog::warn("[FadeTrack Warrning ({})] Do not have PostProcessObject", __LINE__);
 			return false;
 		}
 
@@ -47,14 +47,14 @@ namespace fq::game_module
 		// 포스트 프로세스 오브젝트가 씬에 존재하지 않으면 실패 반환
 		if (mPostProcessObject.expired())
 		{
-			spdlog::warn("[Warrning] Do not have PostProcessObject");
+			spdlog::warn("[FadeTrack Warrning ({})] Do not have PostProcessObject"), __LINE__;
 		}
 		else
 		{
 			auto postProcessing = mPostProcessObject.lock()->GetComponent<PostProcessing>();
 			if (postProcessing == nullptr)
 			{
-				spdlog::warn("[Warrning] Object have not PostProcessingComponent");
+				spdlog::warn("[FadeTrack Warrning ({})] Object have not PostProcessingComponent", __LINE__);
 				return;
 			}
 

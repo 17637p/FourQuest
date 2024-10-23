@@ -22,6 +22,7 @@ namespace fq::physics
 		physx::PxConvexMeshCookingResult::Enum result;
 
 		PxCookConvexMesh(params, convexdesc, buf, &result);
+		delete[] vertices;	// Physics System에서 new로 할당한 vertices 해제
 
 		physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
 		physx::PxConvexMesh* convexMesh = physics->createConvexMesh(input);
