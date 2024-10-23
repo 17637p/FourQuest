@@ -43,6 +43,8 @@
     <ClInclude Include="ArmourDestroyer.h" />
     <ClInclude Include="AttackInvalidation.h" />
     <ClInclude Include="BGaugeUI.h" />
+    <ClInclude Include="CollisionColorChanger.h" />
+    <ClInclude Include="CollisionRenderChanger.h" />
     <ClInclude Include="CoolTimeIcon.h" />
     <ClInclude Include="DebugService.h" />
     <ClInclude Include="DestroyWhenCollisionToWall.h" />
@@ -210,6 +212,8 @@
     <ClCompile Include="ArmourDestroyer.cpp" />
     <ClCompile Include="AttackInvalidation.cpp" />
     <ClCompile Include="BGaugeUI.cpp" />
+    <ClCompile Include="CollisionColorChanger.cpp" />
+    <ClCompile Include="CollisionRenderChanger.cpp" />
     <ClCompile Include="CoolTimeIcon.cpp" />
     <ClCompile Include="DebugService.cpp" />
     <ClCompile Include="DestroyWhenCollisionToWall.cpp" />

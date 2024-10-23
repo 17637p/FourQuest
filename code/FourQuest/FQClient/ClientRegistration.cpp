@@ -180,6 +180,8 @@
 #include "ScaleAnimation.h"
 #include "RotationAnimation.h"
 #include "DebugService.h"
+#include "CollisionColorChanger.h"
+#include "CollisionRenderChanger.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -453,7 +455,7 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "EndScale")
 		.prop(fq::reflect::prop::Comment, u"종료 스케일")
 		.base<game_module::Component>();
-	
+
 	entt::meta<RotationAnimation>()
 		.type("RotationAnimation"_hs)
 		.prop(reflect::prop::Name, "RotationAnimation")
@@ -481,6 +483,44 @@ void fq::client::RegisterMetaData()
 		.data<&RotationAnimation::mEndRotationInQuaternion>("mEndRotationInQuaternion"_hs)
 		.prop(fq::reflect::prop::Name, "mEndRotationInQuaternion")
 		.prop(fq::reflect::prop::Comment, u"종료 회전값(사원수)")
+		.base<game_module::Component>();
+
+	entt::meta<CollisionColorChanger>()
+		.type("CollisionColorChanger"_hs)
+		.prop(reflect::prop::Name, "CollisionColorChanger")
+		.data<&CollisionColorChanger::mTags>("Tags"_hs)
+		.prop(fq::reflect::prop::Name, "Tags")
+		.prop(fq::reflect::prop::Comment, u"처리될 태그")
+		.data<&CollisionColorChanger::mbUseBaseColor>("bUseBaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "bUseBaseColor")
+		.prop(fq::reflect::prop::Comment, u"베이스 컬러를 사용할지 유무")
+		.data<&CollisionColorChanger::mBaseColor>("BaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "BaseColor")
+		.prop(fq::reflect::prop::Comment, u"충돌 시 변경될 베이스 컬러")
+		.data<&CollisionColorChanger::mbUseEmissiveColor>("bUseEmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "bUseEmissiveColor")
+		.prop(fq::reflect::prop::Comment, u"이미시브를 사용할지 유무")
+		.data<&CollisionColorChanger::mEmissiveColor>("EmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "EmissiveColor")
+		.prop(fq::reflect::prop::Comment, u"충돌 시 변경될 이미시브 컬러")
+		.base<game_module::Component>();
+
+	entt::meta<TagStructure>()
+		.type("TagStructure"_hs)
+		.prop(reflect::prop::Name, "TagStructure")
+		.prop(fq::reflect::prop::POD)
+		.data<&TagStructure::Tag>("Tag"_hs)
+		.prop(fq::reflect::prop::Name, "Tag");
+
+	entt::meta<CollisionRenderChanger>()
+		.type("CollisionRenderChanger"_hs)
+		.prop(reflect::prop::Name, "CollisionRenderChanger")
+		.data<&CollisionRenderChanger::mbIsRender>("bIsRender"_hs)
+		.prop(fq::reflect::prop::Name, "bIsRender")
+		.prop(fq::reflect::prop::Comment, u"충돌 시 랜더링을 킬지 끌지 여부")
+		.data<&CollisionRenderChanger::mTags>("Tags"_hs)
+		.prop(fq::reflect::prop::Name, "Tags")
+		.prop(fq::reflect::prop::Comment, u"처리될 태그들")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

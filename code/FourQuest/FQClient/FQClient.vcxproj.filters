@@ -617,6 +617,12 @@
     <ClInclude Include="RotationAnimation.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionColorChanger.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionRenderChanger.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1067,6 +1073,12 @@
       <Filter>src\06.ETC</Filter>
     </ClCompile>
     <ClCompile Include="RotationAnimation.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionColorChanger.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionRenderChanger.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
