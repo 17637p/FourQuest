@@ -207,6 +207,7 @@ namespace fq::client
 		float mGroggyDuration;
 		float mGroggyElapsed;
 		size_t mShakeCount;
+		float mRimPow;
 
 		friend void RegisterMetaData();
 	};

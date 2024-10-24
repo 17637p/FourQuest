@@ -1431,6 +1431,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mGroggyDuration")
 		.prop(fq::reflect::prop::Comment, u8"그로기 상태 지속시간")
 
+		.data<&BossMonster::mRimPow>("mRimPow"_hs)
+		.prop(fq::reflect::prop::Name, "mRimPow")
+		.prop(fq::reflect::prop::Comment, u8"림라이트 Pow 값")
+
 		.base<fq::game_module::Component>();
 
 	entt::meta<BossMonsterIdleState>()

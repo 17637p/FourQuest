@@ -69,6 +69,7 @@ fq::client::BossMonster::BossMonster()
 	, mGroggyDuration(5.f)
 	, mGroggyElapsed(0.f)
 	, mShakeCount(10)
+	, mRimPow(3.f)
 {}
 
 fq::client::BossMonster::~BossMonster()
@@ -120,6 +121,7 @@ void fq::client::BossMonster::OnUpdate(float dt)
 {
 	// 그로기 게이지 
 	mGroggyGauge -= mGroggyDecreasePerSecond * dt;
+	mGroggyGauge = std::max<float>(mGroggyGauge, 0);
 
 	// 공격 쿨타임 계산 
 	mAttackElapsedTime = std::min(mAttackCoolTime, mAttackElapsedTime + dt);
@@ -196,12 +198,12 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 					mAnimator->SetParameterBoolean("OnHitBack", true);
 				}
 
-				// HP 흔들기
-				GetScene()->ViewComponents<UIShaker>(
-					[this](fq::game_module::GameObject& object, UIShaker& uiShaker)
-					{
-						uiShaker.AddCount(mShakeCount);
-					});
+				// // HP 흔들기
+				// GetScene()->ViewComponents<UIShaker>(
+				// 	[this](fq::game_module::GameObject& object, UIShaker& uiShaker)
+				// 	{
+				// 		uiShaker.AddCount(mShakeCount);
+				// 	});
 			}
 
 			if (mGroggyGauge == mStartGroggyGauge)
@@ -682,6 +684,7 @@ void fq::client::BossMonster::SetRimLightColor(bool bUseRimLight, DirectX::Simpl
 
 	info.bUseRimLight = bUseRimLight;
 	info.RimLightColor = color;
+	info.RimPow = mRimPow; // 임시로 넣음
 
 	mSkinnedMesh->SetMaterialInstanceInfo(info);
 }

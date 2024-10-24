@@ -1,4 +1,5 @@
 #include "BossMonsterHitState.h"
+#include "BossMonster.h"
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/NavigationAgent.h"
@@ -19,11 +20,25 @@ void fq::client::BossMonsterHitState::OnStateEnter(game_module::Animator& animat
 {
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MB_Groggy", false ,  fq::sound::EChannel::SE });
 
+	auto bossMonster = animator.GetComponent< BossMonster>();
+
+	if (bossMonster != nullptr)
+	{
+		bossMonster->SetRimLightColor(true, { 1, 0, 0, 1 });
+	}
+
 	animator.SetParameterBoolean("IsAnyState", false);
 }
 
 void fq::client::BossMonsterHitState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
+	auto bossMonster = animator.GetComponent< BossMonster>();
+
+	if (bossMonster != nullptr)
+	{
+		bossMonster->SetRimLightColor(true, { 0, 0, 0, 1 });
+	}
+
 	animator.SetParameterBoolean("IsAnyState", true);
 	animator.SetParameterBoolean("OnHitRight", false);
 	animator.SetParameterBoolean("OnHitLeft", false);
