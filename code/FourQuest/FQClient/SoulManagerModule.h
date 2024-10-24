@@ -6,6 +6,7 @@ namespace fq::client
 {
 	struct SoulData
 	{
+		std::shared_ptr<fq::game_module::GameObject> tempGameObject; // 카메라 무빙에 등록해두고 삭제될 임시 컴포넌트
 		unsigned int id = 0;
 		ESoulType soulType = ESoulType::End;
 		DirectX::SimpleMath::Matrix worldTransform;
