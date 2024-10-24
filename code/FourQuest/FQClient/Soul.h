@@ -27,19 +27,20 @@ namespace fq::client
 		void SetSoulType(fq::client::ESoulType type);
 
 		void SetSoulColor();
-		void SetSoulHP();
 
 		void ReleaseGoddessStatue();
 
 		float GetSoulHpRatio()const;
-
 		float GetSoulGauge() const { return mSoulGauge; }
 		void SetSoulGauge(float soulGauge) { mSoulGauge = soulGauge; }
-
 		float GetMaxSoulGauge() const { return mMaxSoulGauge; }
 		void SetMaxSoulGauge(float maxSoulGauge) { mMaxSoulGauge = maxSoulGauge; }
-
 		float GetSoulGaugeRatio() const { if (mMaxSoulGauge == 0.f) { return 0; } return mSoulGauge / mMaxSoulGauge; }
+
+		/// <summary>
+		/// 소울을 무적상태로 설정합니다.
+		/// </summary>
+		void SetInvincible();
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -62,6 +63,8 @@ namespace fq::client
 		// 갑옷 장착 중일 경우를 체크함
 		bool handleOnSummon();
 
+		// 소울 시작시 hp 설정 
+		void setSoulHP();
 		void setName();
 
 	private:

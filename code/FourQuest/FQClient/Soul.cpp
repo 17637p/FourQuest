@@ -89,7 +89,7 @@ void fq::client::Soul::OnStart()
 	}
 
 	SetSoulColor();		// 소울 색깔 지정 
-	SetSoulHP();		// 소울 HP
+	setSoulHP();		// 소울 HP
 
 	setName();
 
@@ -322,7 +322,7 @@ void fq::client::Soul::SetSoulColor()
 	}
 }
 
-void fq::client::Soul::SetSoulHP()
+void fq::client::Soul::setSoulHP()
 {
 	// 갑옷 죽음 카운터에 따라 영혼 최대 체력 세팅
 	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
@@ -497,7 +497,7 @@ void fq::client::Soul::ReleaseGoddessStatue()
 	//	GetComponent<HpBar>()->SetHp(1);
 	//}
 
-	SetSoulHP();
+	setSoulHP();
 }
 
 void fq::client::Soul::checkReleaseGoddessStatue()
@@ -553,5 +553,10 @@ void fq::client::Soul::setName()
 				break;
 		}
 	}
+}
+
+void fq::client::Soul::SetInvincible()
+{
+	mHP = FLT_MAX;
 }
 
