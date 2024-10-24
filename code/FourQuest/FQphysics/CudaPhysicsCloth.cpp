@@ -150,9 +150,8 @@ namespace fq::physics
 			if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource)) return false;
 		}
 
-#ifdef _DEBUG
-		if (!updateDebugVertex()) return false;
-#endif
+		//if (!updateDebugVertex()) return false;
+
 		return true;
 	}
 
@@ -169,9 +168,12 @@ namespace fq::physics
 		// 복사한 데이터를 mVertices에 저장
 		for (int i = 0; i < mVertices.size(); i++)
 		{
-			mVertices[i].x = hostParticleData[i].x;
-			mVertices[i].y = hostParticleData[i].y;
-			mVertices[i].z = hostParticleData[i].z;
+			if (hostParticleData[i].x <= 0.00001f && hostParticleData[i].x >= -0.0001f)
+				mVertices[i].x = hostParticleData[i].x;
+			if (hostParticleData[i].y <= 0.00001f && hostParticleData[i].y >= -0.0001f)
+				mVertices[i].y = hostParticleData[i].y;
+			if (hostParticleData[i].z <= 0.00001f && hostParticleData[i].z >= -0.0001f)
+				mVertices[i].z = hostParticleData[i].z;
 		}
 
 		// 메모리 해제
@@ -335,9 +337,9 @@ namespace fq::physics
 		// 입자 상태 저장
 		for (int i = 0; i < numParticles; i++)
 		{
-			if (mbIsSkinnedMesh)
-				positionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 0.f);
-			else
+			//if (mbIsSkinnedMesh)
+			//	positionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 0.f);
+			//else
 				positionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 1.f / particleMass);
 
 			phase[i] = particlePhase;

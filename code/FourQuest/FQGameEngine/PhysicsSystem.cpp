@@ -1032,7 +1032,24 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 
 			fq::physics::Cloth::GetSetClothData data;
 			mPhysicsEngine->GetClothData(id, data);
-			transform->SetWorldMatrix(data.worldTransform);
+
+			if (!clothCollider->GetIsSkinnedMesh())
+				transform->SetWorldMatrix(data.worldTransform);
+
+			//auto vertices = mPhysicsEngine->GetClothVertex(id);
+
+			//fq::graphics::debug::PolygonInfo info;
+
+			//for (int i = 0; i < vertices.size(); i++)
+			//{
+			//	fq::graphics::debug::SphereInfo info;
+
+			//	info.Sphere.Center = vertices[i];
+			//	info.Sphere.Radius = 0.01f;
+			//	info.Color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
+
+			//	mGameProcess->mGraphics->DrawSphere(info);
+			//}
 		}
 		else
 		{
@@ -1350,6 +1367,8 @@ void fq::game_engine::PhysicsSystem::PostUpdate()
 				mPhysicsEngine->RemoveArticulation(colliderID);
 			else if (info.enttID == mCharactorControllerTypeID || info.enttID == mControllerTypeID)
 				mPhysicsEngine->RemoveController(colliderID);
+			else if (info.enttID == mClothTypeID)
+				mPhysicsEngine->RemoveCloth(colliderID);
 			else
 				mPhysicsEngine->RemoveRigidBody(colliderID);
 

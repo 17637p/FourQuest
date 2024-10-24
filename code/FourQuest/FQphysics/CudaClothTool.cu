@@ -507,7 +507,10 @@ namespace fq::physics
 
 		return true;
 	}
-	bool CudaClothTool::UpdateSkinnedAnimationVertexToPhysicsVertex(cudaGraphicsResource* ID3D11VertexBuffer, physx::PxVec4* particle, unsigned int vertexSize)
+	bool CudaClothTool::UpdateSkinnedAnimationVertexToPhysicsVertex(
+		cudaGraphicsResource* ID3D11VertexBuffer, 
+		physx::PxVec4* particle, 
+		unsigned int vertexSize)
 	{
 		// CUDA 리소스를 매핑
 		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer);
