@@ -163,6 +163,9 @@ namespace fq::graphics
 		// SpriteAnimation
 		virtual ISpriteAnimationObject* CreateSpriteAnimation(SpriteInfo spriteInfo) override;
 		virtual void DeleteSpriteAnimation(fq::graphics::ISpriteAnimationObject* spriteAniamtionObject) override;
+		// Video
+		virtual IVideoObject* CreateVideoObject(VideoInfo videoInfo) override;
+		virtual void DeleteVideoObject(fq::graphics::IVideoObject* videoObject) override;
 
 		/// SkyBox
 		virtual void SetSkyBox(const std::wstring& path, bool bUseIBL = false, float envScale = 1.f) override;

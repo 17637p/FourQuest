@@ -47,6 +47,7 @@ namespace fq::graphics
 	class IImageObject;
 	class ITextObject;
 	class ISpriteAnimationObject;
+	class IVideoObject;
 	/// <summary>
 	/// 일단 3D스러운 UI가 필요 없어 보여서 Direct2D로 만든다. 
 	/// 다른 게 필요하다면 그 때 만들어야지
@@ -94,9 +95,10 @@ namespace fq::graphics
 		void DeleteSpriteAniamtion(ISpriteAnimationObject* spriteAniamtionObject);
 
 		// Video
+		IVideoObject* CreateVideoObject(const VideoInfo& videoInfo);
+		void DeleteVideoObject(IVideoObject* videoObject);
 		bool LoadVideo(const std::wstring& path);
-		bool CreateVideoBitmap(UINT width, UINT height);
-		bool UpdateVideoBitmap();
+		void UpdateVideoBitmap();
 
 		void SetIsRenderObjects(bool isRenderObjects) { mIsRenderObjects = isRenderObjects; }
 
@@ -153,28 +155,16 @@ namespace fq::graphics
 		bool mIsSortedAll;
 
 		// video
-		//IMFSourceReader* mVideoReader = nullptr;
 		ID2D1Bitmap* mVideoBitmap = nullptr;
-		bool mIsDrawVideo;
-		UINT mVideoWidth;
-		UINT mVideoHeight;
-		LONGLONG   llVideoTimeStamp = 0;
-		DWORD in = 0;
+		LONGLONG   mVideoTimeStamp = 0;
+		DWORD mVideoIndex = 0;
 
-		IMFSourceResolver* pSourceResolver = NULL;
-		MF_OBJECT_TYPE     ObjectType = MF_OBJECT_INVALID;
-		IUnknown* uSource = NULL;
-		IMFMediaSource* mediaFileSource = NULL;
-		IMFAttributes* pVideoReaderAttributes = NULL;
 		IMFSourceReader* pSourceReader = NULL;
-		IMFMediaType* pReaderOutputType = NULL;
-		IMFMediaType* pFirstOutputType = NULL;
 
-		uint32_t  width = 0;
-		uint32_t  height = 0;
+		uint32_t mVideoWidth = 0;
+		uint32_t mVideoHeight = 0;
 
-		uint32_t xres = 0;
-		uint32_t yres = 0;
+		IVideoObject* mVideoObject = nullptr;
 	};
 }
 

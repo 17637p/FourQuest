@@ -685,6 +685,7 @@ void fq::client::QuestManager::eventProcessClearQuest()
 						preQuestList[0].preIsMain == event.clearQuest.mIsMain)
 					{
 						mCurMainQuest = mMainQuests[i];
+						startNew(0);
 						spdlog::trace("Complete PreQuest!");
 					}
 				}
@@ -1108,8 +1109,14 @@ void fq::client::QuestManager::playNew(float dt)
 {
 	for (int i = 0; i < 4; i++)
 	{
+		spdlog::trace("{}", mCompleteImageCounts[0]);
+		if (i == 0 && mCompleteImageCounts[0] > 0)
+		{
+			continue;
+		}
 		if (mNewImageCounts[i] > 0)
 		{
+			mNewImages[i]->SetIsRender(0, true);
 			if (mNewImageCounts[i] < 1.0f)
 			{
 				auto uiInfo = mNewImages[i]->GetUIInfomation(0);
@@ -1192,21 +1199,29 @@ void fq::client::QuestManager::playComplete(float dt)
 
 				if (i == 0)
 				{
-					auto textInfo = mMainQuestText->GetTextInfo();
-					textInfo.FontColor.A(mCompleteImageCounts[i]);
-					mMainQuestText->SetTextInfoPlay(textInfo);
+					if (mNewImageCounts[0] > 0)
+					{
+						auto textInfo = mMainQuestText->GetTextInfo();
+						textInfo.FontColor.A(mCompleteImageCounts[i]);
+						mMainQuestText->SetTextInfoPlay(textInfo);
+
+						auto questBox = textUI->GetGameObject()->GetParent()->GetChildren()[1]->GetComponent<game_module::ImageUI>();
+						uiInfo = questBox->GetUIInfomation(0);
+						uiInfo.Alpha = mCompleteImageCounts[i];
+						questBox->SetUIInfomation(0, uiInfo);
+					}
 				}
 				else
 				{
 					auto textInfo = mSubQuestTexts[i - 1]->GetTextInfo();
 					textInfo.FontColor.A(mCompleteImageCounts[i]);
 					mSubQuestTexts[i - 1]->SetTextInfoPlay(textInfo);
-				}
 
-				auto questBox = textUI->GetGameObject()->GetParent()->GetChildren()[1]->GetComponent<game_module::ImageUI>();
-				uiInfo = questBox->GetUIInfomation(0);
-				uiInfo.Alpha = mCompleteImageCounts[i];
-				questBox->SetUIInfomation(0, uiInfo);
+					auto questBox = textUI->GetGameObject()->GetParent()->GetChildren()[1]->GetComponent<game_module::ImageUI>();
+					uiInfo = questBox->GetUIInfomation(0);
+					uiInfo.Alpha = mCompleteImageCounts[i];
+					questBox->SetUIInfomation(0, uiInfo);
+				}
 			}
 
 			mCompleteImageCounts[i] -= dt;
@@ -1235,7 +1250,6 @@ void fq::client::QuestManager::playComplete(float dt)
 				if (mIsFinishedCompleteAnimation[i])
 				{
 					mIsFinishedCompleteAnimation[i] = false;
-					startNew(i);
 
 					int nextSubQuestSize = mNextSubQuests.size() + 1;
 					for (int j = 1; j < nextSubQuestSize; j++)

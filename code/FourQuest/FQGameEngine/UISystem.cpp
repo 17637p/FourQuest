@@ -5,6 +5,7 @@
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/TextUI.h"
 #include "../FQGameModule/SpriteAnimationUI.h"
+#include "../FQGameModule/VideoUI.h"
 #include "../FQGameModule/Transform.h"
 #include "GameProcess.h"
 
@@ -57,6 +58,9 @@ void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
 	mSetSpriteInformationHandler = eventMgr->
 		RegisterHandle<fq::event::SetSpriteAnimationInformation>(this, &UISystem::SetSpriteAnimationInformation);
 
+	mSetVideoInformationHandler = eventMgr->
+		RegisterHandle<fq::event::SetVideoInformation>(this, &UISystem::SetVideoInformation);
+
 	mSetScreenSizeHandler = eventMgr->
 		RegisterHandle<fq::event::SetScreenSize>([this](fq::event::SetScreenSize event)
 			{
@@ -92,6 +96,7 @@ void fq::game_engine::UISystem::OnLoadScene()
 		LoadImageUI(&object);
 		LoadTextUI(&object);
 		LoadSpriteAnimationUI(&object);
+		LoadVideoUI(&object);
 	}
 
 	mbIsGameLoaded = true;
@@ -109,6 +114,7 @@ void fq::game_engine::UISystem::OnAddGameObject(const fq::event::AddGameObject& 
 	LoadImageUI(event.object);
 	LoadTextUI(event.object);
 	LoadSpriteAnimationUI(event.object);
+	LoadVideoUI(event.object);
 }
 
 void fq::game_engine::UISystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
@@ -116,6 +122,7 @@ void fq::game_engine::UISystem::OnDestroyedGameObject(const fq::event::OnDestory
 	UnloadImageUI(event.object);
 	UnloadTextUI(event.object);
 	UnloadSpriteAnimationUI(event.object);
+	UnloadVideoUI(event.object);
 }
 
 void fq::game_engine::UISystem::AddComponent(const fq::event::AddComponent& event)
@@ -132,6 +139,10 @@ void fq::game_engine::UISystem::AddComponent(const fq::event::AddComponent& even
 	{
 		LoadSpriteAnimationUI(event.component->GetGameObject());
 	}
+	if (event.id == entt::resolve<fq::game_module::VideoUI>().id())
+	{
+		LoadVideoUI(event.component->GetGameObject());
+	}
 }
 
 void fq::game_engine::UISystem::RemoveComponent(const fq::event::RemoveComponent& event)
@@ -147,6 +158,10 @@ void fq::game_engine::UISystem::RemoveComponent(const fq::event::RemoveComponent
 	if (event.id == entt::resolve<fq::game_module::SpriteAnimationUI>().id())
 	{
 		UnloadSpriteAnimationUI(event.component->GetGameObject());
+	}
+	if (event.id == entt::resolve<fq::game_module::VideoUI>().id())
+	{
+		UnloadVideoUI(event.component->GetGameObject());
 	}
 }
 
@@ -304,5 +319,51 @@ void fq::game_engine::UISystem::SetSpriteAnimationInformation(const fq::event::S
 {
 	UnloadSpriteAnimationUI(event.object);
 	LoadSpriteAnimationUI(event.object);
+}
+
+void fq::game_engine::UISystem::SetVideoInformation(const fq::event::SetVideoInformation& event)
+{
+	UnloadVideoUI(event.object);
+	LoadVideoUI(event.object);
+}
+
+void fq::game_engine::UISystem::LoadVideoUI(game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::VideoUI>())
+	{
+		return;
+	}
+
+	game_module::VideoUI* videoUI = object->GetComponent<game_module::VideoUI>();
+	graphics::VideoInfo videoInfo = videoUI->GetVideoInfo();
+
+	if (!std::filesystem::exists(videoInfo.VideoPath))
+	{
+		spdlog::warn("[UISystem] {} Load failed", videoInfo.VideoPath);
+	}
+	else
+	{
+		videoInfo.isReset = true;
+		graphics::IVideoObject* videoObject = mGameProcess->mGraphics->CreateVideoObject(videoInfo);
+		videoUI->SetVideoObject(videoObject);
+	}
+}
+
+void fq::game_engine::UISystem::UnloadVideoUI(game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::VideoUI>())
+	{
+		return;
+	}
+
+	game_module::VideoUI* videoUI = object->GetComponent<game_module::VideoUI>();
+
+	graphics::IVideoObject* videoObject = videoUI->GetVideoObject();
+
+	if (videoObject)
+	{
+		mGameProcess->mGraphics->DeleteVideoObject(videoObject);
+		videoUI->SetVideoObject(nullptr);
+	}
 }
 

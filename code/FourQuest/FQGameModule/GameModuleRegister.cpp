@@ -22,6 +22,7 @@
 #include "ImageUI.h"
 #include "TextUI.h"
 #include "SpriteAnimationUI.h"
+#include "VideoUI.h"
 
 // Physics
 #include "Terrain.h"
@@ -438,6 +439,33 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&SpriteAnimationUI::SetSpriteInfo, &SpriteAnimationUI::GetSpriteInfo>("SpriteAnimationInfo"_hs)
 		.prop(fq::reflect::prop::Name, "SpriteAnimationInfo")
+		.base<Component>();
+
+	entt::meta<graphics::VideoInfo>()
+		.type("VideoInfo"_hs)
+		.prop(fq::reflect::prop::Name, "VideoInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&graphics::VideoInfo::isRender>("isRender"_hs)
+		.prop(fq::reflect::prop::Name, "isRender")
+		.data<&graphics::VideoInfo::VideoPath>("VideoPath"_hs)
+		.prop(fq::reflect::prop::Name, "VideoPath")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".mp4")
+		.data<&graphics::VideoInfo::Width>("Width"_hs)
+		.prop(fq::reflect::prop::Name, "Width")
+		.data<&graphics::VideoInfo::Height>("Height"_hs)
+		.prop(fq::reflect::prop::Name, "Height")
+		.data<&graphics::VideoInfo::PlayTime>("PlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "PlayTime")
+		.data<&graphics::VideoInfo::Speed>("Speed"_hs)
+		.prop(fq::reflect::prop::Name, "Speed");
+
+	entt::meta<VideoUI>()
+		.type("VideoUI"_hs)
+		.prop(fq::reflect::prop::Name, "VideoUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&VideoUI::SetVideoInfo, &VideoUI::GetVideoInfo>("VideoInfo"_hs)
+		.prop(fq::reflect::prop::Name, "VideoInfo")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -2304,7 +2332,10 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AlphaCutoff")
 		.data<&fq::graphics::DecalMaterialInfo::bUseEmissiveBlend>("bUseEmissiveBlend"_hs)
 		.prop(fq::reflect::prop::Comment, u8"이미시브 블렌딩 여부")
-		.prop(fq::reflect::prop::Name, "bUseEmissiveBlend");
+		.prop(fq::reflect::prop::Name, "bUseEmissiveBlend")
+		.data<&fq::graphics::DecalMaterialInfo::EmissiveIntensity>("EmissiveIntensity"_hs)
+		.prop(fq::reflect::prop::Comment, u8"이미시브 세기")
+		.prop(fq::reflect::prop::Name, "EmissiveIntensity");
 
 	entt::meta<NavigationMeshLoader>()
 		.type("NavigationMeshLoader"_hs)
