@@ -5,6 +5,10 @@
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/Camera.h"
 #include "../FQGameModule/Transform.h"
+#include "../FQGameModule/CharacterController.h"
+
+#include "ClientEvent.h"
+#include "Player.h"
 
 std::shared_ptr<fq::game_module::Component> fq::client::PlayerHPBar::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -122,6 +126,12 @@ void fq::client::PlayerHPBar::DecreaseHp(float ratio)
 	{
 		mDecreaseRatio = mHpRatio;
 		mHpRatio = 0.f;
+	}
+
+	if (mTransform->GetComponent<game_module::CharacterController>())
+	{
+		int playerID = mTransform->GetComponent<game_module::CharacterController>()->GetControllerID();
+		GetScene()->GetEventManager()->FireEvent<event::DecreaseHPRatio>({ playerID, mDecreaseRatio });
 	}
 
 	mDecreaseTime = 0.f;
