@@ -139,7 +139,19 @@ void fq::client::PlantMonster::EmitAOEAttack()
 	auto arcAttack = attackObj->GetComponent<PlantAOEAttack>();
 	arcAttack->SetmaxRange(mAttackRange);
 	arcAttack->SetStartPosition(transform->GetWorldPosition() + offset);
-	arcAttack->SetTargetPosition(mTarget->GetComponent<fq::game_module::Transform>()->GetWorldPosition());
+	if (mTarget)
+	{
+		auto targetPosition = mTarget->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
+		arcAttack->SetTargetPosition(targetPosition);
+	}
+	else
+	{
+		auto targetPosition = transform->GetWorldPosition();
+		auto look = transform->GetLookAtVector();
+		look.Normalize();
+		targetPosition += look * 3.f;
+		arcAttack->SetTargetPosition(targetPosition);
+	}
 
 	// 공격 설정
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
