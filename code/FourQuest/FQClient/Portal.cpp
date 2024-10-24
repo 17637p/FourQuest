@@ -49,6 +49,7 @@ void fq::client::Portal::OnTriggerEnter(const fq::game_module::Collision& collis
 		GetScene()->GetTimeManager()->SetTimeScale(0);
 		//GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>()->SavePlayerState();
 		//ChangeScene();
+		
 		// 결과창 띄우기 
 		std::shared_ptr<game_module::GameObject> resultUI;
 

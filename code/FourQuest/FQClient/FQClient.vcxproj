@@ -43,7 +43,10 @@
     <ClInclude Include="ArmourDestroyer.h" />
     <ClInclude Include="AttackInvalidation.h" />
     <ClInclude Include="BGaugeUI.h" />
+    <ClInclude Include="CollisionColorChanger.h" />
+    <ClInclude Include="CollisionRenderChanger.h" />
     <ClInclude Include="CoolTimeIcon.h" />
+    <ClInclude Include="DebugService.h" />
     <ClInclude Include="DestroyWhenCollisionToWall.h" />
     <ClInclude Include="DynamicLightHelper.h" />
     <ClInclude Include="EffectColorManager.h" />
@@ -56,6 +59,7 @@
     <ClInclude Include="LookingObjectHelper.h" />
     <ClInclude Include="MaterialManagedGroup.h" />
     <ClInclude Include="MeleeMonsterVariable.h" />
+    <ClInclude Include="MonsterHP.h" />
     <ClInclude Include="MonsterSpawnState.h" />
     <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="MultiPlayerObjectCreator.h" />
@@ -166,7 +170,9 @@
     <ClInclude Include="RepauseUI.h" />
     <ClInclude Include="ResetPopupUI.h" />
     <ClInclude Include="ResultUI.h" />
+    <ClInclude Include="RotationAnimation.h" />
     <ClInclude Include="SavePopupUI.h" />
+    <ClInclude Include="ScaleAnimation.h" />
     <ClInclude Include="ScreenBlending.h" />
     <ClInclude Include="SettingUI.h" />
     <ClInclude Include="SettingVariable.h" />
@@ -206,7 +212,10 @@
     <ClCompile Include="ArmourDestroyer.cpp" />
     <ClCompile Include="AttackInvalidation.cpp" />
     <ClCompile Include="BGaugeUI.cpp" />
+    <ClCompile Include="CollisionColorChanger.cpp" />
+    <ClCompile Include="CollisionRenderChanger.cpp" />
     <ClCompile Include="CoolTimeIcon.cpp" />
+    <ClCompile Include="DebugService.cpp" />
     <ClCompile Include="DestroyWhenCollisionToWall.cpp" />
     <ClCompile Include="DynamicLightHelper.cpp" />
     <ClCompile Include="EffectColorManager.cpp" />
@@ -218,6 +227,7 @@
     <ClCompile Include="LevelHepler.cpp" />
     <ClCompile Include="LookingObjectHelper.cpp" />
     <ClCompile Include="MaterialManagedGroup.cpp" />
+    <ClCompile Include="MonsterHP.cpp" />
     <ClCompile Include="MonsterSpawnState.cpp" />
     <ClCompile Include="MultiPlayerObjectCreator.cpp" />
     <ClCompile Include="ParabolaAttack.cpp" />
@@ -315,7 +325,9 @@
     <ClCompile Include="RepauseUI.cpp" />
     <ClCompile Include="ResetPopupUI.cpp" />
     <ClCompile Include="ResultUI.cpp" />
+    <ClCompile Include="RotationAnimation.cpp" />
     <ClCompile Include="SavePopupUI.cpp" />
+    <ClCompile Include="ScaleAnimation.cpp" />
     <ClCompile Include="ScreenBlending.cpp" />
     <ClCompile Include="SettingUI.cpp" />
     <ClCompile Include="ShieldDashState.cpp" />

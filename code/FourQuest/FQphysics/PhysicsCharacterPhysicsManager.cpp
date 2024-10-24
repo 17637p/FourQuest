@@ -82,7 +82,6 @@ namespace fq::physics
 
 		// 컨테이너에서 해당 Articulation을 삭제합니다.
 		mCharacterPhysicsContainer.erase(articulationIter);
-
 		spdlog::trace("[Remove] Articulation id : {}, ContainerSize : {}", id, mCharacterPhysicsContainer.size());
 
 		return true;

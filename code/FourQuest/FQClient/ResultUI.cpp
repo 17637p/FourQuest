@@ -193,7 +193,7 @@ void fq::client::ResultUI::setTotal()
 	mUseWarriorCount.push_back(0);
 
 	int playerSoulType = PlayerInfoVariable::Player1SoulType;
-	if (playerSoulType > 0)
+	if (playerSoulType >= 0)
 	{
 		mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player1Monster;
 		mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player1Knight;
@@ -203,7 +203,7 @@ void fq::client::ResultUI::setTotal()
 	}
 
 	playerSoulType = PlayerInfoVariable::Player2SoulType;
-	if (playerSoulType > 0)
+	if (playerSoulType >= 0)
 	{
 		mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player2Monster;
 		mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player2Knight;
@@ -213,7 +213,7 @@ void fq::client::ResultUI::setTotal()
 	}
 
 	playerSoulType = PlayerInfoVariable::Player3SoulType;
-	if (playerSoulType > 0)
+	if (playerSoulType >= 0)
 	{
 		mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player3Monster;
 		mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player3Knight;
@@ -223,7 +223,7 @@ void fq::client::ResultUI::setTotal()
 	}
 
 	playerSoulType = PlayerInfoVariable::Player4SoulType;
-	if (playerSoulType > 0)
+	if (playerSoulType >= 0)
 	{
 		mKillMonsterCount[playerSoulType] = PlayerInfoVariable::Player4Monster;
 		mUseKnightCount[playerSoulType] = PlayerInfoVariable::Player4Knight;
@@ -310,31 +310,33 @@ void fq::client::ResultUI::setBar()
 		mMonsterRatios.push_back(mKillMonsterCount[i] / (float)mTotalKillMonster);
 		auto text = mMonsterBars[i]->GetTransform()->GetChildren()[0]->GetComponent<game_module::TextUI>();
 		auto textInfo = text->GetTextInfo();
-		textInfo.Text = std::to_string(mKillMonsterCount[i]);
+
+		// 숫자 0인경우에는 Text를 표시하지 않습니다
+		textInfo.Text = mKillMonsterCount[i] == 0 ? "" : std::to_string(mKillMonsterCount[i]);
 		text->SetTextInfo(textInfo);
 
 		mKnightRatios.push_back(mUseKnightCount[i] / (float)mTotalUseKnight);
 		text = mKnightBars[i]->GetTransform()->GetChildren()[0]->GetComponent<game_module::TextUI>();
 		textInfo = text->GetTextInfo();
-		textInfo.Text = std::to_string(mUseKnightCount[i]);
+		textInfo.Text = mUseKnightCount[i] == 0 ? "" : std::to_string(mUseKnightCount[i]);
 		text->SetTextInfo(textInfo);
 
 		mMagicRatios.push_back(mUseMagicCount[i] / (float)mTotalUseMagic);
 		text = mMagicBars[i]->GetTransform()->GetChildren()[0]->GetComponent<game_module::TextUI>();
 		textInfo = text->GetTextInfo();
-		textInfo.Text = std::to_string(mUseMagicCount[i]);
+		textInfo.Text = mUseMagicCount[i] == 0 ? "" : std::to_string(mUseMagicCount[i]);
 		text->SetTextInfo(textInfo);
 
 		mWarriorRatios.push_back(mUseWarriorCount[i] / (float)mTotalUseWarrior);
 		text = mWarriorBars[i]->GetTransform()->GetChildren()[0]->GetComponent<game_module::TextUI>();
 		textInfo = text->GetTextInfo();
-		textInfo.Text = std::to_string(mUseWarriorCount[i]);
+		textInfo.Text = mUseWarriorCount[i] == 0 ? "" : std::to_string(mUseWarriorCount[i]);
 		text->SetTextInfo(textInfo);
 
 		mArcherRatios.push_back(mUseArcherCount[i] / (float)mTotalUseArcher);
 		text = mArcherBars[i]->GetTransform()->GetChildren()[0]->GetComponent<game_module::TextUI>();
 		textInfo = text->GetTextInfo();
-		textInfo.Text = std::to_string(mUseArcherCount[i]);
+		textInfo.Text = mUseArcherCount[i] == 0 ? "" : std::to_string(mUseArcherCount[i]);
 		text->SetTextInfo(textInfo);
 	}
 

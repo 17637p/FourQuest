@@ -86,7 +86,7 @@ void fq::client::ArmourSpawner::SpawnArmour()
 			count++;
 		}
 		nearPos.y += 1.0f;
-		armourObject->GetComponent<game_module::Transform>()->SetLocalPosition(nearPos);
+		armourObject->GetComponent<game_module::Transform>()->SetWorldPosition(nearPos);
 
 		// 번이펙트 재생
 		for (auto child : armourObject->GetChildren())
@@ -155,7 +155,7 @@ void fq::client::ArmourSpawner::SpawnArmourAll()
 			count++;
 		}
 		nearPos.y += 1.0f;
-		armourObject->GetComponent<game_module::Transform>()->SetLocalPosition(nearPos);
+		armourObject->GetComponent<game_module::Transform>()->SetWorldPosition(nearPos);
 
 		// 번이펙트 재생
 		for (auto child : armourObject->GetChildren())

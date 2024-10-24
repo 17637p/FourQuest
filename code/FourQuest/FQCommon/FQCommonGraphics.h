@@ -92,6 +92,9 @@ namespace fq::graphics
 
 		bool bUseEmissiveColor = false;
 		DirectX::SimpleMath::Color EmissiveColor;
+
+		bool bUseBlendUV = false;
+		DirectX::SimpleMath::Vector4 BlendUVScaleOffset;
 	};
 
 	struct UIInfo
@@ -665,6 +668,13 @@ namespace fq::graphics
 		float InvRimIntensity = 1.f;
 
 		bool bUseMulEmissiveAlpha = false; // 이미시브 알파값 곱하기 여부
+
+		bool bUseBlendTexture = false;
+		std::wstring BlendTextureName;
+		bool bIsBlendBaseColor = false;
+		bool bIsBlendEmissive = false;
+		DirectX::SimpleMath::Vector2 BlendTiling = { 1, 1 };
+		DirectX::SimpleMath::Vector2 BlendOffset = { 0, 0 };
 	};
 
 	struct ParticleMaterialInfo
@@ -709,7 +719,7 @@ namespace fq::graphics
 	struct DecalMaterialInfo
 	{
 		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
-		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 1.f };
 
 		std::wstring BaseColorFileName;
 		std::wstring NormalFileName;
@@ -721,6 +731,8 @@ namespace fq::graphics
 
 		float NormalBlend = 0.5f; // 0 ~ 1, srcNormal의 가중치, 1이라면 decal의 노말이 전부 적용된다.
 		float AlphaCutoff = 0.1f;
+		
+		bool bUseEmissiveBlend = false; // 이미시브 블렌딩 사용 여부
 	};
 
 	//// ---------------------------------------------------------------------

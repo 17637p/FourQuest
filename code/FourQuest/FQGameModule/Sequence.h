@@ -166,6 +166,10 @@ namespace fq::game_module
 				if (mTotalPlayTime < trackTotalTime)
 					mTotalPlayTime = trackTotalTime;
 			}
+			else
+			{
+				spdlog::error("[Sequence ({})] Failed Create Track", __LINE__);
+			}
 		}
 	}
 }

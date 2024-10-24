@@ -6,6 +6,33 @@
 
 namespace fq::game_module
 {
+	DirectX::SimpleMath::Vector3 QuaternionToYawPitchRoll(const DirectX::SimpleMath::Quaternion& quaternion)
+	{
+		// 쿼터니언에서 오일러 각 (Yaw, Pitch, Roll)을 추출
+		float yaw, pitch, roll;
+
+		// 쿼터니언을 행렬로 변환
+		DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(quaternion);
+
+		// Pitch (x축 회전)
+		pitch = asinf(-rotationMatrix._32);  // -sin(theta) 값
+
+		// Yaw (y축 회전)
+		if (cosf(pitch) > 0.0001f)  // pitch가 +-90도인지 아닌지 확인
+		{
+			yaw = atan2f(rotationMatrix._31, rotationMatrix._33);  // yaw 값 계산
+			roll = atan2f(rotationMatrix._12, rotationMatrix._22); // roll 값 계산
+		}
+		else
+		{
+			// pitch가 +-90도일 때 특수한 경우 처리
+			yaw = 0.0f;
+			roll = atan2f(-rotationMatrix._21, rotationMatrix._11);
+		}
+
+		return DirectX::SimpleMath::Vector3(pitch, yaw, roll);  // Pitch, Yaw, Roll 순으로 반환
+	}
+
 	PlayerMoveTrack::PlayerMoveTrack()
 		: Track(ETrackType::PLAYER_MOVE)
 		, mTargetObject()
@@ -28,19 +55,9 @@ namespace fq::game_module
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
 		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;
+		mbIsPlayerCurrentTransformSetting = info.isPlayerCurrentTransformSetting;
 		mPlayerID = info.playerID;
-
-		if (mTargetObject.expired())
-			return false;
-
-		if (!mTargetObject.lock()->HasComponent<Transform>()) return false;
-
 		mKeys = info.keys;
-
-		auto transform = mTargetObject.lock()->GetComponent<Transform>();
-		mPrevPosition = transform->GetWorldPosition();
-		mPrevRotation = transform->GetWorldRotation();
-		mPrevScale = transform->GetWorldScale();
 
 		return true;
 	}
@@ -68,8 +85,23 @@ namespace fq::game_module
 		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
 		if (mTargetObject.expired())
 		{
-			spdlog::warn("[Warrning] Do not Have TargetObject");
+			spdlog::warn("[PlayerMoveTrack Warrning ({})] Do not Have TargetObject", __LINE__);
 		}
+
+		auto transform = mTargetObject.lock()->GetComponent<Transform>();
+		mPrevPosition = transform->GetWorldPosition();
+		mPrevRotation = transform->GetWorldRotation();
+		mPrevScale = transform->GetWorldScale();
+		
+		if (mbIsPlayerCurrentTransformSetting)
+		{
+			mKeys[0].position = transform->GetWorldPosition();
+			mKeys[0].rotation = QuaternionToYawPitchRoll(transform->GetWorldRotation());
+			mKeys[0].scale = transform->GetWorldScale();
+		}
+		transform->SetWorldPosition(mKeys[0].position);
+		transform->SetWorldRotation(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(mKeys[0].rotation));
+		transform->SetWorldScale(mKeys[0].scale);
 	}
 
 	void PlayerMoveTrack::PlayOn()

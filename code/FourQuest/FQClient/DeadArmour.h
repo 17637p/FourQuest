@@ -75,6 +75,8 @@ namespace fq::client
 
 		float mHp;
 
+		DirectX::SimpleMath::Vector2 mUIOffset;
+
 		friend void RegisterMetaData();
 	};
 }

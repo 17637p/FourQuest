@@ -15,6 +15,8 @@
 #include "../FQGameModule/MeshCollider.h"
 #include "../FQGameModule/CapsuleCollider.h"
 #include "../FQGameModule/TerrainCollider.h"
+#include "../FQGameModule/TriangleCollider.h"
+#include "../FQGameModule/ClothCollider.h"
 #include "../FQGameModule/Terrain.h"
 #include "../FQGameModule/Articulation.h"
 #include "../FQGameModule/Transform.h"
@@ -591,6 +593,141 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		loadFunction(rootLinkData, id);
 	}
+
+	// 7. Triangle Collider
+	if (object->HasComponent<TriangleCollider>())
+	{
+		ColliderID id = ++mLastColliderID;
+
+		auto triangleCollider = object->GetComponent<TriangleCollider>();
+		auto triangleColliderInfo = triangleCollider->GetTriangleMeshInfomation();
+		triangleColliderInfo.colliderInfo.id = id;
+
+		if (object->HasComponent<StaticMeshRenderer>())
+		{
+			auto staticMeshRenderer = object->GetComponent<StaticMeshRenderer>();
+			auto meshName = staticMeshRenderer->GetMeshName();
+			auto modelPath = staticMeshRenderer->GetModelPath();
+
+			bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
+			assert(check);
+
+			const auto& model = mGameProcess->mResourceSystem->GetModel(modelPath);
+			const auto& mesh = ModelSystem::GetMesh(model, meshName);
+
+			triangleColliderInfo.indices = new unsigned int[mesh.Indices.size()];
+			triangleColliderInfo.indexSize = mesh.Indices.size();
+			triangleColliderInfo.vertices = new DirectX::SimpleMath::Vector3[mesh.Vertices.size()];
+			triangleColliderInfo.vertexSize = mesh.Vertices.size();
+		}
+		else if (object->HasComponent<SkinnedMeshRenderer>())
+		{
+			auto skeletalMeshRenderer = object->GetComponent<SkinnedMeshRenderer>();
+			auto meshName = skeletalMeshRenderer->GetMeshName();
+			auto modelPath = skeletalMeshRenderer->GetModelPath();
+
+			bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
+			assert(check);
+
+			const auto& model = mGameProcess->mResourceSystem->GetModel(modelPath);
+			const auto& mesh = ModelSystem::GetMesh(model, meshName);
+
+			triangleColliderInfo.indices = new unsigned int[mesh.Indices.size()];
+			triangleColliderInfo.indexSize = mesh.Indices.size();
+			triangleColliderInfo.vertices = new DirectX::SimpleMath::Vector3[mesh.Vertices.size()];
+			triangleColliderInfo.vertexSize = mesh.Vertices.size();
+		}
+		else
+		{
+			spdlog::warn("[PhysicsSystem ({})] TriangleMesh Failed Connect Mesh", __LINE__);
+		}
+
+		if (bodyType == RigidBody::EBodyType::Static)
+		{
+			bool check = mPhysicsEngine->CreateStaticBody(triangleColliderInfo, triangleCollider->GetType());
+			if (!check)
+			{
+				spdlog::error("[PhysicsSystem ({})] Failed Create StaticBody(TriangleMesh)", __LINE__);
+				return;
+			}
+
+			mColliderContainer.insert({ id,
+				{mTriangleTypeID
+				, triangleCollider->shared_from_this()
+				, object->shared_from_this()
+				, triangleCollider, false} });
+
+		}
+		else
+		{
+			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
+
+			bool check = mPhysicsEngine->CreateDynamicBody(triangleColliderInfo, triangleCollider->GetType(), isKinematic);
+			if (!check)
+			{
+				spdlog::error("[PhysicsSystem ({})] Failed Create DynamicBody(TriangleMesh)", __LINE__);
+				return;
+			}
+
+			mColliderContainer.insert({ id,
+				{mTriangleTypeID
+				, triangleCollider->shared_from_this()
+				, object->shared_from_this()
+				, triangleCollider, false} });
+		}
+	}
+
+	// 8. Cloth Collider
+	if (object->HasComponent<ClothCollider>())
+	{
+		ColliderID id = ++mLastColliderID;
+
+		// ClothCollider 컴포넌트 아이디 세팅하고 로드하기
+		auto clothCollider = object->GetComponent<ClothCollider>();
+		clothCollider->SetClothID(id);
+		if (!clothCollider->Load())
+		{
+			spdlog::warn("[PhysicsSystem ({}) Warrning] Failed load Cloth File( ID : {} )", __LINE__, id);
+			return;
+		}
+
+		// 그래픽스 엔진에서 스태틱 메시 및 스켈레탈 메시에서 VertexBuffer, IndexBuffer 포인터 가져오기
+		if (object->HasComponent<StaticMeshRenderer>())
+		{
+			auto staticMesh = object->GetComponent<StaticMeshRenderer>();
+			void* indexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetIndexBuffer();
+			void* vertexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetVertexBuffer();
+			clothCollider->SetIndexBuffer(indexBuffer);
+			clothCollider->SetVertexBuffer(vertexBuffer);
+		}
+		else if (object->HasComponent<SkinnedMeshRenderer>())
+		{
+			auto skeletalMesh = object->GetComponent<SkinnedMeshRenderer>();
+			void* indexBuffer = skeletalMesh->GetSkinnedMeshObject()->GetSkinnedMesh()->GetIndexBuffer();
+			void* vertexBuffer = skeletalMesh->GetSkinnedMeshObject()->GetSkinnedMesh()->GetVertexBuffer();
+			clothCollider->SetIndexBuffer(indexBuffer);
+			clothCollider->SetVertexBuffer(vertexBuffer);
+		}
+		else
+		{
+			spdlog::warn("[PhysicsSystem ({}) Warrning] Object Has not Mesh Component( ID : {} )", __LINE__, id);
+			return;
+		}
+
+		// 물리 엔진에서 천 생성하기
+		bool check = mPhysicsEngine->CreateCloth(*clothCollider->GetClothInfo().get());
+		if (!check)
+		{
+			spdlog::error("[PhysicsSystem ({})] Failed Create Cloth", __LINE__);
+			return;
+		}
+
+		mColliderContainer.insert({ id,
+			{mClothTypeID
+			, clothCollider->shared_from_this()
+			, object->shared_from_this()
+			, clothCollider, false} });
+	}
 }
 
 void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject* object)
@@ -639,7 +776,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
-	// 4. Controller
+	// 5. Controller
 	if (object->HasComponent<Controller>())
 	{
 		auto controller = object->GetComponent<Controller>();
@@ -649,7 +786,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
-	// 4. Mesh Collider
+	// 6. Mesh Collider
 	if (object->HasComponent<MeshCollider>())
 	{
 		auto meshCollider = object->GetComponent<MeshCollider>();
@@ -659,11 +796,31 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
-	// 5. TerrainCollider 
+	// 7. TerrainCollider 
 	if (object->HasComponent<TerrainCollider>())
 	{
 		auto terrainCollider = object->GetComponent<TerrainCollider>();
 		auto id = terrainCollider->GetColliderID();
+		assert(id != physics::unregisterID);
+
+		mColliderContainer.at(id).bIsDestroyed = true;
+	}
+
+	// 8. TriangleCollider
+	if (object->HasComponent<TriangleCollider>())
+	{
+		auto triangleCollider = object->GetComponent<TerrainCollider>();
+		auto id = triangleCollider->GetColliderID();
+		assert(id != physics::unregisterID);
+
+		mColliderContainer.at(id).bIsDestroyed = true;
+	}
+
+	// 9. Cloth
+	if (object->HasComponent<ClothCollider>())
+	{
+		auto clothCollider = object->GetComponent<ClothCollider>();
+		auto id = clothCollider->GetClothID();
 		assert(id != physics::unregisterID);
 
 		mColliderContainer.at(id).bIsDestroyed = true;
@@ -787,7 +944,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			}
 			transform->SetWorldMatrix(matrix);
 		}
-		else if (colliderInfo.enttID == mArticulationTypeID )
+		else if (colliderInfo.enttID == mArticulationTypeID)
 		{
 			if (!client::MonsterVariable::OnRagdoll)
 				continue;
@@ -819,7 +976,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				auto currentAnimationTime = animatorMesh->GetController().GetTimePos();
 
 				animatorMesh->SetStopAnimation(true);
-
 				nodeHierarchy.SetBindPose();
 
 				for (auto& linkData : data.linkData)
@@ -868,6 +1024,14 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				articulation->SetBlendTime(0.f);
 			}
 		}
+		else if (colliderInfo.enttID == mClothTypeID)
+		{
+			auto clothCollider = colliderInfo.component->GetComponent<fq::game_module::ClothCollider>();
+
+			fq::physics::Cloth::GetSetClothData data;
+			mPhysicsEngine->GetClothData(id, data);
+			transform->SetWorldMatrix(data.worldTransform);
+		}
 		else
 		{
 			auto data = mPhysicsEngine->GetRigidBodyData(id);
@@ -903,7 +1067,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		}
 	}
 }
-
 
 void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 {
@@ -1075,6 +1238,21 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			}
 
 			mPhysicsEngine->SetArticulationData(id, data);
+		}
+		else if (colliderInfo.enttID == mClothTypeID)
+		{
+			auto clothCollider = colliderInfo.component->GetComponent<fq::game_module::ClothCollider>();
+
+			fq::physics::Cloth::GetSetClothData data;
+			auto clothInfomation = clothCollider->GetClothInfo();
+
+			auto prevLayer = clothInfomation->layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+
+			data.myLayerNumber = currentLayer;
+			data.worldTransform = transform->GetWorldMatrix();
+
+			mPhysicsEngine->SetClothData(id, data);
 		}
 		else
 		{

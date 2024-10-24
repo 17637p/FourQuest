@@ -192,6 +192,7 @@ namespace fq::graphics
 				decalObjectCB.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
 				decalObjectCB.InvWorld = calcTransform.Invert().Transpose();
 				decalObjectCB.NormalThresholdInRadian = decalInfo.NormalThresholdInDegree * 3.14f / 180.f;
+				decalObjectCB.NormalThresholdInRadian = decalInfo.NormalThresholdInDegree * 3.14f / 180.f;
 				mDecalObjectCB->Update(mDevice, decalObjectCB);
 
 				const auto& materialInfo = material->GetInfo();
@@ -203,6 +204,7 @@ namespace fq::graphics
 				decalMaterialCB.bIsUsedEmissive = materialInfo.bIsUsedEmissive && material->GetHasEmissive();
 				decalMaterialCB.NormalBlend = materialInfo.NormalBlend;
 				decalMaterialCB.AlphaCutoff = materialInfo.AlphaCutoff;
+				decalMaterialCB.bUseEmissiveAlpha = materialInfo.bUseEmissiveBlend;
 				mDecalMaterialCB->Update(mDevice, decalMaterialCB);
 
 				int index = decalMaterialCB.bIsUsedEmissive << 2 | decalMaterialCB.bUseNormalness << 1 | decalMaterialCB.bUseBaseColor << 0;
@@ -241,15 +243,13 @@ namespace fq::graphics
 		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		blendDesc.RenderTarget[1].BlendEnable = FALSE;
-		blendDesc.RenderTarget[2].BlendEnable = FALSE;
-		blendDesc.RenderTarget[3].BlendEnable = TRUE;
-		blendDesc.RenderTarget[3].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		blendDesc.RenderTarget[3].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-		blendDesc.RenderTarget[3].BlendOp = D3D11_BLEND_OP_ADD;
-		blendDesc.RenderTarget[3].SrcBlendAlpha = D3D11_BLEND_ONE;
-		blendDesc.RenderTarget[3].DestBlendAlpha = D3D11_BLEND_ZERO;
-		blendDesc.RenderTarget[3].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		blendDesc.RenderTarget[4] = blendDesc.RenderTarget[0];
+		blendDesc.RenderTarget[2].BlendEnable = TRUE;
+		blendDesc.RenderTarget[2].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[2].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[2].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[2].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[2].DestBlendAlpha = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[2].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
 		for (int i = 0; i < 2; ++i)
 		{

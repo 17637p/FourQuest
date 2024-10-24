@@ -81,8 +81,6 @@ namespace fq::physics
 		}
 
 		// 속도 제한 적용
-		LimitVelocity();
-
 		if (input.y != 0 && !mIsFall)
 			Jump();
 

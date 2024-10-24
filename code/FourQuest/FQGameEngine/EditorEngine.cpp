@@ -1,6 +1,7 @@
 #include "EditorEngine.h"
 
 #include <algorithm>
+#include <spdlog/stopwatch.h>
 
 #include "../FQClient/Client.h"
 #include "../FQGameModule/GameModule.h"
@@ -158,9 +159,11 @@ void fq::game_engine::EditorEngine::Process()
 			//							시간 입력 처리								//
 			//////////////////////////////////////////////////////////////////////////
 
+
 			float deltaTime = mGameProcess->mTimeManager->Update();
 			mGameProcess->mInputManager->Update(deltaTime);
 			mGameProcess->mSoundManager->Update();
+
 
 			if (mode == EditorMode::Play)
 			{
@@ -184,6 +187,7 @@ void fq::game_engine::EditorEngine::Process()
 					mGameProcess->mPhysics->FinalUpdate();
 					mGameProcess->mPhysicsSystem->SinkToGameScene();
 					mGameProcess->mPhysicsSystem->ProcessCallBack();
+				
 				}
 
 				if (onFixedUpdtae)
@@ -283,12 +287,12 @@ void fq::game_engine::EditorEngine::Finalize()
 	mGameProcess->mUISystem->Finalize();
 
 	// Editor Process
-   	mEditor->mImageSystem->Finalize();
+	mEditor->mImageSystem->Finalize();
 	mEditor->mFileDialog->Finalize();
 	mEditor->mGamePlayWindow->Finalize();
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
-	mEditor->mImGuiSystem->Finalize();   
+	mEditor->mImGuiSystem->Finalize();
 	mEditor->mAnimatorWindow->Finalize();
 	mEditor->mArticulationHierarchy->Finalize();
 	mEditor->mClothEditorWindow->Finalize();

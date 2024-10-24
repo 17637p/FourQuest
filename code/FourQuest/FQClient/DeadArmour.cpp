@@ -223,13 +223,13 @@ void fq::client::DeadArmour::OnUpdate(float dt)
 
 		auto uiInfomations = imageUI->GetUIInfomations();
 
-		uiInfomations[0].StartX = width * 0.5f + (screenPos.x * width * 0.5f) - 25.f;
-		uiInfomations[0].StartY = height * 0.5f - (screenPos.y * height * 0.5f);
+		uiInfomations[0].StartX = width * 0.5f + (screenPos.x * width * 0.5f) - 25.f + mUIOffset.x;
+		uiInfomations[0].StartY = height * 0.5f - (screenPos.y * height * 0.5f) + mUIOffset.y;
 
 		if (uiInfomations.size() > 1)
 		{
-			uiInfomations[1].StartX = uiInfomations[0].StartX + 60.f;
-			uiInfomations[1].StartY = uiInfomations[0].StartY;
+			uiInfomations[1].StartX = uiInfomations[0].StartX + 60.f + mUIOffset.x;
+			uiInfomations[1].StartY = uiInfomations[0].StartY + mUIOffset.y;
 		}
 
 		imageUI->SetUIInfomations(uiInfomations);

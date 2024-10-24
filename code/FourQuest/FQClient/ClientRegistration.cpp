@@ -113,6 +113,7 @@
 
 // UI
 #include "HpBar.h"
+#include "MonsterHP.h"
 #include "GaugeBar.h"
 #include "PlayerUI.h"
 #include "PlayerUIManager.h"
@@ -176,6 +177,11 @@
 #include "ArmourDestroyer.h"
 #include "DestroyWhenCollisionToWall.h"
 #include "ScreenBlending.h"
+#include "ScaleAnimation.h"
+#include "RotationAnimation.h"
+#include "DebugService.h"
+#include "CollisionColorChanger.h"
+#include "CollisionRenderChanger.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -218,6 +224,11 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Size")
 		.data<&MonsterManager::mRes>("mRes"_hs)
 		.prop(fq::reflect::prop::Name, "mRes")
+		.base<game_module::Component>();
+
+	entt::meta<DebugService>()
+		.type("DebugService"_hs)
+		.prop(reflect::prop::Name, "DebugService")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -431,6 +442,87 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u"종료 색상")
 		.base<game_module::Component>();
 
+	entt::meta<ScaleAnimation>()
+		.type("ScaleAnimation"_hs)
+		.prop(reflect::prop::Name, "ScaleAnimation")
+		.data<&ScaleAnimation::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.prop(fq::reflect::prop::Comment, u"지속 시간")
+		.data<&ScaleAnimation::mStartScale>("StartScale"_hs)
+		.prop(fq::reflect::prop::Name, "StartScale")
+		.prop(fq::reflect::prop::Comment, u"시작 스케일")
+		.data<&ScaleAnimation::mEndScale>("EndScale"_hs)
+		.prop(fq::reflect::prop::Name, "EndScale")
+		.prop(fq::reflect::prop::Comment, u"종료 스케일")
+		.base<game_module::Component>();
+
+	entt::meta<RotationAnimation>()
+		.type("RotationAnimation"_hs)
+		.prop(reflect::prop::Name, "RotationAnimation")
+		.data<&RotationAnimation::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.prop(fq::reflect::prop::Comment, u"지속 시간")
+		.data<&RotationAnimation::mbUseLooping>("bUseLooping"_hs)
+		.prop(fq::reflect::prop::Name, "bUseLooping")
+		.prop(fq::reflect::prop::Comment, u"지속 시간")
+		.data<&RotationAnimation::mbUseEuler>("bUseEuler"_hs)
+		.prop(fq::reflect::prop::Name, "bUseEuler")
+		.prop(fq::reflect::prop::Comment, u"오일러각 사용여부")
+		.data<&RotationAnimation::mStartRotationInEuler>("StartRotationInEuler"_hs)
+		.prop(fq::reflect::prop::Name, "StartRotationInEuler")
+		.prop(fq::reflect::prop::Comment, u"시작 회전값(오일러)")
+		.data<&RotationAnimation::mEndRotationInEuler>("mEndRotationInEuler"_hs)
+		.prop(fq::reflect::prop::Name, "mEndRotationInEuler")
+		.prop(fq::reflect::prop::Comment, u"종료 회전값(오일러)")
+		.data<&RotationAnimation::mbUseQuaternion>("bUseQuaternion"_hs)
+		.prop(fq::reflect::prop::Name, "bUseQuaternion")
+		.prop(fq::reflect::prop::Comment, u"사원수 사용여부")
+		.data<&RotationAnimation::mStartRotationInQuaternion>("mStartRotationInQuaternion"_hs)
+		.prop(fq::reflect::prop::Name, "mStartRotationInQuaternion")
+		.prop(fq::reflect::prop::Comment, u"시작 회전값(사원수)")
+		.data<&RotationAnimation::mEndRotationInQuaternion>("mEndRotationInQuaternion"_hs)
+		.prop(fq::reflect::prop::Name, "mEndRotationInQuaternion")
+		.prop(fq::reflect::prop::Comment, u"종료 회전값(사원수)")
+		.base<game_module::Component>();
+
+	entt::meta<CollisionColorChanger>()
+		.type("CollisionColorChanger"_hs)
+		.prop(reflect::prop::Name, "CollisionColorChanger")
+		.data<&CollisionColorChanger::mTags>("Tags"_hs)
+		.prop(fq::reflect::prop::Name, "Tags")
+		.prop(fq::reflect::prop::Comment, u"처리될 태그")
+		.data<&CollisionColorChanger::mbUseBaseColor>("bUseBaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "bUseBaseColor")
+		.prop(fq::reflect::prop::Comment, u"베이스 컬러를 사용할지 유무")
+		.data<&CollisionColorChanger::mBaseColor>("BaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "BaseColor")
+		.prop(fq::reflect::prop::Comment, u"충돌 시 변경될 베이스 컬러")
+		.data<&CollisionColorChanger::mbUseEmissiveColor>("bUseEmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "bUseEmissiveColor")
+		.prop(fq::reflect::prop::Comment, u"이미시브를 사용할지 유무")
+		.data<&CollisionColorChanger::mEmissiveColor>("EmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "EmissiveColor")
+		.prop(fq::reflect::prop::Comment, u"충돌 시 변경될 이미시브 컬러")
+		.base<game_module::Component>();
+
+	entt::meta<TagStructure>()
+		.type("TagStructure"_hs)
+		.prop(reflect::prop::Name, "TagStructure")
+		.prop(fq::reflect::prop::POD)
+		.data<&TagStructure::Tag>("Tag"_hs)
+		.prop(fq::reflect::prop::Name, "Tag");
+
+	entt::meta<CollisionRenderChanger>()
+		.type("CollisionRenderChanger"_hs)
+		.prop(reflect::prop::Name, "CollisionRenderChanger")
+		.data<&CollisionRenderChanger::mbIsRender>("bIsRender"_hs)
+		.prop(fq::reflect::prop::Name, "bIsRender")
+		.prop(fq::reflect::prop::Comment, u"충돌 시 랜더링을 킬지 끌지 여부")
+		.data<&CollisionRenderChanger::mTags>("Tags"_hs)
+		.prop(fq::reflect::prop::Name, "Tags")
+		.prop(fq::reflect::prop::Comment, u"처리될 태그들")
+		.base<game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             플레이어 관련								//
 	//////////////////////////////////////////////////////////////////////////
@@ -520,6 +612,9 @@ void fq::client::RegisterMetaData()
 		.data<&DeadArmour::mSummonDuration>("SummonDuration"_hs)
 		.prop(reflect::prop::Name, "SummonDuration")
 		.prop(reflect::prop::Comment, u8"갑옷 입기까지 걸리는 시간")
+		.data<&DeadArmour::mUIOffset>("UIOffset"_hs)
+		.prop(reflect::prop::Name, "UIOffset")
+		.prop(reflect::prop::Comment, u8"UI Offset 값")
 		.base<game_module::Component>();
 
 	entt::meta<MagicArmour>()
@@ -1702,6 +1797,22 @@ void fq::client::RegisterMetaData()
 		.data<&HpBar::mInnerOffset>("InnerOffset"_hs)
 		.prop(fq::reflect::prop::Name, "InnerOffset")
 		.prop(fq::reflect::prop::Comment, u8"Bar 외부와 내부의 크기 차이")
+		.base<fq::game_module::Component>();
+
+	entt::meta<MonsterHP>()
+		.type("MonsterHP"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterHP")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&MonsterHP::mBarSize>("BarSize"_hs)
+		.prop(fq::reflect::prop::Name, "BarSize")
+		.data<&MonsterHP::mInnerOffset>("InnerOffset"_hs)
+		.prop(fq::reflect::prop::Name, "InnerOffset")
+		.data<&MonsterHP::mWorldYOffset>("WorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldOffset")
+		.prop(fq::reflect::prop::Comment, u8"월드 공간의 Y를 더한후 UI 위치 계산")
+		.data<&MonsterHP::mScreenYOffset>("ScreenOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ScreenOffset")
+		.prop(fq::reflect::prop::Comment, u8"Screen 공간의 Y를 더한후 UI 위치 계산")
 		.base<fq::game_module::Component>();
 
 	entt::meta<GaugeBar>()

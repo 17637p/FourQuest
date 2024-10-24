@@ -31,6 +31,7 @@ cbuffer cbDecalMaterial : register(b1)
     float gNormalBlend;
     
     float gAlphaCutoff;
+    bool gUseEmissiveAlpha;
 }
 
 #endif  /* DECALCOMMON_HLSLI */

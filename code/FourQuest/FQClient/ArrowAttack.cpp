@@ -7,6 +7,8 @@
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/Event.h"
+#include "../FQGameModule/UVAnimator.h"
+#include "../FQGameModule/StateEventEmitter.h"
 
 #include "Attack.h"
 #include "Player.h"
@@ -92,6 +94,18 @@ namespace fq::client
 		GetGameObject()->RemoveComponent<fq::game_module::RigidBody>();
 		GetGameObject()->RemoveComponent<fq::game_module::BoxCollider>();
 		GetGameObject()->RemoveComponent<fq::game_module::CapsuleCollider>();
+		GetGameObject()->RemoveComponent<fq::game_module::StateEventEmitter>();
+
+		// ÀÌÆåÆ® Á¦°Å
+		for (auto child : GetGameObject()->GetChildren())
+		{
+			auto uvAnimatorOrNull = child->GetComponent<fq::game_module::UVAnimator>();
+
+			if (uvAnimatorOrNull != nullptr)
+			{
+				GetScene()->DestroyGameObject(child);
+			}
+		}
 	}
 
 	void ArrowAttack::Set(const ArrowAttackInfo& info)

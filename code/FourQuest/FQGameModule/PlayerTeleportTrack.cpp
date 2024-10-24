@@ -25,21 +25,12 @@ namespace fq::game_module
 
 	bool PlayerTeleportTrack::Initialize(const PlayerTeleportTrackInfo& info, Scene* scene)
 	{
+		mScene = scene;
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
 		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;
 		mPlayerID = info.playerID;
-
-		if (mTargetObject.expired()) return false;
-
-		if (!mTargetObject.lock()->HasComponent<Transform>()) return false;
-
 		mKeys = info.keys;
-
-		auto transform = mTargetObject.lock()->GetComponent<Transform>();
-		mPrevPosition = transform->GetWorldPosition();
-		mPrevRotation = transform->GetWorldRotation();
-		mPrevScale = transform->GetWorldScale();
 
 		return true;
 	}
@@ -67,8 +58,18 @@ namespace fq::game_module
 		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
 		if (mTargetObject.expired())
 		{
-			spdlog::warn("[Warrning] Do not Have TargetObject");
+			spdlog::warn("[PlayerTeleportTrack Warrning({})] Do not Have TargetObject", __LINE__);
+			return;
 		}
+
+		auto transform = mTargetObject.lock()->GetComponent<Transform>();
+		mPrevPosition = transform->GetWorldPosition();
+		mPrevRotation = transform->GetWorldRotation();
+		mPrevScale = transform->GetWorldScale();
+
+		transform->SetWorldPosition(mKeys[0].position);
+		transform->SetWorldRotation(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(mKeys[0].rotation));
+		transform->SetWorldScale(mKeys[0].scale);
 	}
 
 	void PlayerTeleportTrack::PlayOn()

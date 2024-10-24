@@ -22,10 +22,16 @@ std::shared_ptr<fq::game_module::Component> fq::client::ArmourDestroyer::Clone(s
 
 void fq::client::ArmourDestroyer::OnTriggerEnter(const game_module::Collision& collision)
 {
+
 	if (collision.other->GetTag() == game_module::ETag::Player ||
 		collision.other->GetTag() == game_module::ETag::Dash || 
 		collision.other->GetTag() == game_module::ETag::PlayerMonsterIgnore)
 	{
+		if (collision.other->IsDestroyed())
+		{
+			return;
+		}
+
 		auto player = collision.other->GetComponent<Player>();
 
 		if (mbIsRemainDeadAromour)

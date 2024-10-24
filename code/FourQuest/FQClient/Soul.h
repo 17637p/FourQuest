@@ -91,6 +91,10 @@ namespace fq::client
 		float mSoulGauge;
 		float mMaxSoulGauge;
 
+		// BGaugeUI 여신상과 갑옷 근처일 때 활성화하는 로직 작성을 위해 별도로 변수 추가
+		bool mbIsVisibleBGaugeUI;
+		float mBGaugeFillAmount;
+
 	private:
 		friend void RegisterMetaData();
 	};

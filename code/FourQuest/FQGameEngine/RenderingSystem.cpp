@@ -13,6 +13,7 @@
 #include "../FQGameModule/Terrain.h"
 #include "../FQGameModule/UVAnimator.h"
 #include "../FQGameModule/MaterialAnimator.h"
+#include "../FQGameModule/BlendUVAnimator.h"
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/PostProcessing.h"
 #include "../FQGameModule/ImageUI.h"
@@ -109,44 +110,55 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 			{
 				auto meshObject = mesh.GetStaticMeshObject();
 
-				if (meshObject)
+				if (meshObject == nullptr)
 				{
-					auto nodeHierarchyInstanceOrNull = meshObject->GetNodeHierarchyInstance();
+					return;
+				}
 
-					if (!mesh.GetUseTransform())
+				auto nodeHierarchyInstanceOrNull = meshObject->GetNodeHierarchyInstance();
+
+				if (!mesh.GetUseTransform())
+				{
+					meshObject->SetTransform(DirectX::SimpleMath::Matrix::Identity);
+				}
+				else if (nodeHierarchyInstanceOrNull == nullptr)
+				{
+					meshObject->SetTransform(transform.GetWorldMatrix());
+				}
+				else
+				{
+					meshObject->SetTransform(nodeHierarchyInstanceOrNull->GetTransform());
+				}
+
+				fq::graphics::MaterialInstanceInfo materialInstanceInfo = mesh.GetMaterialInstanceInfo();
+
+				// viewComponets가 모두 포함하는 오브젝트만 비용없이 가져온다면 해당 로직 수정해줘야 함
+				auto* materialAnimator = object.GetComponent<MaterialAnimator>();
+
+				if (materialAnimator != nullptr)
+				{
 					{
-						meshObject->SetTransform(DirectX::SimpleMath::Matrix::Identity);
+						const auto& info = materialAnimator->GetAlphaAnimatorInfo();
+						materialInstanceInfo.bUseInstanceAlpha = info.bIsUsed;
+						materialInstanceInfo.Alpha = info.Alpha;
 					}
-					else if (nodeHierarchyInstanceOrNull == nullptr)
 					{
-						meshObject->SetTransform(transform.GetWorldMatrix());
-					}
-					else
-					{
-						meshObject->SetTransform(nodeHierarchyInstanceOrNull->GetTransform());
-					}
-
-					// viewComponets가 모두 포함하는 오브젝트만 비용없이 가져온다면 해당 로직 수정해줘야 함
-					auto* materialAnimator = object.GetComponent<MaterialAnimator>();
-
-					if (materialAnimator != nullptr)
-					{
-						fq::graphics::MaterialInstanceInfo materialInstanceInfo = mesh.GetMaterialInstanceInfo();
-
-						{
-							const auto& info = materialAnimator->GetAlphaAnimatorInfo();
-							materialInstanceInfo.bUseInstanceAlpha = info.bIsUsed;
-							materialInstanceInfo.Alpha = info.Alpha;
-						}
-						{
-							const auto& info = materialAnimator->GetDissolveAnimatorInfo();
-							materialInstanceInfo.bUseDissolveCutoff = info.bIsUsed;
-							materialInstanceInfo.DissolveCutoff = info.DissolveCutoff;
-						}
-
-						mesh.SetMaterialInstanceInfo(materialInstanceInfo);
+						const auto& info = materialAnimator->GetDissolveAnimatorInfo();
+						materialInstanceInfo.bUseDissolveCutoff = info.bIsUsed;
+						materialInstanceInfo.DissolveCutoff = info.DissolveCutoff;
 					}
 				}
+
+				auto* blendUVAnimator = object.GetComponent<BlendUVAnimator>();
+
+				if (blendUVAnimator != nullptr)
+				{
+					const auto& keyframe = blendUVAnimator->GetUVKeyframe();
+					materialInstanceInfo.bUseBlendUV = true;
+					materialInstanceInfo.BlendUVScaleOffset = { keyframe.Scale.x, keyframe.Scale.y, keyframe.Translation.x, keyframe.Translation.y };
+				}
+
+				mesh.SetMaterialInstanceInfo(materialInstanceInfo);
 			});
 
 	scene->ViewComponents<Transform, SkinnedMeshRenderer>
