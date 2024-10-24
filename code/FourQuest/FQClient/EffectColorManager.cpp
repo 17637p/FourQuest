@@ -8,6 +8,7 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Decal.h"
+#include "../FQGameModule/Particle.h"
 #include "../FQCommon/FQCommonGraphics.h"
 
 fq::client::EffectColorManager::EffectColorManager(const EffectColorManager& other)
@@ -126,6 +127,22 @@ void fq::client::EffectColorManager::OnGeneratePrefabInstance(const fq::event::O
 				materialInfo.EmissiveColor.y = applyEmissiveColor.y;
 				materialInfo.EmissiveColor.z = applyEmissiveColor.z;
 				decalOrNull->SetDecalMaterialInfo(materialInfo);
+			}
+
+			auto particleOrNull = gameObject->GetComponent<fq::game_module::Particle>();
+
+			if (particleOrNull)
+			{
+				auto info = particleOrNull->GetParticleMaterialInfo();
+
+				info.BaseColor.x = applyBaseColor.x;
+				info.BaseColor.y = applyBaseColor.y;
+				info.BaseColor.z = applyBaseColor.z;
+				info.EmissiveColor.x = applyEmissiveColor.x;
+				info.EmissiveColor.y = applyEmissiveColor.y;
+				info.EmissiveColor.z = applyEmissiveColor.z;
+
+				particleOrNull->SetParticleMaterialInfo(info);
 			}
 
 			for (auto child : gameObject->GetChildren())

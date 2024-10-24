@@ -231,7 +231,14 @@ bool fq::client::CameraMoving::IsValid(int playerID, EDirection eDirection)
 	int index = -1;
 	for (int i = 0; i < mPlayerTransforms.size(); i++)
 	{
-		int playerIDi = mPlayerTransforms[i]->GetComponent<game_module::CharacterController>()->GetControllerID();
+		auto characterControllerOrNull = mPlayerTransforms[i]->GetComponent<game_module::CharacterController>();
+
+		if (characterControllerOrNull == nullptr)
+		{
+			continue;
+		}
+
+		int playerIDi = characterControllerOrNull->GetControllerID();
 		if (playerIDi == playerID)
 		{
 			index = i;
@@ -239,37 +246,43 @@ bool fq::client::CameraMoving::IsValid(int playerID, EDirection eDirection)
 		}
 	}
 
+	// 캐릭터 컨트롤러를 가진 오브젝트가 없는 경우 
+	if (index == -1)
+	{
+		return false;
+	}
+
 	DirectX::SimpleMath::Vector3 playerWorldPos = mPlayerTransforms[index]->GetWorldPosition();
 	DirectX::SimpleMath::Vector3 projPos = getProjPos(playerWorldPos);
 
 	switch (eDirection)
 	{
-		case fq::client::EDirection::Top:
-			if (projPos.y >= mForbiddenAreaPaddingY.y)
-			{
-				return false;
-			}
-			break;
-		case fq::client::EDirection::Left:
-			if (projPos.x <= mForbiddenAreaPaddingX.x)
-			{
-				return false;
-			}
-			break;
-		case fq::client::EDirection::Bottom:
-			if (projPos.y <= mForbiddenAreaPaddingY.x)
-			{
-				return false;
-			}
-			break;
-		case fq::client::EDirection::Right:
-			if (projPos.x >= mForbiddenAreaPaddingX.y)
-			{
-				return false;
-			}
-			break;
-		default:
-			break;
+	case fq::client::EDirection::Top:
+		if (projPos.y >= mForbiddenAreaPaddingY.y)
+		{
+			return false;
+		}
+		break;
+	case fq::client::EDirection::Left:
+		if (projPos.x <= mForbiddenAreaPaddingX.x)
+		{
+			return false;
+		}
+		break;
+	case fq::client::EDirection::Bottom:
+		if (projPos.y <= mForbiddenAreaPaddingY.x)
+		{
+			return false;
+		}
+		break;
+	case fq::client::EDirection::Right:
+		if (projPos.x >= mForbiddenAreaPaddingX.y)
+		{
+			return false;
+		}
+		break;
+	default:
+		break;
 	}
 
 	return true;
@@ -394,24 +407,28 @@ void fq::client::CameraMoving::restrcitPlayerMove()
 	for (int i = 0; i < mPlayerTransforms.size(); i++)
 	{
 		auto controller = mPlayerTransforms[i]->GetComponent<game_module::CharacterController>();
-		DirectX::SimpleMath::Vector3 playerWorldPos = mPlayerTransforms[i]->GetWorldPosition();
-		DirectX::SimpleMath::Vector3 projPos = getProjPos(playerWorldPos);
 
-		float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
-		float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
-		float xViewport = ((projPos.x + 1) / 2) * width;
-		float yViewport = ((1 - projPos.y) / 2) * height;
+		if (controller != nullptr)
+		{
+			DirectX::SimpleMath::Vector3 playerWorldPos = mPlayerTransforms[i]->GetWorldPosition();
+			DirectX::SimpleMath::Vector3 projPos = getProjPos(playerWorldPos);
 
-		//spdlog::trace("{}, {}", xViewport, yViewport);
+			float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
+			float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
+			float xViewport = ((projPos.x + 1) / 2) * width;
+			float yViewport = ((1 - projPos.y) / 2) * height;
 
-		std::array<bool, 4> moveRestriction{};
+			//spdlog::trace("{}, {}", xViewport, yViewport);
 
-		moveRestriction[static_cast<int>(physics::ERestrictDirection::PlusX)] = projPos.x >= mForbiddenAreaPaddingX.y;
-		moveRestriction[static_cast<int>(physics::ERestrictDirection::PlusZ)] = projPos.y >= mForbiddenAreaPaddingY.y;
-		moveRestriction[static_cast<int>(physics::ERestrictDirection::MinusX)] = projPos.x <= mForbiddenAreaPaddingX.x;
-		moveRestriction[static_cast<int>(physics::ERestrictDirection::MinusZ)] = projPos.y <= mForbiddenAreaPaddingY.x;
+			std::array<bool, 4> moveRestriction{};
 
-		controller->SetMoveRestriction(moveRestriction);
+			moveRestriction[static_cast<int>(physics::ERestrictDirection::PlusX)] = projPos.x >= mForbiddenAreaPaddingX.y;
+			moveRestriction[static_cast<int>(physics::ERestrictDirection::PlusZ)] = projPos.y >= mForbiddenAreaPaddingY.y;
+			moveRestriction[static_cast<int>(physics::ERestrictDirection::MinusX)] = projPos.x <= mForbiddenAreaPaddingX.x;
+			moveRestriction[static_cast<int>(physics::ERestrictDirection::MinusZ)] = projPos.y <= mForbiddenAreaPaddingY.x;
+
+			controller->SetMoveRestriction(moveRestriction);
+		}
 	}
 }
 

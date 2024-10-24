@@ -3,6 +3,7 @@
 #include "Soul.h"
 #include "Player.h"
 #include "SoulVariable.h"
+#include "CameraMoving.h"
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/CharacterController.h"
@@ -58,6 +59,12 @@ namespace fq::client
 
 			if (data.durationTime >= SoulVariable::OutTime)
 			{
+				// 임시 프리팹 제거
+				mScene->ViewComponents<CameraMoving>([data](game_module::GameObject& object, CameraMoving& camera)
+					{
+						camera.DeletePlayerTransform(data.tempGameObject->GetComponent<game_module::Transform>());
+					});
+
 				auto instance = mScene->GetPrefabManager()->InstantiatePrefabResoure(data.soulPrefab);
 				auto& soul = *(instance.begin());
 
@@ -104,6 +111,15 @@ namespace fq::client
 
 		if (!isDestroy)
 			data.durationTime = SoulVariable::OutTime;
+
+		// 임시 프리팹 생성
+		data.tempGameObject = std::make_shared<fq::game_module::GameObject>();
+		data.tempGameObject->GetTransform()->SetWorldMatrix(worldTransform);
+		mScene->ViewComponents<CameraMoving>([data](game_module::GameObject& object, CameraMoving& camera)
+			{
+				camera.AddPlayerTransform(data.tempGameObject->GetComponent<game_module::Transform>());
+			});
+
 
 		mSoulSummonQueue.push_back(data);
 	}

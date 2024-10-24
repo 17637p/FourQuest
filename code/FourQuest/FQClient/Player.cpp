@@ -102,8 +102,6 @@ void fq::client::Player::OnUpdate(float dt)
 
 	checkPoisonDuration(dt);
 	checkCoolTime();
-
-
 }
 
 void fq::client::Player::OnLateUpdate(float dt)
