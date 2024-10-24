@@ -85,7 +85,7 @@ namespace fq::client
 		void Move(DirectX::SimpleMath::Vector3 destination);
 
 		/// <summary>
-		/// 돌진합니다 
+		/// 러쉬 공격 관련 프리팹을 생성합니다.
 		/// </summary>
 		std::shared_ptr<game_module::GameObject> Rush();
 
@@ -94,7 +94,7 @@ namespace fq::client
 		float GetGroggyGaugeRatio()const;
 
 		void AddHp(float hp);
-	
+
 		/// <summary>
 		/// HPBar를 생성합니다
 		/// </summary>
@@ -118,12 +118,14 @@ namespace fq::client
 		/// <summary>
 		/// 보스의 림라이트 컬러를 설정합니다 
 		/// </summary>
-		void SetRimLightColor(bool bUseRimLight ,DirectX::SimpleMath::Color color)const;
+		void SetRimLightColor(bool bUseRimLight, DirectX::SimpleMath::Color color)const;
 
 		/// <summary>
 		/// 보스의 외각선 색깔을 설정합니다
 		/// </summary>
 		void SetOutLineColor(DirectX::SimpleMath::Color color);
+
+		KnockBack* GetKnockBack() const { return mKnockBack; }
 
 	private:
 		void waitAttack();
@@ -137,6 +139,7 @@ namespace fq::client
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 
 		bool isGroggyState()const;
+		void updateGroggy(float dt);
 
 	private:
 		GameManager* mGameManager;
@@ -153,7 +156,7 @@ namespace fq::client
 		float mAcceleration;
 		float mAttackRange;
 		float mAttackCoolTime;
-		float mAttackElapsedTime;	
+		float mAttackElapsedTime;
 		float mSmashDownOffset;
 		float mComboAttackOffset;
 		float mRushPower;
@@ -199,6 +202,11 @@ namespace fq::client
 		float mCurrentDummyTraceDurationTime; // traceDuration + randomRange;
 		float mDummyTraceElapsedTime;
 		bool mIsDummyTarget;
+
+		// 그로기 관련 추가_홍지환
+		float mGroggyDuration;
+		float mGroggyElapsed;
+		size_t mShakeCount;
 
 		friend void RegisterMetaData();
 	};

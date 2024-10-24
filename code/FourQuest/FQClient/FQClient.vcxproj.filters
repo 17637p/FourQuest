@@ -623,6 +623,12 @@
     <ClInclude Include="CollisionRenderChanger.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="BossMonsterHitState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="UIShaker.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1079,6 +1085,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="CollisionRenderChanger.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterHitState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="UIShaker.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

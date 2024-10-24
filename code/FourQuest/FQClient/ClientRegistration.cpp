@@ -86,6 +86,7 @@
 #include "BossMonsterRoarState.h"
 #include "BossMonsterContinousState.h"
 #include "BossMonsterPreContinousState.h"
+#include "BossMonsterHitState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -182,6 +183,7 @@
 #include "DebugService.h"
 #include "CollisionColorChanger.h"
 #include "CollisionRenderChanger.h"
+#include "UIShaker.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -521,6 +523,23 @@ void fq::client::RegisterMetaData()
 		.data<&CollisionRenderChanger::mTags>("Tags"_hs)
 		.prop(fq::reflect::prop::Name, "Tags")
 		.prop(fq::reflect::prop::Comment, u"처리될 태그들")
+		.base<game_module::Component>();
+
+	entt::meta<UIShaker>()
+		.type("UIShaker"_hs)
+		.prop(reflect::prop::Name, "UIShaker")
+		.data<&UIShaker::mCount>("mCount"_hs)
+		.prop(fq::reflect::prop::Name, "mCount")
+		.prop(fq::reflect::prop::Comment, u"흔들릴 횟수, 에디터에서 기능 확인용")
+		.data<&UIShaker::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u"지속시간")
+		.data<&UIShaker::mStartOffset>("mStartOffset"_hs)
+		.prop(fq::reflect::prop::Name, "mStartOffset")
+		.prop(fq::reflect::prop::Comment, u"시작 오프셋")
+		.data<&UIShaker::mEndOffset>("mEndOffset"_hs)
+		.prop(fq::reflect::prop::Name, "mEndOffset")
+		.prop(fq::reflect::prop::Comment, u"종료 오프셋")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1406,6 +1425,10 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mDummyDurationRandomRangeMax>("DummyDurationRandomRangeMax"_hs)
 		.prop(fq::reflect::prop::Name, "DummyDurationRandomRangeMax")
 		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 더해질 최대 랜덤 추적 시간(최소값 ~ 최댓값)")
+		
+		.data<&BossMonster::mGroggyDuration>("mGroggyDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mGroggyDuration")
+		.prop(fq::reflect::prop::Comment, u8"그로기 상태 지속시간")
 
 		.base<fq::game_module::Component>();
 
@@ -1433,6 +1456,15 @@ void fq::client::RegisterMetaData()
 	entt::meta<BossMonsterRushState>()
 		.type("BossMonsterRushState"_hs)
 		.prop(fq::reflect::prop::Name, "BossMonsterRushState")
+		.data<&BossMonsterRushState::mRushVelocity>("mRushVelocity"_hs)
+		.prop(fq::reflect::prop::Name, "mRushVelocity")
+		.prop(fq::reflect::prop::Comment, u8"돌진 속도")
+		.data<&BossMonsterRushState::mRushAcceleration>("mRushAcceleration"_hs)
+		.prop(fq::reflect::prop::Name, "mRushAcceleration")
+		.prop(fq::reflect::prop::Comment, u8"돌진 가속도")
+		.data<&BossMonsterRushState::mRushDuration>("mRushDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mRushDuration")
+		.prop(fq::reflect::prop::Comment, u8"돌진 지속 시간")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<BossMonsterFindTargetState>()
@@ -1479,8 +1511,6 @@ void fq::client::RegisterMetaData()
 	entt::meta<BossMonsterGroggyState>()
 		.type("BossMonsterGroggyState"_hs)
 		.prop(fq::reflect::prop::Name, "BossMonsterGroggyState")
-		.data<&BossMonsterGroggyState::mGroggyTime>("GroggyTime"_hs)
-		.prop(fq::reflect::prop::Name, "GroggyTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<BossMonsterEatState>()
@@ -1512,6 +1542,11 @@ void fq::client::RegisterMetaData()
 	entt::meta<BossMonsterPreContinousState>()
 		.type("BossMonsterPreContinousState"_hs)
 		.prop(fq::reflect::prop::Name, "BossMonsterPreContinousState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterHitState>()
+		.type("BossMonsterHitState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterHitState")
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

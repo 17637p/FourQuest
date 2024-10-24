@@ -19,6 +19,7 @@
 #include "PlayerInfoVariable.h"
 #include "PlayerDummy.h"
 #include "ClientHelper.h"
+#include "UIShaker.h"
 
 #include <spdlog/spdlog.h>
 
@@ -65,6 +66,9 @@ fq::client::BossMonster::BossMonster()
 	, mCurrentDummyTraceDurationTime(0.f)
 	, mDummyTraceElapsedTime(0.f)
 	, mIsDummyTarget(false)
+	, mGroggyDuration(5.f)
+	, mGroggyElapsed(0.f)
+	, mShakeCount(10)
 {}
 
 fq::client::BossMonster::~BossMonster()
@@ -122,6 +126,8 @@ void fq::client::BossMonster::OnUpdate(float dt)
 
 	bool canAttack = mAttackElapsedTime >= mAttackCoolTime;
 	mAnimator->SetParameterBoolean("CanAttack", canAttack);
+
+	updateGroggy(dt);
 }
 
 void fq::client::BossMonster::waitAttack()
@@ -130,8 +136,6 @@ void fq::client::BossMonster::waitAttack()
 	mAttackElapsedTime = 0.f;
 	mAnimator->SetParameterBoolean("CanAttack", false);
 }
-
-
 
 void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& collision)
 {
@@ -150,16 +154,61 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
 
-			// 그로기 
+			// 그로기 상태 처리
 			if (!isGroggyState())
 			{
 				mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
+			}
+			else
+			{
+				// 바닥의 법선을 { 0, 1, 0}으로 가정함
+				DirectX::SimpleMath::Vector3 groundNormal = { 0, 1, 0 };
+				auto currLook = GetTransform()->GetLookAtVector();
+				currLook.y = 0;
+				currLook.Normalize();
+				auto objectLook = collision.other->GetTransform()->GetWorldPosition() - GetTransform()->GetWorldPosition();
+				objectLook.y = 0;
+				objectLook.Normalize();
+				auto crossVec = currLook.Cross(objectLook);
+				bool isLeft = crossVec.Dot(groundNormal) >= 0;
+
+				// 앞뒤 판정
+				float dotProduct = currLook.Dot(objectLook);
+				float angle = acosf(dotProduct); // 두 벡터 사이의 각
+
+				if (angle < DirectX::XM_PIDIV4)
+				{
+					mAnimator->SetParameterBoolean("OnHitFront", true);
+				}
+				else if (angle < DirectX::XM_PIDIV4 + DirectX::XM_PIDIV2)
+				{
+					if (isLeft)
+					{
+						mAnimator->SetParameterBoolean("OnHitLeft", true);
+					}
+					else
+					{
+						mAnimator->SetParameterBoolean("OnHitRight", true);
+					}
+				}
+				else
+				{
+					mAnimator->SetParameterBoolean("OnHitBack", true);
+				}
+
+				// HP 흔들기
+				GetScene()->ViewComponents<UIShaker>(
+					[this](fq::game_module::GameObject& object, UIShaker& uiShaker)
+					{
+						uiShaker.AddCount(mShakeCount);
+					});
 			}
 
 			if (mGroggyGauge == mStartGroggyGauge)
 			{
 				mGroggyGauge = 0.f;
 				mAnimator->SetParameterBoolean("OnGroggy", true);
+				mGroggyElapsed = 0.f;
 			}
 
 			// 사망처리
@@ -362,10 +411,6 @@ void fq::client::BossMonster::CheckTargetInAttackRange()
 std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::Rush()
 {
 	using namespace game_module;
-
-	// 바라보는 방향으로 돌진합니다 
-	auto look = mTransform->GetLookAtVector();
-	mKnockBack->AddKnockBack(mRushPower, look);
 
 	// 러쉬 히트 박스 생성	
 	using namespace game_module;
@@ -707,5 +752,21 @@ float fq::client::BossMonster::GetGroggyGaugeRatio() const
 bool fq::client::BossMonster::isGroggyState() const
 {
 	return mAnimator->GetController().GetParameter("OnGroggy").cast<bool>();
+}
+
+void fq::client::BossMonster::updateGroggy(float dt)
+{
+	if (!isGroggyState())
+	{
+		return;
+	}
+
+	mGroggyElapsed += dt;
+
+	// todo : groggy 관련 변수 맴버로 수정하기
+	if (mGroggyElapsed > mGroggyDuration)
+	{
+		mAnimator->SetParameterBoolean("OnGroggy", false);
+	}
 }
 
