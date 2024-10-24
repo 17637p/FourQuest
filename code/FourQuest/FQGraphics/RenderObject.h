@@ -410,5 +410,15 @@ namespace fq::graphics
 	private:
 		SpriteInfo mSpriteInfo;
 	};
+
+	class VideoObject : public IVideoObject
+	{
+	public:
+		virtual void SetVideoInfo(VideoInfo videoInfo) override { mVideoInfo = videoInfo; };
+		virtual VideoInfo GetVideoInfo() override { return mVideoInfo; };
+
+	private:
+		VideoInfo mVideoInfo;
+	};
 }
 

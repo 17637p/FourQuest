@@ -147,6 +147,22 @@ namespace fq::graphics
 		bool isRender = true;
 	};
 
+	struct VideoInfo
+	{
+		bool isRender = false;
+
+		std::string VideoPath = "";
+
+		float StartX = 0.0f;
+		float StartY = 0.0f;
+		float Width = 1920;
+		float Height = 1080;
+
+		bool isReset = false; // true 되면 리셋 시키고 false 로 변경
+		float PlayTime = 0;
+		float Speed = 1;
+	};
+
 	enum class ETextAlign
 	{
 		LeftTop,
