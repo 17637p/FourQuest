@@ -6,7 +6,6 @@ namespace fq::game_module
 {
 	class Transform;
 	class ImageUI;
-	class Camera;
 }
 
 namespace fq::client

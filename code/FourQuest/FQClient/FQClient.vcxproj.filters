@@ -605,9 +605,6 @@
     <ClInclude Include="ScreenBlending.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterHP.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="ScaleAnimation.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -622,6 +619,12 @@
     </ClInclude>
     <ClInclude Include="CollisionRenderChanger.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHPBar.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterHP.h">
+      <Filter>include\05.UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1063,9 +1066,6 @@
     <ClCompile Include="ScreenBlending.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterHP.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="ScaleAnimation.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -1080,6 +1080,12 @@
     </ClCompile>
     <ClCompile Include="CollisionRenderChanger.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHPBar.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterHP.cpp">
+      <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
