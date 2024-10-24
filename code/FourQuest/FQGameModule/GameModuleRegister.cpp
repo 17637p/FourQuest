@@ -2304,7 +2304,10 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AlphaCutoff")
 		.data<&fq::graphics::DecalMaterialInfo::bUseEmissiveBlend>("bUseEmissiveBlend"_hs)
 		.prop(fq::reflect::prop::Comment, u8"이미시브 블렌딩 여부")
-		.prop(fq::reflect::prop::Name, "bUseEmissiveBlend");
+		.prop(fq::reflect::prop::Name, "bUseEmissiveBlend")
+		.data<&fq::graphics::DecalMaterialInfo::EmissiveIntensity>("EmissiveIntensity"_hs)
+		.prop(fq::reflect::prop::Comment, u8"이미시브 세기")
+		.prop(fq::reflect::prop::Name, "EmissiveIntensity");
 
 	entt::meta<NavigationMeshLoader>()
 		.type("NavigationMeshLoader"_hs)

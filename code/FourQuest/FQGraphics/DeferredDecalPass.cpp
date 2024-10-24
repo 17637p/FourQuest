@@ -198,7 +198,7 @@ namespace fq::graphics
 				const auto& materialInfo = material->GetInfo();
 				CBDecalMaterial decalMaterialCB;
 				decalMaterialCB.BaseColor = materialInfo.BaseColor;
-				decalMaterialCB.EmissiveColor = materialInfo.EmissiveColor;
+				decalMaterialCB.EmissiveColor = materialInfo.EmissiveColor * materialInfo.EmissiveIntensity;
 				decalMaterialCB.bUseBaseColor = materialInfo.bUseBaseColor && material->GetHasBaseColor();
 				decalMaterialCB.bUseNormalness = materialInfo.bUseNormalness && material->GetHasNormal();
 				decalMaterialCB.bIsUsedEmissive = materialInfo.bIsUsedEmissive && material->GetHasEmissive();

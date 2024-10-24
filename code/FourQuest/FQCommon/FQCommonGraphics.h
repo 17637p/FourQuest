@@ -717,6 +717,7 @@ namespace fq::graphics
 		float AlphaCutoff = 0.1f;
 		
 		bool bUseEmissiveBlend = false; // 이미시브 블렌딩 사용 여부
+		float EmissiveIntensity = 1.f;
 	};
 
 	//// ---------------------------------------------------------------------
