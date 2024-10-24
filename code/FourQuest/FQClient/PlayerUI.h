@@ -8,6 +8,7 @@ namespace fq::game_module
 {
 	class ImageUI;
 	class ScreenManager;
+	class SpriteAnimationUI;
 }
 
 namespace fq::client
@@ -35,6 +36,7 @@ namespace fq::client
 		void SetPlayer(fq::client::GameManager* gameMgr);
 		void SetSoulGauge(float ratio);
 		void SetHPBar(float ratio);
+		void SetSoulSprite(int index, bool isOn);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -74,6 +76,8 @@ namespace fq::client
 		std::vector<game_module::ImageUI*> mSkillIconRs; // 스킬 아이콘 
 
 		std::vector<game_module::ImageUI*> mSoulSkillIcons; // 스킬 아이콘 
+
+		std::vector<game_module::SpriteAnimationUI*> mSoulSprites;
 		game_module::ImageUI* mPlayerState;				 // 플레이어 상태
 
 		game_module::ScreenManager* mScreenManager;

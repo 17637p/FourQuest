@@ -977,19 +977,27 @@ void fq::graphics::UIManager::drawSpriteAnimation(ISpriteAnimationObject* sprite
 	std::filesystem::path stringToWstringPath = spriteInfo.ImagePath;
 	std::wstring imagePath = stringToWstringPath.wstring();
 
-	D2D1_SIZE_F imageSize = mBitmaps[imagePath]->bitmap->GetSize();
-	float animWidth = imageSize.width / (float)spriteInfo.ImageNum;
-	D2D1_RECT_F imageRect = { animWidth * spriteInfo.CurImage, 0, animWidth * spriteInfo.CurImage + animWidth, imageSize.height }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
+	//D2D1_SIZE_F imageSize = mBitmaps[imagePath]->bitmap->GetSize();
+	D2D1_SIZE_F imageSize;
+	imageSize.width = spriteInfo.Width;
+	imageSize.height = spriteInfo.Height;
+	float animWidth = imageSize.width / (float)spriteInfo.XNum;
+	float animHeight = imageSize.height / (float)spriteInfo.YNum;
+	D2D1_RECT_F imageRect = { 
+		animWidth * (spriteInfo.CurImage % spriteInfo.XNum), 
+		animHeight * (spriteInfo.CurImage / spriteInfo.XNum),
+		animWidth * (spriteInfo.CurImage % spriteInfo.XNum) + animWidth,
+		animHeight * (spriteInfo.CurImage / spriteInfo.XNum) + animHeight }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
 	D2D1_RECT_F screenRect{};
 	if (spriteInfo.isCenter) // true가 isCenter
 	{
-		screenRect = { spriteInfo.StartX - animWidth / 2, spriteInfo.StartY - spriteInfo.Height / 2,
-		spriteInfo.StartX + animWidth / 2, spriteInfo.StartY + spriteInfo.Height / 2 }; // 그릴 크기 (화면 좌표)
+		screenRect = { spriteInfo.StartX - animWidth / 2, spriteInfo.StartY - animHeight / 2,
+		spriteInfo.StartX + animWidth / 2, spriteInfo.StartY + animHeight / 2 }; // 그릴 크기 (화면 좌표)
 	}
 	else
 	{
 		screenRect = { spriteInfo.StartX, spriteInfo.StartY,
-		spriteInfo.StartX + animWidth, spriteInfo.StartY + spriteInfo.Height }; // 그릴 크기 (화면 좌표)
+		spriteInfo.StartX + animWidth, spriteInfo.StartY + animHeight }; // 그릴 크기 (화면 좌표)
 	}
 
 	// 왜 스케일 위치가 중앙점이 아니라 시작점이지...?
