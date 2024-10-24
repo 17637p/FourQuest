@@ -404,7 +404,7 @@ bool FQGraphics::BeginRender()
 
 	mRenderManager->BeginRender();
 
-	//mUIManager->UpdateVideoBitmap();
+	mUIManager->UpdateVideoBitmap();
 	return true;
 }
 
@@ -1009,6 +1009,16 @@ void fq::graphics::FQGraphics::SetIsRenderUI(bool bIsRenderUI)
 void fq::graphics::FQGraphics::SetIsUseLightmapOnly(bool bIsUseLightmapOnly)
 {
 	mLightManager->SetIsLightmapOnly(bIsUseLightmapOnly);
+}
+
+void FQGraphics::DeleteVideoObject(fq::graphics::IVideoObject* videoObject)
+{
+	mUIManager->DeleteVideoObject(videoObject);
+}
+
+fq::graphics::IVideoObject* FQGraphics::CreateVideoObject(VideoInfo videoInfo)
+{
+	return mUIManager->CreateVideoObject(videoInfo);
 }
 
 void FQGraphics::DeleteText(fq::graphics::ITextObject* textObject)

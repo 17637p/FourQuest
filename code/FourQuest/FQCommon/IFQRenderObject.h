@@ -297,6 +297,15 @@ extern "C" {
 			virtual FQ_GRAPHICS SpriteInfo GetSpriteInfo() abstract;
 		};
 
+		class IVideoObject
+		{
+		public:
+			virtual ~IVideoObject() = default;
+
+			virtual FQ_GRAPHICS void SetVideoInfo(VideoInfo videoInfo) abstract;
+			virtual FQ_GRAPHICS VideoInfo GetVideoInfo() abstract;
+		};
+
 #ifdef __cplusplus
 	}
 #endif

@@ -258,55 +258,24 @@ void fq::client::SpawnerGroup::CheckMaxEnemy(int size)
 		}
 
 		// 여기랑 밑에 채워놓고 timer, collider 테스트 하기 
-		std::vector<std::shared_ptr<game_module::GameObject>> targetOnObject{}; // 타겟이 null이 아니고 isdestroy가 아닌 것들
 		auto monsters = mMonsterManager->GetMonsters();
-		std::copy_if(monsters.begin(), monsters.end(), std::back_inserter(targetOnObject),
-			[this](std::shared_ptr<game_module::GameObject> monster)
-			{
-				auto isMelee = monster->GetComponent<MeleeMonster>();
-				std::shared_ptr<game_module::GameObject> target;
-				if (isMelee)
-				{
-					target = isMelee->GetTarget();
-				}
-				auto isBoss = monster->GetComponent<BossMonster>();
-				if (isBoss)
-				{
-					target = isBoss->GetTarget();
-				}
-				auto isPlant = monster->GetComponent<PlantMonster>();
-				if (isPlant)
-				{
-					target = isPlant->GetTarget();
-				}
-
-				if (target)
-				{
-					return !target->IsDestroyed();
-				}
-				else
-				{
-					return false;
-				}
-			}
-		);
 
 		switch (maxEnemyList.ComparisonOperator)
 		{
 			case EComparisonOperators::Equals:
-				if (targetOnObject.size() == maxEnemyList.MonsterNum)
+				if (monsters.size() == maxEnemyList.MonsterNum)
 				{
 					maxEnemyList.isClear = true;
 				}
 				break;
 			case EComparisonOperators::Greater:
-				if (targetOnObject.size() > maxEnemyList.MonsterNum)
+				if (monsters.size() > maxEnemyList.MonsterNum)
 				{
 					maxEnemyList.isClear = true;
 				}
 				break;
 			case EComparisonOperators::Less:
-				if (targetOnObject.size() < maxEnemyList.MonsterNum)
+				if (monsters.size() < maxEnemyList.MonsterNum)
 				{
 					maxEnemyList.isClear = true;
 				}

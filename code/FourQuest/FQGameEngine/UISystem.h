@@ -73,6 +73,11 @@ namespace fq::game_engine
 		/// </summary>
 		void SetSpriteAnimationInformation(const fq::event::SetSpriteAnimationInformation& event);
 
+		/// <summary>
+		/// Video정보 변경 이벤트
+		/// </summary>
+		void SetVideoInformation(const fq::event::SetVideoInformation& event);
+
 		void LoadImageUI(game_module::GameObject* object);
 		void UnloadImageUI(game_module::GameObject* object);
 
@@ -81,6 +86,9 @@ namespace fq::game_engine
 
 		void LoadSpriteAnimationUI(game_module::GameObject* object);
 		void UnloadSpriteAnimationUI(game_module::GameObject* object);
+
+		void LoadVideoUI(game_module::GameObject* object);
+		void UnloadVideoUI(game_module::GameObject* object);
 
 	private:
 		GameProcess* mGameProcess;
@@ -94,6 +102,7 @@ namespace fq::game_engine
 		EventHandler mSetUIInfomationsHandler;
 		EventHandler mSetTextInformationHandler;
 		EventHandler mSetSpriteInformationHandler;
+		EventHandler mSetVideoInformationHandler;
 		EventHandler mSetScreenSizeHandler;
 		EventHandler mSetViewportSizeHandler;
 

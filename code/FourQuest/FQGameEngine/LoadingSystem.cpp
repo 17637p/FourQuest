@@ -35,6 +35,7 @@ void fq::game_engine::LoadingSystem::Finalize()
 		mGameProcess->mUISystem->UnloadImageUI(object.get());
 		mGameProcess->mUISystem->UnloadSpriteAnimationUI(object.get());
 		mGameProcess->mUISystem->UnloadTextUI(object.get());
+		mGameProcess->mUISystem->UnloadVideoUI(object.get());
 	}
 }
 
@@ -50,6 +51,7 @@ void fq::game_engine::LoadingSystem::loadUI()
 		mGameProcess->mUISystem->LoadImageUI(object.get());
 		mGameProcess->mUISystem->LoadTextUI(object.get());
 		mGameProcess->mUISystem->LoadSpriteAnimationUI(object.get());
+		mGameProcess->mUISystem->LoadVideoUI(object.get());
 	}
 }
 
