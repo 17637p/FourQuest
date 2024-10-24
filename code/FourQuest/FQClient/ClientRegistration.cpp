@@ -114,6 +114,7 @@
 
 // UI
 #include "HpBar.h"
+#include "PlayerHPBar.h"
 #include "MonsterHP.h"
 #include "GaugeBar.h"
 #include "PlayerUI.h"
@@ -1833,6 +1834,21 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "InnerOffset")
 		.prop(fq::reflect::prop::Comment, u8"Bar 외부와 내부의 크기 차이")
 		.base<fq::game_module::Component>();
+
+	entt::meta<PlayerHPBar>()
+		.type("PlayerHPBar"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerHPBar")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&PlayerHPBar::mbIsVisible>("IsVisible"_hs)
+		.prop(fq::reflect::prop::Name, "IsVisible")
+		.data<&PlayerHPBar::mWorldYOffset>("WorldYOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldYOffset")
+		.prop(fq::reflect::prop::Comment, u8"월드 공간의 Y를 더한후 UI 위치 계산")
+		.data<&PlayerHPBar::mScreenYOffset>("ScreenYOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ScreenYOffset")
+		.prop(fq::reflect::prop::Comment, u8"Screen 공간의 Y를 더한후 UI 위치 계산")
+		.base<fq::game_module::Component>();
+
 
 	entt::meta<MonsterHP>()
 		.type("MonsterHP"_hs)

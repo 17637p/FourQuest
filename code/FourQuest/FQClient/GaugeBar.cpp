@@ -48,14 +48,14 @@ void fq::client::GaugeBar::OnStart()
 
 	auto infomations = mImageUI->GetUIInfomations();
 	// OutBar
-	infomations[3].Width = mBarSize.x;
-	infomations[3].Height = mBarSize.y;
-	infomations[3].Layer = layer::OutBar;
+	infomations[0].Width = mBarSize.x;
+	infomations[0].Height = mBarSize.y;
+	infomations[0].Layer = layer::OutBar;
 
 	// InnerBar
-	infomations[4].Width = mBarSize.x - mInnerOffset;
-	infomations[4].Height = mBarSize.y - mInnerOffset;
-	infomations[4].Layer = layer::InnerBar;
+	infomations[1].Width = mBarSize.x - mInnerOffset;
+	infomations[1].Height = mBarSize.y - mInnerOffset;
+	infomations[1].Layer = layer::InnerBar;
 
 	mImageUI->SetUIInfomations(infomations);
 
@@ -67,7 +67,7 @@ void fq::client::GaugeBar::SetVisible(bool isVisible)
 	mbIsVisible = isVisible;
 
 	auto infomations = mImageUI->GetUIInfomations();
-	for (int i = 3; i < 5; ++i)
+	for (int i = 0; i < 2; ++i)
 	{
 		infomations[i].isRender = isVisible;
 	}
@@ -102,14 +102,14 @@ void fq::client::GaugeBar::setUIInfo()
 	auto infomations = mImageUI->GetUIInfomations();
 
 	// OutBar 
-	auto& outBar = infomations[3];
+	auto& outBar = infomations[0];
 
 	outBar.StartX = width * 0.5f + (screenPos.x * width * 0.5f) - mBarSize.x * 0.5f;
 	outBar.StartY = height * 0.5f - (screenPos.y * height * 0.5f) + mScreenOffset;
 
 	// InnerBar
 	float halfInnerOffset = mInnerOffset * 0.5f;
-	auto& innerBar = infomations[4];
+	auto& innerBar = infomations[1];
 
 	innerBar.Width = (mBarSize.x - mInnerOffset) * mGaugeRatio;
 	innerBar.StartX = width * 0.5f + (screenPos.x * width * 0.5f) - mBarSize.x * 0.5f + halfInnerOffset;

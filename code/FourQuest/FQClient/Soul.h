@@ -14,6 +14,7 @@ namespace fq::client
 {
 	class DeadArmour;
 	class GoddessStatue;
+	class PlayerHPBar;
 
 	class Soul :public game_module::Component
 	{
@@ -68,6 +69,7 @@ namespace fq::client
 		std::vector<DeadArmour*> mSelectArmours;
 		GoddessStatue* mSelectGoddessStatue;
 
+		PlayerHPBar* mPlayerHpBar;
 		BGaugeUI* mBGaugeUI;
 		ESoulType mSoulType;
 

@@ -15,6 +15,7 @@ namespace fq::game_module
 
 namespace fq::client
 {
+	class PlayerHPBar;
 	class BGaugeUI;
 
 	class Player : public fq::game_module::Component
@@ -218,6 +219,7 @@ namespace fq::client
 		game_module::CharacterController* mController;
 		game_module::Transform* mTransform;
 		BGaugeUI* mBGaugeUI;
+		PlayerHPBar* mPlayerHpBar;
 
 		ESoulType mSoulType; // øµ»• ≈∏¿‘
 		ESoulType mEquipWeapone;

@@ -1109,7 +1109,6 @@ void fq::client::QuestManager::playNew(float dt)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		spdlog::trace("{}", mCompleteImageCounts[0]);
 		if (i == 0 && mCompleteImageCounts[0] > 0)
 		{
 			continue;
