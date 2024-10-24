@@ -18,7 +18,8 @@
 #include "EffectColorTransmitter.h"
 
 fq::client::DeadArmour::DeadArmour()
-	:mPlayerCount(0)
+	:mSoulCount(0)
+	, mPlayerCount(0)
 	, mbIsVisible(false)
 	, mUnequippedPlayerId(-1)
 	, mPlayerArmourCoolTime(0.f)
@@ -89,7 +90,6 @@ bool fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 	{
 		return false;
 	}
-
 	// 인스턴스 생성
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLivingArmourPrefab);
 	auto& livingArmour = *(instance.begin());
@@ -128,10 +128,17 @@ void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collis
 {
 	if (collision.other->HasComponent<Soul>())
 	{
-		mPlayerCount++;
+		mSoulCount++;
 	}
 
-	if (mPlayerCount > 0 && mbIsSummonAble)
+	if (collision.other->HasComponent<Soul>() || collision.other->HasComponent<Player>())
+	{
+		mPlayerCount++;
+
+		setUI(true);
+	}
+
+	if (mSoulCount > 0 && mbIsSummonAble)
 	{
 		constexpr DirectX::SimpleMath::Color Yellow{ 0.8f,0.6f,0.2f,1.f };
 		setOutlineColor(Yellow);
@@ -142,13 +149,23 @@ void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collisi
 {
 	if (collision.other->HasComponent<Soul>())
 	{
-		if (mPlayerCount > 0)
+		if (mSoulCount > 0)
 		{
-			--mPlayerCount;
+			--mSoulCount;
 		}
 	}
 
-	if (mPlayerCount == 0 && mbIsSummonAble)
+	if (collision.other->HasComponent<Soul>() || collision.other->HasComponent<Player>())
+	{
+		mPlayerCount--;
+
+		if (mPlayerCount == 0)
+		{
+			setUI(false);
+		}
+	}
+
+	if (mSoulCount == 0 && mbIsSummonAble)
 	{
 		constexpr DirectX::SimpleMath::Color NoOutLine{ 0.f,0.f,0.f,1.f };
 
@@ -160,10 +177,12 @@ void fq::client::DeadArmour::OnStart()
 {
 	assert(GetComponent<game_module::ImageUI>() != nullptr);
 
-	setUI(true);
+	setUI(false);
 	mbIsSummonAble = true;
 	mbIsOnSummon = false;
 	mSummonElapsedTime = 0.f;
+
+
 
 	// // HP 가져오기
 	// auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLivingArmourPrefab);
@@ -189,9 +208,6 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 	if (!uiInfos.empty())
 	{
 		uiInfos[0].isRender = isVisible;
-
-		if (uiInfos.size() > 1)
-			uiInfos[1].isRender = false;
 	}
 
 	imageUI->SetUIInfomations(uiInfos);
