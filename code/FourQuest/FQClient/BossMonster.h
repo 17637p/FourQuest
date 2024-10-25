@@ -125,6 +125,11 @@ namespace fq::client
 		/// </summary>
 		void SetOutLineColor(DirectX::SimpleMath::Color color);
 
+		/// <summary>
+		/// 화살에 맞는 함수입니다.
+		/// </summary>
+		void HitArrow(fq::game_module::GameObject* object);
+
 	private:
 		void waitAttack();
 		EBossMonsterAttackType getNextPattern(bool bIsInludeEat)const;
@@ -138,6 +143,8 @@ namespace fq::client
 
 		bool isGroggyState()const;
 
+		void destroySocketCollider();
+
 	private:
 		GameManager* mGameManager;
 		KnockBack* mKnockBack;
@@ -145,6 +152,7 @@ namespace fq::client
 		fq::game_module::Animator* mAnimator;
 		fq::game_module::SkinnedMeshRenderer* mSkinnedMesh;
 		std::shared_ptr<game_module::GameObject> mTarget;
+		std::set<unsigned int> mArrowAttackObject;
 
 		float mMaxHp;
 		float mHp;

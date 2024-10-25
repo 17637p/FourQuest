@@ -86,6 +86,7 @@ namespace fq::game_module
 		if (mTargetObject.expired())
 		{
 			spdlog::warn("[PlayerMoveTrack Warrning ({})] Do not Have TargetObject", __LINE__);
+			return;
 		}
 
 		auto transform = mTargetObject.lock()->GetComponent<Transform>();

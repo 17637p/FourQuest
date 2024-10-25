@@ -6,6 +6,9 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/BoxCollider.h"
+#include "../FQGameModule/Socket.h"
+
 #include "Attack.h"
 #include "GameManager.h"
 #include "DamageCalculation.h"
@@ -124,6 +127,7 @@ void fq::client::BossMonster::OnUpdate(float dt)
 	mAnimator->SetParameterBoolean("CanAttack", canAttack);
 }
 
+
 void fq::client::BossMonster::waitAttack()
 {
 	mAttackCoolTime = helper::RandomGenerator::GetInstance().GetRandomNumber(mMinWaitAttackTime, mMaxWaitAttackTime);
@@ -191,6 +195,7 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 				}
 
 				mAnimator->SetParameterBoolean("IsDead", true);
+				destroySocketCollider();
 			}
 
 			// 이펙트 방출
@@ -709,3 +714,94 @@ bool fq::client::BossMonster::isGroggyState() const
 	return mAnimator->GetController().GetParameter("OnGroggy").cast<bool>();
 }
 
+void fq::client::BossMonster::HitArrow(fq::game_module::GameObject* object)
+{
+	auto playerAttack = object->GetComponent<Attack>();
+
+	// 이미 데미지를 입은 오브젝트라면 함수 종료
+	auto attackObject = mArrowAttackObject.find(object->GetID());
+	if (attackObject == mArrowAttackObject.end())
+	{
+		mArrowAttackObject.insert(object->GetID());
+	}
+	else
+	{
+		return;
+	}
+
+	if (playerAttack->ProcessAttack())
+	{
+		float attackPower = playerAttack->GetAttackPower();
+
+		// HP 감소
+		mHp -= attackPower;
+
+		// 피격 사운드 재생
+		playerAttack->PlayHitSound();
+
+		// 그로기 
+		if (!isGroggyState())
+		{
+			mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
+		}
+
+		if (mGroggyGauge == mStartGroggyGauge)
+		{
+			mGroggyGauge = 0.f;
+			mAnimator->SetParameterBoolean("OnGroggy", true);
+		}
+
+		// 사망처리
+		if (mHp <= 0.f)
+		{
+			if (playerAttack->GetAttacker() != nullptr)
+			{
+				auto attackerID = playerAttack->GetAttacker()->GetComponent<Player>()->GetPlayerID();
+				if (attackerID == 0)
+				{
+					PlayerInfoVariable::Player1Monster += 1;
+					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player1Monster);
+				}
+				if (attackerID == 1)
+				{
+					PlayerInfoVariable::Player2Monster += 1;
+					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player2Monster);
+				}
+				if (attackerID == 2)
+				{
+					PlayerInfoVariable::Player3Monster += 1;
+					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player3Monster);
+				}
+				if (attackerID == 3)
+				{
+					PlayerInfoVariable::Player4Monster += 1;
+					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player4Monster);
+				}
+			}
+
+			mAnimator->SetParameterBoolean("IsDead", true);
+			destroySocketCollider();
+		}
+
+		// 이펙트 방출
+		fq::event::OnCreateStateEvent stateEvent;
+		stateEvent.gameObject = GetGameObject();
+		stateEvent.RegisterKeyName = playerAttack->GetAttackEffectEvent();
+		if (!stateEvent.RegisterKeyName.empty())
+		{
+			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+		}
+	}
+}
+
+void fq::client::BossMonster::destroySocketCollider()
+{
+	// 소켓을 가지고 있는 자식 오브젝트의 박스 콜라이더 삭제
+	for (auto childObject : GetGameObject()->GetChildren())
+	{
+		auto socket = childObject->GetComponent<fq::game_module::Socket>();
+
+		if (socket)
+			childObject->RemoveComponent<fq::game_module::BoxCollider>();
+	}
+}

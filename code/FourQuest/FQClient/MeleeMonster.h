@@ -59,12 +59,16 @@ namespace fq::client
 
 		void DestroyMonsterHPUI();
 
+		void HitArrow(fq::game_module::GameObject* object);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		void OnStart()override;
 		void OnUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
+
+		void destroySocketCollider();
 
 	private:
 		GameManager* mGameManager;
@@ -73,6 +77,7 @@ namespace fq::client
 		MonsterHP* mMonsterHpUI;
 		KnockBack* mKnockBack;
 		std::shared_ptr<game_module::GameObject> mTarget;
+		std::set<unsigned int> mArrowAttackObject;
 
 		float mMaxHp;
 		float mHp;
