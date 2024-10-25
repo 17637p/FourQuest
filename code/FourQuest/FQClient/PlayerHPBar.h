@@ -23,7 +23,7 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		void OnUpdate(float dt) override;
-		void OnStart() override;
+		void OnAwake() override;
 
 	private:
 		bool mbIsVisible;

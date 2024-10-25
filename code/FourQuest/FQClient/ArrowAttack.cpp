@@ -13,6 +13,9 @@
 #include "Attack.h"
 #include "Player.h"
 #include "PlayerSoulVariable.h"
+#include "MeleeMonster.h"
+#include "PlantMonster.h"
+#include "BossMonster.h"
 
 namespace fq::client
 {
@@ -56,6 +59,14 @@ namespace fq::client
 		}
 	}
 
+	void ArrowAttack::OnStart()
+	{
+		if (mMaxBlockCount == 1)
+		{
+			GetGameObject()->SetTag(fq::game_module::ETag::FinalArrow);
+		}
+	}
+
 	void ArrowAttack::OnTriggerEnter(const game_module::Collision& collision)
 	{
 		// 삭제된 공격은 처리하지 않습니다 
@@ -79,12 +90,45 @@ namespace fq::client
 			mMaxBlockCount = 0;
 		}
 
+		if (GetGameObject()->GetTag() == fq::game_module::ETag::FinalArrow)
+		{
+			mMaxBlockCount--;
+		}
+
 		// 관통 카운트가 0이면, 콜라이더 삭제 및 부딪힌 해당 오브젝트를 부모 오브젝트로 지정
+		if (mMaxBlockCount == 1)
+		{
+			GetGameObject()->SetTag(fq::game_module::ETag::FinalArrow);
+		}
+		
 		if (mMaxBlockCount > 0)
 		{
 			return;
 		}
+		
+		if (!(collision.other->GetTag() == fq::game_module::ETag::ArrowHitBox))
+			return;
 
+		// 박히는 화살의 부모 오브젝트의 데미지가 들어가는 함수를 실행합니다.
+		if (collision.other->GetParent()->HasComponent<MeleeMonster>())
+		{
+			auto monster = collision.other->GetParent()->GetComponent<MeleeMonster>();
+
+			monster->HitArrow(GetGameObject());
+		}
+		if (collision.other->GetParent()->HasComponent<PlantMonster>())
+		{
+			auto monster = collision.other->GetParent()->GetComponent<PlantMonster>();
+
+			monster->HitArrow(GetGameObject());
+		}
+		if (collision.other->GetParent()->HasComponent<BossMonster>())
+		{
+			auto monster = collision.other->GetParent()->GetComponent<BossMonster>();
+
+			monster->HitArrow(GetGameObject());
+		}
+		
 		auto transform = GetComponent<fq::game_module::Transform>();
 		auto otherTransform = collision.other->GetComponent<fq::game_module::Transform>();
 
@@ -156,7 +200,7 @@ namespace fq::client
 			}
 			else
 			{
-				attackInfo.remainingAttackCount = 1;
+				attackInfo.remainingAttackCount = 5;
 				attackInfo.damage = mWeakAttackPower;
 			}
 
