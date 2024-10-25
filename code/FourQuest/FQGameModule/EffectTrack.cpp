@@ -54,9 +54,13 @@ namespace fq::game_module
 		}
 
 		auto transform = mEffectObject.lock()->GetComponent<Transform>();
-		transform->SetWorldPosition(mKeys[0].position);
-		transform->SetWorldRotation(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(mKeys[0].rotation));
-		transform->SetWorldScale(mKeys[0].scale);
+
+		if (mKeys.size() > 0)
+		{
+			transform->SetWorldPosition(mKeys[0].position);
+			transform->SetWorldRotation(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(mKeys[0].rotation));
+			transform->SetWorldScale(mKeys[0].scale);
+		}
 	}
 
 	void EffectTrack::PlayOn()

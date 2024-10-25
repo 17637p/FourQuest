@@ -29,13 +29,13 @@ std::shared_ptr<fq::game_module::Component> fq::client::PlayerHPBar::Clone(std::
 
 fq::client::PlayerHPBar::PlayerHPBar()
 	:mbIsVisible(false)
-	,mDecreaseRatio(0.f)
-	,mInnerOffset{}
-	,mHpRatio(1.f)
-	,mDecreaseTime(0.f)
-	,mInnerBarSize{}
-	,mTransform(nullptr)
-	,mImageUI(nullptr)
+	, mDecreaseRatio(0.f)
+	, mInnerOffset{}
+	, mHpRatio(1.f)
+	, mDecreaseTime(0.f)
+	, mInnerBarSize{}
+	, mTransform(nullptr)
+	, mImageUI(nullptr)
 {}
 
 fq::client::PlayerHPBar::~PlayerHPBar()
@@ -80,7 +80,7 @@ void fq::client::PlayerHPBar::OnUpdate(float dt)
 	auto& innerBar = infomations[1];
 	innerBar.StartX = outBar.StartX + mInnerOffset.x;
 	innerBar.StartY = outBar.StartY + mInnerOffset.y;
-	innerBar.XRatio = mHpRatio; 
+	innerBar.XRatio = mHpRatio;
 	innerBar.Width = mHpRatio * mInnerBarSize.x;
 
 	// DecreaseBar 
@@ -89,7 +89,7 @@ void fq::client::PlayerHPBar::OnUpdate(float dt)
 	decreaseBar.StartY = innerBar.StartY;
 	decreaseBar.Width = mHpRatio * mInnerBarSize.x;
 	decreaseBar.XRatio = mHpRatio + mDecreaseRatio;
-	decreaseBar.Width = (mHpRatio +mDecreaseRatio )* mInnerBarSize.x;
+	decreaseBar.Width = (mHpRatio + mDecreaseRatio) * mInnerBarSize.x;
 
 	mImageUI->SetUIInfomations(infomations);
 
@@ -105,7 +105,6 @@ void fq::client::PlayerHPBar::SetVisible(bool isVisible)
 	}
 	mImageUI->SetUIInfomations(infomations);
 }
-
 
 void fq::client::PlayerHPBar::DecreaseHp(float ratio)
 {
@@ -137,26 +136,19 @@ void fq::client::PlayerHPBar::DecreaseHp(float ratio)
 	mDecreaseTime = 0.f;
 }
 
-void fq::client::PlayerHPBar::OnStart()
+void fq::client::PlayerHPBar::OnAwake()
 {
 	mTransform = GetComponent<game_module::Transform>()->GetParentTransform();
 	mImageUI = GetComponent<game_module::ImageUI>();
 	mImageUI->SetBindTransform(false);
 
 	auto infomations = mImageUI->GetUIInfomations();
-	
+
 	auto& outBar = infomations[0];
 	auto& innerBar = infomations[1];
-//	auto& decreaseBar = infomations[2];
 
 	mInnerOffset = { innerBar.StartX, innerBar.StartY };
 	mInnerBarSize = { innerBar.Width , innerBar.Height };
-	// OutBar
-
-
-	// InnerBar 
-
-	// DecreaseBar
 
 	SetVisible(true);
 }

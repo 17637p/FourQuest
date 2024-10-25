@@ -557,6 +557,6 @@ void fq::client::Soul::setName()
 
 void fq::client::Soul::SetInvincible()
 {
-	mHP = FLT_MAX;
+	mbIsInSafeZone = true;
 }
 
