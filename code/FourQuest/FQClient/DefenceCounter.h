@@ -15,9 +15,12 @@ namespace fq::client
 		void SetIsStart(bool isStart) { mIsStart = isStart; }
 		float GetCountRatio() { return mCurCount / mRequestCount; }
 
+		virtual void OnAwake() override;
 		virtual void OnUpdate(float dt) override;
 
 	private:
+		int getMaxPlayer();
+
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
@@ -31,6 +34,8 @@ namespace fq::client
 
 		bool mIsStart;
 		bool mIsClear;
+
+		std::vector<bool> mIsAlive;
 
 		friend void RegisterMetaData();
 	};

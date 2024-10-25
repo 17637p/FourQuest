@@ -567,6 +567,14 @@ void fq::client::QuestManager::eventProcessClearQuest()
 						mMainQuests[i].mIsClear = true;
 					}
 				}
+				if (event.clearQuest.mIndex == mCurMainQuest.mIndex)
+				{
+					mCurMainQuest.mIsClear = true;
+				}
+				if (event.clearQuest.mIndex == mViewMainQuest.mIndex)
+				{
+					mViewMainQuest.mIsClear = true;
+				}
 			}
 			else
 			{
@@ -897,9 +905,12 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 	{
 		if (colliderTriggerList[0].isAll || colliderTriggerList[0].playerNumber != -1)
 		{
-			text.Text = std::to_string(colliderTriggerList[0].curPlayer) + " / " + std::to_string(colliderTriggerList[0].maxPlayer);
-			text.IsRender = true;
-			monsterKillText->SetTextInfo(text);
+			if (!quest.mIsClear)
+			{
+				text.Text = std::to_string(colliderTriggerList[0].curPlayer) + " / " + std::to_string(colliderTriggerList[0].maxPlayer);
+				text.IsRender = true;
+				monsterKillText->SetTextInfo(text);
+			}
 		}
 	}
 
