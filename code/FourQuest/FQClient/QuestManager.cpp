@@ -567,6 +567,14 @@ void fq::client::QuestManager::eventProcessClearQuest()
 						mMainQuests[i].mIsClear = true;
 					}
 				}
+				if (event.clearQuest.mIndex == mCurMainQuest.mIndex)
+				{
+					mCurMainQuest.mIsClear = true;
+				}
+				if (event.clearQuest.mIndex == mViewMainQuest.mIndex)
+				{
+					mViewMainQuest.mIsClear = true;
+				}
 			}
 			else
 			{
