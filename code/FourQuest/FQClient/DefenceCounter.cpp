@@ -3,6 +3,7 @@
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/EventManager.h"
 
+#include "PlayerInfoVariable.h"
 #include "ClientEvent.h"
 
 fq::client::DefenceCounter::DefenceCounter()
@@ -54,7 +55,7 @@ void fq::client::DefenceCounter::OnUpdate(float dt)
 				{ GetGameObject()->GetName()});
 		}
 
-		mCurCount += dt * mCountSpeed * mCollidingPlayerNum;
+		mCurCount += dt * mCountSpeed * 4 * ((float)mCollidingPlayerNum) / getMaxPlayer();
 
 		if (mCurCount > mRequestCount)
 		{
@@ -80,4 +81,44 @@ std::shared_ptr<fq::game_module::Component> fq::client::DefenceCounter::Clone(st
 	}
 
 	return cloneDefence;
+}
+
+void fq::client::DefenceCounter::OnAwake()
+{
+	mIsAlive.clear();
+	for (int i = 0; i < 4; i++)
+	{
+		mIsAlive.push_back(false);
+	}
+
+	if (PlayerInfoVariable::Player1SoulType != -1)
+	{
+		mIsAlive[0] = true;
+	}
+	if (PlayerInfoVariable::Player2SoulType != -1)
+	{
+		mIsAlive[1] = true;
+	}
+	if (PlayerInfoVariable::Player3SoulType != -1)
+	{
+		mIsAlive[2] = true;
+	}
+	if (PlayerInfoVariable::Player4SoulType != -1)
+	{
+		mIsAlive[3] = true;
+	}
+}
+
+int fq::client::DefenceCounter::getMaxPlayer()
+{
+	int maxPlayerNum = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (mIsAlive[i] == true)
+		{
+			maxPlayerNum++;
+		}
+	}
+
+	return maxPlayerNum;
 }
