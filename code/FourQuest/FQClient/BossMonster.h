@@ -185,6 +185,7 @@ namespace fq::client
 		float mGroggyGauge;
 		float mGroggyIncreaseRatio;
 		float mGroggyDecreasePerSecond;
+		float mGroggyDecreaseHpRatio; // 그로기 상태 hp 감소비율
 
 		// 패턴 확률 관련 
 		float mRushProbability;
