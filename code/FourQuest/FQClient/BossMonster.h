@@ -155,7 +155,8 @@ namespace fq::client
 		fq::game_module::Animator* mAnimator;
 		fq::game_module::SkinnedMeshRenderer* mSkinnedMesh;
 		std::shared_ptr<game_module::GameObject> mTarget;
-		std::set<unsigned int> mArrowAttackObject;
+		float mArrowImotalTime;
+		float mArrowHitDuration;
 
 		float mMaxHp;
 		float mHp;

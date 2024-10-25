@@ -175,6 +175,8 @@ void fq::client::PlantMonster::EmitAOEAttack()
 
 void fq::client::PlantMonster::OnUpdate(float dt)
 {
+	mArrowHitDuration += dt;
+
 	// Target 삭제 확인
 	if (mTarget)
 	{
@@ -474,21 +476,14 @@ void fq::client::PlantMonster::DestroyMonsterHPUI()
 
 void fq::client::PlantMonster::HitArrow(fq::game_module::GameObject* object)
 {
-	auto playerAttack = object->GetComponent<client::Attack>();
-	
-	// 이미 데미지를 입은 오브젝트라면 함수 종료
-	auto attackObject = mArrowAttackObject.find(object->GetID());
-	if (attackObject == mArrowAttackObject.end())
-	{
-		mArrowAttackObject.insert(object->GetID());
-	}
-	else
-	{
+	if (mArrowHitDuration < mArrowImotalTime)
 		return;
-	}
+
+	auto playerAttack = object->GetComponent<client::Attack>();
 
 	if (playerAttack->ProcessAttack())
 	{
+		mArrowHitDuration = 0.f;
 		mAnimator->SetParameterTrigger("OnHit");
 		float attackPower = playerAttack->GetAttackPower();
 		mHp -= attackPower;

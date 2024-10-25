@@ -77,7 +77,8 @@ namespace fq::client
 		MonsterHP* mMonsterHpUI;
 		KnockBack* mKnockBack;
 		std::shared_ptr<game_module::GameObject> mTarget;
-		std::set<unsigned int> mArrowAttackObject;
+		float mArrowImotalTime;
+		float mArrowHitDuration;
 
 		float mMaxHp;
 		float mHp;
