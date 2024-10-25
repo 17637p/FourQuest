@@ -185,6 +185,8 @@
 #include "CollisionColorChanger.h"
 #include "CollisionRenderChanger.h"
 #include "UIShaker.h"
+#include "TrainingDummy.h"
+#include "TrainingDummyHitState.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -1811,6 +1813,15 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackInvalidation")
 		.base<fq::game_module::Component>();
 
+	entt::meta<TrainingDummy>()
+		.type("TrainingDummy"_hs)
+		.prop(fq::reflect::prop::Name, "TrainingDummy")
+		.base<fq::game_module::Component>();
+
+	entt::meta<TrainingDummyHitState>()
+		.type("TrainingDummyHitState"_hs)
+		.prop(fq::reflect::prop::Name, "TrainingDummyHitState")
+		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             UI										//

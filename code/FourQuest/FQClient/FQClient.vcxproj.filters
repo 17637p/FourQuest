@@ -120,6 +120,12 @@
     <Filter Include="include\02.Monster\Plant">
       <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\02.Monster\TrainingDummy">
+      <UniqueIdentifier>{413b21b7-e560-4571-a371-8580cda0f803}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\TrainingDummy">
+      <UniqueIdentifier>{f98ad80d-c1b9-46a9-8b53-1e800447a658}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -626,6 +632,18 @@
     <ClInclude Include="MonsterHP.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="BossMonsterHitState.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="UIShaker.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainingDummy.h">
+      <Filter>include\02.Monster\TrainingDummy</Filter>
+    </ClInclude>
+    <ClInclude Include="TrainingDummyHitState.h">
+      <Filter>include\02.Monster\TrainingDummy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1086,6 +1104,18 @@
     </ClCompile>
     <ClCompile Include="MonsterHP.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterHitState.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="UIShaker.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainingDummy.cpp">
+      <Filter>src\02.Monster\TrainingDummy</Filter>
+    </ClCompile>
+    <ClCompile Include="TrainingDummyHitState.cpp">
+      <Filter>src\02.Monster\TrainingDummy</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
