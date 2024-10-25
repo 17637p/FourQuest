@@ -69,7 +69,7 @@ fq::client::BossMonster::BossMonster()
 	, mGroggyDuration(5.f)
 	, mGroggyElapsed(0.f)
 	, mShakeCount(10)
-	, mRimPow(3.f)
+	, mRimPow(1.f)
 {}
 
 fq::client::BossMonster::~BossMonster()
