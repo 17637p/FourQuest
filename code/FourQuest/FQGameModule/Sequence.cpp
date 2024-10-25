@@ -101,6 +101,7 @@ namespace fq::game_module
 			{
 				mDurationTime = 0;
 
+
 				if (!mbIsLoop)
 				{
 					mbIsPlay = false;
@@ -110,6 +111,7 @@ namespace fq::game_module
 				if (mbIsOnce)
 				{
 					GetScene()->DestroyGameObject(GetGameObject());
+					spdlog::trace("sequence {} delete", GetGameObject()->GetName());
 				}
 			}
 		}
@@ -136,7 +138,7 @@ namespace fq::game_module
 
 	void Sequence::OnTriggerEnter(const Collision& collision)
 	{
-		if (collision.other->HasComponent<CharacterController>())
+		if (collision.other->HasComponent<CharacterController>() && !mbIsPlay)
 		{
 			mbIsPlay = true;
 

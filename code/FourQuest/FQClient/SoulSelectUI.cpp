@@ -377,6 +377,7 @@ void fq::client::SoulSelectUI::processInput()
 					newSoul->GetComponent<game_module::Transform>()->SetLocalPosition({ xPos, 0.5f, 0.5f });
 					newSoul->GetComponent<game_module::CharacterController>()->SetControllerID(i);
 					newSoul->GetComponent<game_module::CharacterController>()->SetOnRotation(false);
+					newSoul->GetComponent<Soul>()->SetInvincible();
 					mSouls.push_back(newSoul);
 
 					// MagicSymbol Ãß°¡
