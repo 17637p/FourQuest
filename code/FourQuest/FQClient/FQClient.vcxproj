@@ -43,6 +43,7 @@
     <ClInclude Include="ArmourDestroyer.h" />
     <ClInclude Include="AttackInvalidation.h" />
     <ClInclude Include="BGaugeUI.h" />
+    <ClInclude Include="BossMonsterHitState.h" />
     <ClInclude Include="CollisionColorChanger.h" />
     <ClInclude Include="CollisionRenderChanger.h" />
     <ClInclude Include="CoolTimeIcon.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerCheckUI.h" />
     <ClInclude Include="PlayerDummy.h" />
+    <ClInclude Include="PlayerHPBar.h" />
     <ClInclude Include="PlayerInfoVariable.h" />
     <ClInclude Include="PlayerMovementSoundState.h" />
     <ClInclude Include="PlayerSoundState.h" />
@@ -202,6 +204,7 @@
     <ClInclude Include="SwordAttackState.h" />
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="UILayerDefine.h" />
+    <ClInclude Include="UIShaker.h" />
     <ClInclude Include="VibrationState.h" />
     <ClInclude Include="VideoSettingUI.h" />
     <ClInclude Include="YAxisSetter.h" />
@@ -212,6 +215,7 @@
     <ClCompile Include="ArmourDestroyer.cpp" />
     <ClCompile Include="AttackInvalidation.cpp" />
     <ClCompile Include="BGaugeUI.cpp" />
+    <ClCompile Include="BossMonsterHitState.cpp" />
     <ClCompile Include="CollisionColorChanger.cpp" />
     <ClCompile Include="CollisionRenderChanger.cpp" />
     <ClCompile Include="CoolTimeIcon.cpp" />
@@ -313,6 +317,7 @@
     <ClCompile Include="PlantMonsterStareState.cpp" />
     <ClCompile Include="PlayerCheckUI.cpp" />
     <ClCompile Include="PlayerDummy.cpp" />
+    <ClCompile Include="PlayerHPBar.cpp" />
     <ClCompile Include="PlayerMovementSoundState.cpp" />
     <ClCompile Include="PlayerSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
@@ -352,6 +357,7 @@
     <ClCompile Include="StaffSoulAttackState.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
     <ClCompile Include="TitleUI.cpp" />
+    <ClCompile Include="UIShaker.cpp" />
     <ClCompile Include="VibrationState.cpp" />
     <ClCompile Include="VideoSettingUI.cpp" />
     <ClCompile Include="YAxisSetter.cpp" />

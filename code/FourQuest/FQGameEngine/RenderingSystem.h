@@ -119,5 +119,6 @@ namespace fq::game_engine
 
 		std::map<fq::game_module::GameObject*, std::vector<size_t>> mOnImageUIRenderEventActivatedObjects;
 		std::set<fq::game_module::GameObject*> mOnTextUIRenderEventActivatedObjects;
+		std::set<fq::game_module::GameObject*> mOnSpriteUIRenderEventActivatedObjects;
 	};
 }

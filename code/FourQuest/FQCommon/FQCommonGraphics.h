@@ -143,11 +143,14 @@ namespace fq::graphics
 
 		float ImageNum = 5;
 		float Speed = 0.5f;
-		float CurImage = 0;
+		int CurImage = 0;
 		float CurTime = 0;
 
 		bool isCenter = false;
 		bool isRender = true;
+
+		int XNum = 5;
+		int YNum = 1;
 	};
 
 	struct VideoInfo

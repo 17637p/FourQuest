@@ -18,6 +18,7 @@
 #include "../FQGameModule/PostProcessing.h"
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/TextUI.h"
+#include "../FQGameModule/SpriteAnimationUI.h"
 #include "../FQCommon/FQCommonGraphics.h"
 #include "../FQCommon/FQPath.h"
 #include "../FQCommon/IFQRenderObject.h"
@@ -230,6 +231,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 	for (auto iter = mOnImageUIRenderEventActivatedObjects.begin(); iter != mOnImageUIRenderEventActivatedObjects.end();)
 	{
+		// 죽을 예정이면 제거
 		if (iter->first->IsDestroyed())
 		{
 			iter = mOnImageUIRenderEventActivatedObjects.erase(iter);
@@ -239,9 +241,10 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 			auto object = iter->first;
 			auto imageUI = object->GetComponent<ImageUI>();
 
+			// 이미지 UI 컴포넌트가 없다면 제거
 			if (imageUI == nullptr)
 			{
-				++iter;
+				iter = mOnImageUIRenderEventActivatedObjects.erase(iter);
 				continue;
 			}
 
@@ -271,14 +274,36 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 			if (textUI == nullptr)
 			{
-				++iter;
+				iter = mOnTextUIRenderEventActivatedObjects.erase(iter);
 				continue;
 			}
 
-			auto info = textUI->GetTextInfo();
-			info.IsRender = false;
 			textUI->SetIsRender(false);
-			// textUI->SetTextInfoPlay(info);
+
+			++iter;
+		}
+	}
+
+	for (auto iter = mOnSpriteUIRenderEventActivatedObjects.begin(); iter != mOnSpriteUIRenderEventActivatedObjects.end();)
+	{
+		if ((*iter)->IsDestroyed())
+		{
+			iter = mOnSpriteUIRenderEventActivatedObjects.erase(iter);
+		}
+		else
+		{
+			auto object = *iter;
+			auto spriteAnimUI = object->GetComponent<SpriteAnimationUI>();
+
+			if (spriteAnimUI == nullptr)
+			{
+				iter = mOnSpriteUIRenderEventActivatedObjects.erase(iter);
+				continue;
+			}
+
+			auto info = spriteAnimUI->GetSpriteInfo();
+			info.isRender = false;
+			spriteAnimUI->SetSpriteInfo(info);
 
 			++iter;
 		}
@@ -889,10 +914,24 @@ void fq::game_engine::RenderingSystem::OnUIRender(const fq::event::UIRender& eve
 
 				if (info.IsRender)
 				{
-					info.IsRender = false;
 					textUI.SetIsRender(false);
 					//textUI.SetTextInfoPlay(info);
 					mOnTextUIRenderEventActivatedObjects.insert(&object);
+				}
+			}
+		);
+
+		scene->ViewComponents<SpriteAnimationUI>(
+			[this](GameObject& object, SpriteAnimationUI& ui)
+			{
+				auto info = ui.GetSpriteInfo();
+
+				if (info.isRender)
+				{
+					info.isRender = false;
+					ui.SetSpriteInfo(info);
+
+					mOnSpriteUIRenderEventActivatedObjects.insert(&object);
 				}
 			}
 		);
@@ -939,6 +978,23 @@ void fq::game_engine::RenderingSystem::OnUIRender(const fq::event::UIRender& eve
 		}
 
 		mOnTextUIRenderEventActivatedObjects.clear();
+
+		for (auto eventObject : mOnSpriteUIRenderEventActivatedObjects)
+		{
+			auto object = eventObject;
+			auto spriteAnimUI = object->GetComponent<SpriteAnimationUI>();
+
+			if (spriteAnimUI == nullptr)
+			{
+				continue;
+			}
+
+			auto info = spriteAnimUI->GetSpriteInfo();
+			info.isRender = true;
+			spriteAnimUI->SetSpriteInfo(info);
+		}
+
+		mOnSpriteUIRenderEventActivatedObjects.clear();
 	}
 }
 

@@ -2,6 +2,7 @@
 #include "PlayerUI.h"
 
 #include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/SpriteAnimationUI.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/ScreenManager.h"
@@ -130,6 +131,12 @@ void fq::client::PlayerUI::OnStart()
 	mSoulSkillIcons.push_back(soulIcons[2]->GetComponent<fq::game_module::ImageUI>());
 	mSoulSkillIcons.push_back(soulIcons[3]->GetComponent<fq::game_module::ImageUI>());
 
+	std::vector<fq::game_module::GameObject*> soulSprites = children[1]->GetChildren()[3]->GetChildren();
+	mSoulSprites.push_back(soulSprites[0]->GetComponent<fq::game_module::SpriteAnimationUI>());
+	mSoulSprites.push_back(soulSprites[1]->GetComponent<fq::game_module::SpriteAnimationUI>());
+	mSoulSprites.push_back(soulSprites[2]->GetComponent<fq::game_module::SpriteAnimationUI>());
+	mSoulSprites.push_back(soulSprites[3]->GetComponent<fq::game_module::SpriteAnimationUI>());
+
 	mRCoolTimeImage = skillRs[4]->GetComponent<fq::game_module::ImageUI>();
 	mCoolTimeHeight = mRCoolTimeImage->GetUIInfomation(0).Height;
 
@@ -212,6 +219,16 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 			setWeaponAndSkillIcons(armourTypeIndex, true);
 			SetSoulGauge(mPlayer->GetSoultGaugeRatio());
 			setSkillCoolTime();
+
+			int soulIndex = (int)mPlayer->GetSoulType();
+			if (mPlayer->GetSoultGaugeRatio() >= 1)
+			{
+				SetSoulSprite(soulIndex, true);
+			}
+			else
+			{
+				SetSoulSprite(soulIndex, false);
+			}
 		}
 	}
 	else if (mSoul) // 소울 상태 설정 
@@ -225,6 +242,15 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 			SetHPBar(mSoul->GetSoulHpRatio());
 			SetSoulGauge(mSoul->GetSoulGaugeRatio());
 			resetSkillCoolTime();
+			int soulIndex = (int)mSoul->GetSoulType();
+			if (mSoul->GetSoulGaugeRatio() >= 1)
+			{
+				SetSoulSprite(soulIndex, true);
+			}
+			else
+			{
+				SetSoulSprite(soulIndex, false);
+			}
 		}
 	}
 	else
@@ -539,5 +565,15 @@ void fq::client::PlayerUI::eventProcessDecreaseHPRatio()
 void fq::client::PlayerUI::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mDecreaseHPRatioHandler);
+}
+
+void fq::client::PlayerUI::SetSoulSprite(int index, bool isOn)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		mSoulSprites[i]->SetIsRender(false);
+	}
+
+	mSoulSprites[index]->SetIsRender(isOn);
 }
 

@@ -62,6 +62,7 @@ namespace fq::client
 	private:
 		game_module::PrefabResource mLivingArmourPrefab;
 
+		unsigned short mSoulCount;
 		unsigned short mPlayerCount;
 		bool mbIsVisible;
 		bool mbIsSummonAble;

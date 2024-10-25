@@ -435,7 +435,11 @@ void fq::game_module::RegisterMetaData()
 		.data<&graphics::SpriteInfo::isCenter>("isCenter"_hs)
 		.prop(fq::reflect::prop::Name, "isCenter")
 		.data<&graphics::SpriteInfo::isRender>("isRender"_hs)
-		.prop(fq::reflect::prop::Name, "isRender");
+		.prop(fq::reflect::prop::Name, "isRender")
+		.data<&graphics::SpriteInfo::XNum>("XNum"_hs)
+		.prop(fq::reflect::prop::Name, "XNum")
+		.data<&graphics::SpriteInfo::YNum>("YNum"_hs)
+		.prop(fq::reflect::prop::Name, "YNum");
 
 	entt::meta<SpriteAnimationUI>()
 		.type("SpriteAnimationUI"_hs)

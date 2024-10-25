@@ -13,9 +13,9 @@
 #include "ClientEvent.h"
 #include "PlayerSoulVariable.h"
 #include "Player.h"
-#include "HpBar.h"
 #include "SpeechBubbleUI.h"
 #include "PlayerInfoVariable.h"
+#include "PlayerHPBar.h"
 
 #include "SoulVariable.h"
 
@@ -34,6 +34,7 @@ fq::client::Soul::Soul()
 	, mSummonArmourOrNull(nullptr)
 	, mSoulGauge(0.f)
 	, mMaxSoulGauge(100.f)
+	, mPlayerHpBar(nullptr)
 {}
 
 fq::client::Soul::~Soul()
@@ -72,17 +73,23 @@ void fq::client::Soul::OnStart()
 			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
 		});
 
-	// GaugeUI 등록
+	// UI 등록
 	for (auto& child : GetGameObject()->GetChildren())
 	{
 		auto ui = child->GetComponent<BGaugeUI>();
 
 		if (ui)
 			mBGaugeUI = ui;
+
+		auto hpBar = child->GetComponent<PlayerHPBar>();
+		if (hpBar)
+		{
+			mPlayerHpBar = hpBar;
+		}
 	}
 
 	SetSoulColor();		// 소울 색깔 지정 
-	SetSoulHP();		// 소울 HP
+	setSoulHP();		// 소울 HP
 
 	setName();
 
@@ -255,7 +262,7 @@ void fq::client::Soul::selectArmour()
 					rigidbody->SetLinearVelocity({ 0,0,0 });
 				}
 
-				GetComponent<HpBar>()->SetVisible(false);
+				mPlayerHpBar->SetVisible(false);
 			}
 		}
 	}
@@ -296,18 +303,18 @@ void fq::client::Soul::SetSoulColor()
 
 			switch (mSoulType)
 			{
-			case fq::client::ESoulType::Sword:
-				matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
-				break;
-			case fq::client::ESoulType::Staff:
-				matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
-				break;
-			case fq::client::ESoulType::Axe:
-				matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
-				break;
-			case fq::client::ESoulType::Bow:
-				matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
-				break;
+				case fq::client::ESoulType::Sword:
+					matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
+					break;
+				case fq::client::ESoulType::Staff:
+					matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
+					break;
+				case fq::client::ESoulType::Axe:
+					matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
+					break;
+				case fq::client::ESoulType::Bow:
+					matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
+					break;
 			}
 
 			particle->SetParticleMaterialInfo(matInfo);
@@ -315,7 +322,7 @@ void fq::client::Soul::SetSoulColor()
 	}
 }
 
-void fq::client::Soul::SetSoulHP()
+void fq::client::Soul::setSoulHP()
 {
 	// 갑옷 죽음 카운터에 따라 영혼 최대 체력 세팅
 	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
@@ -333,21 +340,12 @@ void fq::client::Soul::SetSoulHP()
 	int minHP = SoulVariable::SoulMinHp;
 
 	mHP = std::max<int>(maxHP, minHP);
-
-	if (GetGameObject()->HasComponent<HpBar>())
-		GetComponent<HpBar>()->DecreaseHp(((SoulVariable::SoulMaxHp - mHP) / (float)SoulVariable::SoulMaxHp));
-	else
-		spdlog::error("ERROR : GameObject(this) have not \"HpBar\" Component!");
+	if (mPlayerHpBar)
+		mPlayerHpBar->DecreaseHp((SoulVariable::SoulMaxHp - mHP) / (float)SoulVariable::SoulMaxHp);
 }
 
 void fq::client::Soul::updateSoulHP(float dt)
 {
-	if (!GetGameObject()->HasComponent<HpBar>())
-	{
-		spdlog::error("ERROR : GameObject(this) have not \"HpBar\" Component!");
-		return;
-	}
-
 	// 여신상에 빙의 중이거나 세이프 존에 있는 경우
 	if (mIsOverlayGoddessStatue || mbIsInSafeZone)
 	{
@@ -361,12 +359,14 @@ void fq::client::Soul::updateSoulHP(float dt)
 		float decreasDamage = SoulVariable::SoulHpDecreas * dt * decreasPercentage;
 
 		mHP -= decreasDamage;
-		GetComponent<HpBar>()->DecreaseHp((decreasDamage / (float)SoulVariable::SoulMaxHp));
+		if (mPlayerHpBar)
+			mPlayerHpBar->DecreaseHp((decreasDamage / (float)SoulVariable::SoulMaxHp));
 	}
 	else
 	{
 		mHP -= SoulVariable::SoulHpDecreas * dt;
-		GetComponent<HpBar>()->DecreaseHp((SoulVariable::SoulHpDecreas * dt) / (float)SoulVariable::SoulMaxHp);
+		if (mPlayerHpBar)
+			mPlayerHpBar->DecreaseHp((SoulVariable::SoulHpDecreas * dt) / (float)SoulVariable::SoulMaxHp);
 	}
 
 	// 영혼 죽으면 오브젝트 삭제하고 소울 매니저한테 영혼 파괴되었다고 알림
@@ -404,7 +404,9 @@ bool fq::client::Soul::handleOnSummon()
 	{
 		assert(mSummonArmourOrNull != nullptr);
 		PlayerInfo info{ mController->GetControllerID(), mSoulType, mSoulGauge };
-		GetComponent<HpBar>()->SetVisible(false);
+
+		if (mPlayerHpBar)
+			mPlayerHpBar->SetVisible(false);
 
 		if (mSummonArmourOrNull->SummonLivingArmour(info))
 		{
@@ -453,7 +455,9 @@ void fq::client::Soul::selectGoddessStatue(float dt)
 				mIsOverlayGoddessStatue = true;
 				// 빙의하면 못 움직이게 처리 
 				GetComponent<game_module::CharacterController>()->SetCanMoveCharater(false);
-				GetComponent<HpBar>()->SetVisible(false);
+
+				if (mPlayerHpBar)
+					mPlayerHpBar->SetVisible(false);
 
 				// 소울 위치를 여신상 위치로 해서 숨기기 
 				auto soulT = GetComponent<game_module::Transform>();
@@ -463,13 +467,13 @@ void fq::client::Soul::selectGoddessStatue(float dt)
 				soulT->SetWorldPosition(goddessStatuePos);
 			}
 		}
-		
+
 	}
 	else
 	{
 		mCurHoldB = 0;
 	}
-	
+
 	// 게이지 UI 변수 제어
 	mbIsVisibleBGaugeUI = true;
 	mBGaugeFillAmount = mCurHoldB / mNeedHoldB * 360.f;
@@ -488,12 +492,12 @@ void fq::client::Soul::ReleaseGoddessStatue()
 
 	mSelectGoddessStatue->SetOverlaySoul(false, this);
 
-	if (GetGameObject()->HasComponent<HpBar>())
-	{
-		GetComponent<HpBar>()->SetHp(1);
-	}
+	//if (GetGameObject()->HasComponent<HpBar>())
+	//{
+	//	GetComponent<HpBar>()->SetHp(1);
+	//}
 
-	SetSoulHP();
+	setSoulHP();
 }
 
 void fq::client::Soul::checkReleaseGoddessStatue()
@@ -533,21 +537,26 @@ void fq::client::Soul::setName()
 	{
 		switch (soulType)
 		{
-		case 0:
-			speechBubble->SetName(PlayerInfoVariable::KnightName);
-			break;
-		case 1:
-			speechBubble->SetName(PlayerInfoVariable::MagicName);
-			break;
-		case 2:
-			speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-			break;
-		case 3:
-			speechBubble->SetName(PlayerInfoVariable::ArcherName);
-			break;
-		default:
-			break;
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
 		}
 	}
+}
+
+void fq::client::Soul::SetInvincible()
+{
+	mHP = FLT_MAX;
 }
 
