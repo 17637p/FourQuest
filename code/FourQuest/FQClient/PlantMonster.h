@@ -60,6 +60,12 @@ namespace fq::client
 		/// HP UI를 삭제합니다.
 		/// </summary>
 		void DestroyMonsterHPUI();
+
+		/// <summary>
+		/// 화살에 맞는 함수입니다.
+		/// </summary>
+		void HitArrow(fq::game_module::GameObject* object);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -68,11 +74,17 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 
+		/// <summary>
+		/// 소켓의 콜라이더를 삭제하는 함수입니다.
+		/// </summary>
+		void destroySocketCollider();
+
 	private:
 		GameManager* mGameManager;
 		MonsterHP* mMonsterHpUI;
 		game_module::Animator* mAnimator;
 		std::shared_ptr<game_module::GameObject> mTarget;
+		std::set<unsigned int> mArrowAttackObject;
 		float mAttackElapsedTime;
 		
 		/* Plane Moster 설정 관련 */
