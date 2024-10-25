@@ -84,7 +84,8 @@ namespace fq::client
 		MonsterHP* mMonsterHpUI;
 		game_module::Animator* mAnimator;
 		std::shared_ptr<game_module::GameObject> mTarget;
-		std::set<unsigned int> mArrowAttackObject;
+		float mArrowImotalTime;
+		float mArrowHitDuration;
 		float mAttackElapsedTime;
 		
 		/* Plane Moster 설정 관련 */

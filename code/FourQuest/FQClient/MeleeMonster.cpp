@@ -50,6 +50,8 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mCurrentDummyTraceDurationTime(0.f)
 	, mDummyTraceElapsedTime(0.f)
 	, mIsDummyTarget(false)
+	, mArrowImotalTime(0.1f)
+	, mArrowHitDuration()
 {}
 
 fq::client::MeleeMonster::~MeleeMonster()
@@ -470,6 +472,7 @@ void fq::client::MeleeMonster::CheckAttackAble() const
 void fq::client::MeleeMonster::OnUpdate(float dt)
 {
 	mAttackElapsedTime = std::max(0.f, mAttackElapsedTime - dt);
+	mArrowHitDuration += dt;
 
 	// 현재 타겟이 더미 타겟인지 체크
 	if (mIsDummyTarget)
@@ -560,21 +563,14 @@ void fq::client::MeleeMonster::DestroyMonsterHPUI()
 
 void fq::client::MeleeMonster::HitArrow(fq::game_module::GameObject* object)
 {
+	if (mArrowHitDuration < mArrowImotalTime)
+		return;
+
 	// 플레이어 공격 피격 처리
 	if (object->GetTag() == game_module::ETag::FinalArrow)
 	{
+		mArrowHitDuration = 0.f;
 		auto playerAttack = object->GetComponent<Attack>();
-
-		auto attackObject = mArrowAttackObject.find(object->GetID());
-
-		// 이미 데미지를 입은 오브젝트라면 함수 종료
-		if (attackObject == mArrowAttackObject.end())
-			mArrowAttackObject.insert(object->GetID());
-		else
-		{
-			spdlog::trace("arrow Attack ID : {}", object->GetID());
-			return;
-		}
 
 		if (playerAttack->ProcessAttack())
 		{
