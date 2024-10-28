@@ -53,11 +53,6 @@ namespace fq::client
 
 		float GetAOEMoveRange() const { return mAOEMoveRange; }
 
-		/// <summary>
-		/// R 스틱의 입력방향으로 바라보는 방0향을 설정합니다
-		/// </summary>
-		void SetLookAtRStickInput();
-
 		void EnterLaserState();
 
 		/// <summary>

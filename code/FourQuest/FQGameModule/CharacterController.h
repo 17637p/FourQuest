@@ -113,9 +113,15 @@ namespace fq::game_module
 		unsigned int GetCollisionCount() const { return mCollisionCount; }
 
 		/// <summary>
-		/// 컨트롤러 입력방향을 바라봅니다
+		/// 컨트롤러 입력방향을 즉시 바라봅니다
 		/// </summary>
 		void SetPadInputRotation(EPadStickType padStickType = EPadStickType::Left);
+
+		/// <summary>
+		/// 컨트롤럴 입럭방향을 속도에 따라서 바라봅니다
+		/// 1초에 rotation speed 의 속도로 회전합니다
+		/// </summary>
+		void SetPadInputRotationBySpeed(EPadStickType padStickType, float rotationSpeed, float dt);
 
 		float GetFinalSpeedMultiplier() { return mFinalSpeedMultiplier; }
 		void AddFinalSpeedMultiplier(float value) { mFinalSpeedMultiplier += value; }

@@ -3,6 +3,7 @@
 #include "MagicArmour.h"
 #include "Player.h"
 #include "PlayerVariable.h"
+#include "../FQGameModule/CharacterController.h"
 
 fq::client::LaserAttackState::LaserAttackState()
 	:mLaserEmitTime(1.f)
@@ -30,11 +31,14 @@ void fq::client::LaserAttackState::OnStateEnter(game_module::Animator& animator,
 
 void fq::client::LaserAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
-	auto magic = animator.GetComponent<MagicArmour>();
-	magic->SetLookAtRStickInput();
-	//magic->AimToNearMonster();
-
 	mElapsedTime += dt;
+
+	auto magic = animator.GetComponent<MagicArmour>();
+	auto controller = animator.GetComponent<game_module::CharacterController>();
+	controller->SetPadInputRotationBySpeed(game_module::EPadStickType::Right, PlayerVariable::PadRotationSpeed, dt);
+
+	// 에임 보정 
+	//magic->AimToNearMonster();
 
 	// Laser 발사 
 	if (mElapsedTime >= mLaserEmitTime)

@@ -19,7 +19,6 @@ namespace fq::client
 
 	private:
 		float mChargingElapsedTime;
-		float mRotationSpeed;
 		float mForcedChargingWaitingTime;
 		float mChargingWationTime;
 		unsigned int mStringAttackIndex;

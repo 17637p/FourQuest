@@ -41,13 +41,6 @@ namespace fq::client
 		std::shared_ptr<game_module::GameObject> EmitDash();
 
 		/// <summary>
-		/// R 스틱의 입력방향으로 바라보는 방향을 설정합니다
-		/// </summary>
-		void SetLookAtRStickInput();
-		void SetLookAtLStickInput(float dt, float rotationSpeed);
-		void SetLookAtLStickInput();
-
-		/// <summary>
 		/// 가까운 몬스터에게 에임을 보정합니다.
 		/// </summary>
 		void AimToNearMonster();
@@ -55,7 +48,6 @@ namespace fq::client
 	private:
 		void OnStart() override;
 		void OnUpdate(float dt) override;
-
 		void checkSkillCoolTime(float dt);
 		void checkInput(float dt);
 

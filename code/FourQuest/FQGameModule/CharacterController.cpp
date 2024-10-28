@@ -6,6 +6,7 @@
 #include "Transform.h"
 #include "Scene.h"
 #include "InputManager.h"
+#include "TimeManager.h"
 #include "EventManager.h"
 #include "Event.h"
 #include "RigidBody.h"
@@ -152,8 +153,69 @@ void fq::game_module::CharacterController::OnTriggerExit(const Collision& collis
 	--mCollisionCount;
 }
 
+
+void fq::game_module::CharacterController::SetPadInputRotationBySpeed(EPadStickType padStickType, float rotationSpeed, float dt)
+{
+	using namespace DirectX::SimpleMath;
+
+	// 일시정지 예외처리 
+	if (dt == 0.f)
+		return;
+
+	auto inputMgr = GetScene()->GetInputManager();
+	Vector3 input = Vector3::Zero;
+
+	// 컨트롤러 입력 
+	switch (padStickType)
+	{
+		case fq::game_module::EPadStickType::Left:
+			input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftX);
+			input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftY);
+			break;
+		case fq::game_module::EPadStickType::Right: // 우측 방향키로 회전 값을 가지는 경우가 생겨 해당 부분 수정
+			input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::rightX);
+			input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::rightY);
+			break;
+	}
+
+	input.Normalize();
+	Vector3 look = mTransform->GetLookAtVector();
+	float inputAngle = atan2f(-input.x, -input.z);
+
+	 Quaternion inputRotation = Quaternion::CreateFromYawPitchRoll(inputAngle, 0.f, 0.f);
+	Quaternion lookRotation = mTransform->GetWorldRotation();
+
+	float diffAngle = Quaternion::Angle(inputRotation, lookRotation);
+
+	// 미세한 각도차이는 무시합니다. (무시하지 않으면 미세한 떨림 발생)
+	constexpr float IgnoreAngle = 6.25f;
+
+	if (diffAngle >= IgnoreAngle)
+	{
+		mTransform->SetWorldRotation(inputRotation);
+		return;
+	}
+
+	float deltaSpeed = rotationSpeed * DirectX::XM_2PI * dt;
+
+	// 가까운 회전 방향 판단 
+	if (diffAngle > DirectX::XM_PI)
+	{
+		deltaSpeed *= -1.f;
+	}
+
+	lookRotation.RotateTowards(inputRotation, deltaSpeed);
+	mTransform->SetWorldRotation(lookRotation);
+}
+
+
+
 void fq::game_module::CharacterController::SetPadInputRotation(EPadStickType padStickType/* = EPadStickType::Left */)
 {
+	// 일시정지 예외처리 
+	if (GetScene()->GetTimeManager()->GetTimeScale() == 0.f)
+		return;
+
 	using namespace DirectX::SimpleMath;
 
 	auto inputMgr = GetScene()->GetInputManager();
@@ -162,17 +224,17 @@ void fq::game_module::CharacterController::SetPadInputRotation(EPadStickType pad
 	// 컨트롤러
 	switch (padStickType)
 	{
-	case fq::game_module::EPadStickType::Left:
-		input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftX);
-		input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftY);
-		break;
-	case fq::game_module::EPadStickType::Right: // 우측 방향키로 회전 값을 가지는 경우가 생겨 해당 부분 수정
-		input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::rightX);
-		input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::rightY);
-		break;
-	default:
-		assert(false);
-		break;
+		case fq::game_module::EPadStickType::Left:
+			input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftX);
+			input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftY);
+			break;
+		case fq::game_module::EPadStickType::Right: // 우측 방향키로 회전 값을 가지는 경우가 생겨 해당 부분 수정
+			input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::rightX);
+			input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::rightY);
+			break;
+		default:
+			assert(false);
+			break;
 	}
 	input.Normalize();
 

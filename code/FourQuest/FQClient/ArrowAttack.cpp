@@ -107,24 +107,27 @@ namespace fq::client
 			mMaxBlockCount = 0;
 		}
 
-		// 박히는 화살의 부모 오브젝트의 데미지가 들어가는 함수를 실행합니다.
-		if (collision.other->GetParent()->HasComponent<MeleeMonster>())
+		if (collision.other->HasParent())
 		{
-			auto monster = collision.other->GetParent()->GetComponent<MeleeMonster>();
+			// 박히는 화살의 부모 오브젝트의 데미지가 들어가는 함수를 실행합니다.
+			if (collision.other->GetParent()->HasComponent<MeleeMonster>())
+			{
+				auto monster = collision.other->GetParent()->GetComponent<MeleeMonster>();
 
-			monster->HitArrow(GetGameObject());
-		}
-		if (collision.other->GetParent()->HasComponent<PlantMonster>())
-		{
-			auto monster = collision.other->GetParent()->GetComponent<PlantMonster>();
+				monster->HitArrow(GetGameObject());
+			}
+			if (collision.other->GetParent()->HasComponent<PlantMonster>())
+			{
+				auto monster = collision.other->GetParent()->GetComponent<PlantMonster>();
 
-			monster->HitArrow(GetGameObject());
-		}
-		if (collision.other->GetParent()->HasComponent<BossMonster>())
-		{
-			auto monster = collision.other->GetParent()->GetComponent<BossMonster>();
+				monster->HitArrow(GetGameObject());
+			}
+			if (collision.other->GetParent()->HasComponent<BossMonster>())
+			{
+				auto monster = collision.other->GetParent()->GetComponent<BossMonster>();
 
-			monster->HitArrow(GetGameObject());
+				monster->HitArrow(GetGameObject());
+			}
 		}
 
 		if (mMaxBlockCount <= 0)

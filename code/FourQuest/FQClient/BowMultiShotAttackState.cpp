@@ -4,6 +4,7 @@
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/InputManager.h"
 #include "ArcherArmour.h"
+#include "PlayerVariable.h"
 
 namespace fq::client
 {
@@ -23,10 +24,11 @@ namespace fq::client
 	void BowMultiShotAttackState::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
 	{
 		auto archer = animator.GetComponent<ArcherArmour>();
-		archer->SetLookAtRStickInput();
+		auto controller = animator.GetComponent<fq::game_module::CharacterController>();
+
+		controller->SetPadInputRotationBySpeed(game_module::EPadStickType::Right, PlayerVariable::PadRotationSpeed ,dt);
 		archer->AimToNearMonster();
 
-		auto controller = animator.GetComponent<fq::game_module::CharacterController>();
 		controller->AddFinalSpeedMultiplier((-controller->GetFinalSpeedMultiplier() / 2.f));
 
 		mShotElapsedTime += dt;

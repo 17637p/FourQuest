@@ -324,7 +324,6 @@
     <ClCompile Include="PlayerSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
     <ClCompile Include="PlayerLowerMovementState.cpp" />
-    <ClCompile Include="PlayerVariable.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Quest.cpp" />
     <ClCompile Include="QuestColliderTriggerChecker.cpp" />
