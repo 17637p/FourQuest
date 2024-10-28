@@ -71,6 +71,20 @@ namespace fq::client
 	{
 		std::string goddessStatueName = "";
 	};
+
+	enum class ESkillType
+	{
+		X,
+		A,
+		R,
+		Y
+	};
+
+	struct PushButton
+	{
+		ESkillType skillType;
+		bool isAll;
+	};
 	
 	struct QuestClearCondition
 	{
@@ -81,6 +95,7 @@ namespace fq::client
 		std::vector<QuestColliderTrigger> colliderTriggerList;
 		std::vector<ObjectInteraction> objectInterationList;
 		std::vector<ClearGoddessStatue> clearGoddessStatueList;
+		std::vector<PushButton> pushButtonList;
 	};
 
 	struct RewardPortal

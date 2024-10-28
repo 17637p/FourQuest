@@ -198,4 +198,13 @@ namespace fq::client::event
 		EArmourType mArmourType;
 		char skillKey; // 'X' 'A' 'R'
 	};
+
+	/// <summary>
+	/// Skill 사용 이벤트
+	/// </summary>
+	struct PushButtonEvent
+	{
+		int playerID;
+		ESkillType eSkillType;
+	};
 }

@@ -2201,6 +2201,27 @@ void fq::client::RegisterMetaData()
 		.data<&ClearGoddessStatue::goddessStatueName>("GoddessStatueName"_hs)
 		.prop(fq::reflect::prop::Name, "GoddessStatueName");
 
+	entt::meta<ESkillType>()
+		.prop(fq::reflect::prop::Name, "ESkillType")
+		.conv<std::underlying_type_t<ESkillType>>()
+		.data<ESkillType::X>("X"_hs) // 0
+		.prop(fq::reflect::prop::Name, "X")
+		.data<ESkillType::A>("A"_hs) // 1
+		.prop(fq::reflect::prop::Name, "A")
+		.data<ESkillType::R>("R"_hs) // 2
+		.prop(fq::reflect::prop::Name, "R")
+		.data<ESkillType::Y>("Y"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Y");
+
+	entt::meta<PushButton>()
+		.type("PushButton"_hs)
+		.prop(fq::reflect::prop::Name, "PushButton")
+		.prop(fq::reflect::prop::POD)
+		.data<&PushButton::skillType>("skillType"_hs)
+		.prop(fq::reflect::prop::Name, "skillType")
+		.data<&PushButton::isAll>("isAll"_hs)
+		.prop(fq::reflect::prop::Name, "isAll");
+
 	entt::meta<QuestJoinCondition>()
 		.type("QuestJoinCondition"_hs)
 		.prop(fq::reflect::prop::Name, "QuestJoinCondition")
@@ -2225,7 +2246,9 @@ void fq::client::RegisterMetaData()
 		.data<&QuestClearCondition::colliderTriggerList>("ColliderTriggerList"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
 		.data<&QuestClearCondition::clearGoddessStatueList>("ClearGoddessStatueList"_hs)
-		.prop(fq::reflect::prop::Name, "ClearGoddessStatueList");
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatueList")
+		.data<&QuestClearCondition::pushButtonList>("PushButtonList"_hs)
+		.prop(fq::reflect::prop::Name, "PushButtonList");
 
 	entt::meta<RewardPortal>()
 		.type("RewardPortal"_hs)
