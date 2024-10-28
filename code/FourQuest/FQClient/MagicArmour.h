@@ -58,7 +58,7 @@ namespace fq::client
 		/// </summary>
 		void SetLookAtRStickInput();
 
-		void CountLaserCoolTime();
+		void EnterLaserState();
 
 		/// <summary>
 		/// 가까운 몬스터에게 에임을 보정합니다.

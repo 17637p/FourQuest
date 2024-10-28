@@ -14,6 +14,7 @@
 #include "SpeechBubbleUI.h"
 #include "PlayerInfoVariable.h"
 #include "EffectColorTransmitter.h"
+#include "ClientEvent.h"
 
 fq::client::MagicArmour::MagicArmour()
 	:mPlayer(nullptr)
@@ -119,6 +120,10 @@ void fq::client::MagicArmour::EmitMagicBall()
 	{
 		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
 	}
+
+	int id = mController->GetControllerID();
+	GetScene()->GetEventManager()
+		->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::X });
 }
 
 void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
@@ -170,6 +175,10 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	{
 		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
 	}
+
+	int id = mController->GetControllerID();
+	GetScene()->GetEventManager()
+		->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::A });
 }
 
 void fq::client::MagicArmour::EmitLaser()
@@ -373,12 +382,18 @@ void fq::client::MagicArmour::checkCoolTime(float dt)
 	}
 }
 
-void fq::client::MagicArmour::CountLaserCoolTime()
+void fq::client::MagicArmour::EnterLaserState()
 {
+	// 쿨타임 설정 
 	if (mPlayer->IsFeverTime())
 		mLaserElapsedTime = (mLaserCoolTime - mLaserCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
 	else
 		mLaserElapsedTime = mLaserCoolTime * mPlayer->GetGBDecreaseCooltime();
+
+	// 키입력 이벤트 호출 
+	int id = mController->GetControllerID();
+	GetScene()->GetEventManager()
+		->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::R });
 }
 
 

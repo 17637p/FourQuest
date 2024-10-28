@@ -15,6 +15,7 @@
 #include "SpeechBubbleUI.h"
 #include "PlayerInfoVariable.h"
 #include "EffectColorTransmitter.h"
+#include "ClientEvent.h"
 
 namespace fq::client
 {
@@ -95,6 +96,10 @@ namespace fq::client
 		{
 			effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
 		}
+
+		int id = static_cast<int>(mController->GetControllerID());
+		GetScene()->GetEventManager()
+			->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::R });
 	}
 
 	void ArcherArmour::EmitStrongAttack(int chargeLevel)
@@ -140,36 +145,36 @@ namespace fq::client
 
 		switch (chargeLevel)
 		{
-		case 1:
-		{
-			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 1.f;
-			attackInfo.strongDamage = dc::GetArcherCA_1_Damage(mPlayer->GetAttackPower());
-			attackInfo.remainingAttackCount = 1;
-		}
-		break;
-		case 2:
-		{
-			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 2.f;
-			attackInfo.strongDamage = dc::GetArcherCA_2_Damage(mPlayer->GetAttackPower());
-			attackInfo.remainingAttackCount = 3;
-		}
-		break;
-		case 3:
-		{
-			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 3.f;
-			attackInfo.strongDamage = dc::GetArcherCA_3_Damage(mPlayer->GetAttackPower());
-			attackInfo.remainingAttackCount = 5;
-		}
-		break;
-		case 4:
-		{
-			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 5.f;
-			attackInfo.strongDamage = dc::GetArcherCA_4_Damage(mPlayer->GetAttackPower());
-			attackInfo.remainingAttackCount = 0b11111111;
-		}
-		break;
-		default:
+			case 1:
+			{
+				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 1.f;
+				attackInfo.strongDamage = dc::GetArcherCA_1_Damage(mPlayer->GetAttackPower());
+				attackInfo.remainingAttackCount = 1;
+			}
 			break;
+			case 2:
+			{
+				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 2.f;
+				attackInfo.strongDamage = dc::GetArcherCA_2_Damage(mPlayer->GetAttackPower());
+				attackInfo.remainingAttackCount = 3;
+			}
+			break;
+			case 3:
+			{
+				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 3.f;
+				attackInfo.strongDamage = dc::GetArcherCA_3_Damage(mPlayer->GetAttackPower());
+				attackInfo.remainingAttackCount = 5;
+			}
+			break;
+			case 4:
+			{
+				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 5.f;
+				attackInfo.strongDamage = dc::GetArcherCA_4_Damage(mPlayer->GetAttackPower());
+				attackInfo.remainingAttackCount = 0b11111111;
+			}
+			break;
+			default:
+				break;
 		}
 
 		attackComponent->Set(attackInfo);
@@ -186,6 +191,10 @@ namespace fq::client
 		{
 			effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
 		}
+
+		int id = static_cast<int>(mController->GetControllerID());
+		GetScene()->GetEventManager()
+			->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::X });
 	}
 
 	void ArcherArmour::EmitSound(EArcherSound archerSound)
@@ -194,32 +203,32 @@ namespace fq::client
 
 		switch (archerSound)
 		{
-		case fq::client::EArcherSound::ShootStart:
-			soundName = "A_Shoot_start";
-			break;
-		case fq::client::EArcherSound::Charge1:
-			soundName = "A_Charge_1";
-			break;
-		case fq::client::EArcherSound::Charge2:
-			soundName = "A_Charge_2";
-			break;
-		case fq::client::EArcherSound::Shoot:
-			soundName = "A_Fastshoot_end";
-			break;
-		case fq::client::EArcherSound::Fastshoot1:
-			soundName = "A_Fastshoot_1";
-			break;
-		case fq::client::EArcherSound::Fastshoot2:
-			soundName = "A_Fastshoot_2";
-			break;
-		case fq::client::EArcherSound::Fastshoot3:
-			soundName = "A_Fastshoot_3";
-			break;
-		case fq::client::EArcherSound::Rolling:
-			soundName = "A_Rolling";
-			break;
-		default:
-			break;
+			case fq::client::EArcherSound::ShootStart:
+				soundName = "A_Shoot_start";
+				break;
+			case fq::client::EArcherSound::Charge1:
+				soundName = "A_Charge_1";
+				break;
+			case fq::client::EArcherSound::Charge2:
+				soundName = "A_Charge_2";
+				break;
+			case fq::client::EArcherSound::Shoot:
+				soundName = "A_Fastshoot_end";
+				break;
+			case fq::client::EArcherSound::Fastshoot1:
+				soundName = "A_Fastshoot_1";
+				break;
+			case fq::client::EArcherSound::Fastshoot2:
+				soundName = "A_Fastshoot_2";
+				break;
+			case fq::client::EArcherSound::Fastshoot3:
+				soundName = "A_Fastshoot_3";
+				break;
+			case fq::client::EArcherSound::Rolling:
+				soundName = "A_Rolling";
+				break;
+			default:
+				break;
 		}
 
 		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ soundName, false , fq::sound::EChannel::SE });
@@ -264,6 +273,11 @@ namespace fq::client
 
 		// 공격 체력 감소
 		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
+		// 키 입력 이벤트 호출 
+		int id = static_cast<int>(mController->GetControllerID());
+		GetScene()->GetEventManager()
+			->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::A });
 
 		return effectObj;
 	}
@@ -506,20 +520,20 @@ namespace fq::client
 		{
 			switch (soulType)
 			{
-			case 0:
-				speechBubble->SetName(PlayerInfoVariable::KnightName);
-				break;
-			case 1:
-				speechBubble->SetName(PlayerInfoVariable::MagicName);
-				break;
-			case 2:
-				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-				break;
-			case 3:
-				speechBubble->SetName(PlayerInfoVariable::ArcherName);
-				break;
-			default:
-				break;
+				case 0:
+					speechBubble->SetName(PlayerInfoVariable::KnightName);
+					break;
+				case 1:
+					speechBubble->SetName(PlayerInfoVariable::MagicName);
+					break;
+				case 2:
+					speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+					break;
+				case 3:
+					speechBubble->SetName(PlayerInfoVariable::ArcherName);
+					break;
+				default:
+					break;
 			}
 		}
 	}
