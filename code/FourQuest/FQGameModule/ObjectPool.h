@@ -56,7 +56,7 @@ namespace fq::game_module
 	std::shared_ptr<T>
 		fq::game_module::ObjectPool::Assign(Args&& ...args)
 	{
-		ComponentID id = entt::resolve<T>().id();
+		static const ComponentID id = entt::resolve<T>().id();
 
 		auto iter = mPools.find(id);
 
