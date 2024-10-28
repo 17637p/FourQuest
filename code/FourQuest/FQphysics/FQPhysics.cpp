@@ -348,6 +348,7 @@ namespace fq::physics
 				unsigned int layerNumber = static_cast<CollisionData*>(shape->userData)->myLayerNumber;
 
 				output.contectPoints.push_back(position);
+				output.layerNumber.push_back(layerNumber);
 				output.id.push_back(id);
 			}
 		}
@@ -683,9 +684,9 @@ namespace fq::physics
 #pragma endregion
 
 #pragma region PhysicsClothManager
-	bool FQPhysics::CreateCloth(const Cloth::CreateClothData& info)
+	bool FQPhysics::CreateCloth(const Cloth::CreateClothData& info, bool isSkinnedMesh)
 	{
-		if (mClothManager->CreateCloth(info, mCollisionMatrix))
+		if (mClothManager->CreateCloth(info, mCollisionMatrix, isSkinnedMesh))
 		{
 			return true;
 		}

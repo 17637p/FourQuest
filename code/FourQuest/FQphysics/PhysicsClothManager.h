@@ -31,7 +31,7 @@ namespace fq::physics
 		/// <summary>
 		/// 천을 생성합니다.
 		/// </summary>
-		bool CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix);
+		bool CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix, bool isSkinnedMesh);
 
 		/// <summary>
 		/// 천 데이터를 얻습니다.

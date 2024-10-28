@@ -66,9 +66,14 @@ namespace fq::game_module
 		/// <summary>
 		/// Cloth Component의 ID를 세팅합니다.
 		/// </summary>
-		/// <returns></returns>
 		unsigned int GetClothID() { return mClothInfo->id; }
 		void SetClothID(unsigned int id) { mClothInfo->id = id; }
+
+		/// <summary>
+		/// Cloth Component를 가진 Object가 SkinnedMesh일 경우 (Physics에서 업데이트하는 것이 아닌 Graphics에서 업데이트된 버텍스 정보를 physX에 업데이트)
+		/// </summary>
+		unsigned int GetIsSkinnedMesh() { return mbIsSkinnedMesh; }
+		void SetIsSkinnedMesh(unsigned int isSkinnedMesh) { mbIsSkinnedMesh = isSkinnedMesh; }
 
 		/// <summary>
 		/// 콜라이더의 오프셋을 반환합니다.
@@ -87,6 +92,7 @@ namespace fq::game_module
 	private:
 		ClothPath mClothPath;
 		std::shared_ptr<ClothInfo> mClothInfo;
+		bool mbIsSkinnedMesh;
 
 		DirectX::SimpleMath::Vector3 mOffset;
 	};

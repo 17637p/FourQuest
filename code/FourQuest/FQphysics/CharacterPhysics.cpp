@@ -165,15 +165,12 @@ namespace fq::physics
 		newFilterData.word1 = collisionMatrix[newLayerNumber];
 		newFilterData.word2 = 1;
 
-		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
-		collisionData->myId = mID;
-		collisionData->myLayerNumber = newLayerNumber;
+		mCollisionData->myId = mID;
+		mCollisionData->myLayerNumber = newLayerNumber;
 
 		for (const auto& [name, myLink] : mLinkContainer)
 		{
-			myLink->ChangeLayerNumber(newFilterData, collisionData.get());
+			myLink->ChangeLayerNumber(newFilterData, mCollisionData.get());
 		}
-		
-		mPhysicsCollisionDataManager->Create(mID, collisionData);
 	}
 }

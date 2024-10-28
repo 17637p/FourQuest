@@ -167,7 +167,52 @@ namespace fq::game_engine
 
 				// 모델 경로 값으로 모델의 메쉬 찾기
 				bool check = mGameProcess->mResourceSystem->HasModel(mModelPath);
-				assert(check);
+				if (!check)
+				{
+					spdlog::error("[ClothEditorWindow ({})] Can't Find ModelPath", __LINE__);
+					return;
+				}
+
+				const auto& model = mGameProcess->mResourceSystem->GetModel(mModelPath);
+				const auto& mesh = ModelSystem::GetMesh(model, meshName);
+
+				// 물리 엔진에 전달할 메쉬의 버텍스와 인덱스 값을 저장
+				mClothData->vertices.resize(mesh.Vertices.size());
+				mClothData->uvs.resize(mesh.Vertices.size());
+				mClothData->indices.resize(mesh.Indices.size());
+				triangleMeshInfo.vertexSize = mesh.Vertices.size();
+				triangleMeshInfo.indexSize = mesh.Indices.size();
+
+				for (int i = 0; i < mesh.Vertices.size(); ++i)
+				{
+					mClothData->vertices[i] = DirectX::SimpleMath::Vector3::Transform(mesh.Vertices[i].Pos, transform->GetWorldMatrix());
+				}
+				for (int i = 0; i < mesh.Vertices.size(); ++i)
+				{
+					mClothData->uvs[i] = mesh.Vertices[i].Tex;
+				}
+				for (int i = 0; i < mesh.Indices.size(); ++i)
+				{
+					mClothData->indices[i] = mesh.Indices[i];
+				}
+
+				triangleMeshInfo.vertices = mClothData->vertices.data();
+				triangleMeshInfo.indices = mClothData->indices.data();
+			}
+			else if (hasSkinnedMesh)
+			{
+				// 모델의 경로 찾기
+				auto skinnedMeshRenderer = mGameObject->GetComponent<fq::game_module::SkinnedMeshRenderer>();
+				auto meshName = skinnedMeshRenderer->GetMeshName();
+				mModelPath = skinnedMeshRenderer->GetModelPath();
+
+				// 모델 경로 값으로 모델의 메쉬 찾기
+				bool check = mGameProcess->mResourceSystem->HasModel(mModelPath);
+				if (!check)
+				{
+					spdlog::error("[ClothEditorWindow ({})] Can't Find ModelPath", __LINE__);
+					return;
+				}
 
 				const auto& model = mGameProcess->mResourceSystem->GetModel(mModelPath);
 				const auto& mesh = ModelSystem::GetMesh(model, meshName);
