@@ -348,6 +348,7 @@ namespace fq::physics
 				unsigned int layerNumber = static_cast<CollisionData*>(shape->userData)->myLayerNumber;
 
 				output.contectPoints.push_back(position);
+				output.layerNumber.push_back(layerNumber);
 				output.id.push_back(id);
 			}
 		}

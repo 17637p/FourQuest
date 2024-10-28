@@ -27,6 +27,7 @@ namespace fq::game_module
 		Shield =19,
 		Arrow = 20,
 		RangeHitBox = 21,
-		End = 22,
+		DeadMonster = 22,
+		End = 23,
 	};
 }

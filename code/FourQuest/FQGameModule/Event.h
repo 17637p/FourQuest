@@ -251,6 +251,7 @@ namespace fq::event
 
 			unsigned int hitCount = -1;
 			std::vector<game_module::GameObject*> hitObjects;
+			std::vector<unsigned int> hitLayerNumber;
 			std::vector<DirectX::SimpleMath::Vector3> hitContactPoints;
 		};
 

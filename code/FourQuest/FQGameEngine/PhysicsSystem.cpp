@@ -1243,6 +1243,16 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
 			data.worldTransform = transform->GetWorldMatrix();
 
+			// Tag가 변경된 경우
+			auto articulationData = articulation->GetArticulationData();
+			auto prevLayer = articulationData->GetLayerNumber();
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				articulationData->SetLayerNumber(currentLayer);
+			}
+
 			// 새로 생성되는 레그돌만 프레임 갯수 제한, 씬에 레그돌 최대 갯수 제한, 한 프레임에 레그돌 생성 갯수 제한, 레그돌 On/Off
 			if ((mGameProcess->mTimeManager->GetFPS() <= client::MonsterVariable::MinFrameCountForRagdoll
 				|| client::MonsterVariable::MaxRagdollsPerScene <= mPhysicsEngine->GetArticulationCount())
@@ -1451,6 +1461,7 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 		event.result->hitContactPoints.push_back(result.contectPoints[i]);
 		auto object = mColliderContainer.find(result.id[i])->second.gameObject.get();
 		event.result->hitObjects.push_back(object);
+		event.result->hitLayerNumber.push_back(result.layerNumber[i]);
 	}
 
 	if (event.bUseDebugDraw)

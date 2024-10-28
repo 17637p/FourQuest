@@ -109,6 +109,7 @@ namespace fq::physics
 		// Hit 
 		unsigned int hitSize = 0;
 		std::vector<unsigned int> id = {};
+		std::vector<unsigned int> layerNumber = {};
 		std::vector<DirectX::SimpleMath::Vector3> contectPoints = {};
 	};
 

@@ -205,6 +205,9 @@ void fq::client::MagicArmour::EmitLaser()
 	{
 		for (int i = 0; i < data.hitCount; ++i)
 		{
+			if (data.hitLayerNumber[i] == static_cast<unsigned int>(fq::game_module::ETag::DeadMonster))
+				continue;
+
 			float hitDistance = (origin - data.hitContactPoints[i]).Length();
 
 			if (minDistance >= hitDistance)

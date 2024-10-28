@@ -40,6 +40,7 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 {
 	auto gameObject = animator.GetGameObject();
 
+	gameObject->SetTag(fq::game_module::ETag::DeadMonster);
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 	gameObject->RemoveComponent<game_module::BoxCollider>();
 	animator.GetComponent<PlantMonster>()->DestroyMonsterHPUI();
