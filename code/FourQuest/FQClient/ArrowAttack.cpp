@@ -87,10 +87,10 @@ namespace fq::client
 			|| collision.other->GetTag() == fq::game_module::ETag::Box)
 		{
 			// 이미 공격한 몬스터의 히트 박스에 다시 충돌 했을 때, 체크
-			auto monsterIter = mHitMonsterID.find(collision.other->GetID());
+			auto monsterIter = mHitMonsterID.find(collision.other->GetParent()->GetID());
 			if (monsterIter == mHitMonsterID.end())
 			{
-				mHitMonsterID.insert(collision.other->GetID());
+				mHitMonsterID.insert(collision.other->GetParent()->GetID());
 			}
 			else
 			{
