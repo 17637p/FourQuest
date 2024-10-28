@@ -52,6 +52,7 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	agent->Stop();
 
 	auto gameObject = animator.GetGameObject();
+	gameObject->SetTag(fq::game_module::ETag::DeadMonster);
 
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 	gameObject->GetComponent<MeleeMonster>()->DestroyMonsterHPUI();

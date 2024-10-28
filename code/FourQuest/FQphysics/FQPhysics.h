@@ -192,7 +192,7 @@ namespace fq::physics
 		/// <summary>
 		/// 천을 생성합니다.
 		/// </summary>
-		virtual bool CreateCloth(const Cloth::CreateClothData& info) override;
+		virtual bool CreateCloth(const Cloth::CreateClothData& info, bool isSkinnedMesh) override;
 
 		/// <summary>
 		/// 천 데이터를 얻습니다.

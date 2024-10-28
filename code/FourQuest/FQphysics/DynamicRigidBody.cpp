@@ -156,6 +156,9 @@ namespace fq::physics
 		newFilterData.word1 = collisionMatrix[newLayerNumber];
 		shape->setSimulationFilterData(newFilterData);
 
+		auto userData = static_cast<CollisionData*>(shape->userData);
+		userData->myLayerNumber = mLayerNumber;
+
 		return true;
 	}
 }

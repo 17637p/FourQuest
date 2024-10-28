@@ -110,7 +110,9 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Arrow>("Arrow"_hs) // 20
 		.prop(fq::reflect::prop::Name, "Arrow")
 		.data<ETag::RangeHitBox>("RangeHitBox"_hs) // 21
-		.prop(fq::reflect::prop::Name, "RangeHitBox");
+		.prop(fq::reflect::prop::Name, "RangeHitBox")
+		.data<ETag::DeadMonster>("DeadMonster"_hs) // 22
+		.prop(fq::reflect::prop::Name, "DeadMonster");
 
 	// GameObject
 	entt::meta<GameObject>()
