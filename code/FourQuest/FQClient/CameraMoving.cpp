@@ -126,8 +126,8 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 	float xViewport = ((projCenter.x + 1) / 2) * width;
 	float yViewport = ((1 - projCenter.y) / 2) * height;
 	yViewport += 100;
-	//center.x = 2 * (xViewport / width) - 1;
-	//center.y = 1 - 2 * (yViewport / height);
+	center.x = 2 * (xViewport / width) - 1;
+	center.y = 1 - 2 * (yViewport / height);
 
 	DirectX::SimpleMath::Vector3 centerCopy = center; // 거리 재는 용
 
@@ -456,5 +456,3 @@ void fq::client::CameraMoving::InitCameraPos()
 	return;
 }
 
-// 콜라이더 추가하기
-// 콜라이더 넘어갈 때 어떻게 처리 ?
