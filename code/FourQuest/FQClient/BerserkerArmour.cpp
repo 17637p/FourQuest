@@ -8,6 +8,7 @@
 #include "../FQGameModule/Animator.h"
 #include "SpeechBubbleUI.h"
 #include "PlayerInfoVariable.h"
+#include "ClientEvent.h"
 
 namespace fq::client
 {
@@ -116,6 +117,23 @@ namespace fq::client
 
 		// 공격시 체력 감소 
 		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
+
+		// 키입력 이벤트 호출 
+		int id = static_cast<int>(mController->GetControllerID());
+		auto eventMgr = GetScene()->GetEventManager();
+
+		switch (attackType)
+		{
+			case fq::client::EBerserkerAttackType::Right:
+				eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::X });
+				break;
+			case fq::client::EBerserkerAttackType::SwingAround:
+				eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::A });
+				break;
+			case fq::client::EBerserkerAttackType::Rush:
+				eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::R });
+				break;
+		}
 
 		return attackObj;
 	}

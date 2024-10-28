@@ -25,6 +25,8 @@ UIDemo::UIDemo()
 
 UIDemo::~UIDemo()
 {
+	mTestGraphics->DeleteVideoObject(mVideoObject);
+
 	mTestGraphics->Finalize();
 	for (fq::graphics::IImageObject* iobj : mImageObjects)
 	{
@@ -184,6 +186,10 @@ void UIDemo::Update()
 	mTimeManager.Update();
 	InputManager::GetInstance().Update();
 
+	fq::graphics::VideoInfo videoInfo = mVideoObject->GetVideoInfo();
+	videoInfo.PlayTime += mTimeManager.GetDeltaTime();
+	mVideoObject->SetVideoInfo(videoInfo);
+
 	if (GetAsyncKeyState(VK_F1) & 0x8000)
 	{
 		mTestGraphics->SetWindowSize(mScreenWidth, mScreenHeight);
@@ -251,6 +257,13 @@ void UIDemo::Update()
 		mTestGraphics->DeleteText(mTextObject1);
 		mTestGraphics->DeleteText(mTextObject2);
 	}
+
+	if (InputManager::GetInstance().IsGetKeyDown('J'))
+	{
+		fq::graphics::VideoInfo videoInfo = mVideoObject->GetVideoInfo();
+		videoInfo.isReset = true;
+		mVideoObject->SetVideoInfo(videoInfo);
+	}
 }
 
 void UIDemo::Render()
@@ -294,6 +307,17 @@ void UIDemo::createImage()
 	uiInfo.fillDegree = 180;
 	uiInfo.RotationAngle = 0;
 	uiInfo.isCenter = true;
+
+	fq::graphics::VideoInfo videoInfo;
+
+	videoInfo.Width = 1080;
+	videoInfo.Height = 800;
+	videoInfo.isRender = true;
+	videoInfo.VideoPath = "C:\\Users\\user\\Videos\\Captures\\GamePlay.mp4";
+	videoInfo.StartX = 100;
+	videoInfo.StartY = 100;
+
+	mVideoObject = mTestGraphics->CreateVideoObject(videoInfo);
 
 	//auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	//mImageObjects.push_back(tempImageObject);

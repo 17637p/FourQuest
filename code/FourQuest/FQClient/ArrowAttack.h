@@ -40,6 +40,7 @@ namespace fq::client
 		/// 화살의 라이프 타임을 계산하고 시간이 지나면 화살 오브젝트 삭제
 		/// </summary>
 		void OnUpdate(float dt) override;
+		void OnStart() override;
 
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -54,6 +55,7 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 mAttackDirection;
 		DirectX::SimpleMath::Matrix  mAttackTransform;
 		int mMaxBlockCount;
+		std::set<unsigned int> mHitMonsterID;
 
 		// 생존 시간
 		float mLifeElapsedTime;

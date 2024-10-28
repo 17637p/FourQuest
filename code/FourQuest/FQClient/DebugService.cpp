@@ -95,7 +95,7 @@ void fq::client::DebugService::updateInput()
 	else if (input->IsKeyState(EKey::F4, EKeyState::Tap))
 	{
 		savePlayerState();
-		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene3", true });
+		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene4", true });
 	}
 
 	// 디버그 정보 표시 

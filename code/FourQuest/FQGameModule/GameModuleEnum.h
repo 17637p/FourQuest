@@ -25,6 +25,8 @@ namespace fq::game_module
 		MagicCircle = 17,
 		SafeZone = 18,
 		Shield =19,
-		End = 20,
+		Arrow = 20,
+		RangeHitBox = 21,
+		End = 22,
 	};
 }

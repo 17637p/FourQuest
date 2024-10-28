@@ -12,6 +12,7 @@
 #include "GaugeBar.h"
 #include "SpeechBubbleUI.h"
 #include "PlayerInfoVariable.h"
+#include "ClientEvent.h"
 
 fq::client::KnightArmour::KnightArmour()
 	:mDashCoolTime(1.f)
@@ -68,27 +69,27 @@ void fq::client::KnightArmour::EmitSound(EKnightSound soundType)
 
 	switch (soundType)
 	{
-	case fq::client::EKnightSound::Swing1:
-		soundName = "K_Swing1";
-		break;
-	case fq::client::EKnightSound::Swing2:
-		soundName = "K_Swing2";
-		break;
-	case fq::client::EKnightSound::Swing3:
-		soundName = "K_Swing3";
-		break;
-	case fq::client::EKnightSound::ShieldStart:
-		soundName = "K_Shield_Start";
-		break;
-	case fq::client::EKnightSound::ShieldLoop:
-		soundName = "K_Shield_Loop";
-		break;
-	case fq::client::EKnightSound::Bash:
-		soundName = "K_Bash";
-		break;
-	default:
-		assert(false);
-		break;
+		case fq::client::EKnightSound::Swing1:
+			soundName = "K_Swing1";
+			break;
+		case fq::client::EKnightSound::Swing2:
+			soundName = "K_Swing2";
+			break;
+		case fq::client::EKnightSound::Swing3:
+			soundName = "K_Swing3";
+			break;
+		case fq::client::EKnightSound::ShieldStart:
+			soundName = "K_Shield_Start";
+			break;
+		case fq::client::EKnightSound::ShieldLoop:
+			soundName = "K_Shield_Loop";
+			break;
+		case fq::client::EKnightSound::Bash:
+			soundName = "K_Bash";
+			break;
+		default:
+			assert(false);
+			break;
 	}
 
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ soundName, false , fq::sound::EChannel::SE });
@@ -149,6 +150,10 @@ void fq::client::KnightArmour::EmitSwordAttack()
 	mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 
 	GetScene()->AddGameObject(attackObj);
+
+	int id = static_cast<int>(mController->GetControllerID());
+	GetScene()->GetEventManager()
+		->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::X });
 }
 
 void fq::client::KnightArmour::EmitShieldAttack()
@@ -252,6 +257,11 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 
 	EmitSound(EKnightSound::Bash);
 	GetScene()->AddGameObject(attackObj);
+
+
+	int id = static_cast<int>(mController->GetControllerID());
+	GetScene()->GetEventManager()
+		->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::A });
 }
 
 void fq::client::KnightArmour::OnUpdate(float dt)
@@ -469,6 +479,11 @@ void fq::client::KnightArmour::EnterShieldState()
 
 	GetScene()->AddGameObject(shieldObj);
 	mShieldObject = shieldObj;
+
+	// 키입력 이벤트
+	int id = mController->GetControllerID();
+	GetScene()->GetEventManager()
+		->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::R });
 }
 
 void fq::client::KnightArmour::setName()
@@ -487,20 +502,20 @@ void fq::client::KnightArmour::setName()
 	{
 		switch (soulType)
 		{
-		case 0:
-			speechBubble->SetName(PlayerInfoVariable::KnightName);
-			break;
-		case 1:
-			speechBubble->SetName(PlayerInfoVariable::MagicName);
-			break;
-		case 2:
-			speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-			break;
-		case 3:
-			speechBubble->SetName(PlayerInfoVariable::ArcherName);
-			break;
-		default:
-			break;
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
 		}
 	}
 }

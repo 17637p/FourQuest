@@ -143,11 +143,30 @@ namespace fq::graphics
 
 		float ImageNum = 5;
 		float Speed = 0.5f;
-		float CurImage = 0;
+		int CurImage = 0;
 		float CurTime = 0;
 
 		bool isCenter = false;
 		bool isRender = true;
+
+		int XNum = 5;
+		int YNum = 1;
+	};
+
+	struct VideoInfo
+	{
+		bool isRender = false;
+
+		std::string VideoPath = "";
+
+		float StartX = 0.0f;
+		float StartY = 0.0f;
+		float Width = 1920;
+		float Height = 1080;
+
+		bool isReset = false; // true 되면 리셋 시키고 false 로 변경
+		float PlayTime = 0;
+		float Speed = 1;
 	};
 
 	enum class ETextAlign
@@ -717,6 +736,7 @@ namespace fq::graphics
 		float AlphaCutoff = 0.1f;
 		
 		bool bUseEmissiveBlend = false; // 이미시브 블렌딩 사용 여부
+		float EmissiveIntensity = 1.f;
 	};
 
 	//// ---------------------------------------------------------------------

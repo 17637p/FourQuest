@@ -86,6 +86,7 @@
 #include "BossMonsterRoarState.h"
 #include "BossMonsterContinousState.h"
 #include "BossMonsterPreContinousState.h"
+#include "BossMonsterHitState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -113,6 +114,7 @@
 
 // UI
 #include "HpBar.h"
+#include "PlayerHPBar.h"
 #include "MonsterHP.h"
 #include "GaugeBar.h"
 #include "PlayerUI.h"
@@ -178,7 +180,13 @@
 #include "DestroyWhenCollisionToWall.h"
 #include "ScreenBlending.h"
 #include "ScaleAnimation.h"
+#include "RotationAnimation.h"
 #include "DebugService.h"
+#include "CollisionColorChanger.h"
+#include "CollisionRenderChanger.h"
+#include "UIShaker.h"
+#include "TrainingDummy.h"
+#include "TrainingDummyHitState.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -453,6 +461,90 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u"종료 스케일")
 		.base<game_module::Component>();
 
+	entt::meta<RotationAnimation>()
+		.type("RotationAnimation"_hs)
+		.prop(reflect::prop::Name, "RotationAnimation")
+		.data<&RotationAnimation::mDuration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.prop(fq::reflect::prop::Comment, u"지속 시간")
+		.data<&RotationAnimation::mbUseLooping>("bUseLooping"_hs)
+		.prop(fq::reflect::prop::Name, "bUseLooping")
+		.prop(fq::reflect::prop::Comment, u"지속 시간")
+		.data<&RotationAnimation::mbUseEuler>("bUseEuler"_hs)
+		.prop(fq::reflect::prop::Name, "bUseEuler")
+		.prop(fq::reflect::prop::Comment, u"오일러각 사용여부")
+		.data<&RotationAnimation::mStartRotationInEuler>("StartRotationInEuler"_hs)
+		.prop(fq::reflect::prop::Name, "StartRotationInEuler")
+		.prop(fq::reflect::prop::Comment, u"시작 회전값(오일러)")
+		.data<&RotationAnimation::mEndRotationInEuler>("mEndRotationInEuler"_hs)
+		.prop(fq::reflect::prop::Name, "mEndRotationInEuler")
+		.prop(fq::reflect::prop::Comment, u"종료 회전값(오일러)")
+		.data<&RotationAnimation::mbUseQuaternion>("bUseQuaternion"_hs)
+		.prop(fq::reflect::prop::Name, "bUseQuaternion")
+		.prop(fq::reflect::prop::Comment, u"사원수 사용여부")
+		.data<&RotationAnimation::mStartRotationInQuaternion>("mStartRotationInQuaternion"_hs)
+		.prop(fq::reflect::prop::Name, "mStartRotationInQuaternion")
+		.prop(fq::reflect::prop::Comment, u"시작 회전값(사원수)")
+		.data<&RotationAnimation::mEndRotationInQuaternion>("mEndRotationInQuaternion"_hs)
+		.prop(fq::reflect::prop::Name, "mEndRotationInQuaternion")
+		.prop(fq::reflect::prop::Comment, u"종료 회전값(사원수)")
+		.base<game_module::Component>();
+
+	entt::meta<CollisionColorChanger>()
+		.type("CollisionColorChanger"_hs)
+		.prop(reflect::prop::Name, "CollisionColorChanger")
+		.data<&CollisionColorChanger::mTags>("Tags"_hs)
+		.prop(fq::reflect::prop::Name, "Tags")
+		.prop(fq::reflect::prop::Comment, u"처리될 태그")
+		.data<&CollisionColorChanger::mbUseBaseColor>("bUseBaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "bUseBaseColor")
+		.prop(fq::reflect::prop::Comment, u"베이스 컬러를 사용할지 유무")
+		.data<&CollisionColorChanger::mBaseColor>("BaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "BaseColor")
+		.prop(fq::reflect::prop::Comment, u"충돌 시 변경될 베이스 컬러")
+		.data<&CollisionColorChanger::mbUseEmissiveColor>("bUseEmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "bUseEmissiveColor")
+		.prop(fq::reflect::prop::Comment, u"이미시브를 사용할지 유무")
+		.data<&CollisionColorChanger::mEmissiveColor>("EmissiveColor"_hs)
+		.prop(fq::reflect::prop::Name, "EmissiveColor")
+		.prop(fq::reflect::prop::Comment, u"충돌 시 변경될 이미시브 컬러")
+		.base<game_module::Component>();
+
+	entt::meta<TagStructure>()
+		.type("TagStructure"_hs)
+		.prop(reflect::prop::Name, "TagStructure")
+		.prop(fq::reflect::prop::POD)
+		.data<&TagStructure::Tag>("Tag"_hs)
+		.prop(fq::reflect::prop::Name, "Tag");
+
+	entt::meta<CollisionRenderChanger>()
+		.type("CollisionRenderChanger"_hs)
+		.prop(reflect::prop::Name, "CollisionRenderChanger")
+		.data<&CollisionRenderChanger::mbIsRender>("bIsRender"_hs)
+		.prop(fq::reflect::prop::Name, "bIsRender")
+		.prop(fq::reflect::prop::Comment, u"충돌 시 랜더링을 킬지 끌지 여부")
+		.data<&CollisionRenderChanger::mTags>("Tags"_hs)
+		.prop(fq::reflect::prop::Name, "Tags")
+		.prop(fq::reflect::prop::Comment, u"처리될 태그들")
+		.base<game_module::Component>();
+
+	entt::meta<UIShaker>()
+		.type("UIShaker"_hs)
+		.prop(reflect::prop::Name, "UIShaker")
+		.data<&UIShaker::mCount>("mCount"_hs)
+		.prop(fq::reflect::prop::Name, "mCount")
+		.prop(fq::reflect::prop::Comment, u"흔들릴 횟수, 에디터에서 기능 확인용")
+		.data<&UIShaker::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u"지속시간")
+		.data<&UIShaker::mStartOffset>("mStartOffset"_hs)
+		.prop(fq::reflect::prop::Name, "mStartOffset")
+		.prop(fq::reflect::prop::Comment, u"시작 오프셋")
+		.data<&UIShaker::mEndOffset>("mEndOffset"_hs)
+		.prop(fq::reflect::prop::Name, "mEndOffset")
+		.prop(fq::reflect::prop::Comment, u"종료 오프셋")
+		.base<game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             플레이어 관련								//
 	//////////////////////////////////////////////////////////////////////////
@@ -542,6 +634,9 @@ void fq::client::RegisterMetaData()
 		.data<&DeadArmour::mSummonDuration>("SummonDuration"_hs)
 		.prop(reflect::prop::Name, "SummonDuration")
 		.prop(reflect::prop::Comment, u8"갑옷 입기까지 걸리는 시간")
+		.data<&DeadArmour::mUIOffset>("UIOffset"_hs)
+		.prop(reflect::prop::Name, "UIOffset")
+		.prop(reflect::prop::Comment, u8"UI Offset 값")
 		.base<game_module::Component>();
 
 	entt::meta<MagicArmour>()
@@ -1290,7 +1385,9 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mGroggyDecreasePerSecond>("GroggyDecreasePerSecond"_hs)
 		.prop(fq::reflect::prop::Name, "GroggyDecreasePerSecond")
 		.prop(fq::reflect::prop::Comment, u8"초당 그로기 게이지 감소량")
-
+		.data<&BossMonster::mGroggyDecreaseHpRatio>("GroggyDecreaseHpRatio"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyDecreaseHpRatio")
+		.prop(fq::reflect::prop::Comment, u8"그로기 상태에서 hp 감소비율")
 		.data<&BossMonster::mRushProbability>("RushProbability"_hs)
 		.prop(fq::reflect::prop::Name, "RushProbability")
 		.prop(fq::reflect::prop::Comment, u8"러쉬 패턴 확률\n확률합계는 1.f 이하이고 남은 확률은 콤보 공격 확률이 됩니다")
@@ -1333,6 +1430,14 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mDummyDurationRandomRangeMax>("DummyDurationRandomRangeMax"_hs)
 		.prop(fq::reflect::prop::Name, "DummyDurationRandomRangeMax")
 		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 더해질 최대 랜덤 추적 시간(최소값 ~ 최댓값)")
+		
+		.data<&BossMonster::mGroggyDuration>("mGroggyDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mGroggyDuration")
+		.prop(fq::reflect::prop::Comment, u8"그로기 상태 지속시간")
+
+		.data<&BossMonster::mRimPow>("mRimPow"_hs)
+		.prop(fq::reflect::prop::Name, "mRimPow")
+		.prop(fq::reflect::prop::Comment, u8"림라이트 Pow 값")
 
 		.base<fq::game_module::Component>();
 
@@ -1360,6 +1465,15 @@ void fq::client::RegisterMetaData()
 	entt::meta<BossMonsterRushState>()
 		.type("BossMonsterRushState"_hs)
 		.prop(fq::reflect::prop::Name, "BossMonsterRushState")
+		.data<&BossMonsterRushState::mRushVelocity>("mRushVelocity"_hs)
+		.prop(fq::reflect::prop::Name, "mRushVelocity")
+		.prop(fq::reflect::prop::Comment, u8"돌진 속도")
+		.data<&BossMonsterRushState::mRushAcceleration>("mRushAcceleration"_hs)
+		.prop(fq::reflect::prop::Name, "mRushAcceleration")
+		.prop(fq::reflect::prop::Comment, u8"돌진 가속도")
+		.data<&BossMonsterRushState::mRushDuration>("mRushDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mRushDuration")
+		.prop(fq::reflect::prop::Comment, u8"돌진 지속 시간")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<BossMonsterFindTargetState>()
@@ -1406,8 +1520,6 @@ void fq::client::RegisterMetaData()
 	entt::meta<BossMonsterGroggyState>()
 		.type("BossMonsterGroggyState"_hs)
 		.prop(fq::reflect::prop::Name, "BossMonsterGroggyState")
-		.data<&BossMonsterGroggyState::mGroggyTime>("GroggyTime"_hs)
-		.prop(fq::reflect::prop::Name, "GroggyTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<BossMonsterEatState>()
@@ -1439,6 +1551,11 @@ void fq::client::RegisterMetaData()
 	entt::meta<BossMonsterPreContinousState>()
 		.type("BossMonsterPreContinousState"_hs)
 		.prop(fq::reflect::prop::Name, "BossMonsterPreContinousState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterHitState>()
+		.type("BossMonsterHitState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterHitState")
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1698,6 +1815,15 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackInvalidation")
 		.base<fq::game_module::Component>();
 
+	entt::meta<TrainingDummy>()
+		.type("TrainingDummy"_hs)
+		.prop(fq::reflect::prop::Name, "TrainingDummy")
+		.base<fq::game_module::Component>();
+
+	entt::meta<TrainingDummyHitState>()
+		.type("TrainingDummyHitState"_hs)
+		.prop(fq::reflect::prop::Name, "TrainingDummyHitState")
+		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             UI										//
@@ -1725,6 +1851,21 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "InnerOffset")
 		.prop(fq::reflect::prop::Comment, u8"Bar 외부와 내부의 크기 차이")
 		.base<fq::game_module::Component>();
+
+	entt::meta<PlayerHPBar>()
+		.type("PlayerHPBar"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerHPBar")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&PlayerHPBar::mbIsVisible>("IsVisible"_hs)
+		.prop(fq::reflect::prop::Name, "IsVisible")
+		.data<&PlayerHPBar::mWorldYOffset>("WorldYOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldYOffset")
+		.prop(fq::reflect::prop::Comment, u8"월드 공간의 Y를 더한후 UI 위치 계산")
+		.data<&PlayerHPBar::mScreenYOffset>("ScreenYOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ScreenYOffset")
+		.prop(fq::reflect::prop::Comment, u8"Screen 공간의 Y를 더한후 UI 위치 계산")
+		.base<fq::game_module::Component>();
+
 
 	entt::meta<MonsterHP>()
 		.type("MonsterHP"_hs)
@@ -2073,6 +2214,27 @@ void fq::client::RegisterMetaData()
 		.data<&ClearGoddessStatue::goddessStatueName>("GoddessStatueName"_hs)
 		.prop(fq::reflect::prop::Name, "GoddessStatueName");
 
+	entt::meta<ESkillType>()
+		.prop(fq::reflect::prop::Name, "ESkillType")
+		.conv<std::underlying_type_t<ESkillType>>()
+		.data<ESkillType::X>("X"_hs) // 0
+		.prop(fq::reflect::prop::Name, "X")
+		.data<ESkillType::A>("A"_hs) // 1
+		.prop(fq::reflect::prop::Name, "A")
+		.data<ESkillType::R>("R"_hs) // 2
+		.prop(fq::reflect::prop::Name, "R")
+		.data<ESkillType::Y>("Y"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Y");
+
+	entt::meta<PushButton>()
+		.type("PushButton"_hs)
+		.prop(fq::reflect::prop::Name, "PushButton")
+		.prop(fq::reflect::prop::POD)
+		.data<&PushButton::skillType>("skillType"_hs)
+		.prop(fq::reflect::prop::Name, "skillType")
+		.data<&PushButton::isAll>("isAll"_hs)
+		.prop(fq::reflect::prop::Name, "isAll");
+
 	entt::meta<QuestJoinCondition>()
 		.type("QuestJoinCondition"_hs)
 		.prop(fq::reflect::prop::Name, "QuestJoinCondition")
@@ -2097,7 +2259,9 @@ void fq::client::RegisterMetaData()
 		.data<&QuestClearCondition::colliderTriggerList>("ColliderTriggerList"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
 		.data<&QuestClearCondition::clearGoddessStatueList>("ClearGoddessStatueList"_hs)
-		.prop(fq::reflect::prop::Name, "ClearGoddessStatueList");
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatueList")
+		.data<&QuestClearCondition::pushButtonList>("PushButtonList"_hs)
+		.prop(fq::reflect::prop::Name, "PushButtonList");
 
 	entt::meta<RewardPortal>()
 		.type("RewardPortal"_hs)

@@ -13,6 +13,8 @@
 
 #include "PhysicsCookingMeshTool.h"
 
+#include "spdlog\spdlog.h"
+
 namespace fq::physics
 {
 	PhysicsRigidBodyManager::PhysicsRigidBodyManager()
@@ -553,7 +555,12 @@ namespace fq::physics
 	bool PhysicsRigidBodyManager::RemoveRigidBody(const unsigned int& id, physx::PxScene* scene, std::vector<physx::PxActor*>& removeActorList)
 	{
 		if (mRigidBodyContainer.find(id) == mRigidBodyContainer.end())
+		{
+			spdlog::warn("[PhysicsRigidBodyManager ({})] Failed Remove RigidBody ID : {}", __LINE__, id);
 			return false;
+		}
+		else
+			spdlog::trace("[PhysicsRigidBodyManager ({})] Remove RigidBody ID : {}", __LINE__, id);
 
 		std::shared_ptr<RigidBody> body = mRigidBodyContainer.find(id)->second;
 

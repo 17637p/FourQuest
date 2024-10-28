@@ -1237,7 +1237,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
 			auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
 
-			nodeHierarchy.SetBindPose();
+			//nodeHierarchy.SetBindPose();
 
 			fq::physics::ArticulationSetData data;
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
@@ -1361,7 +1361,7 @@ void fq::game_engine::PhysicsSystem::PostUpdate()
 {
 	for (auto& [colliderID, info] : mColliderContainer)
 	{
-		if (info.bIsDestroyed)
+		if (info.bIsDestroyed && !info.bIsRemoveBody)
 		{
 			if (info.enttID == mArticulationTypeID)
 				mPhysicsEngine->RemoveArticulation(colliderID);

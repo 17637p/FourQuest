@@ -321,6 +321,7 @@
     <ClInclude Include="TriangleCollider.h" />
     <ClInclude Include="UVAnimator.h" />
     <ClInclude Include="VibrationTrack.h" />
+    <ClInclude Include="VideoUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BlendUVAnimator.cpp" />
@@ -411,6 +412,7 @@
     <ClCompile Include="TriangleCollider.cpp" />
     <ClCompile Include="UVAnimator.cpp" />
     <ClCompile Include="VibrationTrack.cpp" />
+    <ClCompile Include="VideoUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">

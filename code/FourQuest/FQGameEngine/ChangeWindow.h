@@ -26,8 +26,6 @@ namespace fq::game_engine
 	public:
 		void Render()override;
 		void Initialize(GameProcess* game, EditorProcess* editor);
-
-
 		bool& IsWindowOpen() { return mbIsOpen; }
 
 	private:
@@ -42,6 +40,7 @@ namespace fq::game_engine
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 		bool mbIsOpen = false;
+		bool mbUsePrevObjectScale = false;
 
 		game_module::PrefabResource mPrefabPath;
 

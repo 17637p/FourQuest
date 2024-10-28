@@ -7,6 +7,9 @@
 #include "../FQGameModule/NavigationAgent.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Animator.h"
+#include "../FQGameModule/Socket.h"
+#include "../FQGameModule/BoxCollider.h"
+
 #include "Attack.h"
 #include "ArrowAttack.h"
 #include "GameManager.h"
@@ -47,6 +50,8 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mCurrentDummyTraceDurationTime(0.f)
 	, mDummyTraceElapsedTime(0.f)
 	, mIsDummyTarget(false)
+	, mArrowImotalTime(0.1f)
+	, mArrowHitDuration()
 {}
 
 fq::client::MeleeMonster::~MeleeMonster()
@@ -340,6 +345,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 					}
 				}
 				mAnimator->SetParameterBoolean("IsDead", true);
+				destroySocketCollider();
 			}
 		}
 	}
@@ -466,6 +472,7 @@ void fq::client::MeleeMonster::CheckAttackAble() const
 void fq::client::MeleeMonster::OnUpdate(float dt)
 {
 	mAttackElapsedTime = std::max(0.f, mAttackElapsedTime - dt);
+	mArrowHitDuration += dt;
 
 	// 현재 타겟이 더미 타겟인지 체크
 	if (mIsDummyTarget)
@@ -554,3 +561,88 @@ void fq::client::MeleeMonster::DestroyMonsterHPUI()
 
 }
 
+void fq::client::MeleeMonster::HitArrow(fq::game_module::GameObject* object)
+{
+	spdlog::trace("Hit Arrow ID : {}", object->GetID());
+
+	if (mArrowHitDuration < mArrowImotalTime)
+		return;
+
+	// 플레이어 공격 피격 처리
+	if (object->GetTag() == game_module::ETag::Arrow)
+	{
+		mArrowHitDuration = 0.f;
+		auto playerAttack = object->GetComponent<Attack>();
+
+		if (playerAttack->ProcessAttack())
+		{
+			spdlog::trace("Hit Arrow Damaged to Monster ID : {}", object->GetID());
+
+			mAnimator->SetParameterTrigger("OnHit");
+			float attackPower = playerAttack->GetAttackPower();
+
+			// 타겟은 자신을 때린 사람으로 바꿉니다 
+			SetTarget(playerAttack->GetAttacker());
+
+			// HP 설정
+			mHp -= attackPower;
+			if (mMonsterHpUI)
+				mMonsterHpUI->DecreaseHp(attackPower / mMaxHp);
+
+			// 피격 사운드 재생
+			playerAttack->PlayHitSound();
+
+			// 이펙트 방출
+			fq::event::OnCreateStateEvent stateEvent;
+			stateEvent.gameObject = GetGameObject();
+			stateEvent.RegisterKeyName = playerAttack->GetAttackEffectEvent();
+			if (!stateEvent.RegisterKeyName.empty())
+			{
+				GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+			}
+
+			// 사망처리 
+			if (mHp <= 0.f)
+			{
+				if (playerAttack->GetAttacker() != nullptr)
+				{
+					auto attackerID = playerAttack->GetAttacker()->GetComponent<Player>()->GetPlayerID();
+					if (attackerID == 0)
+					{
+						PlayerInfoVariable::Player1Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player1Monster);
+					}
+					if (attackerID == 1)
+					{
+						PlayerInfoVariable::Player2Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player2Monster);
+					}
+					if (attackerID == 2)
+					{
+						PlayerInfoVariable::Player3Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player3Monster);
+					}
+					if (attackerID == 3)
+					{
+						PlayerInfoVariable::Player4Monster += 1;
+						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player4Monster);
+					}
+				}
+				mAnimator->SetParameterBoolean("IsDead", true);
+				destroySocketCollider();
+			}
+		}
+	}
+}
+
+void fq::client::MeleeMonster::destroySocketCollider()
+{
+	// 소켓을 가지고 있는 자식 오브젝트의 박스 콜라이더 삭제
+	for (auto childObject : GetGameObject()->GetChildren())
+	{
+		auto socket = childObject->GetComponent<fq::game_module::Socket>();
+
+		if (socket)
+			childObject->RemoveComponent<fq::game_module::BoxCollider>();
+	}
+}

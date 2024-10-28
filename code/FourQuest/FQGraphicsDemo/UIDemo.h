@@ -13,6 +13,7 @@ namespace fq::graphics { class EngineExporter; }
 
 namespace fq::graphics { class IImageObject; }
 namespace fq::graphics { class ITextObject; }
+namespace fq::graphics { class IVideoObject; }
 
 class UIDemo : public BaseWindow<UIDemo>
 {
@@ -60,5 +61,7 @@ private:
 
 	fq::graphics::ITextObject* mTextObject1;
 	fq::graphics::ITextObject* mTextObject2;
+
+	fq::graphics::IVideoObject* mVideoObject;
 };
 

@@ -140,7 +140,7 @@ namespace fq::physics
 			mCCTmap.erase(controllerIter);
 			return true;
 		}
-
+ 
 		return false;
 	}
 	bool PhysicsCharactorControllerManager::RemoveAllController()

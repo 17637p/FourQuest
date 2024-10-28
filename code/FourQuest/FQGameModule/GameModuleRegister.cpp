@@ -22,6 +22,7 @@
 #include "ImageUI.h"
 #include "TextUI.h"
 #include "SpriteAnimationUI.h"
+#include "VideoUI.h"
 
 // Physics
 #include "Terrain.h"
@@ -105,7 +106,11 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::SafeZone>("SafeZone"_hs) // 18
 		.prop(fq::reflect::prop::Name, "SafeZone")
 		.data<ETag::Shield>("Shield"_hs) // 19
-		.prop(fq::reflect::prop::Name, "Shield");
+		.prop(fq::reflect::prop::Name, "Shield")
+		.data<ETag::Arrow>("Arrow"_hs) // 20
+		.prop(fq::reflect::prop::Name, "Arrow")
+		.data<ETag::RangeHitBox>("RangeHitBox"_hs) // 21
+		.prop(fq::reflect::prop::Name, "RangeHitBox");
 
 	// GameObject
 	entt::meta<GameObject>()
@@ -430,7 +435,11 @@ void fq::game_module::RegisterMetaData()
 		.data<&graphics::SpriteInfo::isCenter>("isCenter"_hs)
 		.prop(fq::reflect::prop::Name, "isCenter")
 		.data<&graphics::SpriteInfo::isRender>("isRender"_hs)
-		.prop(fq::reflect::prop::Name, "isRender");
+		.prop(fq::reflect::prop::Name, "isRender")
+		.data<&graphics::SpriteInfo::XNum>("XNum"_hs)
+		.prop(fq::reflect::prop::Name, "XNum")
+		.data<&graphics::SpriteInfo::YNum>("YNum"_hs)
+		.prop(fq::reflect::prop::Name, "YNum");
 
 	entt::meta<SpriteAnimationUI>()
 		.type("SpriteAnimationUI"_hs)
@@ -438,6 +447,33 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&SpriteAnimationUI::SetSpriteInfo, &SpriteAnimationUI::GetSpriteInfo>("SpriteAnimationInfo"_hs)
 		.prop(fq::reflect::prop::Name, "SpriteAnimationInfo")
+		.base<Component>();
+
+	entt::meta<graphics::VideoInfo>()
+		.type("VideoInfo"_hs)
+		.prop(fq::reflect::prop::Name, "VideoInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&graphics::VideoInfo::isRender>("isRender"_hs)
+		.prop(fq::reflect::prop::Name, "isRender")
+		.data<&graphics::VideoInfo::VideoPath>("VideoPath"_hs)
+		.prop(fq::reflect::prop::Name, "VideoPath")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".mp4")
+		.data<&graphics::VideoInfo::Width>("Width"_hs)
+		.prop(fq::reflect::prop::Name, "Width")
+		.data<&graphics::VideoInfo::Height>("Height"_hs)
+		.prop(fq::reflect::prop::Name, "Height")
+		.data<&graphics::VideoInfo::PlayTime>("PlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "PlayTime")
+		.data<&graphics::VideoInfo::Speed>("Speed"_hs)
+		.prop(fq::reflect::prop::Name, "Speed");
+
+	entt::meta<VideoUI>()
+		.type("VideoUI"_hs)
+		.prop(fq::reflect::prop::Name, "VideoUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&VideoUI::SetVideoInfo, &VideoUI::GetVideoInfo>("VideoInfo"_hs)
+		.prop(fq::reflect::prop::Name, "VideoInfo")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -752,9 +788,9 @@ void fq::game_module::RegisterMetaData()
 		//.data<&fq::physics::CharacterMovementInfo::jumpXZAcceleration>("JumpXZAcceleration"_hs)
 		//.prop(fq::reflect::prop::Name, "JumpXZAcceleration")
 		//.prop(fq::reflect::prop::Comment, u8"점프 중에 이동(XZ축) 가속도 값")
-		//.data<&fq::physics::CharacterMovementInfo::jumpXZDeceleration>("JumpXZDeceleration"_hs)
-		//.prop(fq::reflect::prop::Name, "JumpXZDeceleration")
-		//.prop(fq::reflect::prop::Comment, u8"점프 중에 이동(XZ축) 감속 값 ( 0.0 ~ 1.0 )")
+		.data<&fq::physics::CharacterMovementInfo::jumpXZDeceleration>("JumpXZDeceleration"_hs)
+		.prop(fq::reflect::prop::Name, "JumpXZDeceleration")
+		.prop(fq::reflect::prop::Comment, u8"점프 중에 이동(XZ축) 감속 값 ( 0.0 ~ 1.0 )")
 		.data<&fq::physics::CharacterMovementInfo::gravityWeight>("GravityWeight"_hs)
 		.prop(fq::reflect::prop::Name, "GravityWeight")
 		.prop(fq::reflect::prop::Comment, u8"기본 중력 값을 줄 수 있지만 가중치를 더 주고 싶을 때 값을 다르게 세팅할 수 있습니다.");
@@ -2304,7 +2340,10 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AlphaCutoff")
 		.data<&fq::graphics::DecalMaterialInfo::bUseEmissiveBlend>("bUseEmissiveBlend"_hs)
 		.prop(fq::reflect::prop::Comment, u8"이미시브 블렌딩 여부")
-		.prop(fq::reflect::prop::Name, "bUseEmissiveBlend");
+		.prop(fq::reflect::prop::Name, "bUseEmissiveBlend")
+		.data<&fq::graphics::DecalMaterialInfo::EmissiveIntensity>("EmissiveIntensity"_hs)
+		.prop(fq::reflect::prop::Comment, u8"이미시브 세기")
+		.prop(fq::reflect::prop::Name, "EmissiveIntensity");
 
 	entt::meta<NavigationMeshLoader>()
 		.type("NavigationMeshLoader"_hs)

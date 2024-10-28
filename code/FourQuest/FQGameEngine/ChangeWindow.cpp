@@ -53,6 +53,9 @@ void fq::game_engine::ChangeWindow::beginPrefabWindow()
 		}
 
 		// Button 
+		ImGui::Checkbox("UsePrevObjectScale", &mbUsePrevObjectScale);
+
+		// Button 
 		if (ImGui::Button("Change"))
 		{
 			change();
@@ -178,9 +181,14 @@ void fq::game_engine::ChangeWindow::change()
 		auto& rootObject = prefabInstance[0];
 		auto rootT = rootObject->GetTransform();
 
-		// 위치
-		auto worldMat = object->GetTransform()->GetWorldMatrix();
-		rootT->SetWorldMatrix(worldMat);
+		// position
+		auto transform = object->GetTransform();
+		auto pos = transform->GetWorldPosition();
+		auto scale = mbUsePrevObjectScale ? transform->GetWorldScale()
+			: rootT->GetWorldScale();
+		auto rotation = transform->GetWorldRotation();
+
+		rootT->GenerateWorld(pos,rotation, scale);
 
 		// 이름 
 		rootObject->SetName(object->GetName());

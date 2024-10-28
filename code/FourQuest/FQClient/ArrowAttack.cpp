@@ -13,6 +13,9 @@
 #include "Attack.h"
 #include "Player.h"
 #include "PlayerSoulVariable.h"
+#include "MeleeMonster.h"
+#include "PlantMonster.h"
+#include "BossMonster.h"
 
 namespace fq::client
 {
@@ -54,6 +57,20 @@ namespace fq::client
 			DirectX::SimpleMath::Vector3 deltaPosition = mAttackDirection * dt * mStrongProjectileVelocity;
 			transform->AddLocalPosition(deltaPosition);
 		}
+
+		// 관통 카운트가 0이면, 콜라이더 삭제 및 부딪힌 해당 오브젝트를 부모 오브젝트로 지정
+		if (mMaxBlockCount == 1)
+		{
+			GetGameObject()->SetTag(fq::game_module::ETag::Arrow);
+		}
+	}
+
+	void ArrowAttack::OnStart()
+	{
+		if (mMaxBlockCount == 1)
+		{
+			GetGameObject()->SetTag(fq::game_module::ETag::Arrow);
+		}
 	}
 
 	void ArrowAttack::OnTriggerEnter(const game_module::Collision& collision)
@@ -65,10 +82,21 @@ namespace fq::client
 		}
 
 		// 몬스터 및 박스에 충돌 시 관통 카운트 감소
-		if (collision.other->GetTag() == fq::game_module::ETag::Monster
+		if (collision.other->GetTag() == fq::game_module::ETag::RangeHitBox
 			|| collision.other->GetTag() == fq::game_module::ETag::Spawner
 			|| collision.other->GetTag() == fq::game_module::ETag::Box)
 		{
+			// 이미 공격한 몬스터의 히트 박스에 다시 충돌 했을 때, 체크
+			auto monsterIter = mHitMonsterID.find(collision.other->GetParent()->GetID());
+			if (monsterIter == mHitMonsterID.end())
+			{
+				mHitMonsterID.insert(collision.other->GetParent()->GetID());
+			}
+			else
+			{
+				return;
+			}
+
 			mMaxBlockCount--;
 		}
 
@@ -79,31 +107,48 @@ namespace fq::client
 			mMaxBlockCount = 0;
 		}
 
-		// 관통 카운트가 0이면, 콜라이더 삭제 및 부딪힌 해당 오브젝트를 부모 오브젝트로 지정
-		if (mMaxBlockCount > 0)
+		// 박히는 화살의 부모 오브젝트의 데미지가 들어가는 함수를 실행합니다.
+		if (collision.other->GetParent()->HasComponent<MeleeMonster>())
 		{
-			return;
+			auto monster = collision.other->GetParent()->GetComponent<MeleeMonster>();
+
+			monster->HitArrow(GetGameObject());
+		}
+		if (collision.other->GetParent()->HasComponent<PlantMonster>())
+		{
+			auto monster = collision.other->GetParent()->GetComponent<PlantMonster>();
+
+			monster->HitArrow(GetGameObject());
+		}
+		if (collision.other->GetParent()->HasComponent<BossMonster>())
+		{
+			auto monster = collision.other->GetParent()->GetComponent<BossMonster>();
+
+			monster->HitArrow(GetGameObject());
 		}
 
-		auto transform = GetComponent<fq::game_module::Transform>();
-		auto otherTransform = collision.other->GetComponent<fq::game_module::Transform>();
-
-		transform->SetLocalMatrix(transform->GetWorldMatrix() * otherTransform->GetWorldMatrix().Invert());
-		transform->SetParent(otherTransform);
-
-		GetGameObject()->RemoveComponent<fq::game_module::RigidBody>();
-		GetGameObject()->RemoveComponent<fq::game_module::BoxCollider>();
-		GetGameObject()->RemoveComponent<fq::game_module::CapsuleCollider>();
-		GetGameObject()->RemoveComponent<fq::game_module::StateEventEmitter>();
-
-		// 이펙트 제거
-		for (auto child : GetGameObject()->GetChildren())
+		if (mMaxBlockCount <= 0)
 		{
-			auto uvAnimatorOrNull = child->GetComponent<fq::game_module::UVAnimator>();
+			auto transform = GetComponent<fq::game_module::Transform>();
+			auto otherTransform = collision.other->GetComponent<fq::game_module::Transform>();
 
-			if (uvAnimatorOrNull != nullptr)
+			transform->SetLocalMatrix(transform->GetWorldMatrix() * otherTransform->GetWorldMatrix().Invert());
+			transform->SetParent(otherTransform);
+
+			GetGameObject()->RemoveComponent<fq::game_module::RigidBody>();
+			GetGameObject()->RemoveComponent<fq::game_module::BoxCollider>();
+			GetGameObject()->RemoveComponent<fq::game_module::CapsuleCollider>();
+			GetGameObject()->RemoveComponent<fq::game_module::StateEventEmitter>();
+
+			// 이펙트 제거
+			for (auto child : GetGameObject()->GetChildren())
 			{
-				GetScene()->DestroyGameObject(child);
+				auto uvAnimatorOrNull = child->GetComponent<fq::game_module::UVAnimator>();
+
+				if (uvAnimatorOrNull != nullptr)
+				{
+					GetScene()->DestroyGameObject(child);
+				}
 			}
 		}
 	}
@@ -156,7 +201,7 @@ namespace fq::client
 			}
 			else
 			{
-				attackInfo.remainingAttackCount = 1;
+				attackInfo.remainingAttackCount = 5;
 				attackInfo.damage = mWeakAttackPower;
 			}
 

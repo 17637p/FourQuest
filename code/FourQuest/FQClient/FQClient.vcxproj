@@ -43,6 +43,9 @@
     <ClInclude Include="ArmourDestroyer.h" />
     <ClInclude Include="AttackInvalidation.h" />
     <ClInclude Include="BGaugeUI.h" />
+    <ClInclude Include="BossMonsterHitState.h" />
+    <ClInclude Include="CollisionColorChanger.h" />
+    <ClInclude Include="CollisionRenderChanger.h" />
     <ClInclude Include="CoolTimeIcon.h" />
     <ClInclude Include="DebugService.h" />
     <ClInclude Include="DestroyWhenCollisionToWall.h" />
@@ -154,6 +157,7 @@
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerCheckUI.h" />
     <ClInclude Include="PlayerDummy.h" />
+    <ClInclude Include="PlayerHPBar.h" />
     <ClInclude Include="PlayerInfoVariable.h" />
     <ClInclude Include="PlayerMovementSoundState.h" />
     <ClInclude Include="PlayerSoundState.h" />
@@ -168,8 +172,10 @@
     <ClInclude Include="RepauseUI.h" />
     <ClInclude Include="ResetPopupUI.h" />
     <ClInclude Include="ResultUI.h" />
+    <ClInclude Include="RotationAnimation.h" />
     <ClInclude Include="SavePopupUI.h" />
     <ClInclude Include="ScaleAnimation.h" />
+    <ClInclude Include="TrainingDummy.h" />
     <ClInclude Include="ScreenBlending.h" />
     <ClInclude Include="SettingUI.h" />
     <ClInclude Include="SettingVariable.h" />
@@ -198,7 +204,9 @@
     <ClInclude Include="StaffSoulAttackState.h" />
     <ClInclude Include="SwordAttackState.h" />
     <ClInclude Include="TitleUI.h" />
+    <ClInclude Include="TrainingDummyHitState.h" />
     <ClInclude Include="UILayerDefine.h" />
+    <ClInclude Include="UIShaker.h" />
     <ClInclude Include="VibrationState.h" />
     <ClInclude Include="VideoSettingUI.h" />
     <ClInclude Include="YAxisSetter.h" />
@@ -209,6 +217,9 @@
     <ClCompile Include="ArmourDestroyer.cpp" />
     <ClCompile Include="AttackInvalidation.cpp" />
     <ClCompile Include="BGaugeUI.cpp" />
+    <ClCompile Include="BossMonsterHitState.cpp" />
+    <ClCompile Include="CollisionColorChanger.cpp" />
+    <ClCompile Include="CollisionRenderChanger.cpp" />
     <ClCompile Include="CoolTimeIcon.cpp" />
     <ClCompile Include="DebugService.cpp" />
     <ClCompile Include="DestroyWhenCollisionToWall.cpp" />
@@ -308,6 +319,7 @@
     <ClCompile Include="PlantMonsterStareState.cpp" />
     <ClCompile Include="PlayerCheckUI.cpp" />
     <ClCompile Include="PlayerDummy.cpp" />
+    <ClCompile Include="PlayerHPBar.cpp" />
     <ClCompile Include="PlayerMovementSoundState.cpp" />
     <ClCompile Include="PlayerSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
@@ -320,8 +332,10 @@
     <ClCompile Include="RepauseUI.cpp" />
     <ClCompile Include="ResetPopupUI.cpp" />
     <ClCompile Include="ResultUI.cpp" />
+    <ClCompile Include="RotationAnimation.cpp" />
     <ClCompile Include="SavePopupUI.cpp" />
     <ClCompile Include="ScaleAnimation.cpp" />
+    <ClCompile Include="TrainingDummy.cpp" />
     <ClCompile Include="ScreenBlending.cpp" />
     <ClCompile Include="SettingUI.cpp" />
     <ClCompile Include="ShieldDashState.cpp" />
@@ -346,6 +360,8 @@
     <ClCompile Include="StaffSoulAttackState.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
     <ClCompile Include="TitleUI.cpp" />
+    <ClCompile Include="TrainingDummyHitState.cpp" />
+    <ClCompile Include="UIShaker.cpp" />
     <ClCompile Include="VibrationState.cpp" />
     <ClCompile Include="VideoSettingUI.cpp" />
     <ClCompile Include="YAxisSetter.cpp" />

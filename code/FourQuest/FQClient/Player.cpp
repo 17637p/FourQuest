@@ -11,7 +11,6 @@
 
 #include "Attack.h"
 #include "CameraMoving.h"
-#include "HpBar.h"
 #include "Soul.h"
 #include "ClientEvent.h"
 #include "PlayerUIManager.h"
@@ -27,6 +26,8 @@
 #include "BGaugeUI.h"
 #include "EffectColorTransmitter.h"
 #include "PlayerDummy.h"
+#include "PlayerHPBar.h"
+#include "ClientEvent.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -38,6 +39,7 @@ fq::client::Player::Player()
 	, mInvincibleTime(1.f)
 	, mInvincibleElapsedTime(1.f)
 	, mAnimator(nullptr)
+	,mPlayerHpBar(nullptr)
 	, mFeverTime(10.f)
 	, mSoulType(ESoulType::Sword)
 	, mArmourType(EArmourType::Knight)
@@ -102,8 +104,6 @@ void fq::client::Player::OnUpdate(float dt)
 
 	checkPoisonDuration(dt);
 	checkCoolTime();
-
-
 }
 
 void fq::client::Player::OnLateUpdate(float dt)
@@ -125,6 +125,9 @@ void fq::client::Player::OnStart()
 	{
 		if (child->HasComponent<BGaugeUI>())
 			mBGaugeUI = child->GetComponent<BGaugeUI>();
+
+		if (child->HasComponent<PlayerHPBar>())
+			mPlayerHpBar = child->GetComponent<PlayerHPBar>();
 	}
 	mBaseAttackPower = mAttackPower;
 
@@ -163,8 +166,8 @@ void fq::client::Player::OnStart()
 			mSkinnedMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
 		}
 	}
-
-	GetComponent<HpBar>()->DecreaseHp((mMaxHp - mHp) / mMaxHp);
+	          
+	mPlayerHpBar->DecreaseHp((mMaxHp - mHp) / mMaxHp);
 
 	mbCanCreateDummy = false;
 }
@@ -272,7 +275,7 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 					knockBackDir *= power;
 					rigid->AddLinearVelocity(knockBackDir);
 				}
-			}
+			}	
 
 			if (isHitAble)
 			{
@@ -397,7 +400,7 @@ void fq::client::Player::processDebuff(float dt)
 			mHp -= poisonDamage;
 
 			// UI 설정
-			GetComponent<HpBar>()->DecreaseHp(poisonDamage / mMaxHp);
+			mPlayerHpBar->DecreaseHp(poisonDamage / mMaxHp);
 
 			// 플레이어 사망처리 
 			if (mHp <= 0.f)
@@ -433,6 +436,11 @@ void fq::client::Player::EmitStaffSoulAttack()
 	}
 
 	GetScene()->AddGameObject(attackObj);
+
+	// 키입력 이벤트 출력
+	int id = static_cast<int>(mController->GetControllerID());
+	auto eventMgr = GetScene()->GetEventManager();
+	eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::Y });
 }
 
 void fq::client::Player::EmitBowSoulAttack()
@@ -480,6 +488,11 @@ void fq::client::Player::EmitBowSoulAttack()
 	}
 
 	GetScene()->AddGameObject(attackObj);
+
+	// 키입력 이벤트 출력
+	int id = static_cast<int>(mController->GetControllerID());
+	auto eventMgr = GetScene()->GetEventManager();
+	eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::Y });
 }
 
 
@@ -512,6 +525,11 @@ void fq::client::Player::EmitSwordSoulAttack()
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
+
+	// 키입력 이벤트 출력
+	int id = static_cast<int>(mController->GetControllerID());
+	auto eventMgr = GetScene()->GetEventManager();
+	eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::Y });
 }
 
 void fq::client::Player::EquipSoulWeapone()
@@ -628,6 +646,11 @@ void fq::client::Player::EmitAxeSoulAttack()
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
+
+	// 키입력 이벤트 출력
+	int id = static_cast<int>(mController->GetControllerID());
+	auto eventMgr = GetScene()->GetEventManager();
+	eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::Y });
 }
 
 void fq::client::Player::AddSoulGauge(float soul)
@@ -934,12 +957,12 @@ void fq::client::Player::DecreaseHp(float hp, bool bUseMinHp /*= false*/, bool b
 	if (bUseMinHp)
 	{
 		mHp = std::max(PlayerVariable::HpReductionOnAttackMinHp, mHp - hp);
-		GetComponent<HpBar>()->DecreaseHp(hp / mMaxHp);
+		mPlayerHpBar->DecreaseHp(hp / mMaxHp);
 	}
 	else
 	{
 		mHp -= hp;
-		GetComponent<HpBar>()->DecreaseHp(hp / mMaxHp);
+		mPlayerHpBar->DecreaseHp(hp / mMaxHp);
 	}
 
 	// 플레이어 사망처리 

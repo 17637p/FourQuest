@@ -104,6 +104,7 @@ void fq::game_engine::GameVariableWindow::beginVariable(entt::meta_type type)
 						metaData.set(variable, color);
 					}
 				}
+				beginIsItemHovered_Comment(metaData);
 			}
 		}
 		ImGui::EndChild();
@@ -121,6 +122,35 @@ void fq::game_engine::GameVariableWindow::Initialize()
 			{
 				mVariableTypes.push_back(type);
 			}
+		}
+	}
+}
+
+void fq::game_engine::GameVariableWindow::beginIsItemHovered_Comment(entt::meta_data data)
+{
+	auto prop = data.prop(fq::reflect::prop::Comment);
+
+	if (!prop)
+	{
+		return;
+	}
+
+	if (prop.value().type() == entt::resolve<const char*>())
+	{
+		const char* comment = prop.value().cast<const char*>();
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip(comment);
+		}
+	}
+	else  if (prop.value().type() == entt::resolve<const char8_t*>())
+	{
+		const char8_t* comment = prop.value().cast<const char8_t*>();
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip(reinterpret_cast<const char*>(comment));
 		}
 	}
 }

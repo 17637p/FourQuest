@@ -3,7 +3,6 @@
 #include "Scene.h"
 #include "Event.h"
 #include "EventManager.h"
-
 #include "Transform.h"
 
 #include "../FQCommon/IFQRenderObject.h"
@@ -60,6 +59,8 @@ void fq::game_module::TextUI::OnUpdate(float dt)
 
 	SetTextPosition(myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
 	SetTextScale(myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
+
+	mTextObject->SetTextInformation(mTextInfo);
 }
 
 void fq::game_module::TextUI::SetText(std::string text)

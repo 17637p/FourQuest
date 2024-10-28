@@ -45,7 +45,6 @@ void fq::client::PlantMonsterAttckState::OnStateUpdate(game_module::Animator& an
 		}
 	}
 
-
 	if (mElapsedTime == mAttackTiming)
 		return;
 

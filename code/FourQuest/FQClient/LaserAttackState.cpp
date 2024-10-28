@@ -25,7 +25,7 @@ void fq::client::LaserAttackState::OnStateEnter(game_module::Animator& animator,
 	mElapsedTime = 0.f;
 	auto magic = animator.GetComponent<MagicArmour>();
 	mGatherEffect = magic->EmitLaserGatherEffect();
-	magic->CountLaserCoolTime();
+	magic->EnterLaserState();
 }
 
 void fq::client::LaserAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
