@@ -1721,15 +1721,19 @@ void fq::client::QuestManager::eventProcessPushButtonEvent()
 
 						if (getMaxPlayer() == pushButtonPlayer)
 						{
-							GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
-								{ mCurMainQuest, 0 });
+							mClearEvents.push_back(mCurMainQuest);
+							mClearEventIndexes.push_back(0);
+							//GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+							//	{ mCurMainQuest, 0 });
 							spdlog::trace("Complete Clear Push Skill");
 						}
 					}
 					else
 					{
-						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
-							{ mCurMainQuest, 0 });
+						mClearEvents.push_back(mCurMainQuest);
+						mClearEventIndexes.push_back(0);
+						//GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+						//	{ mCurMainQuest, 0 });
 						spdlog::trace("Complete Clear Push Skill");
 					}
 				}
@@ -1769,15 +1773,19 @@ void fq::client::QuestManager::eventProcessPushButtonEvent()
 
 							if (getMaxPlayer() == pushButtonPlayer)
 							{
-								GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
-									{ mCurMainQuest, 0 });
+								//GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+								//	{ mCurMainQuest, 0 });
+								mClearEvents.push_back(mCurSubQuest[i]);
+								mClearEventIndexes.push_back(i);
 								spdlog::trace("Complete Clear Push Skill");
 							}
 						}
 						else
 						{
-							GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
-								{ mCurMainQuest, 0 });
+							//GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+							//	{ mCurMainQuest, 0 });
+							mClearEvents.push_back(mCurSubQuest[i]);
+							mClearEventIndexes.push_back(i);
 							spdlog::trace("Complete Clear Push Skill");
 						}
 					}

@@ -35,7 +35,7 @@ fq::client::Portal::~Portal()
 
 void fq::client::Portal::ChangeScene()
 {
-	//GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({mNextSceneName, true});
+	GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({mNextSceneName, true});
 }
 
 void fq::client::Portal::OnTriggerEnter(const fq::game_module::Collision& collision)
@@ -45,18 +45,19 @@ void fq::client::Portal::OnTriggerEnter(const fq::game_module::Collision& collis
 		|| collision.other->GetTag() == game_module::ETag::Dash
 		|| collision.other->GetTag() == game_module::ETag::PlayerMonsterIgnore)
 	{
+		GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>()->SavePlayerState();
+		ChangeScene();
+
 		// 타임 스케일 0 으로 바꾸기 
-		GetScene()->GetTimeManager()->SetTimeScale(0);
-		//GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>()->SavePlayerState();
-		//ChangeScene();
+		//GetScene()->GetTimeManager()->SetTimeScale(0);
 		
-		// 결과창 띄우기 
-		std::shared_ptr<game_module::GameObject> resultUI;
-
-		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mResultUIPrefab);
-		resultUI = *(instance.begin());
-
-		GetScene()->AddGameObject(resultUI);
-		resultUI->GetComponent<ResultUI>()->SetNextScene(mNextSceneName);
+		//// 결과창 띄우기 
+		//std::shared_ptr<game_module::GameObject> resultUI;
+		//
+		//auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mResultUIPrefab);
+		//resultUI = *(instance.begin());
+		//
+		//GetScene()->AddGameObject(resultUI);
+		//resultUI->GetComponent<ResultUI>()->SetNextScene(mNextSceneName);
 	}
 }
