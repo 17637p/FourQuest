@@ -175,6 +175,7 @@
     <ClInclude Include="RotationAnimation.h" />
     <ClInclude Include="SavePopupUI.h" />
     <ClInclude Include="ScaleAnimation.h" />
+    <ClInclude Include="TrainingDummy.h" />
     <ClInclude Include="ScreenBlending.h" />
     <ClInclude Include="SettingUI.h" />
     <ClInclude Include="SettingVariable.h" />
@@ -203,6 +204,7 @@
     <ClInclude Include="StaffSoulAttackState.h" />
     <ClInclude Include="SwordAttackState.h" />
     <ClInclude Include="TitleUI.h" />
+    <ClInclude Include="TrainingDummyHitState.h" />
     <ClInclude Include="UILayerDefine.h" />
     <ClInclude Include="UIShaker.h" />
     <ClInclude Include="VibrationState.h" />
@@ -333,6 +335,7 @@
     <ClCompile Include="RotationAnimation.cpp" />
     <ClCompile Include="SavePopupUI.cpp" />
     <ClCompile Include="ScaleAnimation.cpp" />
+    <ClCompile Include="TrainingDummy.cpp" />
     <ClCompile Include="ScreenBlending.cpp" />
     <ClCompile Include="SettingUI.cpp" />
     <ClCompile Include="ShieldDashState.cpp" />
@@ -357,6 +360,7 @@
     <ClCompile Include="StaffSoulAttackState.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
     <ClCompile Include="TitleUI.cpp" />
+    <ClCompile Include="TrainingDummyHitState.cpp" />
     <ClCompile Include="UIShaker.cpp" />
     <ClCompile Include="VibrationState.cpp" />
     <ClCompile Include="VideoSettingUI.cpp" />

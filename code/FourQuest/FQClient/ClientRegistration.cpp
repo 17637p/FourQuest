@@ -185,6 +185,8 @@
 #include "CollisionColorChanger.h"
 #include "CollisionRenderChanger.h"
 #include "UIShaker.h"
+#include "TrainingDummy.h"
+#include "TrainingDummyHitState.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -1383,7 +1385,9 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mGroggyDecreasePerSecond>("GroggyDecreasePerSecond"_hs)
 		.prop(fq::reflect::prop::Name, "GroggyDecreasePerSecond")
 		.prop(fq::reflect::prop::Comment, u8"초당 그로기 게이지 감소량")
-
+		.data<&BossMonster::mGroggyDecreaseHpRatio>("GroggyDecreaseHpRatio"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyDecreaseHpRatio")
+		.prop(fq::reflect::prop::Comment, u8"그로기 상태에서 hp 감소비율")
 		.data<&BossMonster::mRushProbability>("RushProbability"_hs)
 		.prop(fq::reflect::prop::Name, "RushProbability")
 		.prop(fq::reflect::prop::Comment, u8"러쉬 패턴 확률\n확률합계는 1.f 이하이고 남은 확률은 콤보 공격 확률이 됩니다")
@@ -1811,6 +1815,15 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackInvalidation")
 		.base<fq::game_module::Component>();
 
+	entt::meta<TrainingDummy>()
+		.type("TrainingDummy"_hs)
+		.prop(fq::reflect::prop::Name, "TrainingDummy")
+		.base<fq::game_module::Component>();
+
+	entt::meta<TrainingDummyHitState>()
+		.type("TrainingDummyHitState"_hs)
+		.prop(fq::reflect::prop::Name, "TrainingDummyHitState")
+		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             UI										//

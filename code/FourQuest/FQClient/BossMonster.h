@@ -155,7 +155,8 @@ namespace fq::client
 		fq::game_module::Animator* mAnimator;
 		fq::game_module::SkinnedMeshRenderer* mSkinnedMesh;
 		std::shared_ptr<game_module::GameObject> mTarget;
-		std::set<unsigned int> mArrowAttackObject;
+		float mArrowImotalTime;
+		float mArrowHitDuration;
 
 		float mMaxHp;
 		float mHp;
@@ -184,6 +185,7 @@ namespace fq::client
 		float mGroggyGauge;
 		float mGroggyIncreaseRatio;
 		float mGroggyDecreasePerSecond;
+		float mGroggyDecreaseHpRatio; // 그로기 상태 hp 감소비율
 
 		// 패턴 확률 관련 
 		float mRushProbability;

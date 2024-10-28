@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "BossHP.h"
 
 #include "../FQGameModule/Transform.h"
@@ -36,6 +37,9 @@ void fq::client::BossHP::OnStart()
 	mShieldGauge = GetGameObject()->GetChildren()[1]->GetChildren()[0]->GetComponent <game_module::ImageUI>();
 	mShieldWidth = mShieldGauge->GetUIInfomations()[0].Width;
 
+	// DecreaseBar
+	mDecreaseGauge = myTransform->GetChildren()[2]->GetComponent<game_module::ImageUI>();
+
 	// screenManager µî·Ï
 	fq::game_module::Scene* scene = GetScene();
 	mScreenManager = GetScene()->GetScreenManager();
@@ -68,11 +72,32 @@ void fq::client::BossHP::OnUpdate(float dt)
 	uiInfos[0].Width = mHPWidth * gaugeRatio;
 	mHPBarGauge->SetUIInfomations(uiInfos);
 
+	// Decrease Effect
+	if (mUseDecreaseEffect)
+	{
+		if (mPrevHpRatio > gaugeRatio)
+		{
+			mDecreaseHpRatio += mPrevHpRatio - gaugeRatio;
+		}
+	}
+	else
+	{
+		constexpr float DecreaseSpeed = 0.5f;
+		mDecreaseHpRatio = std::max(0.f, mDecreaseHpRatio - dt * DecreaseSpeed);
+	}
+	mPrevHpRatio = gaugeRatio;
+
+	uiInfos = mDecreaseGauge->GetUIInfomations();
+	uiInfos[0].XRatio = gaugeRatio + mDecreaseHpRatio;
+	uiInfos[0].Width = mHPWidth * (gaugeRatio + mDecreaseHpRatio);
+	mDecreaseGauge->SetUIInfomations(uiInfos);
+
 	gaugeRatio = mBoss->GetGroggyGaugeRatio();
 	uiInfos = mShieldGauge->GetUIInfomations();
 	uiInfos[0].XRatio = gaugeRatio;
 	uiInfos[0].Width = mShieldWidth * gaugeRatio;
 	mShieldGauge->SetUIInfomations(uiInfos);
+
 }
 
 fq::client::BossHP::BossHP()
@@ -81,11 +106,23 @@ fq::client::BossHP::BossHP()
 	mBoss(nullptr),
 	mScreenManager(nullptr),
 	mShieldWidth(0),
-	mShieldGauge(nullptr)
-{
-
-}
+	mShieldGauge(nullptr),
+	mUseDecreaseEffect(false),
+	mDecreaseHpRatio(0.f),
+	mPrevHpRatio(1.f),
+	mDecreaseGauge(nullptr)
+{}
 
 fq::client::BossHP::~BossHP()
+{}
+
+void fq::client::BossHP::SetUseDecreaseEffet(bool useDecreaseEffect)
 {
+	mUseDecreaseEffect = useDecreaseEffect;
 }
+
+void fq::client::BossHP::SetBoss(BossMonster* boss)
+{
+	mBoss = boss;
+}
+

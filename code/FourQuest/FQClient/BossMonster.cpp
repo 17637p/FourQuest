@@ -73,6 +73,7 @@ fq::client::BossMonster::BossMonster()
 	, mGroggyElapsed(0.f)
 	, mShakeCount(10)
 	, mRimPow(1.f)
+	, mGroggyDecreaseHpRatio(2.f)
 {}
 
 fq::client::BossMonster::~BossMonster()
@@ -123,8 +124,18 @@ void fq::client::BossMonster::OnStart()
 void fq::client::BossMonster::OnUpdate(float dt)
 {
 	// 그로기 게이지 
-	mGroggyGauge -= mGroggyDecreasePerSecond * dt;
-	mGroggyGauge = std::max<float>(mGroggyGauge, 0);
+	if (isGroggyState())
+	{
+		float ratio = 1.f - (mGroggyElapsed / mGroggyDuration);
+		mGroggyGauge = ratio * mStartGroggyGauge;
+	}
+	else
+	{
+		mGroggyGauge -= mGroggyDecreasePerSecond * dt;
+		mGroggyGauge = std::max<float>(mGroggyGauge, 0);
+	}
+
+	mArrowHitDuration += dt;
 
 	// 공격 쿨타임 계산 
 	mAttackElapsedTime = std::min(mAttackCoolTime, mAttackElapsedTime + dt);
@@ -154,14 +165,20 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 		{
 			float attackPower = playerAttack->GetAttackPower();
 
-			// HP 감소
+			bool isGroggy = isGroggyState();
+
+			// 그로기 상태에서는 hp가 더 많이 감소 
+			if (isGroggy)
+			{
+				attackPower *= mGroggyDecreaseHpRatio;
+			}
 			mHp -= attackPower;
 
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
 
 			// 그로기 상태 처리
-			if (!isGroggyState())
+			if (!isGroggy)
 			{
 				mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
 			}
@@ -212,7 +229,6 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 
 			if (mGroggyGauge == mStartGroggyGauge)
 			{
-				mGroggyGauge = 0.f;
 				mAnimator->SetParameterBoolean("OnGroggy", true);
 				mGroggyElapsed = 0.f;
 			}
@@ -764,20 +780,14 @@ bool fq::client::BossMonster::isGroggyState() const
 
 void fq::client::BossMonster::HitArrow(fq::game_module::GameObject* object)
 {
+	if (mArrowHitDuration < mArrowImotalTime)
+		return;
+
 	auto playerAttack = object->GetComponent<Attack>();
 
-	// 이미 데미지를 입은 오브젝트라면 함수 종료
-	auto attackObject = mArrowAttackObject.find(object->GetID());
-	if (attackObject == mArrowAttackObject.end())
-	{
-		mArrowAttackObject.insert(object->GetID());
-	}
-	else
-	{
-		return;
-	}
 	if (playerAttack->ProcessAttack())
 	{
+		mArrowHitDuration = 0.f;
 		float attackPower = playerAttack->GetAttackPower();
 
 		// HP 감소
@@ -855,8 +865,17 @@ void fq::client::BossMonster::destroySocketCollider()
 
 void fq::client::BossMonster::updateGroggy(float dt)
 {
-	if (!isGroggyState())
-	mGroggyElapsed += dt;
+	bool isGroggy = isGroggyState();
+
+	if (isGroggy)
+	{
+		mGroggyElapsed += dt;
+	}
+
+	if (mHpBar)
+	{
+		mHpBar->GetComponent<BossHP>()->SetUseDecreaseEffet(isGroggy);
+	}
 
 	// todo : groggy 관련 변수 맴버로 수정하기
 	if (mGroggyElapsed > mGroggyDuration)
