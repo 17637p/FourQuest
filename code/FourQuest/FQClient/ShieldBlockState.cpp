@@ -4,6 +4,7 @@
 #include "../FQGameModule/CharacterController.h"
 #include "KnightArmour.h"
 #include "Player.h"
+#include "PlayerVariable.h"
 
 fq::client::ShieldBlockState::ShieldBlockState()
 {}
@@ -18,7 +19,8 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::ShieldBlockState::
 
 void fq::client::ShieldBlockState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
-	animator.GetComponent<game_module::CharacterController>()->SetPadInputRotation(game_module::EPadStickType::Right);
+	auto controller = animator.GetComponent<game_module::CharacterController>();
+	controller->SetPadInputRotationBySpeed(game_module::EPadStickType::Right, PlayerVariable::PadRotationSpeed, dt);
 	animator.GetComponent<KnightArmour>()->UpdateBlockState(dt);
 	animator.GetComponent<Player>()->SetLowerBodyAnimation();
 }
