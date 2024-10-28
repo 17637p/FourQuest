@@ -27,6 +27,7 @@
 #include "EffectColorTransmitter.h"
 #include "PlayerDummy.h"
 #include "PlayerHPBar.h"
+#include "ClientEvent.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -435,6 +436,11 @@ void fq::client::Player::EmitStaffSoulAttack()
 	}
 
 	GetScene()->AddGameObject(attackObj);
+
+	// 키입력 이벤트 출력
+	int id = static_cast<int>(mController->GetControllerID());
+	auto eventMgr = GetScene()->GetEventManager();
+	eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::Y });
 }
 
 void fq::client::Player::EmitBowSoulAttack()
@@ -482,6 +488,11 @@ void fq::client::Player::EmitBowSoulAttack()
 	}
 
 	GetScene()->AddGameObject(attackObj);
+
+	// 키입력 이벤트 출력
+	int id = static_cast<int>(mController->GetControllerID());
+	auto eventMgr = GetScene()->GetEventManager();
+	eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::Y });
 }
 
 
@@ -514,6 +525,11 @@ void fq::client::Player::EmitSwordSoulAttack()
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
+
+	// 키입력 이벤트 출력
+	int id = static_cast<int>(mController->GetControllerID());
+	auto eventMgr = GetScene()->GetEventManager();
+	eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::Y });
 }
 
 void fq::client::Player::EquipSoulWeapone()
@@ -630,6 +646,11 @@ void fq::client::Player::EmitAxeSoulAttack()
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
+
+	// 키입력 이벤트 출력
+	int id = static_cast<int>(mController->GetControllerID());
+	auto eventMgr = GetScene()->GetEventManager();
+	eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::Y });
 }
 
 void fq::client::Player::AddSoulGauge(float soul)
