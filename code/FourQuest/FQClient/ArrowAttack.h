@@ -55,6 +55,7 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 mAttackDirection;
 		DirectX::SimpleMath::Matrix  mAttackTransform;
 		int mMaxBlockCount;
+		std::set<unsigned int> mHitMonsterID;
 
 		// 생존 시간
 		float mLifeElapsedTime;

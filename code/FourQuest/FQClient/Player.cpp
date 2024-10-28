@@ -274,7 +274,7 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 					knockBackDir *= power;
 					rigid->AddLinearVelocity(knockBackDir);
 				}
-			}
+			}	
 
 			if (isHitAble)
 			{
