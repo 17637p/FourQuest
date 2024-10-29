@@ -82,9 +82,7 @@ namespace fq::client
 		}
 
 		// 몬스터 및 박스에 충돌 시 관통 카운트 감소
-		if (collision.other->GetTag() == fq::game_module::ETag::RangeHitBox
-			|| collision.other->GetTag() == fq::game_module::ETag::Spawner
-			|| collision.other->GetTag() == fq::game_module::ETag::Box)
+		if (collision.other->GetTag() == fq::game_module::ETag::RangeHitBox)
 		{
 			// 이미 공격한 몬스터의 히트 박스에 다시 충돌 했을 때, 체크
 			auto monsterIter = mHitMonsterID.find(collision.other->GetParent()->GetID());
@@ -100,9 +98,16 @@ namespace fq::client
 			mMaxBlockCount--;
 		}
 
+		if (collision.other->GetTag() == fq::game_module::ETag::Spawner
+			|| collision.other->GetTag() == fq::game_module::ETag::Box)
+		{
+			mMaxBlockCount--;
+		}
+
 		// 바닥 및 벽에 부딪히면 관통 카운트 즉시 0
 		if (collision.other->GetTag() == fq::game_module::ETag::Floor
-			|| collision.other->GetTag() == fq::game_module::ETag::Wall)
+			|| collision.other->GetTag() == fq::game_module::ETag::Wall
+			|| collision.other->GetTag() == fq::game_module::ETag::Untagged)
 		{
 			mMaxBlockCount = 0;
 		}

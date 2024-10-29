@@ -1473,6 +1473,7 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 		ray.Direction = event.direction * event.distance;
 		ray.Origin = event.origin;
 		ray.Normalize = false;
+		ray.bUseDepthTest = true;
 
 		renderer->DrawRay(ray);
 	}
