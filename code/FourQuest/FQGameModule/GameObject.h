@@ -282,6 +282,12 @@ namespace fq::game_module
 	template <typename T>
 	bool fq::game_module::GameObject::HasComponent() const
 	{
+		// Transform 은 항상 소유합니다. 
+		if constexpr (std::is_same_v<T,Transform>)
+		{
+			return true;
+		}
+
 		static const entt::id_type id = entt::resolve<T>().id();
 
 		auto iter = mComponents.find(id);

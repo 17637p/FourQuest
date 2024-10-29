@@ -215,20 +215,11 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Warrior")
 		.base<game_module::Component>();
 
-	entt::meta<TestPOD>()
-		.type("TestPOD"_hs)
-		.prop(reflect::prop::Name, "TestPOD")
-		.prop(reflect::prop::POD)
-		.data<&TestPOD::res>("res"_hs)
-		.prop(fq::reflect::prop::Name, "res");
-
 	entt::meta<MonsterManager>()
 		.type("MonsterManager"_hs)
 		.prop(reflect::prop::Name, "MonsterManager")
 		.data<&MonsterManager::SetMonsterSize, &MonsterManager::GetMonsterSize>("Size"_hs)
 		.prop(fq::reflect::prop::Name, "Size")
-		.data<&MonsterManager::mRes>("mRes"_hs)
-		.prop(fq::reflect::prop::Name, "mRes")
 		.base<game_module::Component>();
 
 	entt::meta<DebugService>()

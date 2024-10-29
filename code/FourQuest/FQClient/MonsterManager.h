@@ -6,11 +6,6 @@
 
 namespace fq::client
 {
-	struct TestPOD
-	{
-		fq::game_module::PrefabResource res;
-	};
-
 	class MonsterManager : public fq::game_module::Component
 	{
 		using EventHandler = game_module::EventHandler;
@@ -50,8 +45,6 @@ namespace fq::client
 
 		EventHandler mOnDestroyHandler;
 		EventHandler mAddGameObjectHandler;
-
-		std::vector<TestPOD> mRes;	
 
 		friend void RegisterMetaData();
 	};

@@ -33,7 +33,6 @@ fq::client::MeleeMonsterDeadState::~MeleeMonsterDeadState()
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterDeadState::Clone()
 {
 	return fq::game_module::ObjectPool::GetInstance()->Assign<MeleeMonsterDeadState>(*this);
-
 }
 
 void fq::client::MeleeMonsterDeadState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -121,8 +120,9 @@ void fq::client::MeleeMonsterDeadState::OnStateUpdate(game_module::Animator& ani
 {
 	mDurationTime += dt;
 
-	if (mDurationTime >= mEraseTime)
+	if (mDurationTime >= mEraseTime && !animator.GetGameObject()->IsDestroyed())
 	{
+		spdlog::trace("destroy");
 		auto scene = animator.GetScene();
 		scene->DestroyGameObject(animator.GetGameObject());
 	}
