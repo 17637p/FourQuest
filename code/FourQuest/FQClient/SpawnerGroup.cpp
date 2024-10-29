@@ -155,10 +155,13 @@ void fq::client::SpawnerGroup::Spawn(SpawnRule rule)
 	auto children = GetGameObject()->GetChildren();
 	for (int i = 0; i < children.size(); i++)
 	{
+		auto spawner = children[i]->GetComponent<Spawner>();
+		if (spawner == nullptr) continue;
+
 		for (int k = 0; k < rule.spawnData.size(); k++)
 		{
 			// 스폰하려는 스포너의 ID가 맞다면
-			if (children[i]->GetComponent<Spawner>()->GetID() == rule.spawnData[k].SpawnerNum)
+			if (spawner->GetID() == rule.spawnData[k].SpawnerNum)
 			{
 				// 몬스터 타입 결정
 				game_module::PrefabResource mSelectPrefab;
