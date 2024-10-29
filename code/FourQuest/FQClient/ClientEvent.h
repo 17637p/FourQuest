@@ -207,4 +207,11 @@ namespace fq::client::event
 		int playerID;
 		ESkillType eSkillType;
 	};
+
+	/// 보스몬스터 스폰 요청 이벤트 
+	struct BossSpawnMonster
+	{
+		std::shared_ptr<game_module::GameObject> mTarget;
+	};
+
 }

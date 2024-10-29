@@ -1025,7 +1025,7 @@ void fq::client::RegisterMetaData()
 		.data<&BowDashState::mMinSpeedMultiplier>("MinSpeed"_hs)
 		.prop(reflect::prop::Name, "MinSpeed")
 		.prop(fq::reflect::prop::Comment, u8"최소 스피드 배수")
-		.data<&BowDashState::mRotationSpeed> ("RotationSpeed"_hs)
+		.data<&BowDashState::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(reflect::prop::Name, "RotationSpeed")
 		.prop(fq::reflect::prop::Comment, u8"회전 스피드")
 		.data<&BowDashState::mPeakSpeedTime>("PeakSpeedTime"_hs)
@@ -1427,7 +1427,7 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mDummyDurationRandomRangeMax>("DummyDurationRandomRangeMax"_hs)
 		.prop(fq::reflect::prop::Name, "DummyDurationRandomRangeMax")
 		.prop(fq::reflect::prop::Comment, u8"더미 플레이어 생성 시 더해질 최대 랜덤 추적 시간(최소값 ~ 최댓값)")
-		
+
 		.data<&BossMonster::mGroggyDuration>("mGroggyDuration"_hs)
 		.prop(fq::reflect::prop::Name, "mGroggyDuration")
 		.prop(fq::reflect::prop::Comment, u8"그로기 상태 지속시간")
@@ -2840,6 +2840,11 @@ void fq::client::RegisterMetaData()
 		.data<&InProgressDefence::Count>("Count"_hs)
 		.prop(fq::reflect::prop::Name, "Count");
 
+	entt::meta<BossSpawnCondition>()
+		.type("BossSpawnCondition"_hs)
+		.prop(fq::reflect::prop::Name, "BossSpawnCondition")
+		.prop(fq::reflect::prop::POD);
+
 	entt::meta<SpawnCondition>()
 		.type("SpawnCondition"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnCondition")
@@ -2855,7 +2860,9 @@ void fq::client::RegisterMetaData()
 		.data<&SpawnCondition::InProgressQuestList>("InProgressQuestList"_hs)
 		.prop(fq::reflect::prop::Name, "InProgressQuestList")
 		.data<&SpawnCondition::InProgressDefenceList>("InProgressDefenceList"_hs)
-		.prop(fq::reflect::prop::Name, "InProgressDefenceList");
+		.prop(fq::reflect::prop::Name, "InProgressDefenceList")
+		.data<&SpawnCondition::BossSpwanList>("BossSpwanList"_hs)
+		.prop(fq::reflect::prop::Name, "BossSpwanList");
 
 	entt::meta<SpawnData>()
 		.type("SpawnData"_hs)

@@ -4,6 +4,7 @@
 #include "../FQGameModule/NavigationAgent.h"
 #include "BossMonster.h"
 #include "SpawnStruct.h"
+#include "ClientEvent.h"
 
 fq::client::BossMonsterRoarState::BossMonsterRoarState()
 	:mPosition{ 0.f,0.f,0.f }
@@ -23,8 +24,8 @@ void fq::client::BossMonsterRoarState::OnStateEnter(game_module::Animator& anima
 
 	// 몬스터 소환 요청 이벤트 
 	auto event = animator.GetScene()->GetEventManager();
-	event->FireEvent<RequestSpawnMonster>({ EMonsterType::Melee , mMeleeNumber, mPosition });
-	event->FireEvent<RequestSpawnMonster>({ EMonsterType::Explosion, mExplosionNumber, mPosition });
+	auto boss = animator.GetComponent<BossMonster>();
+	event->FireEvent<event::BossSpawnMonster>({boss->GetTarget()});
 }
 
 void fq::client::BossMonsterRoarState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

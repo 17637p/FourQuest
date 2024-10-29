@@ -43,6 +43,7 @@ namespace fq::client
 		void EventProcessPlayerSpawnCollideTrigger();
 		void EventProcessInProgressQuest();
 		void EventProcessInProgressDefence();
+		void EventProcessBossSpawnMonster();
 
 	private:
 		//인스펙터 용 변수
@@ -65,8 +66,10 @@ namespace fq::client
 		game_module::EventHandler mPlayerSpawnCollideTriggerHandler;
 		game_module::EventHandler mInProgressQuestHandler;
 		game_module::EventHandler mInProgressDefenceHandler;
+		game_module::EventHandler mBossSpwanMonsterHandler;
 
 		MonsterManager* mMonsterManager;
+		std::shared_ptr<game_module::GameObject> mTarget;
 
 		std::list<std::shared_ptr<game_module::GameObject>> mAddedMonsterList; // 추가되고 다음 틱에 타겟 설정하기 위해서 필요, 바로는 컨트롤러 설정이 안되어서 불가능 
 
