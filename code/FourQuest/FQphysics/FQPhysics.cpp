@@ -246,6 +246,16 @@ namespace fq::physics
 		return true;
 	}
 
+	bool FQPhysics::ChangeScene()
+	{
+		if (!RemoveAllRigidBody()) return false;
+		if (!RemoveAllController()) return false;
+		if (!RemoveAllCloth()) return false;
+		if (!RemoveAllArticulation()) return false;
+
+		return true;
+	}
+
 	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)> func)
 	{
 		// 충돌 콜백 등록
@@ -517,6 +527,7 @@ namespace fq::physics
 	{
 		if (mRigidBodyManager->RemoveAllRigidBody(mScene, mActorsToRemove))
 		{
+			spdlog::trace("[Physics ({})] : Remove All RigidBody", __LINE__);
 			return true;
 		}
 		else
@@ -543,12 +554,6 @@ namespace fq::physics
 			spdlog::warn("[Physics Warrning ({})] Failed SetRigidBodyData ID : {}", __LINE__, id);
 			return false;
 		}
-	}
-	bool FQPhysics::ChangeScene()
-	{
-		RemoveAllController();
-		RemoveAllCloth();
-		return false;
 	}
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{
@@ -597,6 +602,7 @@ namespace fq::physics
 	{
 		if (mCCTManager->RemoveAllController())
 		{
+			spdlog::trace("[Physics ({})] Remove All CCT(Character Controller)", __LINE__);
 			return true;
 		}
 		else
@@ -648,6 +654,10 @@ namespace fq::physics
 	bool FQPhysics::RemoveArticulation(const unsigned int& id)
 	{
 		return mCharacterPhysicsManager->RemoveArticulation(id);
+	}
+	bool FQPhysics::RemoveAllArticulation()
+	{
+		return mCharacterPhysicsManager->RemoveAllArticulation();
 	}
 	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
 	{
@@ -738,6 +748,7 @@ namespace fq::physics
 	{
 		if (mClothManager->RemoveAllCloth(mActorsToRemove))
 		{
+			spdlog::trace("[Physics ({})] Remove All Cloth", __LINE__);
 			return true;
 		}
 		else

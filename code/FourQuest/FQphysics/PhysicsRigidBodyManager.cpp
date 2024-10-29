@@ -87,7 +87,7 @@ namespace fq::physics
 	bool PhysicsRigidBodyManager::FinalUpdate()
 	{
 //#ifdef _DEBUG
-		ExtractDebugData();
+		//ExtractDebugData();
 //#endif
 
 		return true;
@@ -559,8 +559,6 @@ namespace fq::physics
 			spdlog::warn("[PhysicsRigidBodyManager ({})] Failed Remove RigidBody ID : {}", __LINE__, id);
 			return false;
 		}
-		else
-			spdlog::trace("[PhysicsRigidBodyManager ({})] Remove RigidBody ID : {}", __LINE__, id);
 
 		std::shared_ptr<RigidBody> body = mRigidBodyContainer.find(id)->second;
 
