@@ -56,6 +56,12 @@ namespace fq::physics
 		virtual void SetPhysicsInfo(PhysicsEngineInfo& info) override;
 
 		/// <summary>
+		/// 씬 체인지할 시에 모든 리지드 바디를 삭제하고 이벤트 콜백을 씬이 넘어가기 전에 처리합니다.
+		/// </summary>
+		/// <returns></returns>
+		virtual bool ChangeScene() override;
+
+		/// <summary>
 		/// 레이캐스트 : 원점, 방향, 거리값의 선을 쏴서 물리 공간의 오브젝트들을 충돌 검사
 		/// </summary>
 		virtual RayCastOutput RayCast(const RayCastInput& info, bool isStatic = false, bool isGPUScene = false) override;
@@ -96,12 +102,6 @@ namespace fq::physics
 		/// 물리 공간에 있는 모든 리지드 바디들을 삭제합니다.
 		/// </summary>
 		virtual bool RemoveAllRigidBody() override;
-
-		/// <summary>
-		/// 씬 체인지할 시에 모든 리지드 바디를 삭제하고 이벤트 콜백을 씬이 넘어가기 전에 처리합니다.
-		/// </summary>
-		/// <returns></returns>
-		virtual bool ChangeScene() override;
 
 		/// <summary>
 		/// 폴리곤의 디버그 데이터 

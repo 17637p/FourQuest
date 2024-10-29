@@ -246,6 +246,16 @@ namespace fq::physics
 		return true;
 	}
 
+	bool FQPhysics::ChangeScene()
+	{
+		if (!RemoveAllRigidBody()) return false;
+		if (!RemoveAllController()) return false;
+		if (!RemoveAllCloth()) return false;
+		if (!RemoveAllArticulation()) return false;
+
+		return true;
+	}
+
 	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)> func)
 	{
 		// 충돌 콜백 등록
@@ -517,6 +527,7 @@ namespace fq::physics
 	{
 		if (mRigidBodyManager->RemoveAllRigidBody(mScene, mActorsToRemove))
 		{
+			spdlog::trace("[Physics ({})] : Remove All RigidBody", __LINE__);
 			return true;
 		}
 		else
@@ -543,14 +554,6 @@ namespace fq::physics
 			spdlog::warn("[Physics Warrning ({})] Failed SetRigidBodyData ID : {}", __LINE__, id);
 			return false;
 		}
-	}
-	bool FQPhysics::ChangeScene()
-	{
-		if (!RemoveAllController()) return false;
-		if (!RemoveAllCloth()) return false;
-		if (!RemoveAllArticulation()) return false;
-
-		return true;
 	}
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{
