@@ -100,7 +100,7 @@ void fq::client::MonsterHP::OnUpdate(float dt)
 
 	// HpBar
 	auto& innerBar = infomations[1];
-	innerBar.StartX = outBar.StartX;
+	innerBar.StartX = outBar.StartX  + mInnerOffset.x;
 	innerBar.StartY = outBar.StartY;
 	innerBar.XRatio = mHpRatio + mDecreaseRatio;
 	innerBar.Width = mBarSize.x * (mHpRatio + mDecreaseRatio);
@@ -142,7 +142,7 @@ void fq::client::MonsterHP::OnStart()
 	infomations[0].Layer = 230;
 
 	// InnerBar	
-	infomations[1].Width = mBarSize.x;
+	infomations[1].Width = mBarSize.x -mInnerOffset.x * 2.f; 
 	infomations[1].Height = mBarSize.y;
 	infomations[1].Layer = 229;
 
