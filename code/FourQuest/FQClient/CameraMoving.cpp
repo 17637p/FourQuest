@@ -480,8 +480,6 @@ void fq::client::CameraMoving::restrcitPlayerMove()
 			float xViewport = ((projPos.x + 1) / 2) * width;
 			float yViewport = ((1 - projPos.y) / 2) * height;
 
-			spdlog::trace("{}Player {}, {}",i, xViewport, yViewport);
-
 			std::array<bool, 4> moveRestriction{};
 
 			moveRestriction[static_cast<int>(physics::ERestrictDirection::PlusX)] = projPos.x >= mForbiddenAreaPaddingX.y;
