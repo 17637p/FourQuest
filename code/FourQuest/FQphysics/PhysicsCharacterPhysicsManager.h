@@ -40,6 +40,11 @@ namespace fq::physics
 		bool RemoveArticulation(const unsigned int& id);
 
 		/// <summary>
+		/// 캐릭터 파직스 삭제
+		/// </summary>
+		bool RemoveAllArticulation();
+
+		/// <summary>
 		/// 가지고 있는 관절 중, 링크 및 조인트 추가
 		/// </summary>
 		template <typename ...Params>
