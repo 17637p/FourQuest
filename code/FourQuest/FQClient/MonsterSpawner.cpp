@@ -4,14 +4,16 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/NavigationAgent.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "Attack.h"
 #include "MonsterGroup.h"
 #include "MeleeMonster.h"
 #include "HpBar.h"
 
+#include <spdlog/spdlog.h>
 #include "Player.h"
 #include "PlayerInfoVariable.h"
-#include <spdlog/spdlog.h>
+#include "MonsterHP.h"
 
 fq::client::MonsterSpawner::MonsterSpawner()
 	:mSpawnCoolTime(10.f)
@@ -19,10 +21,13 @@ fq::client::MonsterSpawner::MonsterSpawner()
 	, mHp(1000.f)
 	, mMaxHp(1000.f)
 	, mSpawnOffset(2.f)
+	, mHitElapsedTime(0.f)
 	, mbIsSpawnState(false)
 	, mTransform(nullptr)
 	, mMonsterGroup(nullptr)
 	, mAnimator(nullptr)
+	, mMonsterHp(nullptr)
+	, mbOnHitRimLight(false)
 {}
 
 fq::client::MonsterSpawner::~MonsterSpawner()
@@ -50,7 +55,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::MonsterSpawner::Clone(st
 void fq::client::MonsterSpawner::OnUpdate(float dt)
 {
 	mSpawnElapsedTime = std::max(mSpawnElapsedTime - dt, 0.f);
-	 
+
 	// 몬스터 생성
 	if (mSpawnElapsedTime == 0.f)
 	{
@@ -64,6 +69,31 @@ void fq::client::MonsterSpawner::OnUpdate(float dt)
 	{
 		agent->SetAgentState();
 	}
+
+	if (mbOnHitRimLight)
+	{
+		mHitElapsedTime += dt;
+		constexpr float HitRimLightTime = 0.15f;
+
+		if (mHitElapsedTime >= HitRimLightTime)
+		{
+			mbOnHitRimLight = false;
+			fq::graphics::MaterialInstanceInfo info;
+			info.bUseRimLight = false;
+
+			for (auto child : GetGameObject()->GetChildren())
+			{
+				auto skeletalMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
+
+				if (skeletalMesh != nullptr)
+				{
+					fq::graphics::MaterialInstanceInfo info;
+					info.bUseRimLight = false;
+					skeletalMesh->SetMaterialInstanceInfo(info);
+				}
+			}
+		}
+	}
 }
 
 void fq::client::MonsterSpawner::OnStart()
@@ -71,6 +101,16 @@ void fq::client::MonsterSpawner::OnStart()
 	mAnimator = GetComponent<game_module::Animator>();
 	mTransform = GetComponent<game_module::Transform>();
 	mMonsterGroup = GetComponent<MonsterGroup>();
+
+	for (auto child : mTransform->GetChildren())
+	{
+		auto hpBar = child->GetComponent<MonsterHP>();
+		if (hpBar)
+		{
+			mMonsterHp = hpBar;
+		}
+	}
+
 
 	mMaxHp = mHp;
 	mSpawnElapsedTime = mSpawnCoolTime;
@@ -82,7 +122,6 @@ void fq::client::MonsterSpawner::OnStart()
 		agent->SetAcceleration(0.f);
 		agent->SetRadius(3.f);
 		agent->SetSyncRotationWithMovementDirection(false);
-		//agent->SetAgentState();
 	}
 
 }
@@ -101,7 +140,7 @@ void fq::client::MonsterSpawner::Spawn()
 	// 몬스터 스폰위치 설정 
 	auto lookDir = DirectX::SimpleMath::Matrix::CreateFromQuaternion(spawnerT->GetWorldRotation()).Right();
 	auto monsterPos = lookDir * mSpawnOffset;
-	monsterT->SetLocalPosition(monsterPos);
+	monsterT->SetWorldPosition(monsterPos);
 
 	// 현재 타겟확인
 	auto target = mMonsterGroup->GetTarget();
@@ -133,12 +172,15 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 		{
 			float damage = playerAttack->GetAttackPower();
 			mHp -= damage;
-			GetComponent<HpBar>()->DecreaseHp(damage / mMaxHp);
+			mMonsterHp->DecreaseHp(damage / mMaxHp);
 
 			if (!mbIsSpawnState)
 			{
 				mAnimator->SetParameterTrigger("OnHit");
 			}
+
+			// 피격 림라이트 설정 
+			onHitRimLight();
 
 			// 몬스터 스포너의 타겟 설정
 			mMonsterGroup->SetTarget(playerAttack->GetAttacker());
@@ -147,7 +189,7 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 			playerAttack->PlayHitSound();
 
 			// 스포너 사망 처리 
-			if (mHp <= 0.f )
+			if (mHp <= 0.f)
 			{
 				if (playerAttack->GetAttacker() != nullptr)
 				{
@@ -266,5 +308,38 @@ void fq::client::MonsterSpawner::Destroy()
 	}
 
 	GetScene()->DestroyGameObject(GetGameObject());
+}
+
+void fq::client::MonsterSpawner::DetectPlayer(game_module::GameObject* target)
+{
+	mMonsterGroup->SetTarget(target);
+	mAnimator->SetParameterTrigger("Detect");
+}
+
+void fq::client::MonsterSpawner::onHitRimLight()
+{
+	mHitElapsedTime = 0.f;
+
+	if (mbOnHitRimLight)
+	{
+		return;
+	}
+
+	mbOnHitRimLight = true;
+	for (auto child : GetGameObject()->GetChildren())
+	{
+		auto skeletalMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
+
+		if (skeletalMesh != nullptr)
+		{
+			fq::graphics::MaterialInstanceInfo info;
+			info.bUseRimLight = true;
+			info.RimLightColor = DirectX::SimpleMath::Color{ 1.f, 0.f, 0.f, 1.f };
+			info.RimPow = 0.f;
+			info.RimIntensity = 0.5f;
+
+			skeletalMesh->SetMaterialInstanceInfo(info);
+		}
+	}
 }
 
