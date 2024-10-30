@@ -11,6 +11,7 @@ struct Vertex
 	DirectX::SimpleMath::Vector3 Normal;
 	DirectX::SimpleMath::Vector3 Tangent;
 	DirectX::SimpleMath::Vector2 Tex;
+	DirectX::SimpleMath::Vector2 Tex1;
 };
 
 namespace fq::physics

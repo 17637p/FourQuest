@@ -91,25 +91,25 @@ __global__ void UpdateVertex(
 	buffer[i2].Pos.y = v2.y;
 	buffer[i2].Pos.z = v2.z;
 
-	buffer[i0].Normal.x = normal.x;
-	buffer[i0].Normal.y = normal.y;
-	buffer[i0].Normal.z = normal.z;
-	buffer[i1].Normal.x = normal.x;
-	buffer[i1].Normal.y = normal.y;
-	buffer[i1].Normal.z = normal.z;
-	buffer[i2].Normal.x = normal.x;
-	buffer[i2].Normal.y = normal.y;
-	buffer[i2].Normal.z = normal.z;
+	//buffer[i0].Normal.x = normal.x;
+	//buffer[i0].Normal.y = normal.y;
+	//buffer[i0].Normal.z = normal.z;
+	//buffer[i1].Normal.x = normal.x;
+	//buffer[i1].Normal.y = normal.y;
+	//buffer[i1].Normal.z = normal.z;
+	//buffer[i2].Normal.x = normal.x;
+	//buffer[i2].Normal.y = normal.y;
+	//buffer[i2].Normal.z = normal.z;
 
-	buffer[i0].Tangent.x = tangent.x;
-	buffer[i0].Tangent.y = tangent.y;
-	buffer[i0].Tangent.z = tangent.z;
-	buffer[i1].Tangent.x = tangent.x;
-	buffer[i1].Tangent.y = tangent.y;
-	buffer[i1].Tangent.z = tangent.z;
-	buffer[i2].Tangent.x = tangent.x;
-	buffer[i2].Tangent.y = tangent.y;
-	buffer[i2].Tangent.z = tangent.z;
+	//buffer[i0].Tangent.x = tangent.x;
+	//buffer[i0].Tangent.y = tangent.y;
+	//buffer[i0].Tangent.z = tangent.z;
+	//buffer[i1].Tangent.x = tangent.x;
+	//buffer[i1].Tangent.y = tangent.y;
+	//buffer[i1].Tangent.z = tangent.z;
+	//buffer[i2].Tangent.x = tangent.x;
+	//buffer[i2].Tangent.y = tangent.y;
+	//buffer[i2].Tangent.z = tangent.z;
 }
 #pragma endregion
 
@@ -134,19 +134,19 @@ __global__ void processVerticesKernel(unsigned int* sameVerticesFirst, unsigned 
 		tangentTemp.y = buffer[first].Tangent.y + buffer[second].Tangent.y;
 		tangentTemp.z = buffer[first].Tangent.z + buffer[second].Tangent.z;
 
-		buffer[first].Normal.x = normalTemp.x;
-		buffer[first].Normal.y = normalTemp.y;
-		buffer[first].Normal.z = normalTemp.z;
-		buffer[second].Normal.x = normalTemp.x;
-		buffer[second].Normal.y = normalTemp.y;
-		buffer[second].Normal.z = normalTemp.z;
+		//buffer[first].Normal.x = normalTemp.x;
+		//buffer[first].Normal.y = normalTemp.y;
+		//buffer[first].Normal.z = normalTemp.z;
+		//buffer[second].Normal.x = normalTemp.x;
+		//buffer[second].Normal.y = normalTemp.y;
+		//buffer[second].Normal.z = normalTemp.z;
 
-		buffer[first].Tangent.x = tangentTemp.x;
-		buffer[first].Tangent.y = tangentTemp.y;
-		buffer[first].Tangent.z = tangentTemp.z;
-		buffer[second].Tangent.x = tangentTemp.x;
-		buffer[second].Tangent.y = tangentTemp.y;
-		buffer[second].Tangent.z = tangentTemp.z;
+		//buffer[first].Tangent.x = tangentTemp.x;
+		//buffer[first].Tangent.y = tangentTemp.y;
+		//buffer[first].Tangent.z = tangentTemp.z;
+		//buffer[second].Tangent.x = tangentTemp.x;
+		//buffer[second].Tangent.y = tangentTemp.y;
+		//buffer[second].Tangent.z = tangentTemp.z;
 	}
 }
 #pragma endregion
@@ -487,6 +487,7 @@ namespace fq::physics
 	{
 		int threadsPerBlock = 256;
 		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
+
 
 		DirectX::SimpleMath::Matrix prevTransform = prevWorldTransform.Invert();
 		DirectX::SimpleMath::Matrix nextTransform = nextWorldTrnasform;

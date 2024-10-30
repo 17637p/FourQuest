@@ -16,6 +16,7 @@
 #include "MeleeMonster.h"
 #include "PlantMonster.h"
 #include "BossMonster.h"
+#include "MonsterSpawner.h"
 
 namespace fq::client
 {
@@ -130,6 +131,12 @@ namespace fq::client
 			if (collision.other->GetParent()->HasComponent<BossMonster>())
 			{
 				auto monster = collision.other->GetParent()->GetComponent<BossMonster>();
+
+				monster->HitArrow(GetGameObject());
+			}
+			if (collision.other->GetParent()->HasComponent<MonsterSpawner>())
+			{
+				auto monster = collision.other->GetParent()->GetComponent<MonsterSpawner>();
 
 				monster->HitArrow(GetGameObject());
 			}

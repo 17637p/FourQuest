@@ -32,6 +32,11 @@ namespace fq::client
 		/// </summary>
 		void Destroy();
 
+		/// <summary>
+		/// 몬스터 스포너가 화살에 맞습니다
+		/// </summary>
+		void HitArrow(fq::game_module::GameObject* object);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;

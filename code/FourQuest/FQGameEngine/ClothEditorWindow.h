@@ -78,6 +78,7 @@ namespace fq::game_engine
 		float mBrushRadian;
 
 		std::shared_ptr<fq::physics::Cloth::ClothData> mClothData;
+		std::vector<DirectX::SimpleMath::Vector3> mVertices;
 		std::set<unsigned int> mObjectDisableIndices;
 		std::string mModelPath;
 		std::string mFileName;

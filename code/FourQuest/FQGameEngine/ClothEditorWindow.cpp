@@ -97,7 +97,7 @@ namespace fq::game_engine
 				mClothData->disableIndices.push_back(disableIndices);
 			}
 
-			mClothDataLoader.Save(mClothData, path.c_str());
+			mClothDataLoader.Save(mClothData, mVertices, path.c_str());
 		}
 	}
 
@@ -177,6 +177,7 @@ namespace fq::game_engine
 				const auto& mesh = ModelSystem::GetMesh(model, meshName);
 
 				// 물리 엔진에 전달할 메쉬의 버텍스와 인덱스 값을 저장
+				mVertices.resize(mesh.Vertices.size());
 				mClothData->vertices.resize(mesh.Vertices.size());
 				mClothData->uvs.resize(mesh.Vertices.size());
 				mClothData->indices.resize(mesh.Indices.size());
@@ -186,6 +187,7 @@ namespace fq::game_engine
 				for (int i = 0; i < mesh.Vertices.size(); ++i)
 				{
 					mClothData->vertices[i] = DirectX::SimpleMath::Vector3::Transform(mesh.Vertices[i].Pos, transform->GetWorldMatrix());
+					mVertices[i] = mesh.Vertices[i].Pos;
 				}
 				for (int i = 0; i < mesh.Vertices.size(); ++i)
 				{

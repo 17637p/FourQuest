@@ -18,7 +18,6 @@ namespace fq::game_module
 	bool ClothCollider::Load()
 	{
 		ClothDataLoader loader;
-
 		return loader.LoadArticulationData(mClothPath, mClothInfo->clothData);
 	}
 

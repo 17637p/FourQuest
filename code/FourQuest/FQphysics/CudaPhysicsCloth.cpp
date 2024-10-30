@@ -337,11 +337,7 @@ namespace fq::physics
 		// 입자 상태 저장
 		for (int i = 0; i < numParticles; i++)
 		{
-			//if (mbIsSkinnedMesh)
-			//	positionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 0.f);
-			//else
-				positionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 1.f / particleMass);
-
+			positionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 1.f / particleMass);
 			phase[i] = particlePhase;
 			velocity[i] = physx::PxVec4(0.f);
 		}
@@ -433,7 +429,21 @@ namespace fq::physics
 	{
 		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
 
-		if (!CudaClothTool::UpdateWorldTransformToID3DBuffer(mWorldTransform, data.worldTransform, mVertices.size(), paticle)) return false;
+		DirectX::SimpleMath::Vector3 prevPosition;
+		DirectX::SimpleMath::Quaternion prevRotation;
+		DirectX::SimpleMath::Vector3 prevScale;
+		DirectX::SimpleMath::Vector3 nextPosition;
+		DirectX::SimpleMath::Quaternion nextRotation;
+		DirectX::SimpleMath::Vector3 nextScale;
+		DirectX::SimpleMath::Matrix prevTransform = mWorldTransform;
+		DirectX::SimpleMath::Matrix nextTransform = data.worldTransform;
+
+		prevTransform.Decompose(prevScale, prevRotation, prevPosition);
+		nextTransform.Decompose(nextScale, nextRotation, nextPosition);
+		prevTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(prevRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(prevPosition);
+		nextTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(nextRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(nextPosition);
+
+		if (!CudaClothTool::UpdateWorldTransformToID3DBuffer(prevTransform, nextTransform, mVertices.size(), paticle)) return false;
 
 		// ClothBuffer 업데이트
 		mClothBuffer->raiseFlags(physx::PxParticleBufferFlag::eUPDATE_POSITION);

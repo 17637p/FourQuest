@@ -26,7 +26,7 @@ namespace fq::game_module
 		return DirectX::SimpleMath::Vector2(vecJson[0], vecJson[1]);
 	}
 
-	void ClothDataLoader::Save(const std::shared_ptr<fq::physics::Cloth::ClothData> data, const Path& path)
+	void ClothDataLoader::Save(const std::shared_ptr<fq::physics::Cloth::ClothData> data, const std::vector<DirectX::SimpleMath::Vector3>& vertices, const Path& path)
 	{
 		ordered_json clothJson;
 
@@ -34,7 +34,7 @@ namespace fq::game_module
 
 		// vertices를 JSON 배열로 변환
 		clothJson["vertices"] = json::array();
-		for (const auto& vertex : data->vertices)
+		for (const auto& vertex : vertices)
 		{
 			clothJson["vertices"].push_back(Vector3ToJson(vertex));
 		}

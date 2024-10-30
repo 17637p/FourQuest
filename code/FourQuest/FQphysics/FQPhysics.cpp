@@ -163,6 +163,7 @@ namespace fq::physics
 		mScene = physics->createScene(sceneDesc);
 
 		// PhysX Physics에서 GPU로 작동하는 Scene을 생성합니다 ( Cloth 입자를 위한 )
+		sceneDesc.gravity.y = 1.f;
 		sceneDesc.filterShader = CustomGpuSimulationFilterShader;
 		sceneDesc.cudaContextManager = mCudaContextManager;
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
