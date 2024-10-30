@@ -43,6 +43,8 @@ namespace fq::graphics
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const { return mVertexBuffer; }
 
+		UINT GetStride() const { return mStride; }
+
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mVertexBuffer;
 		UINT mStride;

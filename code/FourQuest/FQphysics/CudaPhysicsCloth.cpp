@@ -92,6 +92,7 @@ namespace fq::physics
 		bool isSkinnedMesh)
 	{
 		mbIsSkinnedMesh = isSkinnedMesh;
+		mCudaVertexStride = info.vertexStride;
 
 		int deviceCount;
 		cudaError_t cudaStatus = cudaGetDeviceCount(&deviceCount);
@@ -135,22 +136,18 @@ namespace fq::physics
 
 		return true;
 	}
-
+	 
 	bool CudaPhysicsCloth::UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager)
 	{
 		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
 
-		if (mbIsSkinnedMesh)
-		{
-			if (!CudaClothTool::UpdateSkinnedAnimationVertexToPhysicsVertex(mCudaVertexResource, paticle, mVertices.size())) return false;
-		}
-		else
-		{
-			if (!CudaClothTool::UpdatePhysXDataToID3DBuffer(mVertices, mIndices, mUV, mCudaVertexResource, paticle)) return false;
-			if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource)) return false;
-		}
+		DirectX::SimpleMath::Matrix InvTransform;
+		mWorldTransform.Invert(InvTransform);
 
-		//if (!updateDebugVertex()) return false;
+		if (!CudaClothTool::UpdatePhysXDataToID3DBuffer(mVertices, mIndices, mUV, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;
+		//if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource, mCudaVertexStride)) return false;
+
+		if (!updateDebugVertex()) return false;
 
 		return true;
 	}
@@ -168,12 +165,9 @@ namespace fq::physics
 		// 복사한 데이터를 mVertices에 저장
 		for (int i = 0; i < mVertices.size(); i++)
 		{
-			if (hostParticleData[i].x <= 0.00001f && hostParticleData[i].x >= -0.0001f)
-				mVertices[i].x = hostParticleData[i].x;
-			if (hostParticleData[i].y <= 0.00001f && hostParticleData[i].y >= -0.0001f)
-				mVertices[i].y = hostParticleData[i].y;
-			if (hostParticleData[i].z <= 0.00001f && hostParticleData[i].z >= -0.0001f)
-				mVertices[i].z = hostParticleData[i].z;
+			mVertices[i].x = hostParticleData[i].x;
+			mVertices[i].y = hostParticleData[i].y;
+			mVertices[i].z = hostParticleData[i].z;
 		}
 
 		// 메모리 해제
@@ -443,7 +437,7 @@ namespace fq::physics
 		prevTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(prevRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(prevPosition);
 		nextTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(nextRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(nextPosition);
 
-		if (!CudaClothTool::UpdateWorldTransformToID3DBuffer(prevTransform, nextTransform, mVertices.size(), paticle)) return false;
+		//if (!CudaClothTool::UpdateWorldTransformToID3DBuffer(prevTransform, nextTransform, mVertices.size(), paticle)) return false;
 
 		// ClothBuffer 업데이트
 		mClothBuffer->raiseFlags(physx::PxParticleBufferFlag::eUPDATE_POSITION);

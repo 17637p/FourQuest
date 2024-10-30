@@ -146,6 +146,21 @@ namespace fq::graphics
 		return indexBuffer.Get();
 	}
 
+	UINT StaticMesh::GetVertexSize() const
+	{
+		if (mVertexBuffer == nullptr)
+		{
+			// 버텍스 버퍼 자체가 생성되지 않은 경우
+			assert(false);
+			return 0u;
+		}
+		
+		UINT stride = mVertexBuffer->GetStride();
+		assert(stride != 0);
+
+		return stride;
+	}
+
 	SkinnedMesh::SkinnedMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData)
 		: MeshBase(device, meshData)
 		, mDevice(device)

@@ -695,11 +695,13 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		if (object->HasComponent<StaticMeshRenderer>())
 		{
 			auto staticMesh = object->GetComponent<StaticMeshRenderer>();
-			void* indexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetIndexBuffer();
-			void* vertexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetVertexBuffer();
+			auto iStaticMesh = staticMesh->GetStaticMeshObject()->GetStaticMesh();
+			void* indexBuffer = iStaticMesh->GetIndexBuffer();
+			void* vertexBuffer = iStaticMesh->GetVertexBuffer();
 			clothCollider->SetIndexBuffer(indexBuffer);
 			clothCollider->SetVertexBuffer(vertexBuffer);
 			clothCollider->SetIsSkinnedMesh(false);
+			clothCollider->GetClothInfo()->vertexStride = iStaticMesh->GetVertexSize();
 		}
 		else if (object->HasComponent<SkinnedMeshRenderer>())
 		{

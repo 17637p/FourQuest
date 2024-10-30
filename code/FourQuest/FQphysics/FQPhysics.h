@@ -243,6 +243,9 @@ namespace fq::physics
 		void RemoveActors();
 
 	private:
+		void updateGravity(float dt);
+
+	private:
 		// ¾À
 		physx::PxScene* mScene;
 		physx::PxScene* mGpuScene;
