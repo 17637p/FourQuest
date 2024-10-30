@@ -628,13 +628,26 @@ void fq::client::QuestManager::eventProcessClearQuest()
 			std::vector<ClearQuest>& clearQuestList = mCurMainQuest.mclearConditionList.clearQuestList;
 			if (clearQuestList.size() > 0)
 			{
-				if (clearQuestList[0].clearIndex == event.clearQuest.mIndex &&
-					clearQuestList[0].clearIsMain == event.clearQuest.mIsMain)
+				bool isClear = true;
+				for (int i = 0; i < clearQuestList.size(); i++)
+				{
+					if (clearQuestList[i].clearIndex == event.clearQuest.mIndex &&
+						clearQuestList[i].clearIsMain == event.clearQuest.mIsMain)
+					{
+						clearQuestList[i].isClear = true;
+
+						spdlog::trace("Clear Quest Condition True!");
+					}
+
+					if (!clearQuestList[i].isClear)
+					{
+						isClear = false;
+					}
+				}
+				if (isClear)
 				{
 					mClearEvents.push_back(mCurMainQuest);
 					mClearEventIndexes.push_back(0);
-
-					spdlog::trace("Clear Quest Condition True!");
 				}
 			}
 
@@ -643,13 +656,25 @@ void fq::client::QuestManager::eventProcessClearQuest()
 				std::vector<ClearQuest>& clearQuestList = mCurSubQuest[i].mclearConditionList.clearQuestList;
 				if (clearQuestList.size() > 0)
 				{
-					if (clearQuestList[0].clearIndex == event.clearQuest.mIndex &&
-						clearQuestList[0].clearIsMain == event.clearQuest.mIsMain)
+					bool isClear = true;
+					for (int j = 0; j < clearQuestList.size(); j++)
+					{
+						if (clearQuestList[j].clearIndex == event.clearQuest.mIndex &&
+							clearQuestList[j].clearIsMain == event.clearQuest.mIsMain)
+						{
+							clearQuestList[j].isClear = true;
+
+							spdlog::trace("Clear Quest Condition True!");
+						}
+						if (!clearQuestList[j].isClear)
+						{
+							isClear = false;
+						}
+					}
+					if (isClear)
 					{
 						mClearEvents.push_back(mCurSubQuest[i]);
 						mClearEventIndexes.push_back(i);
-
-						spdlog::trace("Clear Quest Condition True!");
 					}
 				}
 			}

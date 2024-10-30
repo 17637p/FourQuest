@@ -54,6 +54,8 @@ namespace fq::client
 	{
 		int clearIndex = 0;
 		bool clearIsMain = true; // QuestType
+
+		bool isClear;
 	};
 	
 	struct QuestJoinCondition
