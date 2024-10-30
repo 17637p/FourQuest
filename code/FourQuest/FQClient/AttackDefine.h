@@ -53,9 +53,8 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 attackDirection{};
 		DirectX::SimpleMath::Matrix attackTransform{};
 
-		std::string hitSound; // 乔拜 家府
-		
-		std::string HitEffectName;
+		std::string hitSound{}; // 乔拜 家府
+		std::string HitEffectName{};
 	};
 
 }

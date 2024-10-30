@@ -45,13 +45,18 @@ namespace fq::client
 		/// </summary>
 		void AimToNearMonster();
 
+		/// <summary>
+		/// 차지 레벨에 따른 화살의 방향들을 반환합니다 
+		/// </summary>
+		std::vector<DirectX::SimpleMath::Quaternion> GetStrongArrowDirections(int chargeLevel);
+
 	private:
 		void OnStart() override;
 		void OnUpdate(float dt) override;
 		void checkSkillCoolTime(float dt);
 		void checkInput(float dt);
-
 		void setName();
+		void makeStrongAttackArrow(float damage, DirectX::SimpleMath::Quaternion direction, DirectX::SimpleMath::Vector3 position);
 
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -60,6 +65,7 @@ namespace fq::client
 		game_module::Animator*				mAnimator;
 		game_module::CharacterController*	mController;
 		game_module::Transform*				mTransform;
+		game_module::Transform*				mWeaponeSocketT;
 		client::Player*						mPlayer;
 		AimAssist*							mAimAssist;
 
@@ -73,6 +79,8 @@ namespace fq::client
 		float mRStickNoInputTime;
 		float mWeakProjectileVelocity;
 		float mStrongProjectileVelocity;
+		float mStrongArrowOffset;
+		float mStrongArrowRange;
 
 		game_module::PrefabResource mWeakAttack;
 		game_module::PrefabResource mStrongAttack;
