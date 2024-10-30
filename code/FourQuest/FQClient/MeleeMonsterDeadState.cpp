@@ -122,7 +122,6 @@ void fq::client::MeleeMonsterDeadState::OnStateUpdate(game_module::Animator& ani
 
 	if (mDurationTime >= mEraseTime && !animator.GetGameObject()->IsDestroyed())
 	{
-		spdlog::trace("destroy");
 		auto scene = animator.GetScene();
 		scene->DestroyGameObject(animator.GetGameObject());
 	}

@@ -26,10 +26,13 @@ void fq::client::MonsterSpawnerDetector::OnTriggerEnter(const game_module::Colli
 		|| collision.other->GetTag() == game_module::ETag::Dash
 		|| collision.other->GetTag() == game_module::ETag::PlayerMonsterIgnore)
 	{
-		auto monsterSpawner = GetGameObject()->GetParent()->GetComponent<MonsterSpawner>();
-		monsterSpawner->DetectPlayer(collision.other);
-
-		// 활성화 이후에는 파괴합니다
-		GetScene()->DestroyGameObject(GetGameObject());
+		auto parent = GetGameObject()->GetParent();
+		if (parent)
+		{
+			auto monsterSpawner = parent->GetComponent<MonsterSpawner>();
+			monsterSpawner->DetectPlayer(collision.other);
+			// 활성화 이후에는 파괴합니다
+			GetScene()->DestroyGameObject(GetGameObject());
+		}
 	}
 }
