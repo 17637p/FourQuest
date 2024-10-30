@@ -103,6 +103,7 @@
 
 // MonsterSpawner
 #include "MonsterSpawner.h"
+#include "MonsterSpawnerDetector.h"
 #include "MonsterGroup.h"
 #include "SpawnerDeadState.h"
 #include "SpawnerOpenState.h"
@@ -1665,6 +1666,12 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SpwanCoolTime")
 		.data<&MonsterSpawner::mSpawnOffset>("SpawnOffeset"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnOffeset")
+		.base<fq::game_module::Component>();
+
+	entt::meta<MonsterSpawnerDetector>()
+		.type("MonsterSpawnerDetector"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterSpawnerDetector")
+		.prop(reflect::prop::Label, "Monster")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SpawnerOpenState>()

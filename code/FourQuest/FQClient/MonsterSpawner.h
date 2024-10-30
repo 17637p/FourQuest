@@ -12,6 +12,7 @@ namespace fq::game_module
 namespace fq::client
 {
 	class MonsterGroup;
+	class MonsterHP;
 
 	/// <summary>
 	/// 몬스터 스포너
@@ -32,6 +33,11 @@ namespace fq::client
 		/// </summary>
 		void Destroy();
 
+		/// <summary>
+		/// 플레이어를 감지하여 몬스터스포너를 활성화합니다 
+		/// </summary>
+		void DetectPlayer(game_module::GameObject* target);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -39,15 +45,22 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnStart() override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
+	
+		void onHitRimLight();
+
 	private:
 		fq::game_module::Animator* mAnimator;
 		fq::game_module::Transform* mTransform;
 		MonsterGroup* mMonsterGroup;
+		MonsterHP* mMonsterHp;
 
 		bool mbIsSpawnState;
 		float mSpawnCoolTime;
 		float mSpawnElapsedTime;
 		float mSpawnOffset;
+
+		bool mbOnHitRimLight;
+		float mHitElapsedTime;
 
 		float mHp;
 		float mMaxHp;

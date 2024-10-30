@@ -119,7 +119,6 @@ void fq::client::MonsterHP::OnUpdate(float dt)
 		rankBar.StartY = outBar.StartY - mRankOffset.y;
 	}
 
-
 	mImageUI->SetUIInfomations(infomations);
 }
 
