@@ -134,12 +134,13 @@ namespace fq::client
 
 				monster->HitArrow(GetGameObject());
 			}
-			if (collision.other->GetParent()->HasComponent<MonsterSpawner>())
-			{
-				auto monster = collision.other->GetParent()->GetComponent<MonsterSpawner>();
+		}
 
-				monster->HitArrow(GetGameObject());
-			}
+		if (collision.other->HasComponent<MonsterSpawner>())
+		{
+			auto monster = collision.other->GetComponent<MonsterSpawner>();
+
+			monster->HitArrow(GetGameObject());
 		}
 
 		if (mMaxBlockCount <= 0)
