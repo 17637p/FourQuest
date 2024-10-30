@@ -37,8 +37,13 @@ namespace fq::client
 		controller->SetPadInputRotation();
 		controller->SetDashInput(true);
 
+
 		// 몬스터 충돌에 의한 밀림 무시
-		animator.GetGameObject()->SetTag(game_module::ETag::PlayerMonsterIgnore);
+		// 회전 공격 시 몬스터 위로 올라가는 버그로 인해 임시로 수정
+		if (mAttackType != EBerserkerAttackType::SwingAround) 
+		{
+			animator.GetGameObject()->SetTag(game_module::ETag::PlayerMonsterIgnore);
+		}
 
 		mElapsedTime = 0.f;
 
