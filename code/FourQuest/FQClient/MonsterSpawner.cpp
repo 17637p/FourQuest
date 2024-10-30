@@ -163,6 +163,11 @@ void fq::client::MonsterSpawner::Spawn()
 
 void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& collision)
 {
+	if (mHp <= 0.f)
+	{
+		return;
+	}
+
 	// 피격 처리 
 	if (collision.other->GetTag() == game_module::ETag::PlayerAttack)
 	{
@@ -234,18 +239,26 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 
 void fq::client::MonsterSpawner::HitArrow(fq::game_module::GameObject* object)
 {
+	if (mHp <= 0.f)
+	{
+		return;
+	}
+
 	auto playerAttack = object->GetComponent<Attack>();
 
 	if (playerAttack->ProcessAttack())
 	{
 		float damage = playerAttack->GetAttackPower();
 		mHp -= damage;
-		GetComponent<HpBar>()->DecreaseHp(damage / mMaxHp);
+		mMonsterHp->DecreaseHp(damage / mMaxHp);
 
 		if (!mbIsSpawnState)
 		{
 			mAnimator->SetParameterTrigger("OnHit");
 		}
+
+		// 피격 림라이트 설정 
+		onHitRimLight();
 
 		// 몬스터 스포너의 타겟 설정
 		mMonsterGroup->SetTarget(playerAttack->GetAttacker());
