@@ -57,6 +57,7 @@ namespace fq::client
 		void checkInput(float dt);
 		void setName();
 		void makeStrongAttackArrow(float damage, DirectX::SimpleMath::Quaternion direction, DirectX::SimpleMath::Vector3 position);
+		void makeLineOfSight();
 
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -87,6 +88,8 @@ namespace fq::client
 		game_module::PrefabResource mStrongAttackChargingEffect;
 		game_module::PrefabResource mStrongAttackLaunchEffect;
 		game_module::PrefabResource mDashEffect;
+		game_module::PrefabResource mLineOfSightEffect;
+		game_module::GameObject* mLineOfSightObject;
 
 		friend void RegisterMetaData();
 	};

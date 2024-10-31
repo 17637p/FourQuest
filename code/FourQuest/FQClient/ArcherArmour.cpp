@@ -5,6 +5,7 @@
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/UVAnimator.h"
 
 #include "Player.h"
 #include "PlayerVariable.h"
@@ -123,6 +124,23 @@ namespace fq::client
 		{
 			effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
 		}
+	}
+
+	void ArcherArmour::makeLineOfSight()
+	{
+		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLineOfSightEffect);
+		auto& lineObj = *(instance.begin());
+		mLineOfSightObject = lineObj.get();
+
+		if (!mLineOfSightObject)
+			return;
+
+		auto uvAnimationComponent = mLineOfSightObject->GetComponent<fq::game_module::UVAnimator>();
+		auto LOSTrnasform = mLineOfSightObject->GetComponent<fq::game_module::Transform>();
+		uvAnimationComponent->SetIsRecursive(false);
+		LOSTrnasform->SetParent(mTransform);
+
+		GetScene()->AddGameObject(lineObj);
 	}
 
 	void ArcherArmour::EmitStrongAttack(int chargeLevel)
@@ -325,10 +343,24 @@ namespace fq::client
 			mAnimator->SetParameterTrigger("OnStrongAttack");
 			mStrongAttackElapsedTime = mPlayer->IsFeverTime() ? mStrongAttackCoolTime - mStrongAttackCoolTimeReduction : mStrongAttackCoolTime;
 			mStrongAttackElapsedTime *= mPlayer->GetGBDecreaseCooltime();
+			
+			// 조준선 생성
+			makeLineOfSight();
 		}
 		else
 		{
 			mAnimator->SetParameterOffTrigger("OnStrongAttack");
+
+		}
+
+		// 조준선 삭제
+		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::X, EKeyState::Away))
+		{
+			if (mLineOfSightObject)
+			{
+				GetScene()->DestroyGameObject(mLineOfSightObject);
+				mLineOfSightObject = nullptr;
+			}
 		}
 
 		// MultiShot R Stick 조작

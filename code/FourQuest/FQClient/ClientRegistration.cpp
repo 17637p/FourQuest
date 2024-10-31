@@ -788,6 +788,7 @@ void fq::client::RegisterMetaData()
 		.data<&ArcherArmour::mStrongArrowOffset>("mStrongArrowOffset"_hs)
 		.prop(reflect::prop::Name, "mStrongArrowOffset")
 		.prop(reflect::prop::Comment, u8"강공격 화살 사이의 간격")
+
 		.data<&ArcherArmour::mWeakAttack>("mWeakAttack"_hs)
 		.prop(reflect::prop::Name, "mWeakAttack")
 		.prop(reflect::prop::Comment, u8"약공격 프리펩")
@@ -803,6 +804,9 @@ void fq::client::RegisterMetaData()
 		.data<&ArcherArmour::mDashEffect>("mDashEffect"_hs)
 		.prop(reflect::prop::Name, "mDashEffect")
 		.prop(reflect::prop::Comment, u8"구르기 이펙트")
+		.data<&ArcherArmour::mLineOfSightEffect>("LineOfSightEffect"_hs)
+		.prop(reflect::prop::Name, "LineOfSightEffect")
+		.prop(reflect::prop::Comment, u8"조준선 이펙트")
 		.base<game_module::Component>();
 
 	entt::meta<BerserkerArmour>()

@@ -7,9 +7,6 @@
     <Filter Include="physx">
       <UniqueIdentifier>{872a7053-a4db-4092-8d1b-7df60631faf6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Manager">
-      <UniqueIdentifier>{2f5b572a-f716-4d41-bc93-347ba83f9d88}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Tool">
       <UniqueIdentifier>{b44d4da7-2419-4b10-93d2-155e5d2d13d7}</UniqueIdentifier>
     </Filter>
@@ -30,9 +27,6 @@
     </Filter>
     <Filter Include="PhysicsActor\Header">
       <UniqueIdentifier>{37b9fb57-bd86-478c-8bf1-7f37d9a0cf8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Manager\Header">
-      <UniqueIdentifier>{f2137e3f-9175-4f40-8334-28b653dbc0cd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource\Header">
       <UniqueIdentifier>{91398720-00b3-4e8a-869a-cb0c79d45d94}</UniqueIdentifier>
@@ -57,6 +51,12 @@
     </Filter>
     <Filter Include="Filter">
       <UniqueIdentifier>{e26831ee-a1d6-4cee-8c33-9fa37a8e23d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{2f5b572a-f716-4d41-bc93-347ba83f9d88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Header">
+      <UniqueIdentifier>{f2137e3f-9175-4f40-8334-28b653dbc0cd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
