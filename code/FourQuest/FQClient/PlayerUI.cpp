@@ -398,16 +398,11 @@ void fq::client::PlayerUI::setPlayerStateUpdate()
 	}
 
 	// ¿µÈ¥ ÆÄ±« UI
-	if (isRetire)
-	{
-		mPlayerState->SetIsRender(5, true);
-		mRetireMask->SetIsRender(0, true);
-	}
-	else
-	{
-		mPlayerState->SetIsRender(5, false);
-		mRetireMask->SetIsRender(0, false);
-	}
+	if (mPlayerState)
+		mPlayerState->SetIsRender(5, isRetire);
+
+	if (mRetireMask)
+		mRetireMask->SetIsRender(0, isRetire);
 }
 
 void fq::client::PlayerUI::SetPlayer(fq::client::GameManager* gameMgr)
