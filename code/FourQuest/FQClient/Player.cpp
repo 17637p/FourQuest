@@ -485,9 +485,7 @@ void fq::client::Player::EmitBowSoulAttack()
 	auto fowardDirection = DirectX::SimpleMath::Matrix::CreateFromQuaternion(angleOffset).Forward();
 
 	// 화살 시작 위치
-	auto position = mTransform->GetWorldPosition();
-	position.y += 1.f;
-	position += fowardDirection * PlayerSoulVariable::SoulBowAttackOffset;
+	auto position = mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->GetTransform()->GetWorldPosition();
 
 	attackT->GenerateWorld(position, angleOffset, attackT->GetWorldScale());
 	linearAttack->SetMoveDirection(fowardDirection);
