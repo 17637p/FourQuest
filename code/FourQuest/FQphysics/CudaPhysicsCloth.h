@@ -17,6 +17,7 @@
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
+#include <random>
 
 namespace fq::physics
 {
@@ -72,6 +73,7 @@ namespace fq::physics
 
 	private:
 		bool updateDebugVertex();
+		bool updateWindToParticle();
 		bool settingInfoData(const Cloth::CreateClothData& info);
 		bool extractSpringsData();
 		bool createClothParticle(
@@ -98,10 +100,14 @@ namespace fq::physics
 			physx::PxVec4* positionInvMass,
 			physx::PxVec4* velocity);
 
+		// 무작위 바람 생성 함수
+		DirectX::SimpleMath::Vector3 getRandomWindForce(float maxWindStrength);
+
 	private:
 		unsigned int	mID;
 		unsigned int	mLayerNumber;
 		bool mbIsSkinnedMesh;
+		std::mt19937 mGen; // 각 객체에 고유한 난수 엔진
 
 		DirectX::SimpleMath::Matrix					mWorldTransform;
 		std::vector<DirectX::SimpleMath::Vector3>	mVertices;

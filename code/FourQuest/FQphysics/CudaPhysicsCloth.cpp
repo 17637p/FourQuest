@@ -7,8 +7,8 @@
 #include <cudamanager\PxCudaContext.h>
 #include <PxPhysicsAPI.h>
 
-#include <iostream>
 #include <math.h>
+#include <random>
 #include <spdlog\spdlog.h>
 
 #pragma comment (lib, "cudart.lib")
@@ -144,13 +144,15 @@ namespace fq::physics
 		DirectX::SimpleMath::Matrix InvTransform;
 		mWorldTransform.Invert(InvTransform);
 
-		if (!CudaClothTool::UpdatePhysXDataToID3DBuffer(mVertices, mIndices, mUV, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;
-		//if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource, mCudaVertexStride)) return false;
+		if (!CudaClothTool::UpdatePhysXDataToID3DBuffer(mVertices, mIndices, mUV, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;		// 천 입자로 Graphics VertexBuffer에 position값 Update하는 cuda함수 
+		//if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource, mCudaVertexStride)) return false;	// 겹치는 버텍스 노말값 업데이트 cuda함수
+		if (!updateWindToParticle()) return false;
 
-		if (!updateDebugVertex()) return false;
+		//if (!updateDebugVertex()) return false;
 
 		return true;
 	}
+
 
 	bool CudaPhysicsCloth::updateDebugVertex()
 	{
@@ -172,6 +174,19 @@ namespace fq::physics
 
 		// 메모리 해제
 		delete[] hostParticleData;
+
+		return true;
+	}
+
+	bool CudaPhysicsCloth::updateWindToParticle()
+	{
+		DirectX::SimpleMath::Vector3 wind = getRandomWindForce(10.f);
+		physx::PxVec3 pxWind;
+		pxWind.x = wind.x;
+		pxWind.y = wind.y;
+		pxWind.z = wind.z;
+
+		mParticleSystem->setWind(pxWind);
 
 		return true;
 	}
@@ -412,6 +427,23 @@ namespace fq::physics
 		cudaContextManager->freePinnedHostBuffer(positionInvMass);
 		cudaContextManager->freePinnedHostBuffer(velocity);
 		cudaContextManager->freePinnedHostBuffer(phase);
+	}
+
+	DirectX::SimpleMath::Vector3 CudaPhysicsCloth::getRandomWindForce(float maxWindStrength) // 무작위 바람 생성 함수
+	{
+		// 무작위 엔진 및 분포 설정
+		static std::random_device rd;
+		static std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> strengthDist(0.0f, maxWindStrength); // 바람 세기
+		std::uniform_real_distribution<float> directionDist(-1.0f, 1.0f);           // 방향
+
+		// 무작위 바람의 세기와 방향을 생성
+		float windStrength = strengthDist(gen);
+		DirectX::SimpleMath::Vector3 windDirection(directionDist(gen), directionDist(gen), directionDist(gen));
+		windDirection.Normalize();
+
+		// 최종 바람 벡터 = 방향 * 세기
+		return windDirection * windStrength;
 	}
 
 	void CudaPhysicsCloth::GetPhysicsCloth(Cloth::GetSetClothData& data)
