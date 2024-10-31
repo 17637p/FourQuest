@@ -210,6 +210,7 @@ namespace fq::graphics
 		unsigned int Layer = 0; // 작을 수록 위에 클 수록 아래에 출력
 
 		bool IsRender = true;
+		bool IsUseSetSpacing = false;
 	};
 
 	struct TerrainLayer

@@ -748,7 +748,10 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 			D2D1::Matrix3x2F::Scale(scaleX, scaleY, D2D1::Point2F(drawTextInformation.CenterX, drawTextInformation.CenterY))
 		);
 
-		mFonts[fontPath]->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_UNIFORM, 50, 80);
+		if (textObject->GetTextInformation().IsUseSetSpacing)
+		{
+			mFonts[fontPath]->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_UNIFORM, 50, 80);
+		}
 
 		if (textObject->GetTextInformation().BoxAlign == ETextBoxAlign::CenterCenter)
 		{

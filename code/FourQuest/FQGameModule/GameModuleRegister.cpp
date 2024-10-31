@@ -402,6 +402,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Align")
 		.data<&graphics::TextInfo::BoxAlign>("BoxAlign"_hs)
 		.prop(fq::reflect::prop::Name, "BoxAlign")
+		.data<&graphics::TextInfo::IsUseSetSpacing>("IsUseSetSpacing"_hs)
+		.prop(fq::reflect::prop::Name, "IsUseSetSpacing")
 		.data<&graphics::TextInfo::IsRender>("IsRender"_hs)
 		.prop(fq::reflect::prop::Name, "IsRender");
 
