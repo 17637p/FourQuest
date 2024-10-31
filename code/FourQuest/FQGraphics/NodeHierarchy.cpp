@@ -350,21 +350,35 @@ namespace fq::graphics
 			{
 				fq::common::Keyframe lhs;
 				fq::common::Keyframe rhs;
-				float weight;
-				AnimationHelper::FindKeyframe(lhsNodeClip->Keyframes, lhsAnimationClip, lhsTimePos, &lhs, &rhs, &weight);
-				lhsKeyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
+				float lhsWeight;
+				AnimationHelper::FindKeyframe(lhsNodeClip->Keyframes, lhsAnimationClip, lhsTimePos, &lhs, &rhs, &lhsWeight);
+				lhsKeyframe = AnimationHelper::Interpolate(lhs, rhs, lhsWeight);
 			}
 
 			if (rhsNodeClip != nullptr)
 			{
 				fq::common::Keyframe lhs;
 				fq::common::Keyframe rhs;
-				float weight;
-				AnimationHelper::FindKeyframe(rhsNodeClip->Keyframes, rhsAnimationClip, rhsTimePos, &lhs, &rhs, &weight);
-				rhsKeyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
+				float rhsWeight;
+				AnimationHelper::FindKeyframe(rhsNodeClip->Keyframes, rhsAnimationClip, rhsTimePos, &lhs, &rhs, &rhsWeight);
+				rhsKeyframe = AnimationHelper::Interpolate(lhs, rhs, rhsWeight);
 			}
 
-			fq::common::Keyframe nodeKeyframe = AnimationHelper::Interpolate(lhsKeyframe, rhsKeyframe, weight);
+			fq::common::Keyframe nodeKeyframe;
+
+			if (lhsNodeClip == nullptr)
+			{
+				nodeKeyframe = rhsKeyframe;
+			}
+			else if (rhsNodeClip == nullptr)
+			{
+				nodeKeyframe = lhsKeyframe;
+			}
+			else
+			{
+				nodeKeyframe = AnimationHelper::Interpolate(lhsKeyframe, rhsKeyframe, weight);
+			}
+
 			mLocalTransforms[lhsBone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
 		}
 

@@ -15,7 +15,16 @@ fq::client::BossMonsterComboAttackState::~BossMonsterComboAttackState()
 void fq::client::BossMonsterComboAttackState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	mAttackElapsedTime = 0.f;
-	animator.GetComponent<BossMonster>()->ReboundComboAttack();
+	auto bossMonster = animator.GetComponent<BossMonster>();
+	
+	bossMonster->ReboundComboAttack();
+
+	mPrevPlayBackSpeed = state.GetPlayBackSpeed();
+
+	if (bossMonster->IsAngry())
+	{
+		state.SetPlayBackSpeed(mPrevPlayBackSpeed * bossMonster->GetAngryAttackSpeedRatio());
+	}
 }
 
 void fq::client::BossMonsterComboAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
@@ -27,6 +36,7 @@ void fq::client::BossMonsterComboAttackState::OnStateUpdate(game_module::Animato
 		if (mAttackElapsedTime >= mEmitAttackTime)
 		{
 			animator.GetComponent<BossMonster>()->EmitComboAttack(mXAxisOffset);
+			animator.GetComponent<BossMonster>()->EmitComboEffect(mXAxisOffset);
 			mAttackElapsedTime = mEmitAttackTime;
 		}
 	}
@@ -45,6 +55,8 @@ void fq::client::BossMonsterComboAttackState::OnStateExit(game_module::Animator&
 	{
 		animator.GetComponent<BossMonster>()->EndPattern();
 	}
+	
+	state.SetPlayBackSpeed(mPrevPlayBackSpeed);
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterComboAttackState::Clone()

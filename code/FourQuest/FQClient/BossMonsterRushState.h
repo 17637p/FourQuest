@@ -19,6 +19,8 @@ namespace fq::client
 
 	private:
 		std::shared_ptr<game_module::GameObject> mRushHitBox;
+		std::shared_ptr<game_module::GameObject> mRushEffect;
+
 		float mRushVelocity;
 		float mRushAcceleration;
 		float mRushElapsed;

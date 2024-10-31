@@ -6,7 +6,8 @@
 #include "KnockBack.h"
 
 fq::client::BossMonsterRushState::BossMonsterRushState()
-	:mRushHitBox(nullptr)
+	: mRushHitBox(nullptr)
+	, mRushEffect(nullptr)
 	, mRushVelocity(5.f)
 	, mRushAcceleration(5.f)
 	, mRushElapsed(0.f)
@@ -19,15 +20,16 @@ fq::client::BossMonsterRushState::~BossMonsterRushState()
 void fq::client::BossMonsterRushState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	animator.GetGameObject()->SetTag(game_module::ETag::Dash);
-	mRushHitBox = animator.GetComponent<BossMonster>()->Rush();
-
-	auto look = animator.GetTransform()->GetLookAtVector();
 	auto bossMonster = animator.GetComponent<BossMonster>();
 
 	if (bossMonster != nullptr)
 	{
 		auto knockBack = bossMonster->GetKnockBack();
+		auto look = animator.GetTransform()->GetLookAtVector();
+
 		knockBack->SetKnockBack(mRushVelocity, look);
+		mRushHitBox = bossMonster->EmitRushAttack();
+		mRushEffect = bossMonster->EmitRushEffect();
 	}
 
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MB_Rush", false , fq::sound::EChannel::SE });
@@ -62,6 +64,11 @@ void fq::client::BossMonsterRushState::OnStateExit(game_module::Animator& animat
 	{
 		animator.GetScene()->DestroyGameObject(mRushHitBox.get());
 		mRushHitBox = nullptr;
+	}
+	if (mRushEffect)
+	{
+		animator.GetScene()->DestroyGameObject(mRushEffect.get());
+		mRushEffect = nullptr;
 	}
 
 	animator.GetGameObject()->SetTag(game_module::ETag::Monster);

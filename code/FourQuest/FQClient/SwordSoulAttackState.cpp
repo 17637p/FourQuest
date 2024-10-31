@@ -29,8 +29,13 @@ void fq::client::SwordSoulAttackState::OnStateEnter(game_module::Animator& anima
 
 	// 검을 장착합니다
 	auto player = animator.GetComponent<Player>();
-	player->EquipSoulWeapone();
-	player->AddSoulGauge(-PlayerSoulVariable::SoulSwordAttackCost);
+
+	if (player != nullptr)
+	{
+		player->EquipSoulWeapone();
+		player->AddSoulGauge(-PlayerSoulVariable::SoulSwordAttackCost);
+		player->SetIsActiveOnHit(false);
+	}
 }
 
 void fq::client::SwordSoulAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
@@ -53,7 +58,12 @@ void fq::client::SwordSoulAttackState::OnStateUpdate(game_module::Animator& anim
 void fq::client::SwordSoulAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	auto player = animator.GetComponent<Player>();
-	player->EquipArmourWeapone();
+
+	if (player != nullptr)
+	{
+		player->EquipArmourWeapone();
+		player->SetIsActiveOnHit(true);
+	}
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::SwordSoulAttackState::Clone()

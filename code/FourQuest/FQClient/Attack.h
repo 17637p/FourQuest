@@ -65,6 +65,8 @@ namespace fq::client
 		void SetAttackDirection(DirectX::SimpleMath::Vector3 direction);
 
 		const std::string& GetAttackEffectEvent() const { return mAttackEffectEvent; }
+		
+		float GetKnockBackTime() const { return mKnockBackTime; }
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -95,6 +97,7 @@ namespace fq::client
 		float mDirectionRatio; // TargetPositionAndDirectionByAngle¿ë º¯¼ö
 
 		std::string mAttackEffectEvent;
+		float mKnockBackTime;
 
 		friend void RegisterMetaData();
 	};

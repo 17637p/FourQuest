@@ -1,14 +1,13 @@
 #pragma once
-
 #include "../FQGameModule/IStateBehaviour.h"
 
 namespace fq::client
 {
-	class BossMonsterRoarState : public fq::game_module::IStateBehaviour
+	class BossMonsterPreJumpState : public fq::game_module::IStateBehaviour
 	{
 	public:
-		BossMonsterRoarState();
-		~BossMonsterRoarState();
+		BossMonsterPreJumpState();
+		~BossMonsterPreJumpState() = default;
 
 	private:
 		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
@@ -17,18 +16,18 @@ namespace fq::client
 		std::shared_ptr<IStateBehaviour> Clone() override;
 		entt::meta_handle GetHandle() override { return *this; }
 
-	private:
-		unsigned int mMeleeNumber;
-		unsigned int mExplosionNumber;
-		DirectX::SimpleMath::Vector3 mPosition;
 
-		bool mbIsEnterAngry;
-		float mChangeColorDuration;
-		float mChangeColorElapsed;
-		DirectX::SimpleMath::Color mStartColor;
-		DirectX::SimpleMath::Color mEndColor;
-		float mStartInvRimPow;
-		float mEndInvRimPow;
+		bool existBetweenWallObject(game_module::Scene* scene, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& target, game_module::ETag tag);
+		void selectJumpPosition(game_module::Animator& animator);
+
+	private:
+		// 로직 변수
+		float mElapsed;
+		std::shared_ptr<fq::game_module::GameObject> mDecalEffectObject;
+
+		// 에디터 변수
+		float mWaitingTime; // 점프 대기 시간
+		float mTargetCaptureTime; // 움직임 확정 시간
 
 		friend void RegisterMetaData();
 	};

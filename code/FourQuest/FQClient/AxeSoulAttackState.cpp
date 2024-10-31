@@ -41,8 +41,13 @@ void fq::client::AxeSoulAttackState::OnStateUpdate(game_module::Animator& animat
 void fq::client::AxeSoulAttackState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	auto player = animator.GetComponent<Player>();
-	player->EquipSoulWeapone();
-	player->AddSoulGauge(-PlayerSoulVariable::SoulAxeAttackCost);
+
+	if (player != nullptr)
+	{
+		player->EquipSoulWeapone();
+		player->AddSoulGauge(-PlayerSoulVariable::SoulAxeAttackCost);
+		player->SetIsActiveOnHit(false);
+	}
 
 	mAttackElapsedTime = 0.f;
 	mAttackDuration = 0.f;
@@ -51,6 +56,12 @@ void fq::client::AxeSoulAttackState::OnStateEnter(game_module::Animator& animato
 void fq::client::AxeSoulAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	auto player = animator.GetComponent<Player>();
-	player->EquipArmourWeapone();
+
+	if (player != nullptr)
+	{
+		player->EquipArmourWeapone();
+		player->SetIsActiveOnHit(true);
+	}
+
 	animator.SetParameterBoolean("EndSoulAttack", false);
 }

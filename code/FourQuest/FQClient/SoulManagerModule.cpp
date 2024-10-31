@@ -120,7 +120,6 @@ namespace fq::client
 				camera.AddPlayerTransform(data.tempGameObject->GetComponent<game_module::Transform>());
 			});
 
-
 		mSoulSummonQueue.push_back(data);
 	}
 

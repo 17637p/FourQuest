@@ -189,6 +189,7 @@ namespace fq::client
 		void SetSoulGauge(float soulGauge) { mSoulGauge = soulGauge; }
 
 	private:
+		void processKnockBack(float dt);
 		void processInput(float dt);
 		void processCoolTime(float dt);
 		void processFeverTime(float dt);
@@ -293,5 +294,9 @@ namespace fq::client
 		// ´õ¹Ì ÇÁ¸®ÆÕ
 		bool mbCanCreateDummy;
 		game_module::PrefabResource mDummyPrefab;
+
+		float mKnockBackTime;
+		float mKnockBackPower;
+		DirectX::SimpleMath::Vector3 mKnockBackDir;
 	};
 }

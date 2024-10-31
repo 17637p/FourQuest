@@ -21,6 +21,7 @@ namespace fq::client
 		float mEmitAttackTime;
 		float mAttackElapsedTime;
 		float mXAxisOffset;
+		float mPrevPlayBackSpeed;
 
 		friend void RegisterMetaData();
 	};

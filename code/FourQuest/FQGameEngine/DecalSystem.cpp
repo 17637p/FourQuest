@@ -142,6 +142,10 @@ void fq::game_engine::DecalSystem::OnLoadScene()
 
 void fq::game_engine::DecalSystem::loadDecal(fq::game_module::GameObject* object)
 {
+	if (object->IsDestroyed())
+	{
+		return;
+	}
 	if (!object->HasComponent<fq::game_module::Decal>())
 	{
 		return;
@@ -152,6 +156,7 @@ void fq::game_engine::DecalSystem::loadDecal(fq::game_module::GameObject* object
 	fq::graphics::DecalMaterialInfo materialInfo = decal->GetDecalMaterialInfo();
 	auto material = mGameProcess->mGraphics->CreateDecalMaterial(materialInfo);
 
+	// 현상 : 인터페이스 오브젝트 (그래픽스 오브젝트 살아있고, 컴포넌트를 들고있는 게임오브젝트)
 	auto decalObjectInterface = mGameProcess->mGraphics->CreateDecalObject(material, decalInfo, object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
 	decal->SetDecalObjectInterface(decalObjectInterface);
 	decal->SetDecalMaterial(material);

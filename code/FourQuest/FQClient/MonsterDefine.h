@@ -24,5 +24,6 @@ namespace fq::client
 		Roar = 3, // 로어 
 		Continous =4, // 연속공격
 		Eat = 5, // 먹기 
+		Jump = 6, // 점프 
 	};
 }
