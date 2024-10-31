@@ -578,7 +578,6 @@ void fq::client::BossMonster::DetectTarget()
 		if (distance <= mDetectRange)
 		{
 			SetTarget(player.get());
-			mAnimator->SetParameterBoolean("FindTarget", true);
 		}
 	}
 }

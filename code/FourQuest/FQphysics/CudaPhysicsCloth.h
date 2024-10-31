@@ -35,7 +35,8 @@ namespace fq::physics
 			physx::PxScene* scene, 
 			physx::PxCudaContextManager* cudaContextManager, 
 			std::shared_ptr<CollisionData> collisionData,
-			int* collisionMatrix);
+			int* collisionMatrix,
+			bool isSkinnedMesh);
 
 		/// <summary>
 		/// 실시간 시뮬레이션 된 천 입자들을 ID11Buffer에 업데이트
@@ -100,6 +101,7 @@ namespace fq::physics
 	private:
 		unsigned int	mID;
 		unsigned int	mLayerNumber;
+		bool mbIsSkinnedMesh;
 
 		DirectX::SimpleMath::Matrix					mWorldTransform;
 		std::vector<DirectX::SimpleMath::Vector3>	mVertices;
@@ -118,6 +120,7 @@ namespace fq::physics
 
 		cudaGraphicsResource* mCudaVertexResource;
 		cudaGraphicsResource* mCudaIndexResource;
+		UINT mCudaVertexStride;
 	};
 
 #pragma region GetSet

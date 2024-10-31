@@ -16,6 +16,7 @@
 #include "MeleeMonster.h"
 #include "PlantMonster.h"
 #include "BossMonster.h"
+#include "MonsterSpawner.h"
 
 namespace fq::client
 {
@@ -30,6 +31,7 @@ namespace fq::client
 		, mHitSound{}
 		, mAttackDirection{}
 		, mAttackTransform{}
+		, mHitMonsterID{}
 	{
 	}
 
@@ -40,7 +42,7 @@ namespace fq::client
 	void ArrowAttack::OnUpdate(float dt)
 	{
 		// 화살이 박히고 난 뒤에 일정 시간 뒤 오브젝트 삭제
-		if (mMaxBlockCount <= 0)
+		if (mMaxBlockCount <= 0 || mbIsStrongAttack)
 		{
 			mLifeElapsedTime += dt;
 
@@ -57,13 +59,19 @@ namespace fq::client
 			DirectX::SimpleMath::Vector3 deltaPosition = mAttackDirection * dt * mStrongProjectileVelocity;
 			transform->AddLocalPosition(deltaPosition);
 		}
+
+		// 관통 카운트가 0이면, 콜라이더 삭제 및 부딪힌 해당 오브젝트를 부모 오브젝트로 지정
+		if (mMaxBlockCount == 1)
+		{
+			GetGameObject()->SetTag(fq::game_module::ETag::Arrow);
+		}
 	}
 
 	void ArrowAttack::OnStart()
 	{
 		if (mMaxBlockCount == 1)
 		{
-			GetGameObject()->SetTag(fq::game_module::ETag::FinalArrow);
+			GetGameObject()->SetTag(fq::game_module::ETag::Arrow);
 		}
 	}
 
@@ -76,8 +84,23 @@ namespace fq::client
 		}
 
 		// 몬스터 및 박스에 충돌 시 관통 카운트 감소
-		if (collision.other->GetTag() == fq::game_module::ETag::Monster
-			|| collision.other->GetTag() == fq::game_module::ETag::Spawner
+		if (collision.other->GetTag() == fq::game_module::ETag::RangeHitBox)
+		{
+			// 이미 공격한 몬스터의 히트 박스에 다시 충돌 했을 때, 체크
+			auto monsterIter = mHitMonsterID.find(collision.other->GetParent()->GetID());
+			if (monsterIter == mHitMonsterID.end())
+			{
+				mHitMonsterID.insert(collision.other->GetParent()->GetID());
+			}
+			else
+			{
+				return;
+			}
+
+			mMaxBlockCount--;
+		}
+
+		if (collision.other->GetTag() == fq::game_module::ETag::Spawner
 			|| collision.other->GetTag() == fq::game_module::ETag::Box)
 		{
 			mMaxBlockCount--;
@@ -85,69 +108,61 @@ namespace fq::client
 
 		// 바닥 및 벽에 부딪히면 관통 카운트 즉시 0
 		if (collision.other->GetTag() == fq::game_module::ETag::Floor
-			|| collision.other->GetTag() == fq::game_module::ETag::Wall)
+			|| collision.other->GetTag() == fq::game_module::ETag::Wall
+			|| collision.other->GetTag() == fq::game_module::ETag::Untagged)
 		{
 			mMaxBlockCount = 0;
 		}
 
-		if (GetGameObject()->GetTag() == fq::game_module::ETag::FinalArrow)
+		auto parent = collision.other->GetParent();
+		if (parent)
 		{
-			mMaxBlockCount--;
-		}
-
-		// 관통 카운트가 0이면, 콜라이더 삭제 및 부딪힌 해당 오브젝트를 부모 오브젝트로 지정
-		if (mMaxBlockCount == 1)
-		{
-			GetGameObject()->SetTag(fq::game_module::ETag::FinalArrow);
-		}
-		
-		if (mMaxBlockCount > 0)
-		{
-			return;
-		}
-		
-		if (!(collision.other->GetTag() == fq::game_module::ETag::ArrowHitBox))
-			return;
-
-		// 박히는 화살의 부모 오브젝트의 데미지가 들어가는 함수를 실행합니다.
-		if (collision.other->GetParent()->HasComponent<MeleeMonster>())
-		{
-			auto monster = collision.other->GetParent()->GetComponent<MeleeMonster>();
-
-			monster->HitArrow(GetGameObject());
-		}
-		if (collision.other->GetParent()->HasComponent<PlantMonster>())
-		{
-			auto monster = collision.other->GetParent()->GetComponent<PlantMonster>();
-
-			monster->HitArrow(GetGameObject());
-		}
-		if (collision.other->GetParent()->HasComponent<BossMonster>())
-		{
-			auto monster = collision.other->GetParent()->GetComponent<BossMonster>();
-
-			monster->HitArrow(GetGameObject());
-		}
-		
-		auto transform = GetComponent<fq::game_module::Transform>();
-		auto otherTransform = collision.other->GetComponent<fq::game_module::Transform>();
-
-		transform->SetLocalMatrix(transform->GetWorldMatrix() * otherTransform->GetWorldMatrix().Invert());
-		transform->SetParent(otherTransform);
-
-		GetGameObject()->RemoveComponent<fq::game_module::RigidBody>();
-		GetGameObject()->RemoveComponent<fq::game_module::BoxCollider>();
-		GetGameObject()->RemoveComponent<fq::game_module::CapsuleCollider>();
-		GetGameObject()->RemoveComponent<fq::game_module::StateEventEmitter>();
-
-		// 이펙트 제거
-		for (auto child : GetGameObject()->GetChildren())
-		{
-			auto uvAnimatorOrNull = child->GetComponent<fq::game_module::UVAnimator>();
-
-			if (uvAnimatorOrNull != nullptr)
+			// 박히는 화살의 부모 오브젝트의 데미지가 들어가는 함수를 실행합니다.
+			if (parent->HasComponent<MeleeMonster>())
 			{
-				GetScene()->DestroyGameObject(child);
+				auto melee = parent->GetComponent<MeleeMonster>();
+				melee->HitArrow(GetGameObject());
+			}
+			if (parent->HasComponent<PlantMonster>())
+			{
+				auto plant = parent->GetComponent<PlantMonster>();
+				plant->HitArrow(GetGameObject());
+			}
+			if (parent->HasComponent<BossMonster>())
+			{
+				auto boss = parent->GetComponent<BossMonster>();
+				boss->HitArrow(GetGameObject());
+			}
+		}
+
+		if (collision.other->HasComponent<MonsterSpawner>())
+		{
+			auto monster = collision.other->GetComponent<MonsterSpawner>();
+			monster->HitArrow(GetGameObject());
+		}
+
+		if (mMaxBlockCount <= 0)
+		{
+			auto transform = GetComponent<fq::game_module::Transform>();
+			auto otherTransform = collision.other->GetComponent<fq::game_module::Transform>();
+
+			transform->SetLocalMatrix(transform->GetWorldMatrix() * otherTransform->GetWorldMatrix().Invert());
+			transform->SetParent(otherTransform);
+
+			GetGameObject()->RemoveComponent<fq::game_module::RigidBody>();
+			GetGameObject()->RemoveComponent<fq::game_module::BoxCollider>();
+			GetGameObject()->RemoveComponent<fq::game_module::CapsuleCollider>();
+			GetGameObject()->RemoveComponent<fq::game_module::StateEventEmitter>();
+
+			// 이펙트 제거
+			for (auto child : GetGameObject()->GetChildren())
+			{
+				auto uvAnimatorOrNull = child->GetComponent<fq::game_module::UVAnimator>();
+
+				if (uvAnimatorOrNull != nullptr)
+				{
+					GetScene()->DestroyGameObject(child);
+				}
 			}
 		}
 	}

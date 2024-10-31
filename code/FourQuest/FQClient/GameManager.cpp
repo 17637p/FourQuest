@@ -465,161 +465,37 @@ void fq::client::GameManager::spawnPlayers()
 			player->GetComponent<Soul>()->SetSoulType(playerSoulType);
 		}
 	}
+}
 
-
-
-	// 영혼 스폰 고정전 코드 
-
-	//if (mIsAutoSpawn)
-	//{
-	//	int playerID = 0;
-	//	ESoulType playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player1SoulType);
-	//	switch (PlayerInfoVariable::Player1State)
-	//	{
-	//		case 0:
-	//		{
-	//			auto player = SpawnPlayer(mSoul, playerID);
-	//			player->GetComponent<Soul>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 1:
-	//		{
-	//			auto player = SpawnPlayer(mKnight, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 2:
-	//		{
-	//			auto player = SpawnPlayer(mMagic, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 3:
-	//		{
-	//			auto player = SpawnPlayer(mArcher, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 4:
-	//		{
-	//			auto player = SpawnPlayer(mWarrior, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		default:
-	//			break;
-	//	}
-	//	playerID = 1;
-	//	playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player2SoulType);
-	//	switch (PlayerInfoVariable::Player2State)
-	//	{
-	//		case 0:
-	//		{
-	//			auto player = SpawnPlayer(mSoul, playerID);
-	//			player->GetComponent<Soul>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 1:
-	//		{
-	//			auto player = SpawnPlayer(mKnight, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 2:
-	//		{
-	//			auto player = SpawnPlayer(mMagic, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 3:
-	//		{
-	//			auto player = SpawnPlayer(mArcher, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 4:
-	//		{
-	//			auto player = SpawnPlayer(mWarrior, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		default:
-	//			break;
-	//	}
-	//	playerID = 2;
-	//	playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player3SoulType);
-	//	switch (PlayerInfoVariable::Player3State)
-	//	{
-	//		case 0:
-	//		{
-	//			auto player = SpawnPlayer(mSoul, playerID);
-	//			player->GetComponent<Soul>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 1:
-	//		{
-	//			auto player = SpawnPlayer(mKnight, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 2:
-	//		{
-	//			auto player = SpawnPlayer(mMagic, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 3:
-	//		{
-	//			auto player = SpawnPlayer(mArcher, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 4:
-	//		{
-	//			auto player = SpawnPlayer(mWarrior, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		default:
-	//			break;
-	//	}
-	//	playerID = 3;
-	//	playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player4SoulType);
-	//	switch (PlayerInfoVariable::Player4State)
-	//	{
-	//		case 0:
-	//		{
-	//			auto player = SpawnPlayer(mSoul, playerID);
-	//			player->GetComponent<Soul>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 1:
-	//		{
-	//			auto player = SpawnPlayer(mKnight, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 2:
-	//		{
-	//			auto player = SpawnPlayer(mMagic, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 3:
-	//		{
-	//			auto player = SpawnPlayer(mArcher, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		case 4:
-	//		{
-	//			auto player = SpawnPlayer(mWarrior, playerID);
-	//			player->GetComponent<Player>()->SetSoulType(playerSoulType);
-	//			break;
-	//		}
-	//		default:
-	//			break;
-	//	}
-	//}
+void fq::client::GameManager::SpawnPlayer(int playerID)
+{
+	// Player1 
+	if (playerID == 0)
+	{
+		ESoulType playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player1SoulType);
+		auto player = SpawnPlayer(mSoul, playerID);
+		player->GetComponent<Soul>()->SetSoulType(playerSoulType);
+	}
+	// Player2
+	if (playerID == 1)
+	{
+		ESoulType playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player2SoulType);
+		auto player = SpawnPlayer(mSoul, playerID);
+		player->GetComponent<Soul>()->SetSoulType(playerSoulType);
+	}
+	// Player3 
+	if (playerID == 2)
+	{
+		ESoulType playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player3SoulType);
+		auto player = SpawnPlayer(mSoul, playerID);
+		player->GetComponent<Soul>()->SetSoulType(playerSoulType);
+	}
+	// Player4 
+	if (playerID == 3)
+	{
+		ESoulType playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player4SoulType);
+		auto player = SpawnPlayer(mSoul, playerID);
+		player->GetComponent<Soul>()->SetSoulType(playerSoulType);
+	}
 }
 

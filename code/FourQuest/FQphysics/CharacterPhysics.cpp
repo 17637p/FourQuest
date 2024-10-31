@@ -28,8 +28,6 @@ namespace fq::physics
 	{
 		mCollisionData->isDead = true;
 		PX_RELEASE(mMaterial);
-
-		spdlog::trace("[Destructor] Physics ID : {}", mID);
 	}
 
 	bool CharacterPhysics::Initialize(const ArticulationInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData, physx::PxScene* scene)
@@ -79,7 +77,10 @@ namespace fq::physics
 		}
 
 		physx::PxShape* shape = link->CreateShape(mMaterial, extent, mCollisionData);
-		assert(shape);
+		if (shape == nullptr)
+		{
+			spdlog::error("[CharacterPhysics ({})] Failed Create PxShape", __LINE__);
+		}
 
 		physx::PxFilterData filterdata;
 		filterdata.word0 = mLayerNumber;
@@ -107,7 +108,10 @@ namespace fq::physics
 
 		mLinkContainer.insert(std::make_pair(info.boneName, link));
 		physx::PxShape* shape = link->CreateShape(mMaterial, radius, mCollisionData);
-		assert(shape);
+		if (shape == nullptr)
+		{
+			spdlog::error("[CharacterPhysics ({})] Failed Create PxShape", __LINE__);
+		}
 
 		physx::PxFilterData filterdata;
 		filterdata.word0 = mLayerNumber;
@@ -133,7 +137,10 @@ namespace fq::physics
 
 		mLinkContainer.insert(std::make_pair(info.boneName, link));
 		physx::PxShape* shape = link->CreateShape(mMaterial, radius, halfHeight, mCollisionData);
-		assert(shape);
+		if (shape == nullptr)
+		{
+			spdlog::error("[CharacterPhysics ({})] Failed Create PxShape", __LINE__);
+		}
 
 		physx::PxFilterData filterdata;
 		filterdata.word0 = mLayerNumber;
@@ -143,6 +150,7 @@ namespace fq::physics
 
 		return true;
 	}
+
 	bool CharacterPhysics::AddArticulationLink(LinkInfo& info, int* collisionMatrix)
 	{
 		mRootLink = std::make_shared<CharacterLink>();
@@ -165,15 +173,12 @@ namespace fq::physics
 		newFilterData.word1 = collisionMatrix[newLayerNumber];
 		newFilterData.word2 = 1;
 
-		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
-		collisionData->myId = mID;
-		collisionData->myLayerNumber = newLayerNumber;
+		mCollisionData->myId = mID;
+		mCollisionData->myLayerNumber = newLayerNumber;
 
 		for (const auto& [name, myLink] : mLinkContainer)
 		{
-			myLink->ChangeLayerNumber(newFilterData, collisionData.get());
+			myLink->ChangeLayerNumber(newFilterData, mCollisionData.get());
 		}
-		
-		mPhysicsCollisionDataManager->Create(mID, collisionData);
 	}
 }

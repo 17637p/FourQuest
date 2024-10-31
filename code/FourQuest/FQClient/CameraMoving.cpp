@@ -28,7 +28,9 @@ fq::client::CameraMoving::CameraMoving()
 	mZoomInPadX{ -0.4f, 0.4f },
 	mZoomInPadY{ -0.3f, 0.6f },
 	mForbiddenAreaPaddingX{ -0.85f, 0.85f },
-	mForbiddenAreaPaddingY{ -0.7f, 1.0f }
+	mForbiddenAreaPaddingY{ -0.7f, 1.0f },
+	mForbiddenViewPortX{150, 1770},
+	mForbiddenViewPortY{50, 1030}
 {
 }
 
@@ -78,13 +80,73 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPosInView(float 
 	// 플레이어 트랜스폼 돌면서 센터 점 계산 
 	mPlayersCenterPoint = { 0, 0, 0 };
 
+	float minX = FLT_MAX;
+	float maxX = FLT_MIN;
+	float minY = FLT_MAX;
+	float maxY = FLT_MIN;
+
 	for (const auto& playerTransform : mPlayerTransforms)
 	{
 		DirectX::SimpleMath::Vector3 playerWorldPosition = playerTransform->GetWorldPosition();
 		mPlayersCenterPoint += getViewPos(playerWorldPosition);
+
+		// 추가
+		DirectX::SimpleMath::Vector3 projPos = getProjPos(playerWorldPosition);
+
+		float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
+		float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
+		float xViewport = ((projPos.x + 1) / 2) * width;
+		float yViewport = ((1 - projPos.y) / 2) * height;
+		
+		if (xViewport < minX)
+		{
+			minX = xViewport;
+		}
+		if (xViewport > maxX)
+		{
+			maxX = xViewport;
+		}
+		if (yViewport < minY)
+		{
+			minY = yViewport;
+		}
+		if (yViewport > maxY)
+		{
+			maxY = yViewport;
+		}
 	}
 
 	mPlayersCenterPoint /= mPlayerTransforms.size();
+
+	float aspectRatio = mMainCamera->GetAspectRatio();
+	DirectX::SimpleMath::Matrix projMat = mMainCamera->GetProjection(aspectRatio);
+	DirectX::SimpleMath::Vector3 projCenter = DirectX::SimpleMath::Vector3::Transform(mPlayersCenterPoint, projMat);
+	// 위 아래 보정 (각도 때문)
+	float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
+	float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
+	float xViewport = ((projCenter.x + 1) / 2) * width;
+	float yViewport = ((1 - projCenter.y) / 2) * height;
+	
+	if (minX < mForbiddenViewPortX.x)
+	{
+		xViewport -= (mForbiddenViewPortX.x - minX) * 5 * (mPlayerTransforms.size() - 1);
+	}
+	if (maxX > mForbiddenViewPortX.y)
+	{
+		xViewport -= (mForbiddenViewPortX.y - maxX) * 5 * (mPlayerTransforms.size() - 1);
+	}
+	if (minY < mForbiddenViewPortY.x)
+	{
+		yViewport -= (mForbiddenViewPortY.x - minY) * 5 * (mPlayerTransforms.size() - 1);
+	}
+	if (maxY > mForbiddenViewPortY.y)
+	{
+		yViewport -= (mForbiddenViewPortY.y - maxY) * 5 * (mPlayerTransforms.size() - 1);
+	}
+
+	mPlayersCenterPoint.x = 2 * (xViewport / width) - 1;
+	mPlayersCenterPoint.y = 1 - 2 * (yViewport / height);
+
 	//spdlog::trace("{}, {}, {}", playersCenterPoint.x, playersCenterPoint.y, playersCenterPoint.z);
 
 	return mPlayersCenterPoint;
@@ -121,14 +183,14 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 	DirectX::SimpleMath::Vector3 projCenter = DirectX::SimpleMath::Vector3::Transform(center, projMat);
 
 	// 위 아래 보정 (각도 때문)
-	float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
-	float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
-	float xViewport = ((projCenter.x + 1) / 2) * width;
-	float yViewport = ((1 - projCenter.y) / 2) * height;
-	yViewport += 100;
+	//float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
+	//float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
+	//float xViewport = ((projCenter.x + 1) / 2) * width;
+	//float yViewport = ((1 - projCenter.y) / 2) * height;
+	//yViewport += 100;
 	//center.x = 2 * (xViewport / width) - 1;
 	//center.y = 1 - 2 * (yViewport / height);
-
+	
 	DirectX::SimpleMath::Vector3 centerCopy = center; // 거리 재는 용
 
 	// zoom 20 기준으로 100;
@@ -418,8 +480,6 @@ void fq::client::CameraMoving::restrcitPlayerMove()
 			float xViewport = ((projPos.x + 1) / 2) * width;
 			float yViewport = ((1 - projPos.y) / 2) * height;
 
-			//spdlog::trace("{}, {}", xViewport, yViewport);
-
 			std::array<bool, 4> moveRestriction{};
 
 			moveRestriction[static_cast<int>(physics::ERestrictDirection::PlusX)] = projPos.x >= mForbiddenAreaPaddingX.y;
@@ -456,5 +516,3 @@ void fq::client::CameraMoving::InitCameraPos()
 	return;
 }
 
-// 콜라이더 추가하기
-// 콜라이더 넘어갈 때 어떻게 처리 ?

@@ -274,7 +274,7 @@ namespace fq::game_module
 	template <typename T>
 	void fq::game_module::GameObject::RemoveComponent()
 	{
-		entt::id_type id = entt::resolve<T>().id();
+	 	static const entt::id_type id = entt::resolve<T>().id();
 
 		RemoveComponent(id);
 	}
@@ -282,7 +282,13 @@ namespace fq::game_module
 	template <typename T>
 	bool fq::game_module::GameObject::HasComponent() const
 	{
-		entt::id_type id = entt::resolve<T>().id();
+		// Transform 은 항상 소유합니다. 
+		if constexpr (std::is_same_v<T,Transform>)
+		{
+			return true;
+		}
+
+		static const entt::id_type id = entt::resolve<T>().id();
 
 		auto iter = mComponents.find(id);
 
@@ -298,7 +304,7 @@ namespace fq::game_module
 	template<typename T, typename ...Args>
 	inline T& GameObject::AddComponent(Args && ...args)
 	{
-		entt::id_type id = entt::resolve<T>().id();
+		static const entt::id_type id = entt::resolve<T>().id();
 
 		auto component = ObjectPool::GetInstance()->Assign<T>(std::forward<Args>(args)...);
 
@@ -310,7 +316,7 @@ namespace fq::game_module
 	template <typename T>
 	T* fq::game_module::GameObject::GetComponent()
 	{
-		entt::id_type id = entt::resolve<T>().id();
+		static const entt::id_type id = entt::resolve<T>().id();
 
 		auto iter = mComponents.find(id);
 

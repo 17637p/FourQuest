@@ -88,8 +88,12 @@ namespace fq::physics
 		physx::PxScene* scene,
 		physx::PxCudaContextManager* cudaContextManager, 
 		std::shared_ptr<CollisionData> collisionData,
-		int* collisionMatrix)
+		int* collisionMatrix,
+		bool isSkinnedMesh)
 	{
+		mbIsSkinnedMesh = isSkinnedMesh;
+		mCudaVertexStride = info.vertexStride;
+
 		int deviceCount;
 		cudaError_t cudaStatus = cudaGetDeviceCount(&deviceCount);
 		if (cudaStatus != cudaSuccess || deviceCount == 0) {
@@ -132,13 +136,17 @@ namespace fq::physics
 
 		return true;
 	}
-
+	 
 	bool CudaPhysicsCloth::UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager)
 	{
 		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
 
-		if (!CudaClothTool::UpdatePhysXDataToID3DBuffer(mVertices, mIndices, mUV, mCudaVertexResource, paticle)) return false;
-		if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource)) return false;
+		DirectX::SimpleMath::Matrix InvTransform;
+		mWorldTransform.Invert(InvTransform);
+
+		if (!CudaClothTool::UpdatePhysXDataToID3DBuffer(mVertices, mIndices, mUV, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;
+		//if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource, mCudaVertexStride)) return false;
+
 		if (!updateDebugVertex()) return false;
 
 		return true;
@@ -415,7 +423,21 @@ namespace fq::physics
 	{
 		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
 
-		if (!CudaClothTool::UpdateWorldTransformToID3DBuffer(mWorldTransform, data.worldTransform, mVertices.size(), paticle)) return false;
+		DirectX::SimpleMath::Vector3 prevPosition;
+		DirectX::SimpleMath::Quaternion prevRotation;
+		DirectX::SimpleMath::Vector3 prevScale;
+		DirectX::SimpleMath::Vector3 nextPosition;
+		DirectX::SimpleMath::Quaternion nextRotation;
+		DirectX::SimpleMath::Vector3 nextScale;
+		DirectX::SimpleMath::Matrix prevTransform = mWorldTransform;
+		DirectX::SimpleMath::Matrix nextTransform = data.worldTransform;
+
+		prevTransform.Decompose(prevScale, prevRotation, prevPosition);
+		nextTransform.Decompose(nextScale, nextRotation, nextPosition);
+		prevTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(prevRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(prevPosition);
+		nextTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(nextRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(nextPosition);
+
+		//if (!CudaClothTool::UpdateWorldTransformToID3DBuffer(prevTransform, nextTransform, mVertices.size(), paticle)) return false;
 
 		// ClothBuffer 업데이트
 		mClothBuffer->raiseFlags(physx::PxParticleBufferFlag::eUPDATE_POSITION);

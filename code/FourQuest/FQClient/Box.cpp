@@ -31,7 +31,8 @@ namespace fq::client
 
 	void Box::OnTriggerEnter(const fq::game_module::Collision& collision)
 	{
-		if (collision.other->GetTag() != fq::game_module::ETag::PlayerAttack)
+		if (collision.other->GetTag() != fq::game_module::ETag::PlayerAttack &&
+			collision.other->GetTag() != fq::game_module::ETag::Arrow)
 			return;
 
 		if (!bIsBlock)

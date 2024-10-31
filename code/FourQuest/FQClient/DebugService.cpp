@@ -2,9 +2,12 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/TextUI.h"
-#include "PlayerInfoVariable.h"
-#include "GameManager.h"
+#include "../FQGameModule/EventManager.h"
 
+#include "PlayerInfoVariable.h"
+#include "SoulVariable.h"
+#include "GameManager.h"
+#include "ClientEvent.h"
 
 std::shared_ptr<fq::game_module::Component> fq::client::DebugService::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -44,9 +47,7 @@ void fq::client::DebugService::OnStart()
 		{
 			mFPSUI = child->GetComponent<game_module::TextUI>();
 		}
-
 	}
-
 }
 
 void fq::client::DebugService::OnUpdate(float dt)
@@ -107,6 +108,12 @@ void fq::client::DebugService::updateInput()
 	// 플레이어 무적 
 	if (input->IsKeyState(EKey::F6, EKeyState::Tap))
 	{
+	}
+
+	// 플레이어 부활 (영혼 상태인 플레이어)
+	if (input->IsKeyState(EKey::F7, EKeyState::Tap))
+	{
+		resurrectAllSoul();
 	}
 
 	// 캐릭터 설정
@@ -170,5 +177,47 @@ void fq::client::DebugService::savePlayerState()
 	if (gameMgr)
 	{
 		gameMgr->GetComponent<GameManager>()->SavePlayerState();
+	}
+}
+
+void fq::client::DebugService::resurrectAllSoul()
+{
+	std::vector<bool> isDeadPlayers(4, false);
+
+	if (SoulVariable::Player1Type == EPlayerType::SoulDestoryed)
+	{
+		isDeadPlayers[0] = true;
+		SoulVariable::Player1Type = EPlayerType::Soul;
+		GetScene()->GetEventManager()->FireEvent<fq::client::event::UpdatePlayerState>(
+			{ 0, EPlayerType::Soul });
+	}
+	if (SoulVariable::Player2Type == EPlayerType::SoulDestoryed)
+	{
+		isDeadPlayers[1] = true;
+		SoulVariable::Player2Type = EPlayerType::Soul;
+		GetScene()->GetEventManager()->FireEvent<fq::client::event::UpdatePlayerState>(
+			{ 1, EPlayerType::Soul });
+	}
+	if (SoulVariable::Player3Type == EPlayerType::SoulDestoryed)
+	{
+		isDeadPlayers[2] = true;
+		SoulVariable::Player3Type = EPlayerType::Soul;
+		GetScene()->GetEventManager()->FireEvent<fq::client::event::UpdatePlayerState>(
+			{ 2, EPlayerType::Soul });
+	}
+	if (SoulVariable::Player4Type == EPlayerType::SoulDestoryed)
+	{
+		isDeadPlayers[3] = true;
+		SoulVariable::Player4Type = EPlayerType::Soul;
+		GetScene()->GetEventManager()->FireEvent<fq::client::event::UpdatePlayerState>(
+			{ 3, EPlayerType::Soul });
+	}
+
+	for (int i = 0; i < isDeadPlayers.size(); i++)
+	{
+		if (isDeadPlayers[i])
+		{
+			GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>()->SpawnPlayer(i);
+		}
 	}
 }

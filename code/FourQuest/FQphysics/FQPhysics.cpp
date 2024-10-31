@@ -12,6 +12,7 @@
 
 #include "ConvexMeshResource.h"
 #include "EngineDataConverter.h"
+#include <random>
 
 namespace fq::physics
 {
@@ -146,7 +147,7 @@ namespace fq::physics
 		// 중력을 설정합니다.
 		sceneDesc.gravity.x = info.gravity.x;
 		sceneDesc.gravity.y = info.gravity.y;
-		sceneDesc.gravity.z = -info.gravity.z;
+		sceneDesc.gravity.z = info.gravity.z;
 		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * COLLISION_MATRIX_SIZE);
 
 		// Scene 설명자에 CPU 디스패처와 필터 셰이더를 설정합니다.
@@ -212,6 +213,7 @@ namespace fq::physics
 	bool FQPhysics::Update(float deltaTime)
 	{
 		RemoveActors();
+		updateGravity(deltaTime);
 
 		if (!mRigidBodyManager->Update(mScene, mGpuScene))
 			return false;
@@ -242,6 +244,16 @@ namespace fq::physics
 			return false;
 		if (!mClothManager->Update())
 			return false;
+
+		return true;
+	}
+
+	bool FQPhysics::ChangeScene()
+	{
+		if (!RemoveAllRigidBody()) return false;
+		if (!RemoveAllController()) return false;
+		if (!RemoveAllCloth()) return false;
+		if (!RemoveAllArticulation()) return false;
 
 		return true;
 	}
@@ -348,6 +360,7 @@ namespace fq::physics
 				unsigned int layerNumber = static_cast<CollisionData*>(shape->userData)->myLayerNumber;
 
 				output.contectPoints.push_back(position);
+				output.layerNumber.push_back(layerNumber);
 				output.id.push_back(id);
 			}
 		}
@@ -516,6 +529,7 @@ namespace fq::physics
 	{
 		if (mRigidBodyManager->RemoveAllRigidBody(mScene, mActorsToRemove))
 		{
+			spdlog::trace("[Physics ({})] : Remove All RigidBody", __LINE__);
 			return true;
 		}
 		else
@@ -542,12 +556,6 @@ namespace fq::physics
 			spdlog::warn("[Physics Warrning ({})] Failed SetRigidBodyData ID : {}", __LINE__, id);
 			return false;
 		}
-	}
-	bool FQPhysics::ChangeScene()
-	{
-		RemoveAllController();
-		RemoveAllCloth();
-		return false;
 	}
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{
@@ -596,6 +604,7 @@ namespace fq::physics
 	{
 		if (mCCTManager->RemoveAllController())
 		{
+			spdlog::trace("[Physics ({})] Remove All CCT(Character Controller)", __LINE__);
 			return true;
 		}
 		else
@@ -648,6 +657,10 @@ namespace fq::physics
 	{
 		return mCharacterPhysicsManager->RemoveArticulation(id);
 	}
+	bool FQPhysics::RemoveAllArticulation()
+	{
+		return mCharacterPhysicsManager->RemoveAllArticulation();
+	}
 	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, extent);
@@ -683,9 +696,9 @@ namespace fq::physics
 #pragma endregion
 
 #pragma region PhysicsClothManager
-	bool FQPhysics::CreateCloth(const Cloth::CreateClothData& info)
+	bool FQPhysics::CreateCloth(const Cloth::CreateClothData& info, bool isSkinnedMesh)
 	{
-		if (mClothManager->CreateCloth(info, mCollisionMatrix))
+		if (mClothManager->CreateCloth(info, mCollisionMatrix, isSkinnedMesh))
 		{
 			return true;
 		}
@@ -737,6 +750,7 @@ namespace fq::physics
 	{
 		if (mClothManager->RemoveAllCloth(mActorsToRemove))
 		{
+			spdlog::trace("[Physics ({})] Remove All Cloth", __LINE__);
 			return true;
 		}
 		else
@@ -784,6 +798,48 @@ namespace fq::physics
 			mScene->removeActor(*removeActor);
 		}
 		mActorsToRemove.clear();
+	}
+
+	// 바람 세기와 방향을 반환하는 함수
+	DirectX::SimpleMath::Vector3 GetWindForce(float windStrength, float time, const DirectX::SimpleMath::Vector3& baseDirection = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f)) {
+		// 바람의 방향에 약간의 변화를 주기 위해 sin 함수를 사용
+		float windX = baseDirection.x + 0.1f * std::sin(time * 0.5f);
+		float windY = baseDirection.y + 0.1f * std::cos(time * 0.3f);
+		float windZ = baseDirection.z + 0.1f * std::sin(time * 0.7f);
+
+		// 변형된 방향 벡터에 대한 정규화
+		DirectX::SimpleMath::Vector3 windDirection(windX, windY, windZ);
+		windDirection.Normalize();
+
+		// 최종 바람 벡터 = 방향 * 세기
+		return windDirection * windStrength;
+	}
+
+	// 무작위 바람 생성 함수
+	DirectX::SimpleMath::Vector3 GetRandomWindForce(float maxWindStrength) {
+		// 무작위 엔진 및 분포 설정
+		static std::random_device rd;
+		static std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> strengthDist(0.0f, maxWindStrength); // 바람 세기
+		std::uniform_real_distribution<float> directionDist(-1.0f, 1.0f);           // 방향
+
+		// 무작위 바람의 세기와 방향을 생성
+		float windStrength = strengthDist(gen);
+		DirectX::SimpleMath::Vector3 windDirection(directionDist(gen), directionDist(gen), directionDist(gen));
+		windDirection.Normalize();
+
+		// 최종 바람 벡터 = 방향 * 세기
+		return windDirection * windStrength;
+	}
+	void FQPhysics::updateGravity(float dt)
+	{
+		physx::PxVec3 gravity = mGpuScene->getGravity();
+
+		DirectX::SimpleMath::Vector3 wind = GetRandomWindForce(50.f);
+
+		gravity.x = wind.x;
+		gravity.z = wind.z;
+		mGpuScene->setGravity(gravity);
 	}
 #pragma endregion
 }

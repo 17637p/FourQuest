@@ -34,6 +34,7 @@ namespace fq::client
 		fq::game_module::GameObject* GetAttacker() const { return mAttacker; }
 		DirectX::SimpleMath::Vector3 GetAttackDirection() const { return mAttackDirection; }
 		DirectX::SimpleMath::Matrix GetAttackPosition() const { return mAttackTransform; }
+		void SetLifeTime(float time) { mLifeTime = time; }
 
 	private:
 		/// <summary>
@@ -55,6 +56,7 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 mAttackDirection;
 		DirectX::SimpleMath::Matrix  mAttackTransform;
 		int mMaxBlockCount;
+		std::set<unsigned int> mHitMonsterID;
 
 		// 생존 시간
 		float mLifeElapsedTime;

@@ -24,5 +24,4 @@ void fq::client::BossMonsterFindTargetState::OnStateEnter(game_module::Animator&
 
 void fq::client::BossMonsterFindTargetState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	animator.SetParameterBoolean("FindTarget", false);
 }

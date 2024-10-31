@@ -28,6 +28,11 @@ void fq::game_engine::AnimationSystem::Initialize(GameProcess* game)
 
 void fq::game_engine::AnimationSystem::UpdateAnimation(float dt)
 {
+	if (mGameProcess->mTimeManager->GetTimeScale() == 0.f)
+	{
+		return;
+	}
+
 	// 1. State Update
 	updateAnimtorState(dt);
 

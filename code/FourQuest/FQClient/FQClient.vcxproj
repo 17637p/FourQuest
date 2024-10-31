@@ -66,6 +66,7 @@
     <ClInclude Include="MaterialManagedGroup.h" />
     <ClInclude Include="MeleeMonsterVariable.h" />
     <ClInclude Include="MonsterHP.h" />
+    <ClInclude Include="MonsterSpawnerDetector.h" />
     <ClInclude Include="MonsterSpawnState.h" />
     <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="MultiPlayerObjectCreator.h" />
@@ -244,6 +245,7 @@
     <ClCompile Include="LookingObjectHelper.cpp" />
     <ClCompile Include="MaterialManagedGroup.cpp" />
     <ClCompile Include="MonsterHP.cpp" />
+    <ClCompile Include="MonsterSpawnerDetector.cpp" />
     <ClCompile Include="MonsterSpawnState.cpp" />
     <ClCompile Include="MultiPlayerObjectCreator.cpp" />
     <ClCompile Include="ParabolaAttack.cpp" />
@@ -334,7 +336,6 @@
     <ClCompile Include="PlayerSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
     <ClCompile Include="PlayerLowerMovementState.cpp" />
-    <ClCompile Include="PlayerVariable.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Quest.cpp" />
     <ClCompile Include="QuestColliderTriggerChecker.cpp" />

@@ -198,4 +198,20 @@ namespace fq::client::event
 		EArmourType mArmourType;
 		char skillKey; // 'X' 'A' 'R'
 	};
+
+	/// <summary>
+	/// Skill 사용 이벤트
+	/// </summary>
+	struct PushButtonEvent
+	{
+		int playerID;
+		ESkillType eSkillType;
+	};
+
+	/// 보스몬스터 스폰 요청 이벤트 
+	struct BossSpawnMonster
+	{
+		std::shared_ptr<game_module::GameObject> mTarget;
+	};
+
 }

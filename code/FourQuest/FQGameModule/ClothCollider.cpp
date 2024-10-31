@@ -7,6 +7,7 @@ namespace fq::game_module
 	ClothCollider::ClothCollider()
 		: mClothPath{}
 		, mClothInfo(std::make_shared<ClothInfo>())
+		, mbIsSkinnedMesh(false)
 	{
 	}
 
@@ -17,7 +18,6 @@ namespace fq::game_module
 	bool ClothCollider::Load()
 	{
 		ClothDataLoader loader;
-
 		return loader.LoadArticulationData(mClothPath, mClothInfo->clothData);
 	}
 

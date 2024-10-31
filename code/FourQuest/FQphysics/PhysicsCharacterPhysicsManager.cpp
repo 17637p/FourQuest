@@ -86,6 +86,28 @@ namespace fq::physics
 
 		return true;
 	}
+
+	bool PhysicsCharacterPhysicsManager::RemoveAllArticulation()
+	{
+		// 모든 관절 삭제
+		for (auto [id, articulation] : mCharacterPhysicsContainer)
+		{
+			auto pxArticulation = articulation->GetPxArticulation();
+
+			if (articulation->GetIsRagdoll() == true)
+			{
+				// 모든 링크가 제거된 후 Articulation을 Scene에서 제거합니다.
+				mScene->removeArticulation(*pxArticulation);
+				PX_RELEASE(pxArticulation);
+
+				spdlog::trace("[PxScene Remove] PxScene's Articulation Current Count : {}", mScene->getNbArticulations());
+			}
+		}
+
+		mCharacterPhysicsContainer.clear();
+
+		return true;
+	}
 	
 	void PhysicsCharacterPhysicsManager::GetArticulationData(const unsigned int& id, ArticulationGetData& articulationData)
 	{

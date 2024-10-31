@@ -13,7 +13,6 @@ namespace fq::client
 	struct SpawnColliderTrigger
 	{
 		std::string ColliderName;
-
 		bool isClear = false;
 	};
 
@@ -65,12 +64,9 @@ namespace fq::client
 		bool isClear = false;
 	};
 
-	// 보스몬스터 스폰 요청 이벤트 
-	struct RequestSpawnMonster
+	struct BossSpawnCondition
 	{
-		EMonsterType MonsterType = EMonsterType::Melee; // 스폰하는 몬스터 타입
-		unsigned int MonsterNumber = 1; // 스폰하는 몬스터 갯수 
-		DirectX::SimpleMath::Vector3 Position = DirectX::SimpleMath::Vector3::Zero; // 스폰하는 위치
+		bool isClear = false;
 	};
 
 	struct SpawnCondition
@@ -81,6 +77,7 @@ namespace fq::client
 		std::vector<ObjectLive> ObjectLiveList;
 		std::vector<InProgressQuest> InProgressQuestList;
 		std::vector<InProgressDefence> InProgressDefenceList;
+		std::vector<BossSpawnCondition> BossSpwanList;
 	};
 
 	/// <summary>

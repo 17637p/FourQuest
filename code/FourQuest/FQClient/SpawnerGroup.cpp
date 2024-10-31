@@ -27,7 +27,8 @@ fq::client::SpawnerGroup::SpawnerGroup()
 	mSpawnerMonsterPrefab(),
 	mCurRuleNum(0),
 	mCurSpawnMonsterNum(0),
-	mMonsterManager(nullptr)
+	mMonsterManager(nullptr),
+	mTarget(nullptr)
 {
 }
 
@@ -57,6 +58,7 @@ void fq::client::SpawnerGroup::OnStart()
 	EventProcessPlayerSpawnCollideTrigger();
 	EventProcessInProgressQuest();
 	EventProcessInProgressDefence();
+	EventProcessBossSpawnMonster();
 }
 
 void fq::client::SpawnerGroup::OnUpdate(float dt)
@@ -146,6 +148,13 @@ bool fq::client::SpawnerGroup::IsPassSpawnCondition()
 			return false;
 		}
 	}
+	for (int i = 0; i < mSpawnConditions.BossSpwanList.size(); i++)
+	{
+		if (!mSpawnConditions.BossSpwanList[i].isClear)
+		{
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -155,10 +164,13 @@ void fq::client::SpawnerGroup::Spawn(SpawnRule rule)
 	auto children = GetGameObject()->GetChildren();
 	for (int i = 0; i < children.size(); i++)
 	{
+		auto spawner = children[i]->GetComponent<Spawner>();
+		if (spawner == nullptr) continue;
+
 		for (int k = 0; k < rule.spawnData.size(); k++)
 		{
 			// 스폰하려는 스포너의 ID가 맞다면
-			if (children[i]->GetComponent<Spawner>()->GetID() == rule.spawnData[k].SpawnerNum)
+			if (spawner->GetID() == rule.spawnData[k].SpawnerNum)
 			{
 				// 몬스터 타입 결정
 				game_module::PrefabResource mSelectPrefab;
@@ -193,7 +205,7 @@ void fq::client::SpawnerGroup::Spawn(SpawnRule rule)
 
 					// monster 이름 변경
 					monster->SetName(rule.spawnData[k].Name + std::to_string(mCurSpawnMonsterNum));
-					
+
 					// Monster Spawner 위치로 이동
 					DirectX::SimpleMath::Vector3 spawnPos = children[i]->GetTransform()->GetWorldPosition();
 					monster->GetTransform()->SetWorldPosition(spawnPos);
@@ -258,7 +270,7 @@ void fq::client::SpawnerGroup::CheckMaxEnemy(int size)
 		}
 
 		// 여기랑 밑에 채워놓고 timer, collider 테스트 하기 
-		auto monsters = mMonsterManager->GetMonsters();
+		const auto& monsters = mMonsterManager->GetMonsters();
 
 		switch (maxEnemyList.ComparisonOperator)
 		{
@@ -376,6 +388,11 @@ void fq::client::SpawnerGroup::InitCondition()
 	{
 		inProgressDefenceList[i].isClear = false;
 	}
+	auto& bossSpawnList = mSpawnConditions.BossSpwanList;
+	for (int i = 0; i < bossSpawnList.size(); i++)
+	{
+		bossSpawnList[i].isClear = false;
+	}
 }
 
 // 09.20 Enter -> Stay 이벤트로 변경
@@ -400,6 +417,7 @@ void fq::client::SpawnerGroup::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mPlayerSpawnCollideTriggerHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mInProgressQuestHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mInProgressDefenceHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mBossSpwanMonsterHandler);
 }
 
 fq::client::SpawnerGroup& fq::client::SpawnerGroup::operator=(const SpawnerGroup& other)
@@ -422,8 +440,14 @@ fq::client::SpawnerGroup& fq::client::SpawnerGroup::operator=(const SpawnerGroup
 
 void fq::client::SpawnerGroup::OnFixedUpdate(float dt)
 {
+	if (mAddedMonsterList.empty())
+		return;
+
 	for (auto& monster : mAddedMonsterList)
 	{
+		// 미리 지정된 타겟이 있는경우 타겟으로 설정합니다.
+
+
 		// Target 설정 위해
 		game_module::GameObject* nearestPlayer = nullptr;
 		float minDistance = FLT_MAX;
@@ -444,6 +468,7 @@ void fq::client::SpawnerGroup::OnFixedUpdate(float dt)
 		auto isBoss = monster->GetComponent<BossMonster>();
 		auto isPlant = monster->GetComponent<PlantMonster>();
 		std::shared_ptr<game_module::GameObject> target;
+
 		if (isMelee)
 		{
 			isMelee->SetTarget(nearestPlayer);
@@ -500,4 +525,19 @@ void fq::client::SpawnerGroup::EventProcessInProgressDefence()
 				}
 			}
 		});
+}
+
+void fq::client::SpawnerGroup::EventProcessBossSpawnMonster()
+{
+	mBossSpwanMonsterHandler = GetScene()->GetEventManager()->RegisterHandle<event::BossSpawnMonster>(
+		[this](const client::event::BossSpawnMonster& event)
+		{
+			mTarget = event.mTarget;
+			for (int i = 0; i < mSpawnConditions.BossSpwanList.size(); ++i)
+			{
+				auto& bossSpawnList = mSpawnConditions.BossSpwanList[i];
+				bossSpawnList.isClear = true;
+			}
+		}
+	);
 }

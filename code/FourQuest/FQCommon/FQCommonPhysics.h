@@ -109,6 +109,7 @@ namespace fq::physics
 		// Hit 
 		unsigned int hitSize = 0;
 		std::vector<unsigned int> id = {};
+		std::vector<unsigned int> layerNumber = {};
 		std::vector<DirectX::SimpleMath::Vector3> contectPoints = {};
 	};
 
@@ -386,6 +387,7 @@ namespace fq::physics
 
 			ClothData clothData;
 
+			unsigned int vertexStride = 0;
 			void* vertexBuffer = nullptr;							// D3D11Buffer*
 			void* indexBuffer = nullptr;							// D3D11Buffer*
 		};

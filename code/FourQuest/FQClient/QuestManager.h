@@ -64,6 +64,8 @@ namespace fq::client
 		void eventProcessClearGoddessStatue();
 		void eventProcessChangePlayerNumCollideTrigger();
 		void eventProcessInProgressDefence();
+		void eventProcessPushButtonEvent();
+		void eventProcessUpdatePlayerState();
 
 		void playNew(float dt);
 		void playComplete(float dt);
@@ -77,6 +79,15 @@ namespace fq::client
 		void initSTL();
 		void startNew(int index);
 		void startComplete(int index);
+
+		// pushButton
+		int getMaxPlayer();
+		int getXPushPlayer();
+		int getRPushPlayer();
+		int getAPushPlayer();
+		int getYPushPlayer();
+
+		void initPushPlayer(std::vector<bool>& pushVec);
 
 	private:
 		// 인스펙터 용
@@ -106,6 +117,8 @@ namespace fq::client
 		game_module::EventHandler mClearGoddessStatueHandler;
 		game_module::EventHandler mChangePlayerNumCollideTriggereHandler;
 		game_module::EventHandler mInProgressDefenceHandler;
+		game_module::EventHandler mPushButtonHandler;
+		game_module::EventHandler mUpdatePlayerStateHandler;
 
 		// ClearCondition - ClearQuest 전용
 		std::vector<Quest> mClearEvents; // 이벤트 안에서 이벤트 호출이 안되어서 다음 틱에 처리
@@ -140,6 +153,13 @@ namespace fq::client
 		int mGaugeMaxWidth;
 		int mFontSize;
 		game_module::ScreenManager* mScreenManager;
+
+		// 버튼 퀘스트 용
+		std::vector<bool> mIsAlive;
+		std::vector<bool> mIsUseX;
+		std::vector<bool> mIsUseY;
+		std::vector<bool> mIsUseR;
+		std::vector<bool> mIsUseA;
 
 		friend void RegisterMetaData();
 	};

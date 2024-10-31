@@ -8,6 +8,8 @@
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/Event.h"
 #include "../FQGameModule/Scene.h"
+#include "../FQGameModule/MaterialAnimator.h"
+
 
 #include "ArmourSpawner.h"
 
@@ -41,6 +43,24 @@ void fq::client::SpawnerDeadState::OnStateEnter(game_module::Animator& animator,
 			info.bUseRimLight = false;
 
 			skeletalMesh->SetMaterialInstanceInfo(info);
+		}
+	}
+
+	// BurnEffect
+	for (auto child : animator.GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<game_module::MaterialAnimator>())
+		{
+			auto matAnimator = child->GetComponent<game_module::MaterialAnimator>();
+			auto info = matAnimator->GetDissolveAnimatorInfo();
+			info.bIsUpdate = true;
+			info.bIsUsed = true;
+			info.Duration = 2.f;
+			info.Speed = 2.f;
+			info.DelayTime = 0.f;
+			info.MinDissolveCutoff = -1.f;
+			info.InitDissolveCutoff = -1.f;
+			matAnimator->SetDissolveAnimatorInfo(info);
 		}
 	}
 }

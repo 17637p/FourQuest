@@ -26,5 +26,12 @@ physx::PxQueryHitType::Enum fq::physics::RaycastQueryFileter::postFilter(
 	, const physx::PxShape* shape
 	, const physx::PxRigidActor* actor)
 {
-	return physx::PxQueryHitType::eBLOCK;
+	auto data = shape->getSimulationFilterData();
+
+	if (filterData.word1 & (1 << data.word0))
+	{
+		return physx::PxQueryHitType::eTOUCH;
+	}
+
+	return physx::PxQueryHitType::eNONE;
 }

@@ -658,6 +658,9 @@
     </ClInclude>
     <ClInclude Include="BossMonsterVigilantState.h">
       <Filter>include\02.Monster\Boss</Filter>
+	</ClInclude>
+	<ClInclude Include="MonsterSpawnerDetector.h">
+      <Filter>include\02.Monster\Spawner</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -961,9 +964,6 @@
     <ClCompile Include="BerserkerRushState.cpp">
       <Filter>src\01.Player\State\Berserker</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerVariable.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="MonsterManager.cpp">
       <Filter>src\02.Monster</Filter>
     </ClCompile>
@@ -1093,9 +1093,6 @@
     <ClCompile Include="CoolTimeIcon.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterSpawnState.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="ScreenBlending.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -1146,6 +1143,12 @@
     </ClCompile>
     <ClCompile Include="BossMonsterVigilantState.cpp">
       <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterSpawnerDetector.cpp">
+      <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterSpawnState.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

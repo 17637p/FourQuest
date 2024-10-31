@@ -12,13 +12,10 @@ fq::client::MonsterManager::MonsterManager(const MonsterManager& other)
 	:mOnDestroyHandler{}
 	, mAddGameObjectHandler{}
 {
-	mRes = other.mRes;
 }
 
 fq::client::MonsterManager& fq::client::MonsterManager::operator=(const MonsterManager& other)
 {
-	mRes = other.mRes;
-
 	return *this;
 }
 
@@ -53,16 +50,17 @@ void fq::client::MonsterManager::OnAwake()
 	// 몬스터 삭제 이벤트 처리
 	mOnDestroyHandler = eventMgr->RegisterHandle<fq::event::OnDestoryedGameObject>([this](const fq::event::OnDestoryedGameObject& event)
 		{
-			if (event.object->GetTag() != game_module::ETag::Monster)
-				return;
+			if (event.object->GetTag() == game_module::ETag::Monster
+				|| event.object->GetTag() == game_module::ETag::DeadMonster)
+			{
+				auto id = event.object->GetID();
 
-			auto id = event.object->GetID();
-
-			mMonsters.erase(std::remove_if(mMonsters.begin(), mMonsters.end()
-				, [id](const std::shared_ptr<game_module::GameObject>& object)
-				{
-					return id == object->GetID();
-				}), mMonsters.end());
+				mMonsters.erase(std::remove_if(mMonsters.begin(), mMonsters.end()
+					, [id](const std::shared_ptr<game_module::GameObject>& object)
+					{
+						return id == object->GetID();
+					}), mMonsters.end());
+			}
 		});
 
 	// 몬스터 추가 이벤트 처리
@@ -93,8 +91,4 @@ void fq::client::MonsterManager::OnDestroy()
 
 void fq::client::MonsterManager::OnUpdate(float dt)
 {
-	if (GetScene()->GetInputManager()->IsKeyState(EKey::Z, EKeyState::Tap))
-	{
-		spdlog::debug("FPS : {} Monster Count : {}", GetScene()->GetTimeManager()->GetFPS(), GetMonsterSize());
-	}
 }

@@ -15,6 +15,7 @@
 #include "CameraMoving.h"
 #include "LevelHepler.h"
 #include "QuestColliderTriggerChecker.h"
+#include "PlayerInfoVariable.h"
 
 #include <spdlog/spdlog.h>
 
@@ -96,6 +97,7 @@ void fq::client::QuestManager::OnStart()
 	eventProcessClearGoddessStatue();
 	eventProcessChangePlayerNumCollideTrigger();
 	eventProcessInProgressDefence();
+	eventProcessPushButtonEvent();
 
 	// Quest 마다 isMain 설정
 	for (int i = 0; i < mMainQuests.size(); i++)
@@ -176,6 +178,33 @@ void fq::client::QuestManager::OnStart()
 
 	// 시작 서브퀘스트 개수 만큼만 QuestUI Render 하기 
 	RenderOnAllSubQuest();
+
+	// 버튼 퀘스트 
+	for (int i = 0; i < 4; i++)
+	{
+		mIsAlive.push_back(false);
+		mIsUseX.push_back(false);
+		mIsUseY.push_back(false);
+		mIsUseR.push_back(false);
+		mIsUseA.push_back(false);
+	}
+
+	if (PlayerInfoVariable::Player1SoulType != -1)
+	{
+		mIsAlive[0] = true;
+	}
+	if (PlayerInfoVariable::Player2SoulType != -1)
+	{
+		mIsAlive[1] = true;
+	}
+	if (PlayerInfoVariable::Player3SoulType != -1)
+	{
+		mIsAlive[2] = true;
+	}
+	if (PlayerInfoVariable::Player4SoulType != -1)
+	{
+		mIsAlive[3] = true;
+	}
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
@@ -249,6 +278,7 @@ void fq::client::QuestManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mClearGoddessStatueHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mChangePlayerNumCollideTriggereHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mInProgressDefenceHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mPushButtonHandler);
 }
 
 void fq::client::QuestManager::eventProcessKillMonster()
@@ -558,6 +588,11 @@ void fq::client::QuestManager::eventProcessClearQuest()
 	mClearQuestHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ClearQuestEvent>(
 		[this](const client::event::ClearQuestEvent& event)
 		{
+			initPushPlayer(mIsUseX);
+			initPushPlayer(mIsUseY);
+			initPushPlayer(mIsUseR);
+			initPushPlayer(mIsUseA);
+
 			if (event.clearQuest.mIsMain)
 			{
 				for (int i = 0; i < mMainQuests.size(); i++)
@@ -593,13 +628,26 @@ void fq::client::QuestManager::eventProcessClearQuest()
 			std::vector<ClearQuest>& clearQuestList = mCurMainQuest.mclearConditionList.clearQuestList;
 			if (clearQuestList.size() > 0)
 			{
-				if (clearQuestList[0].clearIndex == event.clearQuest.mIndex &&
-					clearQuestList[0].clearIsMain == event.clearQuest.mIsMain)
+				bool isClear = true;
+				for (int i = 0; i < clearQuestList.size(); i++)
+				{
+					if (clearQuestList[i].clearIndex == event.clearQuest.mIndex &&
+						clearQuestList[i].clearIsMain == event.clearQuest.mIsMain)
+					{
+						clearQuestList[i].isClear = true;
+
+						spdlog::trace("Clear Quest Condition True!");
+					}
+
+					if (!clearQuestList[i].isClear)
+					{
+						isClear = false;
+					}
+				}
+				if (isClear)
 				{
 					mClearEvents.push_back(mCurMainQuest);
 					mClearEventIndexes.push_back(0);
-
-					spdlog::trace("Clear Quest Condition True!");
 				}
 			}
 
@@ -608,13 +656,25 @@ void fq::client::QuestManager::eventProcessClearQuest()
 				std::vector<ClearQuest>& clearQuestList = mCurSubQuest[i].mclearConditionList.clearQuestList;
 				if (clearQuestList.size() > 0)
 				{
-					if (clearQuestList[0].clearIndex == event.clearQuest.mIndex &&
-						clearQuestList[0].clearIsMain == event.clearQuest.mIsMain)
+					bool isClear = true;
+					for (int j = 0; j < clearQuestList.size(); j++)
+					{
+						if (clearQuestList[j].clearIndex == event.clearQuest.mIndex &&
+							clearQuestList[j].clearIsMain == event.clearQuest.mIsMain)
+						{
+							clearQuestList[j].isClear = true;
+
+							spdlog::trace("Clear Quest Condition True!");
+						}
+						if (!clearQuestList[j].isClear)
+						{
+							isClear = false;
+						}
+					}
+					if (isClear)
 					{
 						mClearEvents.push_back(mCurSubQuest[i]);
 						mClearEventIndexes.push_back(i);
-
-						spdlog::trace("Clear Quest Condition True!");
 					}
 				}
 			}
@@ -939,6 +999,33 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		{
 			gaugeBarBack->SetIsRender(0, true);
 		}
+	}
+
+	// PushButton
+	std::vector<PushButton>& pushButtonList = quest.mclearConditionList.pushButtonList;
+	if (pushButtonList.size() > 0)
+	{
+		int pushButtonPlayer = -1;
+		switch (pushButtonList[0].skillType)
+		{
+			case ESkillType::X:
+				pushButtonPlayer = getXPushPlayer();
+				break;
+			case ESkillType::A:
+				pushButtonPlayer = getAPushPlayer();
+				break;
+			case ESkillType::R:
+				pushButtonPlayer = getRPushPlayer();
+				break;
+			case ESkillType::Y:
+				pushButtonPlayer = getYPushPlayer();
+				break;
+			default:
+				break;
+		}
+		text.Text = std::to_string(pushButtonPlayer) + " / " + std::to_string(getMaxPlayer());
+		text.IsRender = true;
+		monsterKillText->SetTextInfo(text);
 	}
 
 	if (quest.mIsTime && !quest.mIsClear)
@@ -1566,6 +1653,11 @@ void fq::client::QuestManager::initSTL()
 	mFailImages.clear();
 	mFailImageCounts.clear();
 	mIsFinishedFailedAnimation.clear();
+	mIsAlive.clear();
+	mIsUseA.clear();
+	mIsUseX.clear();
+	mIsUseY.clear();
+	mIsUseR.clear();
 }
 
 void fq::client::QuestManager::RenderOnAllSubQuest()
@@ -1615,5 +1707,205 @@ void fq::client::QuestManager::startComplete(int index)
 	mRightChecks[index]->SetUIInfomation(0, uiInfo);
 
 	mNewImages[index]->SetIsRender(0, false);
+}
+
+void fq::client::QuestManager::eventProcessPushButtonEvent()
+{
+	mPushButtonHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::PushButtonEvent>(
+		[this](const client::event::PushButtonEvent& event)
+		{
+			std::vector<PushButton>& pushButtonList = mCurMainQuest.mclearConditionList.pushButtonList;
+			if (pushButtonList.size() > 0)
+			{
+				if (pushButtonList[0].skillType == event.eSkillType)
+				{
+					if (pushButtonList[0].isAll)
+					{
+						int pushButtonPlayer = -1;
+						switch (event.eSkillType)
+						{
+							case ESkillType::X:
+								mIsUseX[event.playerID] = true;
+								pushButtonPlayer = getXPushPlayer();
+								break;
+							case ESkillType::A:
+								mIsUseA[event.playerID] = true;
+								pushButtonPlayer = getAPushPlayer();
+								break;
+							case ESkillType::R:
+								mIsUseR[event.playerID] = true;
+								pushButtonPlayer = getRPushPlayer();
+								break;
+							case ESkillType::Y:
+								mIsUseY[event.playerID] = true;
+								pushButtonPlayer = getYPushPlayer();
+								break;
+							default:
+								break;
+						}
+
+						if (getMaxPlayer() == pushButtonPlayer)
+						{
+							mClearEvents.push_back(mCurMainQuest);
+							mClearEventIndexes.push_back(0);
+							//GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+							//	{ mCurMainQuest, 0 });
+							spdlog::trace("Complete Clear Push Skill");
+						}
+					}
+					else
+					{
+						mClearEvents.push_back(mCurMainQuest);
+						mClearEventIndexes.push_back(0);
+						//GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+						//	{ mCurMainQuest, 0 });
+						spdlog::trace("Complete Clear Push Skill");
+					}
+				}
+			}
+
+			for (int i = 0; i < mCurSubQuest.size(); i++)
+			{
+				std::vector<PushButton>& pushButtonList = mCurSubQuest[i].mclearConditionList.pushButtonList;
+				if (pushButtonList.size() > 0)
+				{
+					if (pushButtonList[0].skillType == event.eSkillType)
+					{
+						if (pushButtonList[0].isAll)
+						{
+							int pushButtonPlayer = -1;
+							switch (event.eSkillType)
+							{
+								case ESkillType::X:
+									mIsUseX[event.playerID] = true;
+									pushButtonPlayer = getXPushPlayer();
+									break;
+								case ESkillType::A:
+									mIsUseA[event.playerID] = true;
+									pushButtonPlayer = getAPushPlayer();
+									break;
+								case ESkillType::R:
+									mIsUseR[event.playerID] = true;
+									pushButtonPlayer = getRPushPlayer();
+									break;
+								case ESkillType::Y:
+									mIsUseY[event.playerID] = true;
+									pushButtonPlayer = getYPushPlayer();
+									break;
+								default:
+									break;
+							}
+
+							if (getMaxPlayer() == pushButtonPlayer)
+							{
+								//GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+								//	{ mCurMainQuest, 0 });
+								mClearEvents.push_back(mCurSubQuest[i]);
+								mClearEventIndexes.push_back(i);
+								spdlog::trace("Complete Clear Push Skill");
+							}
+						}
+						else
+						{
+							//GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
+							//	{ mCurMainQuest, 0 });
+							mClearEvents.push_back(mCurSubQuest[i]);
+							mClearEventIndexes.push_back(i);
+							spdlog::trace("Complete Clear Push Skill");
+						}
+					}
+				}
+			}
+		});
+}
+
+int fq::client::QuestManager::getMaxPlayer()
+{
+	int maxPlayerNum = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (mIsAlive[i] == true)
+		{
+			maxPlayerNum++;
+		}
+	}
+
+	return maxPlayerNum;
+}
+
+void fq::client::QuestManager::eventProcessUpdatePlayerState()
+{
+	mUpdatePlayerStateHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::UpdatePlayerState>(
+		[this](const client::event::UpdatePlayerState& event)
+		{
+			if (event.type == EPlayerType::SoulDestoryed)
+			{
+				mIsAlive[event.playerID] = false;
+			}
+		});
+}
+
+int fq::client::QuestManager::getXPushPlayer()
+{
+	int maxPlayerNum = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (mIsUseX[i] == true)
+		{
+			maxPlayerNum++;
+		}
+	}
+
+	return maxPlayerNum;
+}
+
+int fq::client::QuestManager::getRPushPlayer()
+{
+	int maxPlayerNum = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (mIsUseR[i] == true)
+		{
+			maxPlayerNum++;
+		}
+	}
+
+	return maxPlayerNum;
+}
+
+int fq::client::QuestManager::getAPushPlayer()
+{
+	int maxPlayerNum = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (mIsUseA[i] == true)
+		{
+			maxPlayerNum++;
+		}
+	}
+
+	return maxPlayerNum;
+}
+
+int fq::client::QuestManager::getYPushPlayer()
+{
+	int maxPlayerNum = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (mIsUseY[i] == true)
+		{
+			maxPlayerNum++;
+		}
+	}
+
+	return maxPlayerNum;
+}
+
+void fq::client::QuestManager::initPushPlayer(std::vector<bool>& pushVec)
+{
+	for (int i = 0; i < pushVec.size(); i++)
+	{
+		pushVec[i] = false;
+	}
 }
 

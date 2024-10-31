@@ -10,6 +10,7 @@
 #include "../FQGameModule/AnimatorController.h"
 #include "../FQGameModule/InputEnum.h"
 #include "../FQGameModule/InputManager.h"
+#include "PlayerVariable.h"
 
 namespace fq::client
 {
@@ -59,18 +60,11 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 rightInput{};
 		rightInput.x = input->GetStickInfomation(controller->GetControllerID(), EPadStick::rightX);
 		rightInput.z = input->GetStickInfomation(controller->GetControllerID(), EPadStick::rightY);
-		constexpr float rotationOffsetSq = 0.5f * 0.5f;
 
-		if (rightInput.LengthSquared() >= rotationOffsetSq)
+		constexpr float NoInput = 0.01f;
+		if (rightInput.LengthSquared() >= NoInput)
 		{
-			rightInput.Normalize();
-			float targetYaw = atan2f(-rightInput.x, -rightInput.z); // atan2 사용으로 XZ 평면 기준 각도 계산
-
-			DirectX::SimpleMath::Quaternion inputRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(targetYaw, 0, 0);
-			DirectX::SimpleMath::Quaternion startRotation = transform->GetWorldRotation();
-			DirectX::SimpleMath::Quaternion newRotation = DirectX::SimpleMath::Quaternion::Slerp(startRotation, inputRotation, mRotationSpeed * dt);
-
-			transform->SetWorldRotation(newRotation);
+			controller->SetPadInputRotationBySpeed(game_module::EPadStickType::Right, PlayerVariable::PadRotationSpeed, dt);
 		}
 		else
 		{

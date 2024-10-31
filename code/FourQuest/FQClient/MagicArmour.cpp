@@ -14,6 +14,7 @@
 #include "SpeechBubbleUI.h"
 #include "PlayerInfoVariable.h"
 #include "EffectColorTransmitter.h"
+#include "ClientEvent.h"
 
 fq::client::MagicArmour::MagicArmour()
 	:mPlayer(nullptr)
@@ -119,6 +120,10 @@ void fq::client::MagicArmour::EmitMagicBall()
 	{
 		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
 	}
+
+	int id = mController->GetControllerID();
+	GetScene()->GetEventManager()
+		->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::X });
 }
 
 void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
@@ -170,6 +175,10 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	{
 		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
 	}
+
+	int id = mController->GetControllerID();
+	GetScene()->GetEventManager()
+		->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::A });
 }
 
 void fq::client::MagicArmour::EmitLaser()
@@ -196,6 +205,9 @@ void fq::client::MagicArmour::EmitLaser()
 	{
 		for (int i = 0; i < data.hitCount; ++i)
 		{
+			if (data.hitLayerNumber[i] == static_cast<unsigned int>(fq::game_module::ETag::DeadMonster))
+				continue;
+
 			float hitDistance = (origin - data.hitContactPoints[i]).Length();
 
 			if (minDistance >= hitDistance)
@@ -373,47 +385,18 @@ void fq::client::MagicArmour::checkCoolTime(float dt)
 	}
 }
 
-void fq::client::MagicArmour::CountLaserCoolTime()
+void fq::client::MagicArmour::EnterLaserState()
 {
+	// 쿨타임 설정 
 	if (mPlayer->IsFeverTime())
 		mLaserElapsedTime = (mLaserCoolTime - mLaserCoolTimeReduction) * mPlayer->GetGBDecreaseCooltime();
 	else
 		mLaserElapsedTime = mLaserCoolTime * mPlayer->GetGBDecreaseCooltime();
-}
 
-
-void fq::client::MagicArmour::SetLookAtRStickInput()
-{
-	using namespace DirectX::SimpleMath;
-
-	auto inputMgr = GetScene()->GetInputManager();
-	Vector3 input = Vector3::Zero;
-
-	// 컨트롤러 입력
-	input.x = inputMgr->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
-	input.z = inputMgr->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
-
-	float lengthSq = input.LengthSquared();
-
-	// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
-	constexpr float rotationOffsetSq = 0.5f * 0.5f;
-
-	// 캐릭터 컨트롤러 회전 처리
-	if (lengthSq >= rotationOffsetSq)
-	{
-		// 바라보는 방향 설정 
-		input.Normalize();
-
-		if (input == Vector3::Backward)
-		{
-			mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
-		}
-		else if (input != Vector3::Zero)
-		{
-			mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
-		}
-	}
-
+	// 키입력 이벤트 호출 
+	int id = mController->GetControllerID();
+	GetScene()->GetEventManager()
+		->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::R });
 }
 
 std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserGatherEffect()
@@ -519,20 +502,20 @@ void fq::client::MagicArmour::setName()
 	{
 		switch (soulType)
 		{
-		case 0:
-			speechBubble->SetName(PlayerInfoVariable::KnightName);
-			break;
-		case 1:
-			speechBubble->SetName(PlayerInfoVariable::MagicName);
-			break;
-		case 2:
-			speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-			break;
-		case 3:
-			speechBubble->SetName(PlayerInfoVariable::ArcherName);
-			break;
-		default:
-			break;
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
 		}
 	}
 }

@@ -189,6 +189,11 @@ extern "C" {
 			virtual FQ_PHYSICS bool RemoveArticulation(const unsigned int& id) abstract;
 
 			/// <summary>
+			/// 캐릭터 파직스 모두 삭제
+			/// </summary>
+			virtual FQ_PHYSICS bool RemoveAllArticulation() abstract;
+
+			/// <summary>
 			/// 가지고 있는 관절 중, 링크 및 조인트 추가
 			/// </summary>
 			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) abstract;
@@ -206,7 +211,7 @@ extern "C" {
 			/// <summary>
 			/// 천을 생성합니다.
 			/// </summary>
-			virtual FQ_PHYSICS bool CreateCloth(const Cloth::CreateClothData& info) abstract;
+			virtual FQ_PHYSICS bool CreateCloth(const Cloth::CreateClothData& info, bool isSkinnedMesh) abstract;
 
 			/// <summary>
 			/// 천 데이터를 얻습니다.

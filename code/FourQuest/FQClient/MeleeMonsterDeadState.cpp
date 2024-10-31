@@ -33,7 +33,6 @@ fq::client::MeleeMonsterDeadState::~MeleeMonsterDeadState()
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterDeadState::Clone()
 {
 	return fq::game_module::ObjectPool::GetInstance()->Assign<MeleeMonsterDeadState>(*this);
-
 }
 
 void fq::client::MeleeMonsterDeadState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -52,6 +51,7 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	agent->Stop();
 
 	auto gameObject = animator.GetGameObject();
+	gameObject->SetTag(fq::game_module::ETag::DeadMonster);
 
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 	gameObject->GetComponent<MeleeMonster>()->DestroyMonsterHPUI();
@@ -120,7 +120,7 @@ void fq::client::MeleeMonsterDeadState::OnStateUpdate(game_module::Animator& ani
 {
 	mDurationTime += dt;
 
-	if (mDurationTime >= mEraseTime)
+	if (mDurationTime >= mEraseTime && !animator.GetGameObject()->IsDestroyed())
 	{
 		auto scene = animator.GetScene();
 		scene->DestroyGameObject(animator.GetGameObject());

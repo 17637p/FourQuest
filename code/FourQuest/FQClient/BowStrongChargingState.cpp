@@ -5,12 +5,12 @@
 #include "../FQGameModule/InputManager.h"
 
 #include "ArcherArmour.h"
+#include "PlayerVariable.h"
 
 namespace fq::client
 {
 	BowStrongChargingState::BowStrongChargingState()
 		: mChargingElapsedTime()
-		, mRotationSpeed()
 		, mStringAttackIndex(1u)
 		, mForcedChargingWaitingTime(0.f)
 		, mbIsEmitAttack(false)
@@ -26,25 +26,25 @@ namespace fq::client
 		mChargingElapsedTime = 0.f;
 		auto archer = animator.GetComponent<ArcherArmour>();
 		mbIsEmitAttack = false;
-		
+
 		if (archer != nullptr)
 		{
 			switch (mStringAttackIndex)
 			{
-			case 1:
-				archer->EmitSound(EArcherSound::ShootStart);
-				break;
-			case 2:
-				// fall through
-			case 3:
-				archer->EmitSound(EArcherSound::Charge1);
-				break;
-			case 4:
-				archer->EmitSound(EArcherSound::Charge2);
-				break;
-			default:
-				assert(false);
-				break;
+				case 1:
+					archer->EmitSound(EArcherSound::ShootStart);
+					break;
+				case 2:
+					// fall through
+				case 3:
+					archer->EmitSound(EArcherSound::Charge1);
+					break;
+				case 4:
+					archer->EmitSound(EArcherSound::Charge2);
+					break;
+				default:
+					assert(false);
+					break;
 			}
 		}
 	}
@@ -54,9 +54,10 @@ namespace fq::client
 		mChargingElapsedTime += dt;
 
 		auto archer = animator.GetComponent<ArcherArmour>();
-		archer->SetLookAtLStickInput(dt, mRotationSpeed);
-
 		auto controller = animator.GetComponent<game_module::CharacterController>();
+
+		controller->SetPadInputRotationBySpeed(game_module::EPadStickType::Left, PlayerVariable::PadRotationSpeed, dt);
+
 		auto controllerID = controller->GetControllerID();
 		auto input = animator.GetGameObject()->GetScene()->GetInputManager();
 

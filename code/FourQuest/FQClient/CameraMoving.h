@@ -86,6 +86,9 @@ namespace fq::client
 		DirectX::SimpleMath::Vector2 mForbiddenAreaPaddingX; // Zoom 아웃 보다 큰 영역 
 		DirectX::SimpleMath::Vector2 mForbiddenAreaPaddingY;
 
+		DirectX::SimpleMath::Vector2 mForbiddenViewPortX; // 금지할 viewportX 좌표 
+		DirectX::SimpleMath::Vector2 mForbiddenViewPortY; // 금지할 viewportY 좌표 
+
 		friend void RegisterMetaData();
 	};
 }

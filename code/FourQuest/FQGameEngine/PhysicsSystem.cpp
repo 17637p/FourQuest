@@ -695,10 +695,13 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		if (object->HasComponent<StaticMeshRenderer>())
 		{
 			auto staticMesh = object->GetComponent<StaticMeshRenderer>();
-			void* indexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetIndexBuffer();
-			void* vertexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetVertexBuffer();
+			auto iStaticMesh = staticMesh->GetStaticMeshObject()->GetStaticMesh();
+			void* indexBuffer = iStaticMesh->GetIndexBuffer();
+			void* vertexBuffer = iStaticMesh->GetVertexBuffer();
 			clothCollider->SetIndexBuffer(indexBuffer);
 			clothCollider->SetVertexBuffer(vertexBuffer);
+			clothCollider->SetIsSkinnedMesh(false);
+			clothCollider->GetClothInfo()->vertexStride = iStaticMesh->GetVertexSize();
 		}
 		else if (object->HasComponent<SkinnedMeshRenderer>())
 		{
@@ -707,6 +710,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			void* vertexBuffer = skeletalMesh->GetSkinnedMeshObject()->GetSkinnedMesh()->GetVertexBuffer();
 			clothCollider->SetIndexBuffer(indexBuffer);
 			clothCollider->SetVertexBuffer(vertexBuffer);
+			clothCollider->SetIsSkinnedMesh(true);
 		}
 		else
 		{
@@ -714,8 +718,15 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			return;
 		}
 
+		auto clothInfo = clothCollider->GetClothInfo();
+
+		for (int i = 0; i < clothInfo->clothData.vertices.size(); i++)
+		{
+			clothInfo->clothData.vertices[i] = DirectX::SimpleMath::Vector3::Transform(clothInfo->clothData.vertices[i], transform->GetWorldMatrix());
+		}
+
 		// 물리 엔진에서 천 생성하기
-		bool check = mPhysicsEngine->CreateCloth(*clothCollider->GetClothInfo().get());
+		bool check = mPhysicsEngine->CreateCloth(*clothCollider->GetClothInfo().get(), clothCollider->GetIsSkinnedMesh());
 		if (!check)
 		{
 			spdlog::error("[PhysicsSystem ({})] Failed Create Cloth", __LINE__);
@@ -1030,7 +1041,24 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 
 			fq::physics::Cloth::GetSetClothData data;
 			mPhysicsEngine->GetClothData(id, data);
-			transform->SetWorldMatrix(data.worldTransform);
+
+			if (!clothCollider->GetIsSkinnedMesh())
+				transform->SetWorldMatrix(data.worldTransform);
+
+			auto vertices = mPhysicsEngine->GetClothVertex(id);
+
+			fq::graphics::debug::PolygonInfo info;
+
+			for (int i = 0; i < vertices.size(); i++)
+			{
+				fq::graphics::debug::SphereInfo info;
+
+				info.Sphere.Center = vertices[i];
+				info.Sphere.Radius = 0.01f;
+				info.Color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
+
+				mGameProcess->mGraphics->DrawSphere(info);
+			}
 		}
 		else
 		{
@@ -1224,6 +1252,16 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
 			data.worldTransform = transform->GetWorldMatrix();
 
+			// Tag가 변경된 경우
+			auto articulationData = articulation->GetArticulationData();
+			auto prevLayer = articulationData->GetLayerNumber();
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				articulationData->SetLayerNumber(currentLayer);
+			}
+
 			// 새로 생성되는 레그돌만 프레임 갯수 제한, 씬에 레그돌 최대 갯수 제한, 한 프레임에 레그돌 생성 갯수 제한, 레그돌 On/Off
 			if ((mGameProcess->mTimeManager->GetFPS() <= client::MonsterVariable::MinFrameCountForRagdoll
 				|| client::MonsterVariable::MaxRagdollsPerScene <= mPhysicsEngine->GetArticulationCount())
@@ -1342,12 +1380,14 @@ void fq::game_engine::PhysicsSystem::PostUpdate()
 {
 	for (auto& [colliderID, info] : mColliderContainer)
 	{
-		if (info.bIsDestroyed)
+		if (info.bIsDestroyed && !info.bIsRemoveBody)
 		{
 			if (info.enttID == mArticulationTypeID)
 				mPhysicsEngine->RemoveArticulation(colliderID);
 			else if (info.enttID == mCharactorControllerTypeID || info.enttID == mControllerTypeID)
 				mPhysicsEngine->RemoveController(colliderID);
+			else if (info.enttID == mClothTypeID)
+				mPhysicsEngine->RemoveCloth(colliderID);
 			else
 				mPhysicsEngine->RemoveRigidBody(colliderID);
 
@@ -1430,6 +1470,7 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 		event.result->hitContactPoints.push_back(result.contectPoints[i]);
 		auto object = mColliderContainer.find(result.id[i])->second.gameObject.get();
 		event.result->hitObjects.push_back(object);
+		event.result->hitLayerNumber.push_back(result.layerNumber[i]);
 	}
 
 	if (event.bUseDebugDraw)
@@ -1441,6 +1482,7 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 		ray.Direction = event.direction * event.distance;
 		ray.Origin = event.origin;
 		ray.Normalize = false;
+		ray.bUseDepthTest = true;
 
 		renderer->DrawRay(ray);
 	}

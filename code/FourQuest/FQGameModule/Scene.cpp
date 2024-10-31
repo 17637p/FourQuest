@@ -164,8 +164,25 @@ void fq::game_module::Scene::DestroyGameObject(GameObject* object)
 		destroyChild(child);
 	}
 
-	object->OnDestroy();
-	mEventManager->FireEvent<fq::event::OnDestoryedGameObject>({ object });
+	// 한 프레임에 생성과 삭제를 동시에하는 경우 예외처리
+	bool hasPedingObject = false;
+	mPedingObjects.erase(std::remove_if(mPedingObjects.begin(), mPedingObjects.end()
+		, [&hasPedingObject, object](const std::shared_ptr<GameObject>& pedingObject)
+		{
+			if (pedingObject->GetID() == object->GetID())
+			{
+				hasPedingObject = true;
+				return true;
+			}
+
+			return false;
+		}), mPedingObjects.end());
+
+	if (!hasPedingObject)
+	{
+		object->OnDestroy();
+		mEventManager->FireEvent<fq::event::OnDestoryedGameObject>({ object });
+	}
 }
 
 void fq::game_module::Scene::destroyChild(GameObject* object)
@@ -182,8 +199,25 @@ void fq::game_module::Scene::destroyChild(GameObject* object)
 		destroyChild(child);
 	}
 
-	object->OnDestroy();
-	mEventManager->FireEvent<fq::event::OnDestoryedGameObject>({ object });
+	// 한 프레임에 생성과 삭제를 동시에하는 경우 예외처리
+	bool hasPedingObject = false;
+	mPedingObjects.erase(std::remove_if(mPedingObjects.begin(), mPedingObjects.end()
+		, [&hasPedingObject, object](const std::shared_ptr<GameObject>& pedingObject)
+		{
+			if (pedingObject->GetID() == object->GetID())
+			{
+				hasPedingObject = true;
+				return true;
+			}
+
+			return false;
+		}), mPedingObjects.end());
+
+	if (!hasPedingObject)
+	{
+		object->OnDestroy();
+		mEventManager->FireEvent<fq::event::OnDestoryedGameObject>({ object });
+	}
 }
 void fq::game_module::Scene::DestroyAll()
 {
@@ -214,7 +248,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectBy
 
 void fq::game_module::Scene::processPedingObject()
 {
-	for (int i = 0; i < mPedingObjects.size(); ++i)	
+	for (int i = 0; i < mPedingObjects.size(); ++i)
 	{
 		auto object = mPedingObjects[i];
 		mEventManager->FireEvent<fq::event::AddGameObject>({ object.get() });

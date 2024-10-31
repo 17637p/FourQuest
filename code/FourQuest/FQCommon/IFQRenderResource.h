@@ -35,6 +35,8 @@ extern "C" {
 			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
 			virtual FQ_GRAPHICS EStaticMeshType GetStaticMeshType() const abstract;
 
+			virtual UINT GetVertexSize() const abstract;
+
 		protected:
 			virtual ~IStaticMesh() = default;
 		};

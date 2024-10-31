@@ -107,10 +107,12 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SafeZone")
 		.data<ETag::Shield>("Shield"_hs) // 19
 		.prop(fq::reflect::prop::Name, "Shield")
-		.data<ETag::FinalArrow>("FinalArrow"_hs) // 20
-		.prop(fq::reflect::prop::Name, "FinalArrow")
-		.data<ETag::ArrowHitBox>("ArrowHitBox"_hs) // 21
-		.prop(fq::reflect::prop::Name, "ArrowHitBox");
+		.data<ETag::Arrow>("Arrow"_hs) // 20
+		.prop(fq::reflect::prop::Name, "Arrow")
+		.data<ETag::RangeHitBox>("RangeHitBox"_hs) // 21
+		.prop(fq::reflect::prop::Name, "RangeHitBox")
+		.data<ETag::DeadMonster>("DeadMonster"_hs) // 22
+		.prop(fq::reflect::prop::Name, "DeadMonster");
 
 	// GameObject
 	entt::meta<GameObject>()

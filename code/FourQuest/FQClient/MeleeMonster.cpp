@@ -563,17 +563,21 @@ void fq::client::MeleeMonster::DestroyMonsterHPUI()
 
 void fq::client::MeleeMonster::HitArrow(fq::game_module::GameObject* object)
 {
+	spdlog::trace("Hit Arrow ID : {}", object->GetID());
+
 	if (mArrowHitDuration < mArrowImotalTime)
 		return;
 
 	// 플레이어 공격 피격 처리
-	if (object->GetTag() == game_module::ETag::FinalArrow)
+	if (object->GetTag() == game_module::ETag::Arrow)
 	{
 		mArrowHitDuration = 0.f;
 		auto playerAttack = object->GetComponent<Attack>();
 
 		if (playerAttack->ProcessAttack())
 		{
+			spdlog::trace("Hit Arrow Damaged to Monster ID : {}", object->GetID());
+
 			mAnimator->SetParameterTrigger("OnHit");
 			float attackPower = playerAttack->GetAttackPower();
 

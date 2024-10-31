@@ -107,6 +107,7 @@
 
 // MonsterSpawner
 #include "MonsterSpawner.h"
+#include "MonsterSpawnerDetector.h"
 #include "MonsterGroup.h"
 #include "SpawnerDeadState.h"
 #include "SpawnerOpenState.h"
@@ -220,20 +221,11 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Warrior")
 		.base<game_module::Component>();
 
-	entt::meta<TestPOD>()
-		.type("TestPOD"_hs)
-		.prop(reflect::prop::Name, "TestPOD")
-		.prop(reflect::prop::POD)
-		.data<&TestPOD::res>("res"_hs)
-		.prop(fq::reflect::prop::Name, "res");
-
 	entt::meta<MonsterManager>()
 		.type("MonsterManager"_hs)
 		.prop(reflect::prop::Name, "MonsterManager")
 		.data<&MonsterManager::SetMonsterSize, &MonsterManager::GetMonsterSize>("Size"_hs)
 		.prop(fq::reflect::prop::Name, "Size")
-		.data<&MonsterManager::mRes>("mRes"_hs)
-		.prop(fq::reflect::prop::Name, "mRes")
 		.base<game_module::Component>();
 
 	entt::meta<DebugService>()
@@ -790,6 +782,12 @@ void fq::client::RegisterMetaData()
 		.data<&ArcherArmour::mStrongProjectileVelocity>("StrongProjectileVelocity"_hs)
 		.prop(reflect::prop::Name, "StrongProjectileVelocity")
 		.prop(reflect::prop::Comment, u8"강공격 속도")
+		.data<&ArcherArmour::mStrongArrowRange>("StrongArrowRange"_hs)
+		.prop(reflect::prop::Name, "StrongArrowRange")
+		.prop(reflect::prop::Comment, u8"강공격 사정거리")
+		.data<&ArcherArmour::mStrongArrowOffset>("mStrongArrowOffset"_hs)
+		.prop(reflect::prop::Name, "mStrongArrowOffset")
+		.prop(reflect::prop::Comment, u8"강공격 화살 사이의 간격")
 		.data<&ArcherArmour::mWeakAttack>("mWeakAttack"_hs)
 		.prop(reflect::prop::Name, "mWeakAttack")
 		.prop(reflect::prop::Comment, u8"약공격 프리펩")
@@ -1060,9 +1058,6 @@ void fq::client::RegisterMetaData()
 	entt::meta<BowStrongChargingState>()
 		.type("BowStrongChargingState"_hs)
 		.prop(reflect::prop::Name, "BowStrongChargingState")
-		.data<&BowStrongChargingState::mRotationSpeed>("RotationSpeed"_hs)
-		.prop(reflect::prop::Name, "RotationSpeed")
-		.prop(fq::reflect::prop::Comment, u8"회전 속도")
 		.data<&BowStrongChargingState::mForcedChargingWaitingTime>("ForcedChargingWaitingTime"_hs)
 		.prop(reflect::prop::Name, "ForcedChargingWaitingTime")
 		.prop(fq::reflect::prop::Comment, u8"강제 차징 대기 시간")
@@ -1891,6 +1886,12 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SpawnOffeset")
 		.base<fq::game_module::Component>();
 
+	entt::meta<MonsterSpawnerDetector>()
+		.type("MonsterSpawnerDetector"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterSpawnerDetector")
+		.prop(reflect::prop::Label, "Monster")
+		.base<fq::game_module::Component>();
+
 	entt::meta<SpawnerOpenState>()
 		.type("SpawnerOpenState"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnerOpenState")
@@ -2426,6 +2427,27 @@ void fq::client::RegisterMetaData()
 		.data<&ClearGoddessStatue::goddessStatueName>("GoddessStatueName"_hs)
 		.prop(fq::reflect::prop::Name, "GoddessStatueName");
 
+	entt::meta<ESkillType>()
+		.prop(fq::reflect::prop::Name, "ESkillType")
+		.conv<std::underlying_type_t<ESkillType>>()
+		.data<ESkillType::X>("X"_hs) // 0
+		.prop(fq::reflect::prop::Name, "X")
+		.data<ESkillType::A>("A"_hs) // 1
+		.prop(fq::reflect::prop::Name, "A")
+		.data<ESkillType::R>("R"_hs) // 2
+		.prop(fq::reflect::prop::Name, "R")
+		.data<ESkillType::Y>("Y"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Y");
+
+	entt::meta<PushButton>()
+		.type("PushButton"_hs)
+		.prop(fq::reflect::prop::Name, "PushButton")
+		.prop(fq::reflect::prop::POD)
+		.data<&PushButton::skillType>("skillType"_hs)
+		.prop(fq::reflect::prop::Name, "skillType")
+		.data<&PushButton::isAll>("isAll"_hs)
+		.prop(fq::reflect::prop::Name, "isAll");
+
 	entt::meta<QuestJoinCondition>()
 		.type("QuestJoinCondition"_hs)
 		.prop(fq::reflect::prop::Name, "QuestJoinCondition")
@@ -2450,7 +2472,9 @@ void fq::client::RegisterMetaData()
 		.data<&QuestClearCondition::colliderTriggerList>("ColliderTriggerList"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
 		.data<&QuestClearCondition::clearGoddessStatueList>("ClearGoddessStatueList"_hs)
-		.prop(fq::reflect::prop::Name, "ClearGoddessStatueList");
+		.prop(fq::reflect::prop::Name, "ClearGoddessStatueList")
+		.data<&QuestClearCondition::pushButtonList>("PushButtonList"_hs)
+		.prop(fq::reflect::prop::Name, "PushButtonList");
 
 	entt::meta<RewardPortal>()
 		.type("RewardPortal"_hs)
@@ -2732,10 +2756,9 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "FeverAttackIncreaseRatio")
 		.data<&PlayerVariable::FeverSpeedIncreaseRatio>("FeverSpeedIncreaseRatio"_hs)
 		.prop(fq::reflect::prop::Name, "FeverSpeedIncreaseRatio")
-		.data<&PlayerVariable::HpReductionOnAttack>("HpReductionOnAttack"_hs)
-		.prop(fq::reflect::prop::Name, "HpReductionOnAttack")
-		.data<&PlayerVariable::HpReductionOnAttackMinHp>("HpReductionOnAttackMinHp"_hs)
-		.prop(fq::reflect::prop::Name, "HpReductionOnAttackMinHp")
+		.data<&PlayerVariable::PadRotationSpeed>("PadRotationSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "PadRotationSpeed")
+		.prop(reflect::prop::Comment, u8"패드 입력에 따른 플레이어 회전속도")
 		.base<IGameVariable>();
 
 	entt::meta<PlayerInfoVariable>()
@@ -3033,6 +3056,11 @@ void fq::client::RegisterMetaData()
 		.data<&InProgressDefence::Count>("Count"_hs)
 		.prop(fq::reflect::prop::Name, "Count");
 
+	entt::meta<BossSpawnCondition>()
+		.type("BossSpawnCondition"_hs)
+		.prop(fq::reflect::prop::Name, "BossSpawnCondition")
+		.prop(fq::reflect::prop::POD);
+
 	entt::meta<SpawnCondition>()
 		.type("SpawnCondition"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnCondition")
@@ -3048,7 +3076,9 @@ void fq::client::RegisterMetaData()
 		.data<&SpawnCondition::InProgressQuestList>("InProgressQuestList"_hs)
 		.prop(fq::reflect::prop::Name, "InProgressQuestList")
 		.data<&SpawnCondition::InProgressDefenceList>("InProgressDefenceList"_hs)
-		.prop(fq::reflect::prop::Name, "InProgressDefenceList");
+		.prop(fq::reflect::prop::Name, "InProgressDefenceList")
+		.data<&SpawnCondition::BossSpwanList>("BossSpwanList"_hs)
+		.prop(fq::reflect::prop::Name, "BossSpwanList");
 
 	entt::meta<SpawnData>()
 		.type("SpawnData"_hs)
