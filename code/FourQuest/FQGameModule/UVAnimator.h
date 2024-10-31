@@ -20,6 +20,8 @@ namespace fq::game_module
 
 		void OnUpdate(float dt);
 
+		void SetTimePos(float timePos);
+
 		void SetUVAnimationPath(const std::string& path) { mUVAnimationPath = path; }
 		const std::string GetUVAnimationPath() const { return mUVAnimationPath; }
 
@@ -40,6 +42,8 @@ namespace fq::game_module
 
 		bool GetInverseX() const { return mbInverseX; }
 		bool GetInverseY() const { return mbInverseY; }
+
+		float GetDuration() const;
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

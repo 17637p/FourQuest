@@ -61,3 +61,27 @@ void fq::game_module::UVAnimator::OnUpdate(float dt)
 		mIUVAnimationInstance->SetTimePos(std::min<float>(timePos + dt * mPlaySpeed, duration));
 	}
 }
+
+void fq::game_module::UVAnimator::SetTimePos(float timePos)
+{
+	float duration = GetDuration();
+
+	if (mbIsRecursive)
+	{
+		mIUVAnimationInstance->SetTimePos(std::fmod(timePos, duration));
+	}
+	else
+	{
+		mIUVAnimationInstance->SetTimePos(std::min<float>(timePos, duration));
+	}
+}
+
+float fq::game_module::UVAnimator::GetDuration() const
+{
+	if (mIUVAnimation == nullptr)
+	{
+		return 0.f;
+	}
+
+	return mIUVAnimation->GetUVAnimationClip().Duration;
+}

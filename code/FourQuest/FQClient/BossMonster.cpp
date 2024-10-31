@@ -168,6 +168,8 @@ void fq::client::BossMonster::OnStart()
 	mbEnterAngryState = false;
 
 	GenerateAngryEnteringVigilantCount();
+	GenerateEnteringVigilantCount();
+	initGroggy();
 }
 
 void fq::client::BossMonster::OnUpdate(float dt)
@@ -205,7 +207,8 @@ void fq::client::BossMonster::OnUpdate(float dt)
 			mAnimator->SetParameterBoolean("IsAngry", true);
 			mAnimator->SetParameterBoolean("IsEnterAngry", true);
 
-			mbEnterAngryState = true;
+			// 그로기 초기화
+			initGroggy();
 		}
 	}
 
@@ -557,6 +560,13 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			}
 		}
 	}
+}
+
+void fq::client::BossMonster::initGroggy()
+{
+	mGroggyElapsed = 0.f;
+	mGroggyGauge = 0.f;
+	mAnimator->SetParameterBoolean("OnGroggy", false);
 }
 
 void fq::client::BossMonster::DetectTarget()
