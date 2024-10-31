@@ -24,7 +24,7 @@ namespace fq::client
 	{
 	public:
 		BossMonster();
-		~BossMonster();
+		~BossMonster() = default;
 
 		/// <summary>
 		/// 타겟이 감지 범위에 있는지 확인합니다 
@@ -37,12 +37,6 @@ namespace fq::client
 		void EndPattern();
 
 		/// <summary>
-		/// 타겟을 설정합니다 
-		/// </summary>
-		void SetTarget(game_module::GameObject* target) override;
-		std::shared_ptr<game_module::GameObject> GetTarget() override { return mTarget; };
-
-		/// <summary>
 		/// 타겟을 추적합니다 
 		/// </summary>
 		void ChaseTarget();
@@ -50,7 +44,7 @@ namespace fq::client
 		/// <summary>
 		/// 플레이어를 위치에 맞게 
 		/// </summary>
-		void HomingTarget();
+		void HomingTarget(bool bUseSpeed = true);
 
 		/// <summary>
 		/// 타겟이 공격범위에 있는지 확인합니다
@@ -58,14 +52,16 @@ namespace fq::client
 		void CheckTargetInAttackRange();
 
 		/// <summary>
-		/// 내려찍기 공격 
+		/// 먹을 수 있는 가장 가까운 갑옷을 탐색하고 타겟으로 지정합니다
 		/// </summary>
-		void EmitSmashDown();
+		bool FindAndSetTargetDeadArmour();
 
 		/// <summary>
-		/// 콤보 공격 
+		/// 타겟을 랜덤으로 설정합니다 
 		/// </summary>
-		void EmitComboAttack(float xAxisOffset);
+		void SetRandomTarget();
+
+		void Move(DirectX::SimpleMath::Vector3 destination);
 
 		/// <summary>
 		/// 콤보, 연속공격 시 앞으로 밀려나는 반동
@@ -77,22 +73,14 @@ namespace fq::client
 		/// </summary>
 		void StepBack();
 
-		/// <summary>
-		/// 내려찍기 공격 이펙트를 방출합니다 
-		/// </summary>
-		std::shared_ptr<game_module::GameObject> EmitSmashDownEffect();
+		void HitArrow(fq::game_module::GameObject* object);
 
-		void Move(DirectX::SimpleMath::Vector3 destination);
+		bool IsAngry() const;
 
-		/// <summary>
-		/// 러쉬 공격 관련 프리팹을 생성합니다.
-		/// </summary>
-		std::shared_ptr<game_module::GameObject> Rush();
+		void ResetJumpCoolTime();
+		void ResetRourCoolTime();
 
-		float GetHPRatio()const;
-
-		float GetGroggyGaugeRatio()const;
-
+#pragma region HPBar
 		void AddHp(float hp);
 
 		/// <summary>
@@ -101,24 +89,84 @@ namespace fq::client
 		void CreateHpBar();
 
 		/// <summary>
-		/// 먹을 수 있는 가장 가까운 값옷을 탐색하고 타겟으로 지정합니다
-		/// </summary>
-		bool FindAndSetTargetDeadArmour();
-
-		/// <summary>
 		/// HpBar를 제거합니다
 		/// </summary>
 		void DestroryHpBar();
+#pragma endregion HPBar
+
+#pragma region EmitEffect/Attack
+		/// <summary>
+		/// 내려찍기 공격 이펙트를 방출합니다 
+		/// </summary>
+		std::shared_ptr<game_module::GameObject> EmitSmashDownEffect();
 
 		/// <summary>
-		/// 타겟을 랜덤으로 설정합니다 
+		/// 내려찍기 공격 데칼 이펙트를 방출합니다
 		/// </summary>
-		void SetRandomTarget();
+		std::shared_ptr<game_module::GameObject> EmitSmashDecalEffect();
+
+		void SetSmashDecalEffect(std::shared_ptr<game_module::GameObject> gameObject);
 
 		/// <summary>
-		/// 보스의 림라이트 컬러를 설정합니다 
+		/// 콤보 공격 이펙트를 방출합니다 
 		/// </summary>
-		void SetRimLightColor(bool bUseRimLight, DirectX::SimpleMath::Color color)const;
+		std::shared_ptr<game_module::GameObject> EmitComboEffect(float xAxisOffset);
+
+		/// <summary>
+		/// 콤보 공격 데칼 이펙트를 방출합니다 
+		/// </summary>
+		std::shared_ptr<game_module::GameObject> EmitComboDecalEffect(float xAxisOffset);
+
+		void SetComboDecalEffect(std::shared_ptr<game_module::GameObject> gameObject, float xAxisOffset);
+
+		/// <summary>
+		/// 대쉬 공격 이펙트를 방출합니다
+		/// </summary>
+		std::shared_ptr<game_module::GameObject> EmitRushEffect();
+
+		/// <summary>
+		/// 대쉬 공격 데칼 이펙트를 방출합니다
+		/// </summary>
+		std::shared_ptr<game_module::GameObject> EmitRushDecalEffect();
+
+		/// <summary>
+		/// 점프 공격 이펙트를 방출합니다
+		/// </summary>
+		std::shared_ptr<game_module::GameObject> EmitJumpEffect();
+
+		/// <summary>
+		/// 점프 공격의 데칼 이펙트를 방출합니다
+		/// </summary>
+		std::shared_ptr<game_module::GameObject> EmitJumpDecalEffect();
+		std::shared_ptr<game_module::GameObject> EmitJumpDecalEndEffect();
+
+		/// <summary>
+		/// 콤보 공격 프리팹 생성 
+		/// </summary>
+		void EmitComboAttack(float xAxisOffset);
+
+		/// <summary>
+		/// 내려찍기 공격 프리팹 생성
+		/// </summary>
+		void EmitSmashDown();
+
+		/// <summary>
+		/// 점프 공격 프리팹 생성
+		/// </summary>
+		void EmitJumpAttack();
+
+		/// <summary>
+		/// 러쉬 공격 프리팹 생성
+		/// </summary>
+		std::shared_ptr<game_module::GameObject> EmitRushAttack();
+
+#pragma endregion EmitEffect/Attack
+
+#pragma region Getter/Setter
+		/// <summary>
+		/// 타겟을 설정합니다 
+		/// </summary>
+		void SetTarget(game_module::GameObject* target) override;
 
 		/// <summary>
 		/// 보스의 외각선 색깔을 설정합니다
@@ -126,11 +174,36 @@ namespace fq::client
 		void SetOutLineColor(DirectX::SimpleMath::Color color);
 
 		/// <summary>
-		/// 화살에 맞는 함수입니다.
+		/// 보스의 림라이트 컬러를 설정합니다 
 		/// </summary>
-		void HitArrow(fq::game_module::GameObject* object);
+		void SetRimLightColor(bool bUseRimLight, DirectX::SimpleMath::Color color, float rimPow = 1.f) const;
+		void SetInvRimLightColor(bool bUseInvRimLight, DirectX::SimpleMath::Color color, float invRimPow = 1.f) const;
+
+		/// <summary>
+		/// 보스가 점프뛸 위치를 설정합니다.
+		/// </summary>
+		void SetJumpPosition(const DirectX::SimpleMath::Vector3& jumpPosition);
+
+		/// <summary>
+		/// 경계 상태에 들어갈 카운트를 세팅합니다.
+		/// </summary>
+		void GenerateAngryEnteringVigilantCount();
+		void GenerateEnteringVigilantCount();
 
 		KnockBack* GetKnockBack() const { return mKnockBack; }
+		std::shared_ptr<game_module::GameObject> GetTarget() override { return mTarget; };
+		const DirectX::SimpleMath::Vector3& GetJumpPosition() const;
+		const DirectX::SimpleMath::Vector3& GetDefaultJumpPosition() const;
+		float GetHPRatio() const;
+		float GetGroggyGaugeRatio()const;
+		float GetAttackPower() const;
+		float GetAngryPreAttackSpeedRatio() const;
+		float GetAngryAttackSpeedRatio() const;
+		float GetAttackCoolTime() const;
+		unsigned int GetAngryEnteringVigilantCount() const;
+		unsigned int GetEnteringVigilantCount() const;
+
+#pragma endregion Getter/Setter
 
 	private:
 		void waitAttack();
@@ -143,49 +216,66 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 
-		bool isGroggyState()const;
 		void updateGroggy(float dt);
+		void updateJump(float dt);
 
 		void destroySocketCollider();
 
+		bool isGroggyState() const;
+		bool canJump(const game_module::Transform* transform) const;
+		bool canRoar() const;
+
 	private:
+		// 참조
 		GameManager* mGameManager;
 		KnockBack* mKnockBack;
 		fq::game_module::Transform* mTransform;
 		fq::game_module::Animator* mAnimator;
 		fq::game_module::SkinnedMeshRenderer* mSkinnedMesh;
 		std::shared_ptr<game_module::GameObject> mTarget;
-		float mArrowImotalTime;
-		float mArrowHitDuration;
+		std::shared_ptr<game_module::GameObject> mHpBar;
 
+		// 보스 능력치
 		float mMaxHp;
 		float mHp;
 		float mAttackPower;
 		float mMoveSpeed;
 		float mAcceleration;
-		float mAttackRange;
-		float mAttackCoolTime;
-		float mAttackElapsedTime;
-		float mSmashDownOffset;
-		float mComboAttackOffset;
-		float mRushPower;
-		float mComboAttackReboundPower;
-		float mDetectRange;
 		float mRotationSpeed;
-		float mSecondComboAttackRatio;
-		float mMinWaitAttackTime;
-		float mMaxWaitAttackTime;
+
+		// 감지 범위
+		float mAttackRange;
+		float mDetectRange;
+
+		// 공격 넉백
 		float mRushKnockBackPower;
 		float mSmashKnockBackPower;
 		float mComboAttackKnockBackPower;
 		float mContinousKnockBackPower;
+		float mJumpAttackKnockBack;
+
+		// 쿨타임
+		float mAttackElapsedTime;
+		float mAttackCoolTime;
+		float mMinWaitAttackTime;
+		float mMaxWaitAttackTime;
+
+		// 보스 공격 조정
+		float mSmashDownOffset;
+		float mComboAttackOffset;
+		float mSecondComboAttackRatio;
+		float mComboAttackReboundPower;
+		float mContinousAttackReboundPower;
+		float mEffectYOffset; // 가려질 위험 있는 이펙트에 Y축 보정
 
 		// 그로기 관련 
-		float mStartGroggyGauge;
-		float mGroggyGauge;
-		float mGroggyIncreaseRatio;
-		float mGroggyDecreasePerSecond;
+		float mStartGroggyGauge; // 그로기 시작 게이지
+		float mGroggyGauge; // 현재 그로기 게이지
+		float mGroggyIncreaseRatio; // 그로기 상승 비율
+		float mGroggyDecreasePerSecond; // 그로기 상태가 아닐 때 감소 비율
 		float mGroggyDecreaseHpRatio; // 그로기 상태 hp 감소비율
+		float mGroggyDuration; // 그로기 지속 시간
+		float mGroggyElapsed;
 
 		// 패턴 확률 관련 
 		float mRushProbability;
@@ -194,30 +284,69 @@ namespace fq::client
 		float mContinousProbability;
 		float mEatProbability;
 
+		// 공격 프리팹
 		fq::game_module::PrefabResource mSmashDownAttack;
-		fq::game_module::PrefabResource mSmashDownEffect;
 		fq::game_module::PrefabResource mComboAttack;
-		fq::game_module::PrefabResource mComboEffect;
+		fq::game_module::PrefabResource mContinousAttack; // 이넘 추가
 		fq::game_module::PrefabResource mRushAttack;
-		fq::game_module::PrefabResource mRushEffect;
+		fq::game_module::PrefabResource mJumpDownAttack;
 
-		std::shared_ptr<game_module::GameObject> mHpBar;
+		// 이펙트 프리팹
+		fq::game_module::PrefabResource mSmashDownEffect;
+		fq::game_module::PrefabResource mSmashDownDecalEffect;
+		fq::game_module::PrefabResource mComboEffect;
+		fq::game_module::PrefabResource mComboDecalEffect;
+		fq::game_module::PrefabResource mRushEffect;
+		fq::game_module::PrefabResource mRushDecalEffect;
+		fq::game_module::PrefabResource mJumpEffect;
+		fq::game_module::PrefabResource mJumpDecalEffect;
+		fq::game_module::PrefabResource mJumpDecalEndEffect;
+
+		// 체력바 프리팹
 		fq::game_module::PrefabResource mHpBarPrefab;
 
-		// 더미 플레이어 추적 관련 변수
+		// todo : 더미 플레이어 추적 기능 모듈화 하기
+		// 더미 플레이어 추적 관련 변수 
 		float mDummyTraceDurationTime;
 		bool mbUseDummyTraceRandomRange;
 		float mDummyDurationRandomRangeMin;
 		float mDummyDurationRandomRangeMax;
-		float mCurrentDummyTraceDurationTime; // traceDuration + randomRange;
+		float mCurrentDummyTraceDurationTime;
 		float mDummyTraceElapsedTime;
 		bool mIsDummyTarget;
 
-		// 그로기 관련 추가_홍지환
-		float mGroggyDuration;
-		float mGroggyElapsed;
-		size_t mShakeCount;
-		float mRimPow;
+		// 점프 공격
+		float mJumpDistance;
+		float mJumpAttackPower;
+		DirectX::SimpleMath::Vector3 mJumpPosition;
+		DirectX::SimpleMath::Vector3 mDefaultJumpPosition;
+		float mJumpCoolTime;
+		float mJumpElapsed;
+
+		// 화살 박힘 처리
+		float mArrowImotalTime;
+		float mArrowHitDuration;
+
+		// 2페이즈 관련
+		bool mbEnterAngryState;
+		float mAngryRatio = 0.5f;
+		float mAngrySpeedRatio = 2.f;
+		float mAngryCoolTimeRatio = 0.5f;
+		float mAngryPreAttackSpeedRatio = 2.f;
+		float mAngryAttackSpeedRatio = 2.f;
+		float mAngryAttackPowerRatio = 2.f;
+		unsigned int mAngryEnteringVigilantCount = 0;
+		unsigned int mAngryEnteringVigilantMinCount = 1;
+		unsigned int mAngryEnteringVigilantMaxCount = 3;
+		unsigned int mVigilantCount = 1;
+		unsigned int mVigilantMinCount = 1;
+		unsigned int mVigilantMaxCount = 3;
+		float mAngryGroggyDecreasePerSecond = 2.f;
+
+		//Roar 패턴 관련
+		unsigned int mMinMonsterCount;
+		float mRoarCoolTime;
+		float mRoarElapsed;
 
 		friend void RegisterMetaData();
 	};

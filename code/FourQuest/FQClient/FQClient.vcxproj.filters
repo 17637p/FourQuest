@@ -632,9 +632,6 @@
     <ClInclude Include="MonsterHP.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
-    <ClInclude Include="BossMonsterHitState.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="UIShaker.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -644,7 +641,25 @@
     <ClInclude Include="TrainingDummyHitState.h">
       <Filter>include\02.Monster\TrainingDummy</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterSpawnerDetector.h">
+    <ClInclude Include="DestroyHelper.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterHitState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterJumpState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterPreJumpState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterVigilantCountingState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterVigilantState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+	</ClInclude>
+	<ClInclude Include="MonsterSpawnerDetector.h">
       <Filter>include\02.Monster\Spawner</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1102,9 +1117,6 @@
     <ClCompile Include="MonsterHP.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
-    <ClCompile Include="BossMonsterHitState.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="UIShaker.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -1113,6 +1125,24 @@
     </ClCompile>
     <ClCompile Include="TrainingDummyHitState.cpp">
       <Filter>src\02.Monster\TrainingDummy</Filter>
+    </ClCompile>
+    <ClCompile Include="DestroyHelper.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterHitState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterJumpState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterPreJumpState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterVigilantCountingState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterVigilantState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
     </ClCompile>
     <ClCompile Include="MonsterSpawnerDetector.cpp">
       <Filter>src\02.Monster\Spawner</Filter>

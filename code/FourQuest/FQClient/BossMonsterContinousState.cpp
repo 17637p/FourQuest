@@ -4,13 +4,15 @@
 #include "BossMonster.h"
 
 fq::client::BossMonsterContinousState::BossMonsterContinousState()
-	:mSecondAttackTime(1.5f)
-	, mFirstAttackTime(0.6f)
+	: mDecalEfffect(nullptr)
+	, mFirstHommingTime(0.6f)
+	, mFirstAttackTime(0.7f)
+	, mSecondHommingTime(1.4f)
+	, mSecondAttackTime(1.5f)
 	, mAttackDuration(10.f)
 	, mAttackElapsedTime(0.f)
 	, mAttackType(EAttackType::First)
 {
-
 }
 
 fq::client::BossMonsterContinousState::~BossMonsterContinousState()
@@ -22,12 +24,25 @@ void fq::client::BossMonsterContinousState::OnStateEnter(game_module::Animator& 
 {
 	mAttackElapsedTime = 0.f;
 	mAttackType = EAttackType::First;
+	mDecalEfffect = nullptr;
+	mFirstHommingTime = (0.6f);
+	mFirstAttackTime = (0.7f);
+	mSecondHommingTime = (1.4f);
+	mSecondAttackTime = (1.5f);
+
+	auto bossMonster = animator.GetComponent<BossMonster>();
+	
+	mPrevPlayBackSpeed = state.GetPlayBackSpeed();
+
+	if (bossMonster->IsAngry())
+	{
+		state.SetPlayBackSpeed(mPrevPlayBackSpeed * bossMonster->GetAngryAttackSpeedRatio());
+	}
 }
 
 void fq::client::BossMonsterContinousState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
 	auto boss = animator.GetComponent<BossMonster>();
-	boss->HomingTarget();
 
 	auto timePos = animator.GetController().GetTimePos();
 
@@ -37,6 +52,7 @@ void fq::client::BossMonsterContinousState::OnStateUpdate(game_module::Animator&
 		mAttackType = EAttackType::Second;
 		boss->ReboundComboAttack();
 		boss->EmitComboAttack(0.f);
+		boss->EmitComboEffect(0.f);
 	}
 	else if (timePos >= mSecondAttackTime && mAttackType == EAttackType::Second)
 	{
@@ -44,11 +60,18 @@ void fq::client::BossMonsterContinousState::OnStateUpdate(game_module::Animator&
 		mAttackType = EAttackType::InitReady;
 		boss->ReboundComboAttack();
 		boss->EmitComboAttack(0.f);
+		boss->EmitComboEffect(0.f);
 	}
 	else if (timePos < mFirstAttackTime && mAttackType == EAttackType::InitReady)
 	{
 		// Loof 애니메이션 초기화 
 		mAttackType = EAttackType::First;
+
+		if (mDecalEfffect != nullptr)
+		{
+			animator.GetScene()->DestroyGameObject(mDecalEfffect.get());
+			mDecalEfffect = nullptr;
+		}
 	}
 
 	// 공격 지속시간 
@@ -57,11 +80,19 @@ void fq::client::BossMonsterContinousState::OnStateUpdate(game_module::Animator&
 	{
 		boss->SetTarget(nullptr);
 	}
+
 }
 
 void fq::client::BossMonsterContinousState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
+	if (mDecalEfffect != nullptr)
+	{
+		animator.GetScene()->DestroyGameObject(mDecalEfffect.get());
+		mDecalEfffect = nullptr;
+	}
+
 	animator.GetComponent<BossMonster>()->EndPattern();
+	state.SetPlayBackSpeed(mPrevPlayBackSpeed);
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterContinousState::Clone()

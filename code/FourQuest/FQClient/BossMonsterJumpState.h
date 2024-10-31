@@ -1,15 +1,15 @@
 #pragma once
-
 #include "../FQGameModule/IStateBehaviour.h"
+#include "../FQGameModule/PrefabResource.h"
 
 namespace fq::client
 {
-	class BossMonsterRoarState : public fq::game_module::IStateBehaviour
+	class BossMonsterJumpState : public fq::game_module::IStateBehaviour
 	{
 	public:
-		BossMonsterRoarState();
-		~BossMonsterRoarState();
-
+		BossMonsterJumpState();
+		~BossMonsterJumpState()= default;
+		 
 	private:
 		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 		void OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt) override;
@@ -18,18 +18,19 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
-		unsigned int mMeleeNumber;
-		unsigned int mExplosionNumber;
-		DirectX::SimpleMath::Vector3 mPosition;
+		// 로직
+		float mElapsed;
+		DirectX::SimpleMath::Vector3 mStartPosition;
+		DirectX::SimpleMath::Vector3 mEndPosition;
+		std::shared_ptr<fq::game_module::GameObject> mDecalEndEffectObject;
+		bool mbIsEmitAttack;
+		bool mbIsEmitEffect;
 
-		bool mbIsEnterAngry;
-		float mChangeColorDuration;
-		float mChangeColorElapsed;
-		DirectX::SimpleMath::Color mStartColor;
-		DirectX::SimpleMath::Color mEndColor;
-		float mStartInvRimPow;
-		float mEndInvRimPow;
-
+		// 에디터
+		float mMaxY;
+		float mJumpDuration; // 점프 지속 시간
+		float mAttackGenateTime; // 공격 생성 시간
+		float mEffectGenateTime; // 이펙트 생성 시간
 		friend void RegisterMetaData();
 	};
 }

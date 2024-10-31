@@ -42,12 +42,9 @@ namespace fq::client
 		game_module::Transform* mProgressSoul;
 
 		int mCurGuideID;
-		std::vector<game_module::GameObject*> mImages;
-		game_module::TextUI* mTitle;
-		game_module::TextUI* mContent;
-
-		game_module::TextUI* mBackgroundTitle;
-		game_module::TextUI* mBackgroundContent;
+		std::vector<game_module::ImageUI*> mImages;
+		std::vector<game_module::TextUI*> mTitles;
+		std::vector<game_module::TextUI*> mContents;
 
 		std::vector<LoadingText> mTexts;
 

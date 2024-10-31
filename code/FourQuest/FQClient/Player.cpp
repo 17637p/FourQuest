@@ -39,7 +39,7 @@ fq::client::Player::Player()
 	, mInvincibleTime(1.f)
 	, mInvincibleElapsedTime(1.f)
 	, mAnimator(nullptr)
-	,mPlayerHpBar(nullptr)
+	, mPlayerHpBar(nullptr)
 	, mFeverTime(10.f)
 	, mSoulType(ESoulType::Sword)
 	, mArmourType(EArmourType::Knight)
@@ -112,6 +112,9 @@ void fq::client::Player::OnLateUpdate(float dt)
 
 	processBuff();
 	mSoulBuffNumber = 0;
+
+	// 넉백 갱신
+	processKnockBack(dt);
 }
 
 void fq::client::Player::OnStart()
@@ -166,7 +169,7 @@ void fq::client::Player::OnStart()
 			mSkinnedMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
 		}
 	}
-	          
+
 	mPlayerHpBar->DecreaseHp((mMaxHp - mHp) / mMaxHp);
 
 	mbCanCreateDummy = false;
@@ -191,6 +194,20 @@ fq::game_module::GameObject* fq::client::Player::CreateDummyOrNull()
 	GetScene()->AddGameObject(dummyObject);
 
 	return dummyObject.get();
+}
+
+void fq::client::Player::processKnockBack(float dt)
+{
+	if (mKnockBackTime < 0)
+	{
+		return;
+	}
+
+	mKnockBackTime -= dt;
+	float acceleration = mKnockBackPower * dt;
+
+	auto rigidbody = GetComponent<game_module::RigidBody>();
+	rigidbody->AddLinearVelocity(mKnockBackDir * acceleration);
 }
 
 void fq::client::Player::processInput(float dt)
@@ -270,10 +287,18 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 
 					auto knockBackDir = playerPos - monsterPos;
 					knockBackDir.Normalize();
-					auto rigid = GetComponent<game_module::RigidBody>();
 
-					knockBackDir *= power;
-					rigid->AddLinearVelocity(knockBackDir);
+					auto velocityPower = power * 0.5f * (mbOnShieldBlock ? 0.25f : 1.f);
+					auto acclerationPower = power * 0.5f * (mbOnShieldBlock ? 0.25f : 1.f);
+
+					// 절반은 가속도로
+					mKnockBackDir = knockBackDir;
+					mKnockBackPower = acclerationPower * (1 / monsterAtk->GetKnockBackTime());
+					mKnockBackTime = monsterAtk->GetKnockBackTime();
+
+					// 절반은 속도로
+					auto rigidbody = GetComponent<game_module::RigidBody>();
+					rigidbody->AddLinearVelocity(mKnockBackDir * velocityPower);
 				}
 			}	
 

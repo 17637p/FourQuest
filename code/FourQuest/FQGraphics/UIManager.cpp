@@ -173,6 +173,7 @@ void fq::graphics::UIManager::AddFont(const std::wstring& path)
 	{
 		hr = mDWriteFactory->CreateTextFormat(
 			path.c_str(),
+			//L"KBIZmjo",
 			NULL,
 			DWRITE_FONT_WEIGHT_NORMAL,
 			DWRITE_FONT_STYLE_NORMAL,
@@ -184,6 +185,44 @@ void fq::graphics::UIManager::AddFont(const std::wstring& path)
 
 		mFonts[path + std::to_wstring(fontSize)] = tempFont;
 	}
+
+	// DWrite √ ±‚»≠
+	//IDWriteFactory* pDWriteFactory = nullptr;
+	//DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&pDWriteFactory));
+	//
+	//IDWriteFontCollection* pFontCollection = nullptr;
+	//pDWriteFactory->GetSystemFontCollection(&pFontCollection);
+	//
+	//UINT32 familyCount = pFontCollection->GetFontFamilyCount();
+	//for (UINT32 i = 0; i < familyCount; ++i) {
+	//	IDWriteFontFamily* pFontFamily = nullptr;
+	//	pFontCollection->GetFontFamily(i, &pFontFamily);
+	//
+	//	IDWriteLocalizedStrings* pFamilyNames = nullptr;
+	//	pFontFamily->GetFamilyNames(&pFamilyNames);
+	//
+	//	UINT32 index = 0;
+	//	BOOL exists = false;
+	//	wchar_t localeName[LOCALE_NAME_MAX_LENGTH];
+	//	if (GetUserDefaultLocaleName(localeName, LOCALE_NAME_MAX_LENGTH)) {
+	//		pFamilyNames->FindLocaleName(localeName, &index, &exists);
+	//	}
+	//
+	//	if (!exists) index = 0;
+	//
+	//	UINT32 length = 0;
+	//	pFamilyNames->GetStringLength(index, &length);
+	//	wchar_t* name = new (std::nothrow) wchar_t[length + 1];
+	//	if (name) {
+	//		pFamilyNames->GetString(index, name, length + 1);
+	//		wprintf(L"Font Family: %s\n", name);
+	//		delete[] name;
+	//	}
+	//	pFamilyNames->Release();
+	//	pFontFamily->Release();
+	//}
+	//pFontCollection->Release();
+	//pDWriteFactory->Release();
 }
 
 void fq::graphics::UIManager::initializeText()
@@ -708,6 +747,11 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 		(
 			D2D1::Matrix3x2F::Scale(scaleX, scaleY, D2D1::Point2F(drawTextInformation.CenterX, drawTextInformation.CenterY))
 		);
+
+		if (textObject->GetTextInformation().IsUseSetSpacing)
+		{
+			mFonts[fontPath]->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_UNIFORM, 50, 80);
+		}
 
 		if (textObject->GetTextInformation().BoxAlign == ETextBoxAlign::CenterCenter)
 		{

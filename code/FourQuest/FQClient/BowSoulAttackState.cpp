@@ -25,14 +25,25 @@ void fq::client::BowSoulAttackState::OnStateEnter(game_module::Animator& animato
 	mAttackDuration = 0.f;
 
 	auto player = animator.GetComponent<Player>();
-	player->EquipSoulWeapone();
-	player->AddSoulGauge(-PlayerSoulVariable::SoulBowAttackCost);
+
+	if (player != nullptr)
+	{
+		player->EquipSoulWeapone();
+		player->AddSoulGauge(-PlayerSoulVariable::SoulBowAttackCost);
+		player->SetIsActiveOnHit(false);
+	}
 }
 
 void fq::client::BowSoulAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	auto player = animator.GetComponent<Player>();
-	player->EquipArmourWeapone();
+
+	if (player != nullptr)
+	{
+		player->EquipArmourWeapone();
+		player->SetIsActiveOnHit(true);
+	}
+
 	animator.SetParameterBoolean("EndSoulAttack", false);
 }
 

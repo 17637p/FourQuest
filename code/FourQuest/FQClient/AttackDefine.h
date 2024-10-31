@@ -38,6 +38,7 @@ namespace fq::client
 		float directionRatio = 1.f; // TargetPositionAndDirectionByAngle¿ë º¯¼ö
 
 		std::string HitEffectName;
+		float knocBackTime = 0.2f;
 	};
 
 	struct ArrowAttackInfo

@@ -1213,7 +1213,10 @@ void fq::client::QuestManager::playNew(float dt)
 		}
 		if (mNewImageCounts[i] > 0)
 		{
-			mNewImages[i]->SetIsRender(0, true);
+			auto newInfo = mNewImages[i]->GetUIInfomation(0);
+			newInfo.isRender = true;
+			newInfo.Alpha = 1;
+			mNewImages[i]->SetUIInfomation(0, newInfo);
 			if (mNewImageCounts[i] < 1.0f)
 			{
 				auto uiInfo = mNewImages[i]->GetUIInfomation(0);
@@ -1678,35 +1681,34 @@ void fq::client::QuestManager::RenderOnAllSubQuest()
 void fq::client::QuestManager::startNew(int index)
 {
 	mNewImageCounts[index] = 3.0f;
-	auto uiInfo = mNewImages[index]->GetUIInfomation(0);
-	uiInfo.isRender = true;
-	uiInfo.Alpha = 1;
-	mNewImages[index]->SetUIInfomation(0, uiInfo);
 }
 
 void fq::client::QuestManager::startComplete(int index)
 {
-	mCompleteImageCounts[index] = 3.0f;
-	auto uiInfo = mCompleteImages[index]->GetUIInfomation(0);
-	uiInfo.isRender = true;
-	uiInfo.Alpha = 1;
-	mCompleteImages[index]->SetUIInfomation(0, uiInfo);
+	if (mCompleteImageCounts[index] <= 0.0f)
+	{
+		mCompleteImageCounts[index] = 3.0f;
+		auto uiInfo = mCompleteImages[index]->GetUIInfomation(0);
+		uiInfo.isRender = true;
+		uiInfo.Alpha = 1;
+		mCompleteImages[index]->SetUIInfomation(0, uiInfo);
 
-	uiInfo = mLeftChecks[index]->GetUIInfomation(0);
-	uiInfo.Width = 100;
-	uiInfo.Height = 100;
-	uiInfo.Alpha = 1;
-	uiInfo.isRender = true;
-	mLeftChecks[index]->SetUIInfomation(0, uiInfo);
+		uiInfo = mLeftChecks[index]->GetUIInfomation(0);
+		uiInfo.Width = 100;
+		uiInfo.Height = 100;
+		uiInfo.Alpha = 1;
+		uiInfo.isRender = true;
+		mLeftChecks[index]->SetUIInfomation(0, uiInfo);
 
-	uiInfo = mRightChecks[index]->GetUIInfomation(0);
-	uiInfo.Width = 100;
-	uiInfo.Height = 100;
-	uiInfo.Alpha = 1;
-	uiInfo.isRender = true;
-	mRightChecks[index]->SetUIInfomation(0, uiInfo);
+		uiInfo = mRightChecks[index]->GetUIInfomation(0);
+		uiInfo.Width = 100;
+		uiInfo.Height = 100;
+		uiInfo.Alpha = 1;
+		uiInfo.isRender = true;
+		mRightChecks[index]->SetUIInfomation(0, uiInfo);
 
-	mNewImages[index]->SetIsRender(0, false);
+		mNewImages[index]->SetIsRender(0, false);
+	}
 }
 
 void fq::client::QuestManager::eventProcessPushButtonEvent()

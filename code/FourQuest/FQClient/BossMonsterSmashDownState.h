@@ -18,14 +18,15 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
+		std::shared_ptr<game_module::GameObject> mSmashDecalEffect;
+
 		float mEffectEmitTime;
 		float mEffectElapsedTime;
 		float mAttackEmitTime;
 		float mAttackElapsedTime;
 		float mHomingTime;
 		float mHomingElapsedTime;
-
-		std::shared_ptr<game_module::GameObject> mEffect;
+		float mPrevPlayBackSpeed;
 
 		friend void RegisterMetaData();
 	};

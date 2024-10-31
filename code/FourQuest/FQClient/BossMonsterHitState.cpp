@@ -27,7 +27,6 @@ void fq::client::BossMonsterHitState::OnStateEnter(game_module::Animator& animat
 		bossMonster->SetRimLightColor(true, { 1, 0, 0, 1 });
 	}
 
-	animator.SetParameterBoolean("IsAnyState", false);
 }
 
 void fq::client::BossMonsterHitState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -38,11 +37,5 @@ void fq::client::BossMonsterHitState::OnStateExit(game_module::Animator& animato
 	{
 		bossMonster->SetRimLightColor(true, { 0, 0, 0, 1 });
 	}
-
-	animator.SetParameterBoolean("IsAnyState", true);
-	animator.SetParameterBoolean("OnHitRight", false);
-	animator.SetParameterBoolean("OnHitLeft", false);
-	animator.SetParameterBoolean("OnHitFront", false);
-	animator.SetParameterBoolean("OnHitBack", false);
 }
 

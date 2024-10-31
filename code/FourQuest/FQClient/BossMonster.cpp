@@ -23,45 +23,72 @@
 #include "PlayerDummy.h"
 #include "ClientHelper.h"
 #include "UIShaker.h"
+#include "MeleeMonster.h"
+#include "PlantMonster.h"
 
 #include <spdlog/spdlog.h>
 
 fq::client::BossMonster::BossMonster()
-	:mMaxHp(0.f)
+	: mGameManager(nullptr)
+	, mKnockBack(nullptr)
+	, mTransform(nullptr)
+	, mAnimator(nullptr)
+	, mSkinnedMesh(nullptr)
+	, mTarget(nullptr)
+	, mHpBar(nullptr)
+
+	, mMaxHp(0.f)
 	, mHp(2000.f)
 	, mAttackPower(50.f)
 	, mMoveSpeed(1.f)
 	, mAcceleration(2.f)
-	, mAttackRange(10.f)
-	, mAttackCoolTime(3.f)
-	, mAttackElapsedTime(0.f)
-	, mDetectRange(5.f)
-	, mRushPower(10.f)
-	, mComboAttackReboundPower(5.f)
 	, mRotationSpeed(0.1f)
-	, mGameManager(nullptr)
-	, mAnimator(nullptr)
-	, mTarget(nullptr)
-	, mKnockBack(nullptr)
-	, mTransform(nullptr)
-	, mGroggyGauge(0.f)
-	, mStartGroggyGauge(100.f)
-	, mGroggyIncreaseRatio(0.1f)
-	, mGroggyDecreasePerSecond(1.f)
-	, mSecondComboAttackRatio(0.5f)
-	, mComboAttackOffset{}
-	, mSmashDownOffset{}
-	, mMinWaitAttackTime(0.5f)
-	, mMaxWaitAttackTime(2.f)
-	, mContinousProbability(0.1f)
-	, mRoarProbability(0.1f)
-	, mEatProbability(0.1f)
-	, mRushProbability(0.1f)
-	, mSmashProbability(0.2f)
+
+	, mAttackRange(10.f)
+	, mDetectRange(5.f)
+
 	, mRushKnockBackPower(5.f)
 	, mSmashKnockBackPower(3.f)
 	, mComboAttackKnockBackPower(3.f)
 	, mContinousKnockBackPower(3.f)
+	, mJumpAttackKnockBack(3.f)
+
+	, mAttackElapsedTime(0.f)
+	, mAttackCoolTime(3.f)
+	, mMinWaitAttackTime(0.5f)
+	, mMaxWaitAttackTime(2.f)
+
+	, mSmashDownOffset(0.f)
+	, mComboAttackOffset(0.f)
+	, mSecondComboAttackRatio(0.5f)
+	, mComboAttackReboundPower(5.f)
+
+	, mStartGroggyGauge(100.f)
+	, mGroggyGauge(0.f)
+	, mGroggyIncreaseRatio(0.1f)
+	, mGroggyDecreasePerSecond(1.f)
+	, mGroggyDecreaseHpRatio(2.f)
+	, mGroggyDuration(5.f)
+	, mGroggyElapsed(0.f)
+
+	, mRushProbability(0.1f)
+	, mSmashProbability(0.2f)
+	, mRoarProbability(0.1f)
+	, mContinousProbability(0.1f)
+	, mEatProbability(0.1f)
+
+	, mSmashDownAttack()
+	, mComboAttack()
+	, mRushAttack()
+	, mJumpDownAttack()
+
+	, mSmashDownEffect()
+	, mComboEffect()
+	, mRushEffect()
+	, mJumpDecalEffect()
+
+	, mHpBarPrefab()
+
 	, mDummyTraceDurationTime(0.f)
 	, mbUseDummyTraceRandomRange(false)
 	, mDummyDurationRandomRangeMin(0.f)
@@ -69,17 +96,35 @@ fq::client::BossMonster::BossMonster()
 	, mCurrentDummyTraceDurationTime(0.f)
 	, mDummyTraceElapsedTime(0.f)
 	, mIsDummyTarget(false)
-	, mGroggyDuration(5.f)
-	, mGroggyElapsed(0.f)
-	, mShakeCount(10)
-	, mRimPow(1.f)
-	, mGroggyDecreaseHpRatio(2.f)
+
+	, mJumpDistance(10.f)
+	, mJumpAttackPower(50.f)
+	, mJumpPosition()
+	, mDefaultJumpPosition()
+
+	, mArrowImotalTime()
+	, mArrowHitDuration()
+
+	, mbEnterAngryState(false)
+	, mAngryRatio(0.5f)
+	, mAngrySpeedRatio(2.f)
+	, mAngryCoolTimeRatio(0.5f)
+	, mAngryPreAttackSpeedRatio(2.f)
+	, mAngryAttackSpeedRatio(2.f)
+	, mAngryAttackPowerRatio(2.f)
+	, mAngryEnteringVigilantCount(0)
+	, mAngryEnteringVigilantMinCount(1)
+	, mAngryEnteringVigilantMaxCount(3)
+	, mVigilantMinCount(1)
+	, mVigilantMaxCount(3)
+	, mAngryGroggyDecreasePerSecond(2.f)
+
+	//Roar 패턴 관련
+	, mMinMonsterCount(10)
+	, mRoarCoolTime(30.f)
+	, mRoarElapsed(0.f)
 {}
 
-fq::client::BossMonster::~BossMonster()
-{
-
-}
 
 std::shared_ptr<fq::game_module::Component> fq::client::BossMonster::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -105,7 +150,7 @@ void fq::client::BossMonster::OnStart()
 	mKnockBack = GetComponent<KnockBack>();
 
 	// 난이도에 따른 공격력 Hp 설정
-	mAttackPower = mAttackPower * LevelHepler::GetDamageRatio();
+	mAttackPower = GetAttackPower() * LevelHepler::GetDamageRatio();
 	mHp = mHp * LevelHepler::GetHpRatio();
 	mMaxHp = mHp;
 
@@ -119,22 +164,14 @@ void fq::client::BossMonster::OnStart()
 
 	// SkinnedMesh 연결
 	mSkinnedMesh = mTransform->GetChildren()[0]->GetComponent<game_module::SkinnedMeshRenderer>();
+
+	mbEnterAngryState = false;
+
+	GenerateAngryEnteringVigilantCount();
 }
 
 void fq::client::BossMonster::OnUpdate(float dt)
 {
-	// 그로기 게이지 
-	if (isGroggyState())
-	{
-		float ratio = 1.f - (mGroggyElapsed / mGroggyDuration);
-		mGroggyGauge = ratio * mStartGroggyGauge;
-	}
-	else
-	{
-		mGroggyGauge -= mGroggyDecreasePerSecond * dt;
-		mGroggyGauge = std::max<float>(mGroggyGauge, 0);
-	}
-
 	mArrowHitDuration += dt;
 
 	// 공격 쿨타임 계산 
@@ -144,12 +181,287 @@ void fq::client::BossMonster::OnUpdate(float dt)
 	mAnimator->SetParameterBoolean("CanAttack", canAttack);
 
 	updateGroggy(dt);
+	updateJump(dt);
+
+	// 현재 타겟이 더미 타겟인지 체크
+	if (mIsDummyTarget)
+	{
+		mDummyTraceElapsedTime += dt;
+
+		if (mCurrentDummyTraceDurationTime < mDummyTraceElapsedTime)
+		{
+			SetTarget(nullptr);
+		}
+	}
+
+	if (IsAngry())
+	{
+		// 첫 진입 시 속도와 플래그 지정
+		if (!mbEnterAngryState)
+		{
+			auto agent = GetComponent<game_module::NavigationAgent>();
+			agent->SetSpeed(mMoveSpeed * mAngrySpeedRatio);
+			agent->SetAcceleration(mAcceleration * mAngrySpeedRatio);
+			mAnimator->SetParameterBoolean("IsAngry", true);
+			mAnimator->SetParameterBoolean("IsEnterAngry", true);
+
+			mbEnterAngryState = true;
+		}
+	}
+
+	mRoarElapsed += dt;
 }
 
+
+void fq::client::BossMonster::SetJumpPosition(const DirectX::SimpleMath::Vector3& jumpPosition)
+{
+	mJumpPosition = jumpPosition;
+}
+
+const DirectX::SimpleMath::Vector3& fq::client::BossMonster::GetJumpPosition() const
+{
+	return mJumpPosition;
+}
+
+const DirectX::SimpleMath::Vector3& fq::client::BossMonster::GetDefaultJumpPosition() const
+{
+	return mDefaultJumpPosition;
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitSmashDecalEffect()
+{
+	if (mSmashDownDecalEffect.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSmashDownDecalEffect);
+	auto& effectObj = *(instance.begin());
+
+	SetSmashDecalEffect(effectObj);
+
+	GetScene()->AddGameObject(effectObj);
+
+	return effectObj;
+}
+
+void fq::client::BossMonster::SetSmashDecalEffect(std::shared_ptr<game_module::GameObject> gameObject)
+{
+	auto effectT = gameObject->GetComponent<game_module::Transform>();
+
+	// 공격 트랜스폼 설정
+	auto attackPos = mTransform->GetWorldPosition();
+	auto scale = effectT->GetWorldScale();
+	auto rotation = mTransform->GetWorldRotation();
+
+	auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
+	auto foward = rotationMat.Forward();
+	attackPos += foward * mSmashDownOffset;
+	effectT->GenerateWorld(attackPos, rotation, scale);
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitComboEffect(float xAxisOffset)
+{
+	if (mComboEffect.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mComboEffect);
+	auto effectObj = *(instance.begin());
+
+	auto effectT = effectObj->GetComponent<game_module::Transform>();
+	{
+		auto worldPos = mTransform->GetWorldPosition();
+		auto scale = effectT->GetWorldScale();
+		auto rotation = mTransform->GetWorldRotation();
+
+		auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
+		auto foward = rotationMat.Forward();
+		auto right = rotationMat.Right();
+		worldPos += foward * mComboAttackOffset;
+		worldPos += right * xAxisOffset;
+		worldPos.y += mEffectYOffset;
+		effectT->GenerateWorld(worldPos, rotation, scale);
+	}
+
+	GetScene()->AddGameObject(effectObj);
+
+	return effectObj;
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitComboDecalEffect(float xAxisOffset)
+{
+	if (mComboDecalEffect.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mComboDecalEffect);
+	auto effectObj = *(instance.begin());
+
+	SetComboDecalEffect(effectObj, xAxisOffset);
+
+	GetScene()->AddGameObject(effectObj);
+
+	return effectObj;
+}
+
+void fq::client::BossMonster::SetComboDecalEffect(std::shared_ptr<game_module::GameObject> gameObject, float xAxisOffset)
+{
+	auto effectT = gameObject->GetComponent<game_module::Transform>();
+	{
+		auto worldPos = mTransform->GetWorldPosition();
+		auto scale = effectT->GetWorldScale();
+		auto rotation = mTransform->GetWorldRotation();
+
+		auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
+		auto foward = rotationMat.Forward();
+		auto right = rotationMat.Right();
+		worldPos += foward * mComboAttackOffset;
+		worldPos += right * xAxisOffset;
+		effectT->GenerateWorld(worldPos, rotation, scale);
+	}
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitRushEffect()
+{
+	if (mRushEffect.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mRushEffect);
+	auto effectObj = *(instance.begin());
+
+	auto effectT = effectObj->GetComponent<game_module::Transform>();
+	effectT->SetParent(mTransform);
+
+	GetScene()->AddGameObject(effectObj);
+
+	return effectObj;
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitRushDecalEffect()
+{
+	if (mRushDecalEffect.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mRushDecalEffect);
+	auto effectObj = *(instance.begin());
+
+	auto effectT = effectObj->GetComponent<game_module::Transform>();
+	auto worldPosition = mTransform->GetWorldPosition();
+	effectT->SetParent(mTransform);
+	effectT->SetLocalPosition({ 0, mEffectYOffset, 0 });
+
+	GetScene()->AddGameObject(effectObj);
+
+	return effectObj;
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitJumpEffect()
+{
+	if (mJumpEffect.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mJumpEffect);
+	auto effectObj = *(instance.begin());
+
+	auto effectT = effectObj->GetComponent<game_module::Transform>();
+	auto effectPosition = mJumpPosition;
+	mJumpPosition.y += mEffectYOffset;
+	effectT->SetWorldPosition(effectPosition);
+
+	GetScene()->AddGameObject(effectObj);
+
+	return effectObj;
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitJumpDecalEffect()
+{
+	if (mJumpDecalEffect.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mJumpDecalEffect);
+	auto effectObj = *(instance.begin());
+
+	auto effectT = effectObj->GetComponent<game_module::Transform>();
+	effectT->SetWorldPosition(mJumpPosition);
+
+	GetScene()->AddGameObject(effectObj);
+
+	return effectObj;
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitJumpDecalEndEffect()
+{
+	if (mJumpDecalEndEffect.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mJumpDecalEndEffect);
+	auto effectObj = *(instance.begin());
+
+	auto effectT = effectObj->GetComponent<game_module::Transform>();
+	effectT->SetWorldPosition(mJumpPosition);
+
+	GetScene()->AddGameObject(effectObj);
+
+	return effectObj;
+}
+
+void fq::client::BossMonster::EmitJumpAttack()
+{
+	if (mJumpDownAttack.GetPrefabPath().empty())
+	{
+		return;
+	}
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mJumpDownAttack);
+	auto& object = *(instance.begin());
+
+	auto transform = object->GetComponent<game_module::Transform>();
+	auto worldPos = mJumpPosition;
+	transform->SetWorldPosition(worldPos);
+
+	// 공격 정보 설정
+	AttackInfo attackInfo{};
+	auto attackComponent = object->GetComponent<Attack>();
+
+	if (attackComponent != nullptr)
+	{
+		auto rotation = mTransform->GetWorldRotation();
+		auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
+		auto foward = rotationMat.Forward();
+
+		attackInfo.attacker = GetGameObject();
+		attackInfo.damage = mJumpAttackPower;
+		attackInfo.attackDirection = foward;
+		attackInfo.type = EKnockBackType::TargetPosition;
+		attackInfo.knocBackPower = mJumpAttackKnockBack;
+		attackComponent->Set(attackInfo);
+	}
+
+	GetScene()->AddGameObject(object);
+}
 
 void fq::client::BossMonster::waitAttack()
 {
 	mAttackCoolTime = helper::RandomGenerator::GetInstance().GetRandomNumber(mMinWaitAttackTime, mMaxWaitAttackTime);
+
+	if (IsAngry())
+	{
+		mAttackCoolTime *= mAngryCoolTimeRatio;
+	}
+
 	mAttackElapsedTime = 0.f;
 	mAnimator->SetParameterBoolean("CanAttack", false);
 }
@@ -184,40 +496,7 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			}
 			else
 			{
-				// 바닥의 법선을 { 0, 1, 0}으로 가정함
-				DirectX::SimpleMath::Vector3 groundNormal = { 0, 1, 0 };
-				auto currLook = GetTransform()->GetLookAtVector();
-				currLook.y = 0;
-				currLook.Normalize();
-				auto objectLook = collision.other->GetTransform()->GetWorldPosition() - GetTransform()->GetWorldPosition();
-				objectLook.y = 0;
-				objectLook.Normalize();
-				auto crossVec = currLook.Cross(objectLook);
-				bool isLeft = crossVec.Dot(groundNormal) >= 0;
-
-				// 앞뒤 판정
-				float dotProduct = currLook.Dot(objectLook);
-				float angle = acosf(dotProduct); // 두 벡터 사이의 각
-
-				if (angle < DirectX::XM_PIDIV4)
-				{
-					mAnimator->SetParameterBoolean("OnHitFront", true);
-				}
-				else if (angle < DirectX::XM_PIDIV4 + DirectX::XM_PIDIV2)
-				{
-					if (isLeft)
-					{
-						mAnimator->SetParameterBoolean("OnHitLeft", true);
-					}
-					else
-					{
-						mAnimator->SetParameterBoolean("OnHitRight", true);
-					}
-				}
-				else
-				{
-					mAnimator->SetParameterBoolean("OnHitBack", true);
-				}
+				mAnimator->SetParameterBoolean("OnHit", true);
 
 				// // HP 흔들기
 				// GetScene()->ViewComponents<UIShaker>(
@@ -227,7 +506,10 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 				// 	});
 			}
 
-			if (mGroggyGauge == mStartGroggyGauge)
+			// 그로기보다 화남을 우선함
+			bool bIsEnteringAngry = mAnimator->GetController().GetParameter("IsEnterAngry").cast<bool>();
+
+			if (mGroggyGauge == mStartGroggyGauge && !bIsEnteringAngry)
 			{
 				mAnimator->SetParameterBoolean("OnGroggy", true);
 				mGroggyElapsed = 0.f;
@@ -283,6 +565,11 @@ void fq::client::BossMonster::DetectTarget()
 
 	for (const auto& player : mGameManager->GetPlayers())
 	{
+		if (player->GetComponent<Player>() == nullptr)
+		{
+			continue;
+		}
+
 		auto playerT = player->GetComponent<game_module::Transform>();
 		auto playerPos = playerT->GetWorldPosition();
 
@@ -315,8 +602,6 @@ void fq::client::BossMonster::SetRandomTarget()
 		SetTarget(nullptr);
 	}
 }
-
-
 
 void fq::client::BossMonster::SetTarget(game_module::GameObject* target)
 {
@@ -430,9 +715,14 @@ void fq::client::BossMonster::CheckTargetInAttackRange()
 	mAnimator->SetParameterBoolean("InAttackRange", isInAttackRange);
 }
 
-std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::Rush()
+std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitRushAttack()
 {
 	using namespace game_module;
+
+	if (mRushAttack.GetPrefabPath().empty())
+	{
+		return nullptr;
+	}
 
 	// 러쉬 히트 박스 생성	
 	using namespace game_module;
@@ -445,12 +735,13 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::Rush()
 	AttackInfo attackInfo{};
 	auto attackComponent = attackObj->GetComponent<Attack>();
 	attackInfo.attacker = GetGameObject();
-	attackInfo.damage = dc::GetMonsterRushDamage(mAttackPower);
+	attackInfo.damage = dc::GetMonsterRushDamage(GetAttackPower());
 	attackInfo.type = EKnockBackType::TargetPosition;
 	attackInfo.knocBackPower = mRushKnockBackPower;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
+
 	return attackObj;
 }
 
@@ -476,7 +767,7 @@ void fq::client::BossMonster::EmitSmashDown()
 	auto attackComponent = attackObj->GetComponent<Attack>();
 
 	attackInfo.attacker = GetGameObject();
-	attackInfo.damage = dc::GetMonsterSmashDownDamage(mAttackPower);
+	attackInfo.damage = dc::GetMonsterSmashDownDamage(GetAttackPower());
 	attackInfo.attackDirection = foward;
 	attackInfo.type = EKnockBackType::TargetPosition;
 	attackInfo.knocBackPower = mSmashKnockBackPower;
@@ -500,6 +791,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitSmashD
 	auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
 	auto foward = rotationMat.Forward();
 	attackPos += foward * mSmashDownOffset;
+	attackPos.y += mEffectYOffset;
 	effectT->GenerateWorld(attackPos, rotation, scale);
 
 	GetScene()->AddGameObject(effectObj);
@@ -507,7 +799,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitSmashD
 	return effectObj;
 }
 
-void fq::client::BossMonster::HomingTarget()
+void fq::client::BossMonster::HomingTarget(bool bUseSpeed)
 {
 	if (mTarget == nullptr)
 	{
@@ -555,7 +847,7 @@ void fq::client::BossMonster::HomingTarget()
 	directionQuaternion.Normalize();
 
 	DirectX::SimpleMath::Quaternion result =
-		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, mRotationSpeed);
+		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, bUseSpeed ? mRotationSpeed : 1.f);
 
 	mTransform->SetWorldRotation(result);
 }
@@ -606,7 +898,7 @@ void fq::client::BossMonster::EmitComboAttack(float xAxisOffset)
 	auto attackComponent = attackObj->GetComponent<Attack>();
 
 	attackInfo.attacker = GetGameObject();
-	attackInfo.damage = dc::GetMonsterComboAttackDamage(mAttackPower);
+	attackInfo.damage = dc::GetMonsterComboAttackDamage(GetAttackPower());
 	attackInfo.attackDirection = foward;
 	attackInfo.type = EKnockBackType::TargetPosition;
 	attackInfo.knocBackPower = mComboAttackKnockBackPower;
@@ -697,14 +989,24 @@ void fq::client::BossMonster::EndPattern()
 	waitAttack();
 }
 
-
-void fq::client::BossMonster::SetRimLightColor(bool bUseRimLight, DirectX::SimpleMath::Color color) const
+void fq::client::BossMonster::SetRimLightColor(bool bUseRimLight, DirectX::SimpleMath::Color color, float rimPow) const
 {
 	auto info = mSkinnedMesh->GetMaterialInstanceInfo();
 
 	info.bUseRimLight = bUseRimLight;
 	info.RimLightColor = color;
-	info.RimPow = mRimPow; // 임시로 넣음
+	info.RimPow = rimPow; // 임시로 넣음
+
+	mSkinnedMesh->SetMaterialInstanceInfo(info);
+}
+
+void fq::client::BossMonster::SetInvRimLightColor(bool bUseInvRimLight, DirectX::SimpleMath::Color color, float invRimPow) const
+{
+	auto info = mSkinnedMesh->GetMaterialInstanceInfo();
+
+	info.bUseInvRimLight = bUseInvRimLight;
+	info.InvRimLightColor = color;
+	info.InvRimPow = invRimPow; // 임시로 넣음
 
 	mSkinnedMesh->SetMaterialInstanceInfo(info);
 }
@@ -714,12 +1016,12 @@ fq::client::EBossMonsterAttackType fq::client::BossMonster::getNextPattern(bool 
 	float val = helper::RandomGenerator::GetInstance().GetRandomNumber(0.f, 1.f);
 	float sum = 0.f;
 
-	// 러쉬 패턴
-	sum += mRushProbability;
-	if (val <= sum)
-	{
-		return EBossMonsterAttackType::Rush;
-	}
+	// // 러쉬 패턴
+	// sum += mRushProbability;
+	// if (val <= sum)
+	// {
+	// 	return EBossMonsterAttackType::Rush;
+	// }
 
 	sum += mSmashProbability;
 	// 내려찍기 
@@ -730,7 +1032,7 @@ fq::client::EBossMonsterAttackType fq::client::BossMonster::getNextPattern(bool 
 
 	sum += mRoarProbability;
 	// 로어 
-	if (val <= sum)
+	if (val <= sum && IsAngry() && canRoar())
 	{
 		return EBossMonsterAttackType::Roar;
 	}
@@ -770,6 +1072,16 @@ void fq::client::BossMonster::StepBack()
 float fq::client::BossMonster::GetGroggyGaugeRatio() const
 {
 	return mGroggyGauge / mStartGroggyGauge;
+}
+
+float fq::client::BossMonster::GetAttackPower() const
+{
+	if (IsAngry())
+	{
+		return mAttackPower * mAngryAttackPowerRatio;
+	}
+
+	return mAttackPower;
 }
 
 bool fq::client::BossMonster::isGroggyState() const
@@ -850,6 +1162,21 @@ void fq::client::BossMonster::HitArrow(fq::game_module::GameObject* object)
 	}
 }
 
+bool fq::client::BossMonster::IsAngry() const
+{
+	return GetHPRatio() < mAngryRatio || mbEnterAngryState;
+}
+
+void fq::client::BossMonster::ResetJumpCoolTime()
+{
+	mJumpElapsed = 0.f;
+}
+
+void fq::client::BossMonster::ResetRourCoolTime()
+{
+	mRoarElapsed = 0.f;
+}
+
 void fq::client::BossMonster::destroySocketCollider()
 {
 	// 소켓을 가지고 있는 자식 오브젝트의 박스 콜라이더 삭제
@@ -866,19 +1193,134 @@ void fq::client::BossMonster::updateGroggy(float dt)
 {
 	bool isGroggy = isGroggyState();
 
+
 	if (isGroggy)
 	{
+		// 그로기 게이지 갱신
+		float ratio = 1.f - (mGroggyElapsed / mGroggyDuration);
+		mGroggyGauge = ratio * mStartGroggyGauge;
+
+		// 그로기 누적 시간 갱신
 		mGroggyElapsed += dt;
+
+		if (mGroggyElapsed > mGroggyDuration)
+		{
+			mAnimator->SetParameterBoolean("OnGroggy", false);
+		}
+	}
+	else
+	{
+		bool bIsEnteringAngry = mAnimator->GetController().GetParameter("IsEnterAngry").cast<bool>();
+		mGroggyGauge -= (IsAngry() ? mAngryGroggyDecreasePerSecond : mGroggyDecreasePerSecond) * dt * (bIsEnteringAngry ? 10 : 1);
+		mGroggyGauge = std::max<float>(mGroggyGauge, 0);
 	}
 
+	// hp바 누적 이펙트
 	if (mHpBar)
 	{
 		mHpBar->GetComponent<BossHP>()->SetUseDecreaseEffet(isGroggy);
 	}
+}
 
-	// todo : groggy 관련 변수 맴버로 수정하기
-	if (mGroggyElapsed > mGroggyDuration)
+void fq::client::BossMonster::updateJump(float dt)
+{
+	if (!IsAngry())
 	{
-		mAnimator->SetParameterBoolean("OnGroggy", false);
+		return;
 	}
+
+	mJumpElapsed += dt;
+
+	if (mJumpElapsed < mJumpCoolTime)
+	{
+		return;
+	}
+	if (mTarget == nullptr)
+	{
+		return;
+	}
+	if (mTarget->GetComponent<Player>() == nullptr
+		&& mTarget->GetComponent<PlayerDummy>() == nullptr)
+	{
+		return;
+	}
+
+	// 점프 중일 때 예외 처리
+	if (canJump(mTarget->GetTransform()))
+	{
+		mAnimator->SetParameterBoolean("OnJumpWaiting", true);
+		mAnimator->SetParameterInt("AttackType", static_cast<int>(EBossMonsterAttackType::Jump));
+	}
+}
+
+bool fq::client::BossMonster::canJump(const fq::game_module::Transform* transform) const
+{
+	assert(transform != nullptr);
+	if (transform == nullptr)
+	{
+		return false;
+	}
+
+	const auto& targetWorldPosition = transform->GetWorldPosition();
+	const auto& bossWorldPosition = mTransform->GetWorldPosition();
+
+	float distanceSquared = DirectX::SimpleMath::Vector3::DistanceSquared(targetWorldPosition, bossWorldPosition);
+	float jumpDistanceSquared = mJumpDistance * mJumpDistance;
+
+	return distanceSquared > jumpDistanceSquared;
+}
+
+bool fq::client::BossMonster::canRoar() const
+{
+	if (mRoarElapsed < mRoarCoolTime)
+	{
+		return false;
+	}
+
+	unsigned int monsterCount = 0;
+
+	GetScene()->ViewComponents<MeleeMonster>([&monsterCount](fq::game_module::GameObject& object, MeleeMonster& monster) { ++monsterCount; });
+	GetScene()->ViewComponents<PlantMonster>([&monsterCount](fq::game_module::GameObject& object, PlantMonster& monster) { ++monsterCount; });
+
+	if (mMinMonsterCount < monsterCount)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+float fq::client::BossMonster::GetAngryPreAttackSpeedRatio() const
+{
+	return mAngryPreAttackSpeedRatio;
+}
+
+float fq::client::BossMonster::GetAngryAttackSpeedRatio() const
+{
+	return mAngryAttackSpeedRatio;
+}
+
+float fq::client::BossMonster::GetAttackCoolTime() const
+{
+	return mAttackCoolTime;
+}
+
+void fq::client::BossMonster::GenerateAngryEnteringVigilantCount()
+{
+	mAngryEnteringVigilantCount = helper::RandomGenerator::GetInstance().GetRandomNumber((int)mAngryEnteringVigilantMinCount, (int)mAngryEnteringVigilantMaxCount);
+}
+
+void fq::client::BossMonster::GenerateEnteringVigilantCount()
+{
+	mVigilantCount = helper::RandomGenerator::GetInstance().GetRandomNumber((int)mVigilantMinCount, (int)mVigilantMaxCount);
+}
+
+unsigned int fq::client::BossMonster::GetAngryEnteringVigilantCount() const
+{
+	return mAngryEnteringVigilantCount;
+}
+
+unsigned int fq::client::BossMonster::GetEnteringVigilantCount() const
+{
+	return mVigilantCount;
 }
