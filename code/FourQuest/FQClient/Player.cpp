@@ -196,6 +196,11 @@ fq::game_module::GameObject* fq::client::Player::CreateDummyOrNull()
 	return dummyObject.get();
 }
 
+void fq::client::Player::SetSoulGauge(float soulGauge)
+{
+	mSoulGauge = std::min(soulGauge, mMaxSoulGauge);
+}
+
 void fq::client::Player::processKnockBack(float dt)
 {
 	if (mKnockBackTime < 0)
@@ -300,7 +305,7 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 					auto rigidbody = GetComponent<game_module::RigidBody>();
 					rigidbody->AddLinearVelocity(mKnockBackDir * velocityPower);
 				}
-			}	
+			}
 
 			if (isHitAble)
 			{

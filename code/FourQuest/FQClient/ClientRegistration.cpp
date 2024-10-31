@@ -194,6 +194,7 @@
 #include "TrainingDummyHitState.h"
 #include "DestroyHelper.h"
 #include "MagicCircleEndPoint.h"
+#include "FillSoulGauge.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -557,6 +558,14 @@ void fq::client::RegisterMetaData()
 		.data<&MagicCircleEndPoint::mDuration>("mDuration"_hs)
 		.prop(fq::reflect::prop::Name, "mDuration")
 		.prop(fq::reflect::prop::Comment, u"총 소요 시간")
+		.base<game_module::Component>();
+
+	entt::meta<FillSoulGauge>()
+		.type("FillSoulGauge"_hs)
+		.prop(reflect::prop::Name, "FillSoulGauge")
+		.data<&FillSoulGauge::mFillGauge>("mFillGauge"_hs)
+		.prop(fq::reflect::prop::Name, "mFillGauge")
+		.prop(fq::reflect::prop::Comment, u"채워질 게이지 양(해당 값으로 설정됨)")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

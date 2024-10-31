@@ -665,6 +665,9 @@
     <ClInclude Include="MagicCircleEndPoint.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="FillSoulGauge.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1151,6 +1154,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="MagicCircleEndPoint.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="FillSoulGauge.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

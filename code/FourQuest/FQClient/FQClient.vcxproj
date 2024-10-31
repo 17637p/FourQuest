@@ -57,6 +57,7 @@
     <ClInclude Include="DynamicLightHelper.h" />
     <ClInclude Include="EffectColorManager.h" />
     <ClInclude Include="EffectColorTransmitter.h" />
+    <ClInclude Include="FillSoulGauge.h" />
     <ClInclude Include="GaugeBar.h" />
     <ClInclude Include="AudioSettingUI.h" />
     <ClInclude Include="GameSettingUI.h" />
@@ -238,6 +239,7 @@
     <ClCompile Include="DynamicLightHelper.cpp" />
     <ClCompile Include="EffectColorManager.cpp" />
     <ClCompile Include="EffectColorTransmitter.cpp" />
+    <ClCompile Include="FillSoulGauge.cpp" />
     <ClCompile Include="GaugeBar.cpp" />
     <ClCompile Include="AudioSettingUI.cpp" />
     <ClCompile Include="GameSettingUI.cpp" />
