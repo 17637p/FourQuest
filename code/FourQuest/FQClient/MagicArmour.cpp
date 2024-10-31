@@ -14,6 +14,7 @@
 #include "SpeechBubbleUI.h"
 #include "PlayerInfoVariable.h"
 #include "EffectColorTransmitter.h"
+#include "EffectColorManager.h"
 #include "ClientEvent.h"
 
 fq::client::MagicArmour::MagicArmour()
@@ -435,13 +436,9 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserH
 	GetScene()->AddGameObject(effectObj);
 
 	mLaserHeadEffect = effectObj;
-
+	
 	// 이펙트 색상 설정
-	auto effectColorTransmitter = effectObj->GetComponent<EffectColorTransmitter>();
-	if (effectColorTransmitter != nullptr && mPlayer != nullptr)
-	{
-		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
-	}
+	GetScene()->ViewComponents<EffectColorManager>([&effectObj, this](fq::game_module::GameObject& object, EffectColorManager& effectColorManager) { effectColorManager.SetColor(mPlayer->GetGameObject(), effectObj.get()); });
 
 	return effectObj;
 }
@@ -468,11 +465,7 @@ void fq::client::MagicArmour::EmitLaserLineEffect()
 	GetScene()->AddGameObject(effect);
 
 	// 이펙트 색상 설정
-	auto effectColorTransmitter = effect->GetComponent<EffectColorTransmitter>();
-	if (effectColorTransmitter != nullptr && mPlayer != nullptr)
-	{
-		effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
-	}
+	GetScene()->ViewComponents<EffectColorManager>([&effect, this](fq::game_module::GameObject& object, EffectColorManager& effectColorManager) { effectColorManager.SetColor(mPlayer->GetGameObject(), effect.get()); });
 }
 
 void fq::client::MagicArmour::OnDestroy()
@@ -502,20 +495,20 @@ void fq::client::MagicArmour::setName()
 	{
 		switch (soulType)
 		{
-			case 0:
-				speechBubble->SetName(PlayerInfoVariable::KnightName);
-				break;
-			case 1:
-				speechBubble->SetName(PlayerInfoVariable::MagicName);
-				break;
-			case 2:
-				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-				break;
-			case 3:
-				speechBubble->SetName(PlayerInfoVariable::ArcherName);
-				break;
-			default:
-				break;
+		case 0:
+			speechBubble->SetName(PlayerInfoVariable::KnightName);
+			break;
+		case 1:
+			speechBubble->SetName(PlayerInfoVariable::MagicName);
+			break;
+		case 2:
+			speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+			break;
+		case 3:
+			speechBubble->SetName(PlayerInfoVariable::ArcherName);
+			break;
+		default:
+			break;
 		}
 	}
 }

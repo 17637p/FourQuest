@@ -19,6 +19,8 @@ namespace fq::client
 		
 		void OnGeneratePrefabInstance(const fq::event::OnGeneratePrefabInstance& data);
 
+		void SetColor(fq::game_module::GameObject* ownerObject, fq::game_module::GameObject* effectObject);
+
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */) const override;
 		entt::meta_handle GetHandle() override { return *this; }

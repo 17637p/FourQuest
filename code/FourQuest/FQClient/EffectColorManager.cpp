@@ -50,8 +50,13 @@ void fq::client::EffectColorManager::OnAwake()
 
 void fq::client::EffectColorManager::OnGeneratePrefabInstance(const fq::event::OnGeneratePrefabInstance& data)
 {
-	auto playerPtr = data.EventSendObject->GetComponent<Player>();
-	auto effectColorTrasmitter = data.EventSendObject->GetComponent<EffectColorTransmitter>();
+	SetColor(data.EventSendObject, data.PrefabGameObject.get());
+}
+
+void fq::client::EffectColorManager::SetColor(fq::game_module::GameObject* ownerObject, fq::game_module::GameObject* effectObject)
+{
+	auto playerPtr = ownerObject->GetComponent<Player>();
+	auto effectColorTrasmitter = ownerObject->GetComponent<EffectColorTransmitter>();
 
 	ESoulType soulType = ESoulType::End;
 
@@ -151,7 +156,7 @@ void fq::client::EffectColorManager::OnGeneratePrefabInstance(const fq::event::O
 			}
 		};
 
-	setColor(data.PrefabGameObject.get());
+	setColor(effectObject);
 }
 
 std::shared_ptr<fq::game_module::Component> fq::client::EffectColorManager::Clone(std::shared_ptr<fq::game_module::Component> clone) const
