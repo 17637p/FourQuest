@@ -103,6 +103,7 @@
 
 // MonsterSpawner
 #include "MonsterSpawner.h"
+#include "MonsterSpawnerDetector.h"
 #include "MonsterGroup.h"
 #include "SpawnerDeadState.h"
 #include "SpawnerOpenState.h"
@@ -768,6 +769,12 @@ void fq::client::RegisterMetaData()
 		.data<&ArcherArmour::mStrongProjectileVelocity>("StrongProjectileVelocity"_hs)
 		.prop(reflect::prop::Name, "StrongProjectileVelocity")
 		.prop(reflect::prop::Comment, u8"강공격 속도")
+		.data<&ArcherArmour::mStrongArrowRange>("StrongArrowRange"_hs)
+		.prop(reflect::prop::Name, "StrongArrowRange")
+		.prop(reflect::prop::Comment, u8"강공격 사정거리")
+		.data<&ArcherArmour::mStrongArrowOffset>("mStrongArrowOffset"_hs)
+		.prop(reflect::prop::Name, "mStrongArrowOffset")
+		.prop(reflect::prop::Comment, u8"강공격 화살 사이의 간격")
 		.data<&ArcherArmour::mWeakAttack>("mWeakAttack"_hs)
 		.prop(reflect::prop::Name, "mWeakAttack")
 		.prop(reflect::prop::Comment, u8"약공격 프리펩")
@@ -1665,6 +1672,12 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SpwanCoolTime")
 		.data<&MonsterSpawner::mSpawnOffset>("SpawnOffeset"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnOffeset")
+		.base<fq::game_module::Component>();
+
+	entt::meta<MonsterSpawnerDetector>()
+		.type("MonsterSpawnerDetector"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterSpawnerDetector")
+		.prop(reflect::prop::Label, "Monster")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SpawnerOpenState>()

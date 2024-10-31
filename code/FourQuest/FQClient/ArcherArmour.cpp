@@ -25,6 +25,7 @@ namespace fq::client
 		, mTransform()
 		, mPlayer(nullptr)
 		, mAimAssist(nullptr)
+		, mWeaponeSocketT(nullptr)
 		, mWeakAttack()
 		, mStrongAttack()
 		, mDashCoolTime()
@@ -32,6 +33,10 @@ namespace fq::client
 		, mDashCoolTimeReduction(0.f)
 		, mStrongAttackCoolTime(0.f)
 		, mStrongAttackCoolTimeReduction(0.f)
+		, mStrongArrowOffset(15.f)
+		, mStrongArrowRange(20.f)
+		, mArrowPower(0.f)
+		, mRStickNoInputTime{ 0.f }
 	{
 	}
 
@@ -48,20 +53,7 @@ namespace fq::client
 		auto rigidBodyComponent = attackObj->GetComponent<fq::game_module::RigidBody>();
 		auto attackT = attackObj->GetComponent<game_module::Transform>();
 		auto foward = mTransform->GetLookAtVector();
-		DirectX::SimpleMath::Vector3 position{};
-
-		for (const auto& child : mTransform->GetChildren())
-		{
-			auto name = child->GetGameObject()->GetName();
-
-			if (name.find("WeaponeSocket") != std::string::npos)
-			{
-				auto transform = child->GetComponent<game_module::Transform>();
-				position = transform->GetWorldPosition();
-
-				break;
-			}
-		}
+		DirectX::SimpleMath::Vector3 position = mWeaponeSocketT->GetWorldPosition();
 
 		// 공격 트랜스폼 설정
 		DirectX::SimpleMath::Quaternion rotation = mTransform->GetWorldRotation();
@@ -82,13 +74,7 @@ namespace fq::client
 		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
 		attackComponent->Set(attackInfo);
 
-		// 약공격 소리
-		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_WeakAttack", false , 0 });
-
 		GetScene()->AddGameObject(attackObj);
-
-		// 공격 체력 감소
-		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 
 		// 이펙트 색상 설정
 		auto effectColorTransmitter = attackObj->GetComponent<EffectColorTransmitter>();
@@ -102,88 +88,34 @@ namespace fq::client
 			->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::R });
 	}
 
-	void ArcherArmour::EmitStrongAttack(int chargeLevel)
+	void ArcherArmour::makeStrongAttackArrow(float damage, DirectX::SimpleMath::Quaternion direction, DirectX::SimpleMath::Vector3 position)
 	{
+		using namespace DirectX::SimpleMath;
+
+		// 프리팹 인스턴스화 
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mStrongAttack);
 		auto& attackObj = *(instance.begin());
-
 		auto attackComponent = attackObj->GetComponent<client::ArrowAttack>();
-		auto linearComponent = attackObj->GetComponent<LinearAttack>();
-		auto rigidBodyComponent = attackObj->GetComponent<fq::game_module::RigidBody>();
 		auto attackT = attackObj->GetComponent<game_module::Transform>();
-		auto foward = mTransform->GetLookAtVector();
-		DirectX::SimpleMath::Vector3 position{};
-
-		for (const auto& child : mTransform->GetChildren())
-		{
-			auto name = child->GetGameObject()->GetName();
-
-			if (name.find("WeaponeSocket") != std::string::npos)
-			{
-				auto transform = child->GetComponent<game_module::Transform>();
-				position = transform->GetWorldPosition();
-
-				break;
-			}
-		}
-
-		// 공격 트랜스폼 설정
-		DirectX::SimpleMath::Quaternion rotation = mTransform->GetWorldRotation();
-		const auto& localOffset = DirectX::SimpleMath::Vector3::TransformNormal(attackT->GetWorldPosition(), mTransform->GetWorldMatrix());
-		attackT->GenerateWorld(position + localOffset, rotation, attackT->GetWorldScale());
+		attackT->GenerateWorld(position, direction, attackT->GetWorldScale());
+		Vector3 attackDirection = Matrix::CreateFromQuaternion(direction).Forward();
 
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};
-		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
-		attackInfo.weakProjectileVelocity = mWeakProjectileVelocity;
 		attackInfo.attacker = GetGameObject();
-		attackInfo.attackDirection = foward;
+		attackInfo.attackDirection = attackDirection;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = true;
 		attackInfo.hitSound = "A_StrongAttack_Hit";
 		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
-
-		switch (chargeLevel)
-		{
-			case 1:
-			{
-				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 1.f;
-				attackInfo.strongDamage = dc::GetArcherCA_1_Damage(mPlayer->GetAttackPower());
-				attackInfo.remainingAttackCount = 1;
-			}
-			break;
-			case 2:
-			{
-				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 2.f;
-				attackInfo.strongDamage = dc::GetArcherCA_2_Damage(mPlayer->GetAttackPower());
-				attackInfo.remainingAttackCount = 3;
-			}
-			break;
-			case 3:
-			{
-				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 3.f;
-				attackInfo.strongDamage = dc::GetArcherCA_3_Damage(mPlayer->GetAttackPower());
-				attackInfo.remainingAttackCount = 5;
-			}
-			break;
-			case 4:
-			{
-				attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 5.f;
-				attackInfo.strongDamage = dc::GetArcherCA_4_Damage(mPlayer->GetAttackPower());
-				attackInfo.remainingAttackCount = 0b11111111;
-			}
-			break;
-			default:
-				break;
-		}
-
+		attackInfo.remainingAttackCount = 0b11111111;
+		attackInfo.strongDamage = damage;
+		attackInfo.strongProjectileVelocity = mStrongProjectileVelocity;
 		attackComponent->Set(attackInfo);
 
-		// MagicBall Attack 사운드  
+		// 화살 생존시간 설정
+		attackComponent->SetLifeTime(mStrongArrowRange / mStrongProjectileVelocity);
 		GetScene()->AddGameObject(attackObj);
-
-		// 공격 체력 감소
-		mPlayer->DecreaseHp(PlayerVariable::HpReductionOnAttack, true, true);
 
 		// 이펙트 색상 설정
 		auto effectColorTransmitter = attackObj->GetComponent<EffectColorTransmitter>();
@@ -191,7 +123,39 @@ namespace fq::client
 		{
 			effectColorTransmitter->SetSoulType(mPlayer->GetSoulType());
 		}
+	}
 
+	void ArcherArmour::EmitStrongAttack(int chargeLevel)
+	{
+		using namespace DirectX::SimpleMath;
+		Vector3 position = mWeaponeSocketT->GetWorldPosition();
+
+		float attackPower = mPlayer->GetAttackPower();
+
+		switch (chargeLevel)
+		{
+			case 0:
+				attackPower = dc::GetArcherCA_1_Damage(attackPower);
+				break;
+			case 1:
+				attackPower = dc::GetArcherCA_2_Damage(attackPower);
+				break;
+			case 2:
+				attackPower = dc::GetArcherCA_3_Damage(attackPower);
+				break;
+			case 4:
+				attackPower = dc::GetArcherCA_4_Damage(attackPower);
+				break;
+		}
+
+		// 차지레벨에 따라서 화살을 생성 
+		auto directions = GetStrongArrowDirections(chargeLevel);
+		for (int i = 0; i < directions.size(); ++i)
+		{
+			makeStrongAttackArrow(attackPower, directions[i], position);
+		}
+
+		// 키입력 이벤트 
 		int id = static_cast<int>(mController->GetControllerID());
 		GetScene()->GetEventManager()
 			->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::X });
@@ -297,6 +261,18 @@ namespace fq::client
 			}
 		}
 
+		// 웨폰 소켓 위치 가져오기  
+		for (const auto& child : mTransform->GetChildren())
+		{
+			auto name = child->GetGameObject()->GetName();
+
+			if (name.find("WeaponeSocket") != std::string::npos)
+			{
+				mWeaponeSocketT = child->GetComponent<game_module::Transform>();
+				break;
+			}
+		}
+
 		setName();
 	}
 
@@ -349,6 +325,10 @@ namespace fq::client
 			mAnimator->SetParameterTrigger("OnStrongAttack");
 			mStrongAttackElapsedTime = mPlayer->IsFeverTime() ? mStrongAttackCoolTime - mStrongAttackCoolTimeReduction : mStrongAttackCoolTime;
 			mStrongAttackElapsedTime *= mPlayer->GetGBDecreaseCooltime();
+		}
+		else
+		{
+			mAnimator->SetParameterOffTrigger("OnStrongAttack");
 		}
 
 		// MultiShot R Stick 조작
@@ -431,4 +411,25 @@ namespace fq::client
 		}
 	}
 
+	std::vector<DirectX::SimpleMath::Quaternion> ArcherArmour::GetStrongArrowDirections(int chargeLevel)
+	{
+		using namespace DirectX::SimpleMath;
+		std::vector<Quaternion> directions{};
+		float offsetAngle = DirectX::XMConvertToRadians(mStrongArrowOffset);
+
+		// 시선방향 
+		auto look = mTransform->GetWorldRotation();
+		directions.push_back(look);
+
+		// 차징 레벨에 따라서 화살 방향 생성 1/3/5/7
+		for (int i = 0; i < chargeLevel; ++i)
+		{
+			auto positive = look * Quaternion::CreateFromAxisAngle(Vector3::UnitY, offsetAngle * i);
+			auto negative = look * Quaternion::CreateFromAxisAngle(Vector3::UnitY, -offsetAngle * i);
+			directions.push_back(positive);
+			directions.push_back(negative);
+		}
+
+		return directions;
+	}
 }

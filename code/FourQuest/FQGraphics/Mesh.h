@@ -51,6 +51,8 @@ namespace fq::graphics
 
 		virtual EStaticMeshType GetStaticMeshType() const override { return mStaticMeshType; }
 
+		virtual UINT GetVertexSize() const override;
+
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
 		EStaticMeshType mStaticMeshType;

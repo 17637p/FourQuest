@@ -16,6 +16,7 @@
 #include "MeleeMonster.h"
 #include "PlantMonster.h"
 #include "BossMonster.h"
+#include "MonsterSpawner.h"
 
 namespace fq::client
 {
@@ -30,6 +31,7 @@ namespace fq::client
 		, mHitSound{}
 		, mAttackDirection{}
 		, mAttackTransform{}
+		, mHitMonsterID{}
 	{
 	}
 
@@ -40,7 +42,7 @@ namespace fq::client
 	void ArrowAttack::OnUpdate(float dt)
 	{
 		// 화살이 박히고 난 뒤에 일정 시간 뒤 오브젝트 삭제
-		if (mMaxBlockCount <= 0)
+		if (mMaxBlockCount <= 0 || mbIsStrongAttack)
 		{
 			mLifeElapsedTime += dt;
 
@@ -112,27 +114,31 @@ namespace fq::client
 			mMaxBlockCount = 0;
 		}
 
-		if (collision.other->HasParent())
+		auto parent = collision.other->GetParent();
+		if (parent)
 		{
 			// 박히는 화살의 부모 오브젝트의 데미지가 들어가는 함수를 실행합니다.
-			if (collision.other->GetParent()->HasComponent<MeleeMonster>())
+			if (parent->HasComponent<MeleeMonster>())
 			{
-				auto monster = collision.other->GetParent()->GetComponent<MeleeMonster>();
-
-				monster->HitArrow(GetGameObject());
+				auto melee = parent->GetComponent<MeleeMonster>();
+				melee->HitArrow(GetGameObject());
 			}
-			if (collision.other->GetParent()->HasComponent<PlantMonster>())
+			if (parent->HasComponent<PlantMonster>())
 			{
-				auto monster = collision.other->GetParent()->GetComponent<PlantMonster>();
-
-				monster->HitArrow(GetGameObject());
+				auto plant = parent->GetComponent<PlantMonster>();
+				plant->HitArrow(GetGameObject());
 			}
-			if (collision.other->GetParent()->HasComponent<BossMonster>())
+			if (parent->HasComponent<BossMonster>())
 			{
-				auto monster = collision.other->GetParent()->GetComponent<BossMonster>();
-
-				monster->HitArrow(GetGameObject());
+				auto boss = parent->GetComponent<BossMonster>();
+				boss->HitArrow(GetGameObject());
 			}
+		}
+
+		if (collision.other->HasComponent<MonsterSpawner>())
+		{
+			auto monster = collision.other->GetComponent<MonsterSpawner>();
+			monster->HitArrow(GetGameObject());
 		}
 
 		if (mMaxBlockCount <= 0)

@@ -8,6 +8,14 @@
 
 #include "../FQCommon/FQCommonGraphics.h"
 
+struct SimpleVector3 {
+	float x, y, z;
+};
+
+struct SimpleMatrix {
+	float m[4][4];
+};
+
 __device__ physx::PxVec2 Sub(const physx::PxVec2& lhs, const physx::PxVec2& rhs) {
 	return { lhs.x - rhs.x, lhs.y - rhs.y };
 }
@@ -33,15 +41,27 @@ __device__ void NormalizeVector(physx::PxVec3& vec) {
 	}
 }
 
+template <typename T>
+__device__ SimpleVector3 multiply(SimpleMatrix& mat, const T& vec)
+{
+	SimpleVector3 result;
+	result.x = mat.m[0][0] * vec.x + mat.m[1][0] * vec.y + mat.m[2][0] * vec.z + mat.m[3][0] * 1.0f;
+	result.y = mat.m[0][1] * vec.x + mat.m[1][1] * vec.y + mat.m[2][1] * vec.z + mat.m[3][1] * 1.0f;
+	result.z = mat.m[0][2] * vec.x + mat.m[1][2] * vec.y + mat.m[2][2] * vec.z + mat.m[3][2] * 1.0f;
+	return result;
+}
+
 #pragma region UpdateID3D11VertexBuffer
 // CUDA 커널 함수 정의
+template <typename T>
 __global__ void UpdateVertex(
 	physx::PxVec4* vertices,
 	physx::PxVec2* uvs,
 	unsigned int vertexSize,
 	unsigned int* indices,
 	unsigned int indexSize,
-	Vertex* buffer)
+	SimpleMatrix invTransform,
+	T* buffer)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx >= indexSize / 3) return;
@@ -81,40 +101,57 @@ __global__ void UpdateVertex(
 	physx::PxVec3 normal = cross(edge1, edge2);
 	NormalizeVector(normal);
 
-	buffer[i0].Pos.x = v0.x;
-	buffer[i0].Pos.y = v0.y;
-	buffer[i0].Pos.z = v0.z;
-	buffer[i1].Pos.x = v1.x;
-	buffer[i1].Pos.y = v1.y;
-	buffer[i1].Pos.z = v1.z;
-	buffer[i2].Pos.x = v2.x;
-	buffer[i2].Pos.y = v2.y;
-	buffer[i2].Pos.z = v2.z;
+	SimpleVector3 vertex0;
+	SimpleVector3 vertex1;
+	SimpleVector3 vertex2;
+	vertex0.x = v0.x;
+	vertex0.y = v0.y;
+	vertex0.z = v0.z;
+	vertex1.x = v1.x;
+	vertex1.y = v1.y;
+	vertex1.z = v1.z;
+	vertex2.x = v2.x;
+	vertex2.y = v2.y;
+	vertex2.z = v2.z;
+	vertex0 = multiply< SimpleVector3>(invTransform, vertex0);
+	vertex1 = multiply< SimpleVector3>(invTransform, vertex1);
+	vertex2 = multiply< SimpleVector3>(invTransform, vertex2);
 
-	buffer[i0].Normal.x = normal.x;
-	buffer[i0].Normal.y = normal.y;
-	buffer[i0].Normal.z = normal.z;
-	buffer[i1].Normal.x = normal.x;
-	buffer[i1].Normal.y = normal.y;
-	buffer[i1].Normal.z = normal.z;
-	buffer[i2].Normal.x = normal.x;
-	buffer[i2].Normal.y = normal.y;
-	buffer[i2].Normal.z = normal.z;
+	buffer[i0].Pos.x = vertex0.x;
+	buffer[i0].Pos.y = vertex0.y;
+	buffer[i0].Pos.z = vertex0.z;
+	buffer[i1].Pos.x = vertex1.x;
+	buffer[i1].Pos.y = vertex1.y;
+	buffer[i1].Pos.z = vertex1.z;
+	buffer[i2].Pos.x = vertex2.x;
+	buffer[i2].Pos.y = vertex2.y;
+	buffer[i2].Pos.z = vertex2.z;
 
-	buffer[i0].Tangent.x = tangent.x;
-	buffer[i0].Tangent.y = tangent.y;
-	buffer[i0].Tangent.z = tangent.z;
-	buffer[i1].Tangent.x = tangent.x;
-	buffer[i1].Tangent.y = tangent.y;
-	buffer[i1].Tangent.z = tangent.z;
-	buffer[i2].Tangent.x = tangent.x;
-	buffer[i2].Tangent.y = tangent.y;
-	buffer[i2].Tangent.z = tangent.z;
+	//buffer[i0].Normal.x = normal.x;
+	//buffer[i0].Normal.y = normal.y;
+	//buffer[i0].Normal.z = normal.z;
+	//buffer[i1].Normal.x = normal.x;
+	//buffer[i1].Normal.y = normal.y;
+	//buffer[i1].Normal.z = normal.z;
+	//buffer[i2].Normal.x = normal.x;
+	//buffer[i2].Normal.y = normal.y;
+	//buffer[i2].Normal.z = normal.z;
+
+	//buffer[i0].Tangent.x = tangent.x;
+	//buffer[i0].Tangent.y = tangent.y;
+	//buffer[i0].Tangent.z = tangent.z;
+	//buffer[i1].Tangent.x = tangent.x;
+	//buffer[i1].Tangent.y = tangent.y;
+	//buffer[i1].Tangent.z = tangent.z;
+	//buffer[i2].Tangent.x = tangent.x;
+	//buffer[i2].Tangent.y = tangent.y;
+	//buffer[i2].Tangent.z = tangent.z;
 }
 #pragma endregion
 
 #pragma region SetID3D11BufferVertexNormal
-__global__ void processVerticesKernel(unsigned int* sameVerticesFirst, unsigned int* sameVerticesSecond, Vertex* buffer, int size)
+template <typename T>
+__global__ void processVerticesKernel(unsigned int* sameVerticesFirst, unsigned int* sameVerticesSecond, T* buffer, int size)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -152,22 +189,6 @@ __global__ void processVerticesKernel(unsigned int* sameVerticesFirst, unsigned 
 #pragma endregion
 
 #pragma region SetClothParticleWorldTransform
-struct SimpleVector3 {
-	float x, y, z;
-};
-
-struct SimpleMatrix {
-	float m[4][4];
-};
-
-__device__ SimpleVector3 multiply(SimpleMatrix& mat, const SimpleVector3& vec)
-{
-	SimpleVector3 result;
-	result.x = mat.m[0][0] * vec.x + mat.m[1][0] * vec.y + mat.m[2][0] * vec.z + mat.m[3][0] * 1.0f;
-	result.y = mat.m[0][1] * vec.x + mat.m[1][1] * vec.y + mat.m[2][1] * vec.z + mat.m[3][1] * 1.0f;
-	result.z = mat.m[0][2] * vec.x + mat.m[1][2] * vec.y + mat.m[2][2] * vec.z + mat.m[3][2] * 1.0f;
-	return result;
-}
 
 // 커널 함수
 __global__ void TransformVertices(
@@ -185,10 +206,10 @@ __global__ void TransformVertices(
 	vertex.z = particle[idx].z;
 
 	// 이전 worldTransform의 역행렬 적용
-	vertex = multiply(previousTransformInverse, vertex);
+	vertex = multiply< SimpleVector3>(previousTransformInverse, vertex);
 
 	// 새로운 worldTransform 적용
-	vertex = multiply(newTransform, vertex);
+	vertex = multiply< SimpleVector3>(newTransform, vertex);
 
 	// 변환된 vertex 저장
 	particle[idx].x = vertex.x;
@@ -198,11 +219,12 @@ __global__ void TransformVertices(
 #pragma endregion
 
 #pragma region CopyFromGPUToCPU
+template <typename T>
 __global__ void CopyVertexDataToCPU(
 	physx::PxVec3* vertices,
 	physx::PxVec2* uvs,
 	SimpleMatrix worldTransform,
-	Vertex* ID3D11VertexBuffer,
+	T* ID3D11VertexBuffer,
 	unsigned int vertexSize)
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -245,7 +267,8 @@ namespace fq::physics
 		std::vector<DirectX::SimpleMath::Vector3>& vertices,
 		std::vector<DirectX::SimpleMath::Vector2>& uvs,
 		DirectX::SimpleMath::Matrix& worldTransform,
-		cudaGraphicsResource* ID3D11VertexBuffer)
+		cudaGraphicsResource* ID3D11VertexBuffer,
+		UINT ID3D11VertexStride)
 	{
 		// CUDA 리소스를 매핑
 		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer); 
@@ -278,7 +301,19 @@ namespace fq::physics
 		memcpy(&Trnasform, &worldTransform, sizeof(SimpleMatrix));
 
 		// CUDA 함수 실행
-		CopyVertexDataToCPU << < blocksPerGrid, threadsPerBlock >> > (d_vertices, d_uvs, Trnasform, (Vertex*)devPtr, vertexSize);
+		if (ID3D11VertexStride == 44)
+		{
+			CopyVertexDataToCPU <Vertex><< < blocksPerGrid, threadsPerBlock >> > (d_vertices, d_uvs, Trnasform, (Vertex*)devPtr, vertexSize);
+		}
+		else if (ID3D11VertexStride == 52)
+		{
+			CopyVertexDataToCPU <Vertex1> << < blocksPerGrid, threadsPerBlock >> > (d_vertices, d_uvs, Trnasform, (Vertex1*)devPtr, vertexSize);
+		}
+		else if (ID3D11VertexStride == 60)
+		{
+			CopyVertexDataToCPU <Vertex2> << < blocksPerGrid, threadsPerBlock >> > (d_vertices, d_uvs, Trnasform, (Vertex2*)devPtr, vertexSize);
+		}
+		
 		cudaStatus = cudaDeviceSynchronize(); 
 		if (!(cudaStatus == cudaSuccess))
 		{
@@ -341,7 +376,9 @@ namespace fq::physics
 		std::vector<DirectX::SimpleMath::Vector3>& vertices, 
 		std::vector<unsigned int>& indices, 
 		std::vector<DirectX::SimpleMath::Vector2> uvs, 
+		DirectX::SimpleMath::Matrix transform,
 		cudaGraphicsResource* ID3D11VertexBuffer,
+		UINT ID3D11VertexStride,
 		physx::PxVec4* particle)
 	{
 		int threadsPerBlock = 256;
@@ -384,9 +421,26 @@ namespace fq::physics
 		cudaMemcpy(d_uvs, uvs.data(), uvs.size() * sizeof(DirectX::SimpleMath::Vector2), cudaMemcpyKind::cudaMemcpyHostToDevice);
 		cudaMemcpy(d_indices, indices.data(), indices.size() * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
+		SimpleMatrix invTransform;
+		std::memcpy(&invTransform, &transform, sizeof(invTransform));
+
 		// CUDA 함수 실행
-		UpdateVertex << <blocksPerGrid, threadsPerBlock >> > (
-			particle, d_uvs, vertexSize, d_indices, indexSize, (Vertex*)devPtr);
+		if (ID3D11VertexStride == 44)
+		{
+			UpdateVertex <Vertex> << <blocksPerGrid, threadsPerBlock >> > (
+				particle, d_uvs, vertexSize, d_indices, indexSize, invTransform, (Vertex*)devPtr);
+		}
+		else if (ID3D11VertexStride == 52)
+		{
+			UpdateVertex <Vertex1> << <blocksPerGrid, threadsPerBlock >> > (
+				particle, d_uvs, vertexSize, d_indices, indexSize, invTransform, (Vertex1*)devPtr);
+		}
+		else if (ID3D11VertexStride == 60)
+		{
+			UpdateVertex <Vertex2> << <blocksPerGrid, threadsPerBlock >> > (
+				particle, d_uvs, vertexSize, d_indices, indexSize, invTransform, (Vertex2*)devPtr);
+		}
+
 		cudaStatus = cudaDeviceSynchronize();
 		if (!(cudaStatus == cudaSuccess))
 		{
@@ -412,7 +466,8 @@ namespace fq::physics
 	bool CudaClothTool::UpdateNormalToID3DBuffer(
 		std::vector<std::pair<unsigned int, unsigned int>>& sameVertices,
 		unsigned int vertexSize,
-		cudaGraphicsResource* ID3D11VertexBuffer)
+		cudaGraphicsResource* ID3D11VertexBuffer,
+		UINT ID3D11VertexStride)
 	{
 		int threadsPerBlock = 256;
 		int blocksPerGrid = (sameVertices.size() + threadsPerBlock - 1) / threadsPerBlock;
@@ -455,7 +510,19 @@ namespace fq::physics
 		cudaMemcpy(d_secondVertex, secondVertex.data(), secondVertex.size() * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
 		// CUDA 함수 실행
-		processVerticesKernel << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (Vertex*)devPtr, vertexSize);
+		if (ID3D11VertexStride == 44)
+		{
+			processVerticesKernel <Vertex> << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (Vertex*)devPtr, vertexSize);
+		}
+		else if (ID3D11VertexStride == 52)
+		{
+			processVerticesKernel <Vertex1> << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (Vertex1*)devPtr, vertexSize);
+		}
+		else if (ID3D11VertexStride == 60)
+		{
+			processVerticesKernel <Vertex2> << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (Vertex2*)devPtr, vertexSize);
+		}
+
 		cudaStatus = cudaDeviceSynchronize(); 
 		if (!(cudaStatus == cudaSuccess))
 		{
@@ -487,6 +554,7 @@ namespace fq::physics
 	{
 		int threadsPerBlock = 256;
 		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
+
 
 		DirectX::SimpleMath::Matrix prevTransform = prevWorldTransform.Invert();
 		DirectX::SimpleMath::Matrix nextTransform = nextWorldTrnasform;

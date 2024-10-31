@@ -103,7 +103,7 @@ void fq::client::MonsterHP::OnUpdate(float dt)
 	innerBar.StartX = outBar.StartX  + mInnerOffset.x;
 	innerBar.StartY = outBar.StartY;
 	innerBar.XRatio = mHpRatio + mDecreaseRatio;
-	innerBar.Width = mBarSize.x * (mHpRatio + mDecreaseRatio);
+	innerBar.Width = (mBarSize.x - mInnerOffset.x *2.f ) * (mHpRatio + mDecreaseRatio);
 
 	// DecreaseBar 
 	auto& decreaseBar = infomations[2];
@@ -118,7 +118,6 @@ void fq::client::MonsterHP::OnUpdate(float dt)
 		rankBar.StartX = outBar.StartX - mRankOffset.x;
 		rankBar.StartY = outBar.StartY - mRankOffset.y;
 	}
-
 
 	mImageUI->SetUIInfomations(infomations);
 }

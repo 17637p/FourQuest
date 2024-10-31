@@ -120,6 +120,7 @@ namespace fq::physics
 
 		cudaGraphicsResource* mCudaVertexResource;
 		cudaGraphicsResource* mCudaIndexResource;
+		UINT mCudaVertexStride;
 	};
 
 #pragma region GetSet

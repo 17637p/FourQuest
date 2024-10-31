@@ -695,11 +695,13 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		if (object->HasComponent<StaticMeshRenderer>())
 		{
 			auto staticMesh = object->GetComponent<StaticMeshRenderer>();
-			void* indexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetIndexBuffer();
-			void* vertexBuffer = staticMesh->GetStaticMeshObject()->GetStaticMesh()->GetVertexBuffer();
+			auto iStaticMesh = staticMesh->GetStaticMeshObject()->GetStaticMesh();
+			void* indexBuffer = iStaticMesh->GetIndexBuffer();
+			void* vertexBuffer = iStaticMesh->GetVertexBuffer();
 			clothCollider->SetIndexBuffer(indexBuffer);
 			clothCollider->SetVertexBuffer(vertexBuffer);
 			clothCollider->SetIsSkinnedMesh(false);
+			clothCollider->GetClothInfo()->vertexStride = iStaticMesh->GetVertexSize();
 		}
 		else if (object->HasComponent<SkinnedMeshRenderer>())
 		{
@@ -714,6 +716,13 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			spdlog::warn("[PhysicsSystem ({}) Warrning] Object Has not Mesh Component( ID : {} )", __LINE__, id);
 			return;
+		}
+
+		auto clothInfo = clothCollider->GetClothInfo();
+
+		for (int i = 0; i < clothInfo->clothData.vertices.size(); i++)
+		{
+			clothInfo->clothData.vertices[i] = DirectX::SimpleMath::Vector3::Transform(clothInfo->clothData.vertices[i], transform->GetWorldMatrix());
 		}
 
 		// 물리 엔진에서 천 생성하기
@@ -1036,20 +1045,20 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			if (!clothCollider->GetIsSkinnedMesh())
 				transform->SetWorldMatrix(data.worldTransform);
 
-			//auto vertices = mPhysicsEngine->GetClothVertex(id);
+			auto vertices = mPhysicsEngine->GetClothVertex(id);
 
-			//fq::graphics::debug::PolygonInfo info;
+			fq::graphics::debug::PolygonInfo info;
 
-			//for (int i = 0; i < vertices.size(); i++)
-			//{
-			//	fq::graphics::debug::SphereInfo info;
+			for (int i = 0; i < vertices.size(); i++)
+			{
+				fq::graphics::debug::SphereInfo info;
 
-			//	info.Sphere.Center = vertices[i];
-			//	info.Sphere.Radius = 0.01f;
-			//	info.Color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
+				info.Sphere.Center = vertices[i];
+				info.Sphere.Radius = 0.01f;
+				info.Color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
 
-			//	mGameProcess->mGraphics->DrawSphere(info);
-			//}
+				mGameProcess->mGraphics->DrawSphere(info);
+			}
 		}
 		else
 		{

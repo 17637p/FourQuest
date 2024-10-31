@@ -30,13 +30,12 @@ namespace fq::physics
 
 	void PhysicsSimulationEventCallback::onWake(physx::PxActor** actors, physx::PxU32 count)
 	{
-
-		std::cout << "onWake" << std::endl;
+		std::cerr << "onWake" << std::endl;
 	}
 
 	void PhysicsSimulationEventCallback::onSleep(physx::PxActor** actors, physx::PxU32 count)
 	{
-		std::cout << "onSleep" << std::endl;
+		std::cerr << "onSleep" << std::endl;
 	}
 
 	void PhysicsSimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)

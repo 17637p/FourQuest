@@ -387,6 +387,7 @@ namespace fq::physics
 
 			ClothData clothData;
 
+			unsigned int vertexStride = 0;
 			void* vertexBuffer = nullptr;							// D3D11Buffer*
 			void* indexBuffer = nullptr;							// D3D11Buffer*
 		};

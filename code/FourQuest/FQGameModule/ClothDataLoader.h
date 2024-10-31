@@ -22,7 +22,7 @@ namespace fq::game_module
 		/// <summary>
 		/// Cloth Editor에서 만든 정보를 저장합니다.
 		/// </summary>
-		void Save(const std::shared_ptr<fq::physics::Cloth::ClothData> data, const Path& path);
+		void Save(const std::shared_ptr<fq::physics::Cloth::ClothData> data, const std::vector<DirectX::SimpleMath::Vector3>& vertices, const Path& path);
 
 		/// <summary>
 		/// Cloth Data를 로드합니다.
