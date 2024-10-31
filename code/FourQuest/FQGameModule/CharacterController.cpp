@@ -59,6 +59,10 @@ void fq::game_module::CharacterController::OnFixedUpdate(float dt)
 {
 	using namespace DirectX::SimpleMath;
 
+	if (mControllerInfo.id == fq::physics::unregisterID)
+		return;
+
+
 	auto inputMgr = GetScene()->GetInputManager();
 	Vector3 input = Vector3::Zero;
 
