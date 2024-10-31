@@ -227,6 +227,8 @@ namespace fq::client
 		bool canJump(const game_module::Transform* transform) const;
 		bool canRoar() const;
 
+		void processAttack(class Attack* attack);
+
 	private:
 		// ÂüÁ¶
 		GameManager* mGameManager;
