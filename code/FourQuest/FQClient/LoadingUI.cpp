@@ -25,6 +25,10 @@ std::shared_ptr<fq::game_module::Component> fq::client::LoadingUI::Clone(std::sh
 
 void fq::client::LoadingUI::OnStart()
 {
+	mImages.clear();
+	mTitles.clear();
+	mContents.clear();
+
 	mScreenManager = GetScene()->GetScreenManager();
 
 	// 초기값 세팅
@@ -35,70 +39,43 @@ void fq::client::LoadingUI::OnStart()
 	mProgressSoul = Bars[1]->GetComponent<game_module::Transform>();
 
 	auto guide = GetGameObject()->GetChildren()[1]->GetChildren();
-	mImages = guide[0]->GetChildren();
+	auto images = guide[0]->GetChildren();
+	for (auto& image : images)
+	{
+		mImages.push_back(image->GetComponent<game_module::ImageUI>());
+	}
 
 	auto texts = guide[1]->GetChildren();
-	mTitle = texts[0]->GetComponent<game_module::TextUI>();
-	mContent = texts[1]->GetComponent<game_module::TextUI>();
+	for (auto& title : texts)
+	{
+		mTitles.push_back(title->GetComponent<game_module::TextUI>());
+	}
 
 	texts = guide[2]->GetChildren();
-	mBackgroundTitle = texts[0]->GetComponent<game_module::TextUI>();
-	mBackgroundContent = texts[1]->GetComponent<game_module::TextUI>();
+	for (auto& content : texts)
+	{
+		mContents.push_back(content->GetComponent<game_module::TextUI>());
+	}
 
 	// 시작할 때 모두 Render Off
-	auto textInfo = mTitle->GetTextInfo();
-	textInfo.IsRender = false;
-	mTitle->SetTextInfo(textInfo);
-
-	textInfo = mContent->GetTextInfo();
-	textInfo.IsRender = false;
-	mContent->SetTextInfo(textInfo);
-
-	textInfo = mBackgroundTitle->GetTextInfo();
-	textInfo.IsRender = false;
-	mBackgroundTitle->SetTextInfo(textInfo);
-
-	textInfo = mBackgroundContent->GetTextInfo();
-	textInfo.IsRender = false;
-	mBackgroundContent->SetTextInfo(textInfo);
+	for (int i = 0; i < mTitles.size(); i++)
+	{
+		mImages[i]->SetIsRender(0, false);
+		mTitles[i]->SetIsRender(false);
+		mContents[i]->SetIsRender(false);
+	}
 }
 
 void fq::client::LoadingUI::OnUpdate(float dt)
 {
 	SetScaleScreen();
 
-	// 배경
-	if (mCurGuideID > 5)
-	{
-		auto textInfo = mBackgroundTitle->GetTextInfo();
-		textInfo.Text = mTexts[mCurGuideID].Title;
-		textInfo.IsRender = true;
-		mBackgroundTitle->SetTextInfo(textInfo);
+	mImages[mCurGuideID]->SetIsRender(0, true);
 
-		textInfo = mBackgroundContent->GetTextInfo();
-		textInfo.Text = mTexts[mCurGuideID].Content;
-		textInfo.IsRender = true;
-		mBackgroundContent->SetTextInfo(textInfo);
-	}
-	else
-	{
-		auto textInfo = mTitle->GetTextInfo();
-		textInfo.Text = mTexts[mCurGuideID].Title;
-		textInfo.IsRender = true;
-		mTitle->SetTextInfo(textInfo);
-
-		textInfo = mContent->GetTextInfo();
-		textInfo.Text = mTexts[mCurGuideID].Content;
-		textInfo.IsRender = true;
-		mContent->SetTextInfo(textInfo);
-	}
-
-	for (int i = 0; i < mImages.size(); i++)
-	{
-		mImages[i]->GetComponent<game_module::ImageUI>()->SetIsRender(0, false);
-	}
-
-	mImages[mCurGuideID]->GetComponent<game_module::ImageUI>()->SetIsRender(0, true);
+	mTitles[mCurGuideID]->SetIsRender(true);
+	mTitles[mCurGuideID]->SetText(mTexts[mCurGuideID].Title);
+	mContents[mCurGuideID]->SetIsRender(true);
+	mContents[mCurGuideID]->SetText(mTexts[mCurGuideID].Content);
 }
 
 fq::client::LoadingUI::LoadingUI()
@@ -108,7 +85,6 @@ fq::client::LoadingUI::LoadingUI()
 	mProgressBarMaxWidth(0),
 	mTexts(),
 	mImages(),
-	mContent(nullptr),
 	mCurGuideID(7)
 {
 }
@@ -128,7 +104,7 @@ void fq::client::LoadingUI::SetProgressBar(float progress)
 	mProgressBar->SetUIInfomation(0, uiInfo);
 
 	// Soul Position Setting
-	mProgressSoul->SetLocalPosition({ uiInfo.Width - 50 , -90, 0});
+	mProgressSoul->SetLocalPosition({ uiInfo.Width - 50 , -90, 0 });
 }
 
 void fq::client::LoadingUI::SetScaleScreen()
