@@ -79,6 +79,7 @@ namespace fq::client
 
 		std::vector<game_module::SpriteAnimationUI*> mSoulSprites;
 		game_module::ImageUI* mPlayerState;				 // 플레이어 상태
+		game_module::ImageUI* mRetireMask;				 // 리타이어 이미지
 
 		game_module::ScreenManager* mScreenManager;
 

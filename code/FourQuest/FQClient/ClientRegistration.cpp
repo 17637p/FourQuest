@@ -2639,8 +2639,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SoulBowAttackSpeed")
 		.data<&PlayerSoulVariable::SoulBowAttackAngle>("SoulBowAttackAngle"_hs)
 		.prop(fq::reflect::prop::Name, "SoulBowAttackAngle")
-		.data<&PlayerSoulVariable::SoulBowAttackOffset>("SoulBowAttackOffset"_hs)
-		.prop(fq::reflect::prop::Name, "SoulBowAttackOffset")
 		.data<&PlayerSoulVariable::SoulBowAttackDuration>("SoulBowAttackDuration"_hs)
 		.prop(fq::reflect::prop::Name, "SoulBowAttackDuration")
 

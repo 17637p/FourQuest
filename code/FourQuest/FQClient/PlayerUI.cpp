@@ -33,10 +33,9 @@ fq::client::PlayerUI::PlayerUI()
 	, mDecreaseOffset(0.1f)
 	, mDeceraseTime(0.f)
 	, mDecreaseSpeed(3.f)
-	, mDecreaseRatio(0.f)
-{
-
-}
+	, mDecreaseRatio(0.f),
+	mRetireMask(nullptr)
+{}
 
 fq::client::PlayerUI::PlayerUI(const PlayerUI& other)
 	:mDecreaseOffset(other.mDecreaseOffset)
@@ -140,12 +139,18 @@ void fq::client::PlayerUI::OnStart()
 	mRCoolTimeImage = skillRs[4]->GetComponent<fq::game_module::ImageUI>();
 	mCoolTimeHeight = mRCoolTimeImage->GetUIInfomation(0).Height;
 
+
 	if (children.size() > 4)
 	{
 		fq::game_module::GameObject* playerState = children[4];
 		mPlayerState = playerState->GetComponent<fq::game_module::ImageUI>();
 	}
 
+	if (children.size() > 5)
+	{
+		fq::game_module::GameObject* retireObject = children[5];
+		mRetireMask = retireObject->GetComponent<fq::game_module::ImageUI>();
+	}
 	for (int i = 0; i < 4; i++)
 	{
 		setWeaponAndSkillIcons(i, false);
@@ -280,19 +285,13 @@ void fq::client::PlayerUI::setPlayerStateUpdate()
 	if (mPlayerState->GetUIInfomations().size() <= 5)
 		return;
 
-	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+	game_module::Transform* myTransform = mPlayerState->GetComponent<game_module::Transform>();
 
 	// UI À§Ä¡ Á¶Á¤
 	for (int i = 0; i < mPlayerState->GetUIInfomations().size(); i++)
 	{
-		float localX = mPlayerState->GetGameObject()->GetComponent<fq::game_module::Transform>()->GetLocalPosition().x;
-		float localY = mPlayerState->GetGameObject()->GetComponent<fq::game_module::Transform>()->GetLocalPosition().y;
-
-		mPlayerState->SetUIPosition(i, myTransform->GetWorldPosition().x + localX, myTransform->GetWorldPosition().y + localY);
-
-		UINT screenWidth = mScreenManager->GetFixScreenWidth();
-		UINT screenHeight = mScreenManager->GetFixScreenHeight();
-		mPlayerState->SetUIScale(i, screenWidth / (float)1920, screenHeight / (float)1080);
+		mPlayerState->SetUIPosition(i, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
+		mPlayerState->SetUIScale(i, myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
 	}
 
 	bool isRetire = false;
@@ -331,6 +330,9 @@ void fq::client::PlayerUI::setPlayerStateUpdate()
 		if (SoulVariable::Player4Type == EPlayerType::ArmourDestroyed)
 			isDestroyArmour = true;
 	}
+
+	// ¼Ò¿ï ¾ÆÀÌÄÜ On/Off
+	mSoulIcon->SetIsRender(0, !(isDestroyArmour || isRetire));
 
 	// °©¿Ê ÆÄ±« UI
 	if (isDestroyArmour)
@@ -396,14 +398,11 @@ void fq::client::PlayerUI::setPlayerStateUpdate()
 	}
 
 	// ¿µÈ¥ ÆÄ±« UI
-	if (isRetire)
-	{
-		mPlayerState->SetIsRender(5, true);
-	}
-	else
-	{
-		mPlayerState->SetIsRender(5, false);
-	}
+	if (mPlayerState)
+		mPlayerState->SetIsRender(5, isRetire);
+
+	if (mRetireMask)
+		mRetireMask->SetIsRender(0, isRetire);
 }
 
 void fq::client::PlayerUI::SetPlayer(fq::client::GameManager* gameMgr)
@@ -462,7 +461,7 @@ void fq::client::PlayerUI::SetSoulGauge(float ratio)
 void fq::client::PlayerUI::SetHPBar(float ratio)
 {
 	float hpRatio = ratio;
-	auto uiInfo = mHPBarGauge->GetUIInfomation(0); 
+	auto uiInfo = mHPBarGauge->GetUIInfomation(0);
 	uiInfo.XRatio = hpRatio;
 	uiInfo.Width = mHPWidth * hpRatio;
 	mHPBarGauge->SetUIInfomation(0, uiInfo);
