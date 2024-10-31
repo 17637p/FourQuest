@@ -123,6 +123,11 @@ fq::client::BossMonster::BossMonster()
 	, mMinMonsterCount(10)
 	, mRoarCoolTime(30.f)
 	, mRoarElapsed(0.f)
+
+	, mKnightDamageRatio(1.f)
+	, mMagicDamageRatio(1.f)
+	, mArcherDamageRatio(1.f)
+	, mBerserkerDamageRatio(1.f)
 {}
 
 
@@ -1168,9 +1173,35 @@ void fq::client::BossMonster::processAttack(Attack* attack)
 		return;
 	}
 
+	float damageRatio = 1.f;
+
+	auto player = attack->GetAttacker()->GetComponent<Player>();
+
+	if (player != nullptr)
+	{
+		switch (player->GetArmourType())
+		{
+		case EArmourType::Knight:
+			damageRatio = mKnightDamageRatio;
+			break;
+		case EArmourType::Magic:
+			damageRatio = mMagicDamageRatio;
+			break;
+		case EArmourType::Archer:
+			damageRatio = mArcherDamageRatio;
+			break;
+		case EArmourType::Warrior:
+			damageRatio = mBerserkerDamageRatio;
+			break;
+		default:
+			assert(false);
+			break;
+		}
+	}
+
 	if (attack->ProcessAttack())
 	{
-		float attackPower = attack->GetAttackPower();
+		float attackPower = attack->GetAttackPower() * damageRatio;
 
 		bool isGroggy = isGroggyState();
 

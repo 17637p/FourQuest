@@ -1594,6 +1594,19 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mRoarCoolTime")
 		.prop(fq::reflect::prop::Comment, u8"울부짖음 쿨타임")
 
+		.data<&BossMonster::mKnightDamageRatio>("mKnightDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mKnightDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"기사 갑옷 대미지 비율")
+		.data<&BossMonster::mMagicDamageRatio>("mMagicDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mMagicDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"마법사 갑옷 대미지 비율")
+		.data<&BossMonster::mArcherDamageRatio>("mArcherDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mArcherDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"아처 갑옷 대미지 비율")
+		.data<&BossMonster::mBerserkerDamageRatio>("mBerserkerDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mBerserkerDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"버서커 갑옷 대미지 비율")
+
 		.base<fq::game_module::Component>();
 
 	entt::meta<BossMonsterIdleState>()

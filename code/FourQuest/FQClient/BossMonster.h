@@ -352,6 +352,12 @@ namespace fq::client
 		float mRoarCoolTime;
 		float mRoarElapsed;
 
+		// 캐릭터 별 대미지 배율
+		float mKnightDamageRatio;
+		float mMagicDamageRatio;
+		float mArcherDamageRatio;
+		float mBerserkerDamageRatio;
+
 		friend void RegisterMetaData();
 	};
 }
