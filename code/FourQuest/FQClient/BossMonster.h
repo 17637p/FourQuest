@@ -216,6 +216,8 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 
+		void initGroggy();
+
 		void updateGroggy(float dt);
 		void updateJump(float dt);
 
@@ -329,19 +331,19 @@ namespace fq::client
 
 		// 2페이즈 관련
 		bool mbEnterAngryState;
-		float mAngryRatio = 0.5f;
-		float mAngrySpeedRatio = 2.f;
-		float mAngryCoolTimeRatio = 0.5f;
-		float mAngryPreAttackSpeedRatio = 2.f;
-		float mAngryAttackSpeedRatio = 2.f;
-		float mAngryAttackPowerRatio = 2.f;
-		unsigned int mAngryEnteringVigilantCount = 0;
-		unsigned int mAngryEnteringVigilantMinCount = 1;
-		unsigned int mAngryEnteringVigilantMaxCount = 3;
-		unsigned int mVigilantCount = 1;
-		unsigned int mVigilantMinCount = 1;
-		unsigned int mVigilantMaxCount = 3;
-		float mAngryGroggyDecreasePerSecond = 2.f;
+		float mAngryRatio;
+		float mAngrySpeedRatio;
+		float mAngryCoolTimeRatio;
+		float mAngryPreAttackSpeedRatio;
+		float mAngryAttackSpeedRatio;
+		float mAngryAttackPowerRatio;
+		unsigned int mAngryEnteringVigilantCount;
+		unsigned int mAngryEnteringVigilantMinCount;
+		unsigned int mAngryEnteringVigilantMaxCount;
+		unsigned int mVigilantCount;
+		unsigned int mVigilantMinCount;
+		unsigned int mVigilantMaxCount;
+		float mAngryGroggyDecreasePerSecond;
 
 		//Roar 패턴 관련
 		unsigned int mMinMonsterCount;

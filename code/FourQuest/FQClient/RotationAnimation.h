@@ -25,7 +25,7 @@ namespace fq::client
 		DirectX::SimpleMath::Quaternion mStartRotationInQuaternion;
 		DirectX::SimpleMath::Quaternion mEndRotationInQuaternion;
 		float mElapsed;
-
+		
 		friend void RegisterMetaData();
 	};
 }

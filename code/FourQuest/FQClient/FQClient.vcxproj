@@ -63,6 +63,7 @@
     <ClInclude Include="GoddessStatue.h" />
     <ClInclude Include="LevelHepler.h" />
     <ClInclude Include="LookingObjectHelper.h" />
+    <ClInclude Include="MagicCircleEndPoint.h" />
     <ClInclude Include="MaterialManagedGroup.h" />
     <ClInclude Include="MeleeMonsterVariable.h" />
     <ClInclude Include="MonsterHP.h" />
@@ -243,6 +244,7 @@
     <ClCompile Include="GoddessStatue.cpp" />
     <ClCompile Include="LevelHepler.cpp" />
     <ClCompile Include="LookingObjectHelper.cpp" />
+    <ClCompile Include="MagicCircleEndPoint.cpp" />
     <ClCompile Include="MaterialManagedGroup.cpp" />
     <ClCompile Include="MonsterHP.cpp" />
     <ClCompile Include="MonsterSpawnerDetector.cpp" />

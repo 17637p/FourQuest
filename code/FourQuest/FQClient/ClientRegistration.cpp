@@ -193,6 +193,7 @@
 #include "TrainingDummy.h"
 #include "TrainingDummyHitState.h"
 #include "DestroyHelper.h"
+#include "MagicCircleEndPoint.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -548,6 +549,14 @@ void fq::client::RegisterMetaData()
 		.data<&DestroyHelper::mDuration>("mDuration"_hs)
 		.prop(fq::reflect::prop::Name, "mDuration")
 		.prop(fq::reflect::prop::Comment, u"삭제될 시간")
+		.base<game_module::Component>();
+
+	entt::meta<MagicCircleEndPoint>()
+		.type("MagicCircleEndPoint"_hs)
+		.prop(reflect::prop::Name, "MagicCircleEndPoint")
+		.data<&MagicCircleEndPoint::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u"총 소요 시간")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
