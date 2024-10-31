@@ -165,7 +165,7 @@ namespace fq::physics
 		ActorData2.myLayerNumber = otherData->myLayerNumber;
 		ActorData2.otherLayerNumber = myData->myLayerNumber;
 
-		ActorData1.ContectPoints = points;
+		ActorData1.ContectPoints = points;	
 		ActorData2.ContectPoints = points;
 
 		mFunction(ActorData1, eventType);
