@@ -72,7 +72,7 @@ namespace fq::game_module
 			if (!mTargetObject.lock()->HasComponent<Transform>()) return;
 
 			auto transform = mTargetObject.lock()->GetComponent<Transform>();
-
+				
 			// 현재 재생중인 키가 무엇인지 찾기
 			for (int i = 0; i < mKeys.size(); i++)
 			{
@@ -88,6 +88,13 @@ namespace fq::game_module
 			if (keyNumber + 1 < mKeys.size())
 			{
 				float divisionValue = mKeys[keyNumber + 1].time - mKeys[keyNumber].time;
+
+				if (divisionValue == 0.f)
+				{
+					spdlog::warn("[ObjectTrack] divisionValue == 0.f ");
+					divisionValue = 1.f;
+				}
+
 				float lerpValue = (mElapsedTime - mKeys[keyNumber].time) / divisionValue;
 
 				DirectX::SimpleMath::Vector3 scale = LerpVector3(mKeys[keyNumber].scale, mKeys[keyNumber + 1].scale, lerpValue);
