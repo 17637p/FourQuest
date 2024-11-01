@@ -17,6 +17,7 @@
 #include "ObjectAnimationTrack.h"
 #include "VibrationTrack.h"
 #include "FadeTrack.h"
+#include "CreateDeleteTrack.h"
 
 namespace fq::game_module
 {
@@ -81,10 +82,12 @@ namespace fq::game_module
 		void SetVibrationTrackInfo(const std::vector<VibrationTrackInfo>& info) { mVibrationTrackInfo = info; }
 		const std::vector<FadeTrackInfo>& GetFadeTrackInfo() const { return mFadeTrackInfo; }
 		void SetFadeTrackInfo(const std::vector<FadeTrackInfo>& info) { mFadeTrackInfo = info; }
+		const std::vector<CreateDeleteTrackInfo>& GetCreateDeleteTrackInfo() const { return mCreateDeleteTrackInfo; }
+		void SetCreateDeleteTrackInfo(const std::vector<CreateDeleteTrackInfo>& info) { mCreateDeleteTrackInfo = info; }
 
 		std::vector<std::shared_ptr<Track>>& GetTrackContainer() { return mTracks; }
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>>& GetAnimationContainer() { return mAnimationContainer; }
-		  
+
 	private:
 		/// <summary>
 		/// 다른 실행중인 시퀀스가 있나 체크하는 함수입니다.
@@ -134,10 +137,14 @@ namespace fq::game_module
 		std::vector<CameraShakeTrackInfo>		mCameraShakeTrackInfo;
 		std::vector<VibrationTrackInfo>			mVibrationTrackInfo;
 		std::vector<FadeTrackInfo>				mFadeTrackInfo;
+		std::vector<CreateDeleteTrackInfo>		mCreateDeleteTrackInfo;
+		std::vector<PrefabResource>				mPrefabs;
 
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>> mAnimationContainer;
 
 		bool mbIsProcessedUIRender;
+			
+		friend void RegisterMetaData();
 	};
 
 	template<typename ClassName, typename TrackInfo, typename... Args>

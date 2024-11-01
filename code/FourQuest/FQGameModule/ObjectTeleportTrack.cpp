@@ -84,7 +84,7 @@ namespace fq::game_module
 			DirectX::SimpleMath::Matrix teleportTransform =
 				DirectX::SimpleMath::Matrix::CreateScale(mKeys[keyNumber].scale)
 				* DirectX::SimpleMath::Matrix::CreateFromQuaternion(DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(mKeys[keyNumber].rotation / 180.f * 3.14f))
-				* DirectX::SimpleMath::Matrix::CreateTranslation(mKeys[keyNumber].position);
+	 			* DirectX::SimpleMath::Matrix::CreateTranslation(mKeys[keyNumber].position);
 
 			transform->SetWorldMatrix(teleportTransform);
 		}

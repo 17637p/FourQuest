@@ -3,7 +3,6 @@
 #include "..\FQClient\Player.h"
 #include "CharacterController.h"
 
-
 #include "EventManager.h"
 #include "Event.h"
 #include "TimeManager.h"
@@ -34,6 +33,7 @@ namespace fq::game_module
 		, mSoundTrackInfo{}
 		, mTextPrintTrackInfo{}
 		, mVibrationTrackInfo{}
+		, mPrefabs{}
 	{
 	}
 
@@ -44,6 +44,8 @@ namespace fq::game_module
 
 	void Sequence::OnStart()
 	{
+		mTracks.clear();
+
 		// 트랙 생성
 		createTrack<CameraChangeTrack>(mCameraChangeTrackInfo);
 		createTrack<CameraShakeTrack>(mCameraShakeTrackInfo);
@@ -56,6 +58,7 @@ namespace fq::game_module
 		createTrack<TextPrintTrack>(mTextPrintTrackInfo); 
 		createTrack<VibrationTrack>(mVibrationTrackInfo);
 		createTrack<FadeTrack>(mFadeTrackInfo);
+		createTrack<CreateDeleteTrack>(mCreateDeleteTrackInfo, mPrefabs);
 
 		auto scene = GetScene();
 		bool check = false;
@@ -100,7 +103,6 @@ namespace fq::game_module
 			if (mDurationTime >= mTotalPlayTime)
 			{
 				mDurationTime = 0;
-
 
 				if (!mbIsLoop)
 				{
@@ -247,7 +249,7 @@ namespace fq::game_module
 
 		for (const auto track : mTracks)
 		{
-			track->WakeUp();
+			track->WakeUp ();
 			track->End();
 
 			mbIsPlay = true;

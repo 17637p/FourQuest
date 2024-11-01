@@ -37,7 +37,7 @@ namespace fq::game_module
 	{
 		mObjects = mScene->GetPrefabManager()->LoadPrefab(mPrefebPath);
 		
-		for (auto object : mObjects)
+		for (auto& object : mObjects)
 		{
 			mTrackObjectName.push_back(object->GetName());
 		}
