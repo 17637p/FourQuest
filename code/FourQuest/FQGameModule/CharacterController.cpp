@@ -182,11 +182,14 @@ void fq::game_module::CharacterController::SetPadInputRotationBySpeed(EPadStickT
 			break;
 	}
 
+	if (input.Length() <= 0.1f)
+		return;
+
 	input.Normalize();
 	Vector3 look = mTransform->GetLookAtVector();
 	float inputAngle = atan2f(-input.x, -input.z);
 
-	 Quaternion inputRotation = Quaternion::CreateFromYawPitchRoll(inputAngle, 0.f, 0.f);
+	Quaternion inputRotation = Quaternion::CreateFromYawPitchRoll(inputAngle, 0.f, 0.f);
 	Quaternion lookRotation = mTransform->GetWorldRotation();
 
 	float diffAngle = Quaternion::Angle(inputRotation, lookRotation);
