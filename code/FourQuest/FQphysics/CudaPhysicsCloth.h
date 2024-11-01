@@ -114,6 +114,7 @@ namespace fq::physics
 		std::vector<DirectX::SimpleMath::Vector2>	mUV;
 		float mClothMass;
 		float mRestOffset;
+		float mMaxWindStrength;
 		std::vector<unsigned int> mIndices;
 		std::vector<unsigned int> mDisableIndicesIndices;
 		std::set<std::pair<unsigned int, unsigned int>>		mSprings;

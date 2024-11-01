@@ -63,7 +63,7 @@ namespace fq::physics
 		mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, mToleranceScale, true, nullptr); // Physics를 생성합니다.
 
 		// CPU 디스패처를 생성하고 설정합니다.
-		mDispatcher = physx::PxDefaultCpuDispatcherCreate(2); // CPU 디스패처를 생성합니다.
+		mDispatcher = physx::PxDefaultCpuDispatcherCreate(8); // CPU 디스패처를 생성합니다.
 #endif
 	}
 

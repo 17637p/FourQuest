@@ -372,6 +372,8 @@ namespace fq::physics
 			float drag = 0.01f;								// 항력		: 천이 움직일 때 저항을 받는 힘을 나타냅니다.
 			float cflCoefficient = 1.f;						// CFL 계수	: 천 시뮬레이션에서 안정성을 제어하는 계수입니다.
 			float gravityScale = 1.f;						// 중력 스케일 : 천에 작용하는 중력의 크기를 조정합니다.
+
+			float maxWindStrength = 10.f;					// 최대 풍력 강도  : 천이 최대로 적용 받는 바람의 크기를 조정합니다.
 		};
 
 		struct CreateClothData

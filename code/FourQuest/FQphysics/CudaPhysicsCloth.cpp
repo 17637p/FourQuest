@@ -44,6 +44,7 @@ namespace fq::physics
 		, mSameVertices()
 		, mClothMass(1.f)
 		, mRestOffset(1.f)
+		, mMaxWindStrength(10.f)
 		, mPBDMaterial(nullptr)
 		, mParticleSystem(nullptr)
 		, mClothBuffer(nullptr)
@@ -93,6 +94,7 @@ namespace fq::physics
 	{
 		mbIsSkinnedMesh = isSkinnedMesh;
 		mCudaVertexStride = info.vertexStride;
+		mMaxWindStrength = info.materialInfo.maxWindStrength;
 
 		int deviceCount;
 		cudaError_t cudaStatus = cudaGetDeviceCount(&deviceCount);
@@ -180,7 +182,7 @@ namespace fq::physics
 
 	bool CudaPhysicsCloth::updateWindToParticle()
 	{
-		DirectX::SimpleMath::Vector3 wind = getRandomWindForce(10.f);
+		DirectX::SimpleMath::Vector3 wind = getRandomWindForce(mMaxWindStrength);
 		physx::PxVec3 pxWind;
 		pxWind.x = wind.x;
 		pxWind.y = wind.y;
