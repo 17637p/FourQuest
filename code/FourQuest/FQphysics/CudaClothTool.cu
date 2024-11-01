@@ -78,28 +78,28 @@ __global__ void UpdateVertex(
 	physx::PxVec2 uv1 = uvs[i1];
 	physx::PxVec2 uv2 = uvs[i2];
 
-	physx::PxVec4 edge1 = Sub(v1, v0);
-	physx::PxVec4 edge2 = Sub(v2, v0);
+	//physx::PxVec4 edge1 = Sub(v1, v0);
+	//physx::PxVec4 edge2 = Sub(v2, v0);
 
-	physx::PxVec2 deltaUV1 = Sub(uv1, uv0);
-	physx::PxVec2 deltaUV2 = Sub(uv2, uv0);
+	//physx::PxVec2 deltaUV1 = Sub(uv1, uv0);
+	//physx::PxVec2 deltaUV2 = Sub(uv2, uv0);
 
-	float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+	//float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
-	physx::PxVec3 tangent;
-	tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-	tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-	tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-	NormalizeVector(tangent);
+	//physx::PxVec3 tangent;
+	//tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+	//tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+	//tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+	//NormalizeVector(tangent);
 
-	physx::PxVec3 bitangent;
-	bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-	bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-	bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-	NormalizeVector(bitangent);
+	//physx::PxVec3 bitangent;
+	//bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+	//bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+	//bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+	//NormalizeVector(bitangent);
 
-	physx::PxVec3 normal = cross(edge1, edge2);
-	NormalizeVector(normal);
+	//physx::PxVec3 normal = cross(edge1, edge2);
+	//NormalizeVector(normal);
 
 	SimpleVector3 vertex0;
 	SimpleVector3 vertex1;

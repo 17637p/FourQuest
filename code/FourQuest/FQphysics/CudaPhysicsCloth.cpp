@@ -476,6 +476,7 @@ namespace fq::physics
 		// ClothBuffer 업데이트
 		mClothBuffer->raiseFlags(physx::PxParticleBufferFlag::eUPDATE_POSITION);
 		mWorldTransform = data.worldTransform;
+		mbIsCulling = data.cameraCulling;
 
 		return true;
 	}

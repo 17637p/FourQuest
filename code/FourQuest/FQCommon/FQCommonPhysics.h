@@ -398,6 +398,7 @@ namespace fq::physics
 		{
 			unsigned int myLayerNumber = UINT_MAX;
 			DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
+			bool cameraCulling = false;
 		};
 	}
 #pragma endregion

@@ -62,6 +62,7 @@ namespace fq::physics
 
 		inline const unsigned int& GetID();
 		inline const unsigned int& GetLayerNumber();
+		inline const bool& GetIsCulling();
 		inline const DirectX::SimpleMath::Matrix& GetWorldTrnasform();
 		inline const float& GetClothMass();
 		inline const float& GetRestOffset();
@@ -69,6 +70,7 @@ namespace fq::physics
 		inline const std::vector<DirectX::SimpleMath::Vector3>& GetVertices();
 		inline const std::vector<unsigned int>& GetIndices();
 		inline void SetLayerNumber(const unsigned int& layerNumber);
+		inline void SetIsCulling(const bool& isCulling);
 
 
 	private:
@@ -107,6 +109,7 @@ namespace fq::physics
 		unsigned int	mID;
 		unsigned int	mLayerNumber;
 		bool mbIsSkinnedMesh;
+		bool mbIsCulling;
 		std::mt19937 mGen; // 각 객체에 고유한 난수 엔진
 
 		DirectX::SimpleMath::Matrix					mWorldTransform;
@@ -139,6 +142,10 @@ namespace fq::physics
 	{
 		return mLayerNumber;
 	}
+	inline const bool& CudaPhysicsCloth::GetIsCulling()
+	{
+		return mbIsCulling;
+	}
 	const DirectX::SimpleMath::Matrix& CudaPhysicsCloth::GetWorldTrnasform()
 	{
 		return mWorldTransform;
@@ -158,6 +165,10 @@ namespace fq::physics
 	void CudaPhysicsCloth::SetLayerNumber(const unsigned int& layerNumber)
 	{
 		mLayerNumber = layerNumber;
+	}
+	inline void CudaPhysicsCloth::SetIsCulling(const bool& isCulling)
+	{
+		mbIsCulling = isCulling;
 	}
 	const std::vector<DirectX::SimpleMath::Vector3>& CudaPhysicsCloth::GetVertices()
 	{

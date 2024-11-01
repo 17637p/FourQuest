@@ -34,6 +34,9 @@ namespace fq::physics
 	{
 		for (auto cloth : mPhysicsClothContainer)
 		{
+			if (cloth.second->GetIsCulling())
+				continue;
+
 			if (!cloth.second->UpdatePhysicsCloth(mCudaContextManager)) return false;
 		}
 
