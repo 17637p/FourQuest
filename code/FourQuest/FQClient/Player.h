@@ -186,7 +186,7 @@ namespace fq::client
 		/// </summary>
 		fq::game_module::GameObject* CreateDummyOrNull();
 
-		void SetSoulGauge(float soulGauge) { mSoulGauge = soulGauge; }
+		void SetSoulGauge(float soulGauge);
 
 	private:
 		void processKnockBack(float dt);

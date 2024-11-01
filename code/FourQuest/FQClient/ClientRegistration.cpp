@@ -195,6 +195,7 @@
 #include "TrainingDummyHitState.h"
 #include "DestroyHelper.h"
 #include "MagicCircleEndPoint.h"
+#include "FillSoulGauge.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -560,6 +561,14 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u"총 소요 시간")
 		.base<game_module::Component>();
 
+	entt::meta<FillSoulGauge>()
+		.type("FillSoulGauge"_hs)
+		.prop(reflect::prop::Name, "FillSoulGauge")
+		.data<&FillSoulGauge::mFillGauge>("mFillGauge"_hs)
+		.prop(fq::reflect::prop::Name, "mFillGauge")
+		.prop(fq::reflect::prop::Comment, u"채워질 게이지 양(해당 값으로 설정됨)")
+		.base<game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             플레이어 관련								//
 	//////////////////////////////////////////////////////////////////////////
@@ -897,6 +906,12 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
+		.data<&Soul::mDashSpeed>("mDashSpeed"_hs)
+		.prop(reflect::prop::Name, "mDashSpeed")
+		.prop(reflect::prop::Comment, u8"대시 속도")
+		.data<&Soul::mDashCoolTime>("mDashCoolTime"_hs)
+		.prop(reflect::prop::Name, "mDashCoolTime")
+		.prop(reflect::prop::Comment, u8"대시 쿨타임")
 		.base<game_module::Component>();
 
 	entt::meta<AimAssist>()
@@ -1575,14 +1590,17 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mAngryEnteringExhaustedCount")
 		.prop(fq::reflect::prop::Comment, u8"화남 상태 경계 횟수(에디터 관찰용)")
 		.data<&BossMonster::mAngryEnteringVigilantMinCount>("mAngryEnteringVigilantMinCount"_hs)
-		.prop(fq::reflect::prop::Name, "mAngryEnteringExhaustedMinCount")
+		.prop(fq::reflect::prop::Name, "mAngryEnteringVigilantMinCount")
 		.prop(fq::reflect::prop::Comment, u8"화남 상태 경계 횟수 최소값")
 		.data<&BossMonster::mAngryEnteringVigilantMaxCount>("mAngryEnteringVigilantMaxCount"_hs)
-		.prop(fq::reflect::prop::Name, "mAngryEnteringExhaustedMaxCount")
+		.prop(fq::reflect::prop::Name, "mAngryEnteringVigilantMaxCount")
 		.prop(fq::reflect::prop::Comment, u8"화남 상태 경계 횟수 최댓값")
+		.data<&BossMonster::mVigilantCount>("mVigilantCount"_hs)
+		.prop(fq::reflect::prop::Name, "mVigilantCount")
+		.prop(fq::reflect::prop::Comment, u8"일반 상태 경계 횟수 최소값")
 		.data<&BossMonster::mVigilantMinCount>("mVigilantMinCount"_hs)
 		.prop(fq::reflect::prop::Name, "mVigilantMinCount")
-		.prop(fq::reflect::prop::Comment, u8"일반 상태 경계 횟수 최소값")
+		.prop(fq::reflect::prop::Comment, u8"일반 상태 경계 횟수(에디터 관찰용)")
 		.data<&BossMonster::mVigilantMaxCount>("mVigilantMaxCount"_hs)
 		.prop(fq::reflect::prop::Name, "mVigilantMaxCount")
 		.prop(fq::reflect::prop::Comment, u8"일반 상태 경계 횟수 최댓값")
@@ -1596,6 +1614,19 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mRoarCoolTime>("mRoarCoolTime"_hs)
 		.prop(fq::reflect::prop::Name, "mRoarCoolTime")
 		.prop(fq::reflect::prop::Comment, u8"울부짖음 쿨타임")
+
+		.data<&BossMonster::mKnightDamageRatio>("mKnightDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mKnightDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"기사 갑옷 대미지 비율")
+		.data<&BossMonster::mMagicDamageRatio>("mMagicDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mMagicDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"마법사 갑옷 대미지 비율")
+		.data<&BossMonster::mArcherDamageRatio>("mArcherDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mArcherDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"아처 갑옷 대미지 비율")
+		.data<&BossMonster::mBerserkerDamageRatio>("mBerserkerDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mBerserkerDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"버서커 갑옷 대미지 비율")
 
 		.base<fq::game_module::Component>();
 

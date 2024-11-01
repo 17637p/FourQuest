@@ -33,14 +33,6 @@ void fq::client::BossMonsterVigilantState::OnStateUpdate(game_module::Animator& 
 {
 	mElapsed += dt;
 
-	// 호밍
-	auto bossMonster = animator.GetComponent<BossMonster>();;
-
-	if (bossMonster != nullptr)
-	{
-		bossMonster->HomingTarget();
-	}
-
 	// 시간 카운팅
 	if (mDuration < mElapsed)
 	{

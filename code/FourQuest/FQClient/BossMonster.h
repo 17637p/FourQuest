@@ -227,6 +227,8 @@ namespace fq::client
 		bool canJump(const game_module::Transform* transform) const;
 		bool canRoar() const;
 
+		void processAttack(class Attack* attack);
+
 	private:
 		// 참조
 		GameManager* mGameManager;
@@ -349,6 +351,12 @@ namespace fq::client
 		unsigned int mMinMonsterCount;
 		float mRoarCoolTime;
 		float mRoarElapsed;
+
+		// 캐릭터 별 대미지 배율
+		float mKnightDamageRatio;
+		float mMagicDamageRatio;
+		float mArcherDamageRatio;
+		float mBerserkerDamageRatio;
 
 		friend void RegisterMetaData();
 	};

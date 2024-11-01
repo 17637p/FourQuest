@@ -148,6 +148,8 @@ void fq::client::SoulSelectUI::OnUpdate(float dt)
 	MoveSoulDown(dt);
 
 	mCurStickDelay += dt;
+
+	updateSoulBox();
 }
 
 fq::client::SoulSelectUI::SoulSelectUI()
@@ -267,6 +269,7 @@ void fq::client::SoulSelectUI::processInput()
 					}
 					if (isSeletedOther)
 					{
+						input->SetVibration(i, EVibrationMode::Left, 30000.f, 0.5f);
 						break;
 					}
 
@@ -565,4 +568,59 @@ void fq::client::SoulSelectUI::MoveSoulDown(float dt)
 			soulT->SetLocalPosition({ soulV.x, soulV.y, soulZ });
 		}
 	}
+}
+
+void fq::client::SoulSelectUI::updateSoulBox()
+{
+	for (int playerIndex = 0; playerIndex < 4; ++playerIndex)
+	{
+		// 영혼을 선택하고 있는 경우
+		if (!mIsReadys[playerIndex] && mIsSelects[playerIndex])
+		{
+			auto children = GetGameObject()->GetChildren()[playerIndex]->GetChildren();
+			auto soulBox = children[2];
+			auto soulBoxChildren = soulBox->GetChildren();
+
+			bool isSeletedOther = false;
+			for (int j = 0; j < 4; j++)
+			{
+				if (j == playerIndex)
+				{
+					continue;
+				}
+				// 다른 플레이어와 같은 걸 선택하면 아무일도 발생하지 않음
+				if (mSelectSouls[playerIndex] == mSelectSouls[j] && mIsReadys[j])
+				{
+					isSeletedOther = true;
+					break;
+				}
+			}
+
+			for (int i = 0; i < 4; i++)
+			{
+				auto textUI = soulBoxChildren[i]->GetComponent<game_module::TextUI>();
+				auto textInfo = textUI->GetTextInfo();
+
+				constexpr DirectX::SimpleMath::Color White = { 1.f,1.f,1.f,1.f };
+				constexpr DirectX::SimpleMath::Color Gray = { 0.5f,0.5f,0.5f,1.f };
+
+				if (isSeletedOther)
+				{
+					textInfo.FontColor = Gray;
+				}
+				else if (i == 0)
+				{
+					auto colorIndex = mSelectSouls[playerIndex];
+					textInfo.FontColor = mSoulNameColors[colorIndex];
+				}
+				else
+				{
+					textInfo.FontColor = White;
+				}
+
+				textUI->SetTextInfo(textInfo);
+			}
+		}
+	}
+
 }

@@ -46,6 +46,9 @@ void fq::game_module::SpriteAnimationUI::OnUpdate(float dt)
 void fq::game_module::SpriteAnimationUI::SetIsRender(bool isRender)
 {
 	mSpriteAnimationInfo.isRender = isRender;
+
+	// 임시추가_홍지환
+	GetSpriteAnimationObject()->SetSpriteInfo(mSpriteAnimationInfo);
 }
 
 void fq::game_module::SpriteAnimationUI::SetPosition(float startX, float startY)

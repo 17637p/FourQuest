@@ -123,6 +123,11 @@ fq::client::BossMonster::BossMonster()
 	, mMinMonsterCount(10)
 	, mRoarCoolTime(30.f)
 	, mRoarElapsed(0.f)
+
+	, mKnightDamageRatio(1.f)
+	, mMagicDamageRatio(1.f)
+	, mArcherDamageRatio(1.f)
+	, mBerserkerDamageRatio(1.f)
 {}
 
 
@@ -209,6 +214,8 @@ void fq::client::BossMonster::OnUpdate(float dt)
 
 			// 그로기 초기화
 			initGroggy();
+
+			mbEnterAngryState = true;
 		}
 	}
 
@@ -476,89 +483,7 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 	{
 		auto playerAttack = collision.other->GetComponent<Attack>();
 
-		if (playerAttack->ProcessAttack())
-		{
-			float attackPower = playerAttack->GetAttackPower();
-
-			bool isGroggy = isGroggyState();
-
-			// 그로기 상태에서는 hp가 더 많이 감소 
-			if (isGroggy)
-			{
-				attackPower *= mGroggyDecreaseHpRatio;
-			}
-			mHp -= attackPower;
-
-			// 피격 사운드 재생
-			playerAttack->PlayHitSound();
-
-			// 그로기 상태 처리
-			if (!isGroggy)
-			{
-				mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
-			}
-			else
-			{
-				mAnimator->SetParameterBoolean("OnHit", true);
-
-				// // HP 흔들기
-				// GetScene()->ViewComponents<UIShaker>(
-				// 	[this](fq::game_module::GameObject& object, UIShaker& uiShaker)
-				// 	{
-				// 		uiShaker.AddCount(mShakeCount);
-				// 	});
-			}
-
-			// 그로기보다 화남을 우선함
-			bool bIsEnteringAngry = mAnimator->GetController().GetParameter("IsEnterAngry").cast<bool>();
-
-			if (mGroggyGauge == mStartGroggyGauge && !bIsEnteringAngry)
-			{
-				mAnimator->SetParameterBoolean("OnGroggy", true);
-				mGroggyElapsed = 0.f;
-			}
-
-			// 사망처리
-			if (mHp <= 0.f)
-			{
-				if (playerAttack->GetAttacker() != nullptr)
-				{
-					auto attackerID = playerAttack->GetAttacker()->GetComponent<Player>()->GetPlayerID();
-					if (attackerID == 0)
-					{
-						PlayerInfoVariable::Player1Monster += 1;
-						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player1Monster);
-					}
-					if (attackerID == 1)
-					{
-						PlayerInfoVariable::Player2Monster += 1;
-						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player2Monster);
-					}
-					if (attackerID == 2)
-					{
-						PlayerInfoVariable::Player3Monster += 1;
-						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player3Monster);
-					}
-					if (attackerID == 3)
-					{
-						PlayerInfoVariable::Player4Monster += 1;
-						spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player4Monster);
-					}
-				}
-
-				mAnimator->SetParameterBoolean("IsDead", true);
-				destroySocketCollider();
-			}
-
-			// 이펙트 방출
-			fq::event::OnCreateStateEvent stateEvent;
-			stateEvent.gameObject = GetGameObject();
-			stateEvent.RegisterKeyName = playerAttack->GetAttackEffectEvent();
-			if (!stateEvent.RegisterKeyName.empty())
-			{
-				GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
-			}
-		}
+		processAttack(playerAttack);
 	}
 }
 
@@ -1104,72 +1029,13 @@ void fq::client::BossMonster::HitArrow(fq::game_module::GameObject* object)
 	if (mArrowHitDuration < mArrowImotalTime)
 		return;
 
-	auto playerAttack = object->GetComponent<Attack>();
-
-	if (playerAttack->ProcessAttack())
+	if (GetGameObject()->GetTag() != game_module::ETag::Monster)
 	{
-		mArrowHitDuration = 0.f;
-		float attackPower = playerAttack->GetAttackPower();
-
-		// HP 감소
-		mHp -= attackPower;
-
-		// 피격 사운드 재생
-		playerAttack->PlayHitSound();
-
-		// 그로기 
-		if (!isGroggyState())
-		{
-			mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
-		}
-
-		if (mGroggyGauge == mStartGroggyGauge)
-		{
-			mGroggyGauge = 0.f;
-			mAnimator->SetParameterBoolean("OnGroggy", true);
-		}
-
-		// 사망처리
-		if (mHp <= 0.f)
-		{
-			if (playerAttack->GetAttacker() != nullptr)
-			{
-				auto attackerID = playerAttack->GetAttacker()->GetComponent<Player>()->GetPlayerID();
-				if (attackerID == 0)
-				{
-					PlayerInfoVariable::Player1Monster += 1;
-					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player1Monster);
-				}
-				if (attackerID == 1)
-				{
-					PlayerInfoVariable::Player2Monster += 1;
-					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player2Monster);
-				}
-				if (attackerID == 2)
-				{
-					PlayerInfoVariable::Player3Monster += 1;
-					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player3Monster);
-				}
-				if (attackerID == 3)
-				{
-					PlayerInfoVariable::Player4Monster += 1;
-					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player4Monster);
-				}
-			}
-
-			mAnimator->SetParameterBoolean("IsDead", true);
-			destroySocketCollider();
-		}
-
-		// 이펙트 방출
-		fq::event::OnCreateStateEvent stateEvent;
-		stateEvent.gameObject = GetGameObject();
-		stateEvent.RegisterKeyName = playerAttack->GetAttackEffectEvent();
-		if (!stateEvent.RegisterKeyName.empty())
-		{
-			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
-		}
+		return;
 	}
+
+	auto playerAttack = object->GetComponent<Attack>();
+	processAttack(playerAttack);
 }
 
 bool fq::client::BossMonster::IsAngry() const
@@ -1298,6 +1164,117 @@ bool fq::client::BossMonster::canRoar() const
 	}
 
 	return true;
+}
+
+void fq::client::BossMonster::processAttack(Attack* attack)
+{
+	if (attack == nullptr)
+	{
+		return;
+	}
+
+	float damageRatio = 1.f;
+
+	auto player = attack->GetAttacker()->GetComponent<Player>();
+
+	if (player != nullptr)
+	{
+		switch (player->GetArmourType())
+		{
+		case EArmourType::Knight:
+			damageRatio = mKnightDamageRatio;
+			break;
+		case EArmourType::Magic:
+			damageRatio = mMagicDamageRatio;
+			break;
+		case EArmourType::Archer:
+			damageRatio = mArcherDamageRatio;
+			break;
+		case EArmourType::Warrior:
+			damageRatio = mBerserkerDamageRatio;
+			break;
+		default:
+			assert(false);
+			break;
+		}
+	}
+
+	if (attack->ProcessAttack())
+	{
+		float attackPower = attack->GetAttackPower() * damageRatio;
+
+		bool isGroggy = isGroggyState();
+
+		// 그로기 상태에서는 hp가 더 많이 감소 
+		if (isGroggy)
+		{
+			attackPower *= mGroggyDecreaseHpRatio;
+		}
+		mHp -= attackPower;
+
+		// 피격 사운드 재생
+		attack->PlayHitSound();
+
+		// 그로기 상태 처리
+		if (!isGroggy)
+		{
+			mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
+		}
+		else
+		{
+			mAnimator->SetParameterBoolean("OnHit", true);
+		}
+
+		// 그로기보다 화남을 우선함
+		bool bIsEnteringAngry = mAnimator->GetController().GetParameter("IsEnterAngry").cast<bool>();
+
+		if (mGroggyGauge == mStartGroggyGauge && !bIsEnteringAngry)
+		{
+			mAnimator->SetParameterBoolean("OnGroggy", true);
+			mGroggyElapsed = 0.f;
+		}
+
+		// 사망처리
+		if (mHp <= 0.f)
+		{
+			if (attack->GetAttacker() != nullptr)
+			{
+				auto attackerID = attack->GetAttacker()->GetComponent<Player>()->GetPlayerID();
+				if (attackerID == 0)
+				{
+					PlayerInfoVariable::Player1Monster += 1;
+					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player1Monster);
+				}
+				if (attackerID == 1)
+				{
+					PlayerInfoVariable::Player2Monster += 1;
+					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player2Monster);
+				}
+				if (attackerID == 2)
+				{
+					PlayerInfoVariable::Player3Monster += 1;
+					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player3Monster);
+				}
+				if (attackerID == 3)
+				{
+					PlayerInfoVariable::Player4Monster += 1;
+					spdlog::trace("Player1Monster: {}", PlayerInfoVariable::Player4Monster);
+				}
+			}
+
+			mAnimator->SetParameterBoolean("IsDead", true);
+			destroySocketCollider();
+		}
+
+		// 이펙트 방출
+		fq::event::OnCreateStateEvent stateEvent;
+		stateEvent.gameObject = GetGameObject();
+		stateEvent.RegisterKeyName = attack->GetAttackEffectEvent();
+		if (!stateEvent.RegisterKeyName.empty())
+		{
+			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+		}
+	}
 }
 
 float fq::client::BossMonster::GetAngryPreAttackSpeedRatio() const

@@ -38,6 +38,7 @@ namespace fq::client
 
 		// 입력 처리 
 		void processInput();
+		void updateSoulBox();
 		void CheckAllReady(float dt);
 
 		void setSelectBoxPosition(float dt);

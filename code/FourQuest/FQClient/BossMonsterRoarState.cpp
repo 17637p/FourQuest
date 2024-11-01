@@ -39,6 +39,11 @@ void fq::client::BossMonsterRoarState::OnStateEnter(game_module::Animator& anima
 
 	mbIsEnterAngry = animator.GetController().GetParameter("IsEnterAngry").cast<bool>();
 
+	if (mbIsEnterAngry)
+	{
+		animator.GetGameObject()->SetTag(game_module::ETag::Dash);
+	}
+
 	mChangeColorElapsed = 0.f;
 }
 
@@ -75,6 +80,7 @@ void fq::client::BossMonsterRoarState::OnStateExit(game_module::Animator& animat
 		animator.SetParameterBoolean("IsEnterAngry", false);
 		animator.SetParameterBoolean("OnVigilant", false);
 		animator.SetParameterInt("VigilantCount", 0);
+		animator.GetGameObject()->SetTag(game_module::ETag::Monster);
 	}
 }
 

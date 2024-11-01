@@ -301,9 +301,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 				continue;
 			}
 
-			//auto info = spriteAnimUI->GetSpriteInfo();
-			//info.isRender = false;
-			//spriteAnimUI->SetSpriteInfo(info);
+			auto info = spriteAnimUI->GetSpriteInfo();
 			spriteAnimUI->SetIsRender(false);
 
 			++iter;
@@ -929,8 +927,10 @@ void fq::game_engine::RenderingSystem::OnUIRender(const fq::event::UIRender& eve
 
 				if (info.isRender)
 				{
-					info.isRender = false;
-					ui.SetSpriteInfo(info);
+					ui.SetIsRender(false);
+
+					// info.isRender = false;
+					// ui.SetSpriteInfo(info);
 
 					mOnSpriteUIRenderEventActivatedObjects.insert(&object);
 				}
@@ -991,8 +991,9 @@ void fq::game_engine::RenderingSystem::OnUIRender(const fq::event::UIRender& eve
 			}
 
 			auto info = spriteAnimUI->GetSpriteInfo();
-			info.isRender = true;
-			spriteAnimUI->SetSpriteInfo(info);
+			spriteAnimUI->SetIsRender(true);
+			// info.isRender = true;
+			// spriteAnimUI->SetSpriteInfo(info);
 		}
 
 		mOnSpriteUIRenderEventActivatedObjects.clear();

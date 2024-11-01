@@ -665,8 +665,13 @@
     <ClInclude Include="MagicCircleEndPoint.h">
       <Filter>include</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="BowPullState.h">
       <Filter>include\01.Player\State\ArcherState</Filter>
+=======
+    <ClInclude Include="FillSoulGauge.h">
+      <Filter>include</Filter>
+>>>>>>> a1b9cb68e2460959e8b66494a61a289a76f028b6
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1156,8 +1161,13 @@
     <ClCompile Include="MagicCircleEndPoint.cpp">
       <Filter>src</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="BowPullState.cpp">
       <Filter>src\01.Player\State\Bow</Filter>
+=======
+    <ClCompile Include="FillSoulGauge.cpp">
+      <Filter>src</Filter>
+>>>>>>> a1b9cb68e2460959e8b66494a61a289a76f028b6
     </ClCompile>
   </ItemGroup>
 </Project>
