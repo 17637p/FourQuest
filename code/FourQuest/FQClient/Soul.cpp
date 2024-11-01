@@ -35,6 +35,10 @@ fq::client::Soul::Soul()
 	, mSoulGauge(0.f)
 	, mMaxSoulGauge(100.f)
 	, mPlayerHpBar(nullptr)
+
+	, mDashSpeed(0.3f)
+	, mDashElapsed(0.f)
+	, mDashCoolTime(0.3f)
 {}
 
 fq::client::Soul::~Soul()
@@ -95,6 +99,7 @@ void fq::client::Soul::OnStart()
 
 	mbIsOnSummon = false;
 	mSummonArmourOrNull = nullptr;
+	mDashElapsed = 0.f;
 }
 
 void fq::client::Soul::DestorySoul()
@@ -174,6 +179,7 @@ void fq::client::Soul::OnUpdate(float dt)
 		checkOtherPlayer();
 		updateSoulHP(dt);
 		checkReleaseGoddessStatue();
+		processInput(dt);
 	}
 
 	mBGaugeUI->SetVisible(mbIsVisibleBGaugeUI);
@@ -303,18 +309,18 @@ void fq::client::Soul::SetSoulColor()
 
 			switch (mSoulType)
 			{
-				case fq::client::ESoulType::Sword:
-					matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
-					break;
-				case fq::client::ESoulType::Staff:
-					matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
-					break;
-				case fq::client::ESoulType::Axe:
-					matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
-					break;
-				case fq::client::ESoulType::Bow:
-					matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
-					break;
+			case fq::client::ESoulType::Sword:
+				matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
+				break;
+			case fq::client::ESoulType::Staff:
+				matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
+				break;
+			case fq::client::ESoulType::Axe:
+				matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
+				break;
+			case fq::client::ESoulType::Bow:
+				matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
+				break;
 			}
 
 			particle->SetParticleMaterialInfo(matInfo);
@@ -518,21 +524,46 @@ void fq::client::Soul::setName()
 	{
 		switch (soulType)
 		{
-			case 0:
-				speechBubble->SetName(PlayerInfoVariable::KnightName);
-				break;
-			case 1:
-				speechBubble->SetName(PlayerInfoVariable::MagicName);
-				break;
-			case 2:
-				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-				break;
-			case 3:
-				speechBubble->SetName(PlayerInfoVariable::ArcherName);
-				break;
-			default:
-				break;
+		case 0:
+			speechBubble->SetName(PlayerInfoVariable::KnightName);
+			break;
+		case 1:
+			speechBubble->SetName(PlayerInfoVariable::MagicName);
+			break;
+		case 2:
+			speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+			break;
+		case 3:
+			speechBubble->SetName(PlayerInfoVariable::ArcherName);
+			break;
+		default:
+			break;
 		}
+	}
+}
+
+void fq::client::Soul::processInput(float dt)
+{
+	auto input = GetScene()->GetInputManager();
+
+	mDashElapsed += dt;
+
+	auto rigidbody = GetComponent<fq::game_module::RigidBody>();
+	auto foward = GetTransform()->GetWorldMatrix().Forward();
+	foward.Normalize();
+
+	if (mDashCoolTime < mDashElapsed && input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+	{
+		// 속도 처리
+		if (rigidbody != nullptr)
+		{
+			auto velocity = foward;
+			velocity.x *= mDashSpeed;
+			velocity.z *= mDashSpeed;
+			rigidbody->SetLinearVelocity(velocity);
+		}
+
+		mDashElapsed = 0.f;
 	}
 }
 

@@ -905,6 +905,12 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
+		.data<&Soul::mDashSpeed>("mDashSpeed"_hs)
+		.prop(reflect::prop::Name, "mDashSpeed")
+		.prop(reflect::prop::Comment, u8"대시 속도")
+		.data<&Soul::mDashCoolTime>("mDashCoolTime"_hs)
+		.prop(reflect::prop::Name, "mDashCoolTime")
+		.prop(reflect::prop::Comment, u8"대시 쿨타임")
 		.base<game_module::Component>();
 
 	entt::meta<AimAssist>()

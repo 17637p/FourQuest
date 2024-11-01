@@ -67,6 +67,8 @@ namespace fq::client
 		void setSoulHP();
 		void setName();
 
+		void processInput(float dt);
+
 	private:
 		game_module::CharacterController* mController;
 		std::vector<DeadArmour*> mSelectArmours;
@@ -99,6 +101,11 @@ namespace fq::client
 		// BGaugeUI 여신상과 갑옷 근처일 때 활성화하는 로직 작성을 위해 별도로 변수 추가
 		bool mbIsVisibleBGaugeUI;
 		float mBGaugeFillAmount;
+
+		// 소울 대시 관련
+		float mDashSpeed;
+		float mDashElapsed;
+		float mDashCoolTime;
 
 	private:
 		friend void RegisterMetaData();
