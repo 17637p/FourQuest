@@ -161,6 +161,8 @@ void fq::client::PlayerUI::OnStart()
 
 	// 이벤트 등록
 	eventProcessDecreaseHPRatio();
+
+	mSoulSprites.clear();
 }
 
 void fq::client::PlayerUI::OnUpdate(float dt)
