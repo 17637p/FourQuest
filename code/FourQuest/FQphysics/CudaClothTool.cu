@@ -78,28 +78,28 @@ __global__ void UpdateVertex(
 	physx::PxVec2 uv1 = uvs[i1];
 	physx::PxVec2 uv2 = uvs[i2];
 
-	//physx::PxVec4 edge1 = Sub(v1, v0);
-	//physx::PxVec4 edge2 = Sub(v2, v0);
+	physx::PxVec4 edge1 = Sub(v1, v0);
+	physx::PxVec4 edge2 = Sub(v2, v0);
 
-	//physx::PxVec2 deltaUV1 = Sub(uv1, uv0);
-	//physx::PxVec2 deltaUV2 = Sub(uv2, uv0);
+	physx::PxVec2 deltaUV1 = Sub(uv1, uv0);
+	physx::PxVec2 deltaUV2 = Sub(uv2, uv0);
 
-	//float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+	float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
-	//physx::PxVec3 tangent;
-	//tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-	//tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-	//tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-	//NormalizeVector(tangent);
+	physx::PxVec3 tangent;
+	tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+	tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+	tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+	NormalizeVector(tangent);
 
-	//physx::PxVec3 bitangent;
-	//bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-	//bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-	//bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-	//NormalizeVector(bitangent);
+	physx::PxVec3 bitangent;
+	bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+	bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+	bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+	NormalizeVector(bitangent);
 
-	//physx::PxVec3 normal = cross(edge1, edge2);
-	//NormalizeVector(normal);
+	physx::PxVec3 normal = cross(edge1, edge2);
+	NormalizeVector(normal);
 
 	SimpleVector3 vertex0;
 	SimpleVector3 vertex1;
@@ -127,25 +127,53 @@ __global__ void UpdateVertex(
 	buffer[i2].Pos.y = vertex2.y;
 	buffer[i2].Pos.z = vertex2.z;
 
-	//buffer[i0].Normal.x = normal.x;
-	//buffer[i0].Normal.y = normal.y;
-	//buffer[i0].Normal.z = normal.z;
-	//buffer[i1].Normal.x = normal.x;
-	//buffer[i1].Normal.y = normal.y;
-	//buffer[i1].Normal.z = normal.z;
-	//buffer[i2].Normal.x = normal.x;
-	//buffer[i2].Normal.y = normal.y;
-	//buffer[i2].Normal.z = normal.z;
+	buffer[i0].Normal.x = normal.x;
+	buffer[i0].Normal.y = normal.y;
+	buffer[i0].Normal.z = normal.z;
+	buffer[i1].Normal.x = normal.x;
+	buffer[i1].Normal.y = normal.y;
+	buffer[i1].Normal.z = normal.z;
+	buffer[i2].Normal.x = normal.x;
+	buffer[i2].Normal.y = normal.y;
+	buffer[i2].Normal.z = normal.z;
 
-	//buffer[i0].Tangent.x = tangent.x;
-	//buffer[i0].Tangent.y = tangent.y;
-	//buffer[i0].Tangent.z = tangent.z;
-	//buffer[i1].Tangent.x = tangent.x;
-	//buffer[i1].Tangent.y = tangent.y;
-	//buffer[i1].Tangent.z = tangent.z;
-	//buffer[i2].Tangent.x = tangent.x;
-	//buffer[i2].Tangent.y = tangent.y;
-	//buffer[i2].Tangent.z = tangent.z;
+	buffer[i0].Tangent.x = tangent.x;
+	buffer[i0].Tangent.y = tangent.y;
+	buffer[i0].Tangent.z = tangent.z;
+	buffer[i1].Tangent.x = tangent.x;
+	buffer[i1].Tangent.y = tangent.y;
+	buffer[i1].Tangent.z = tangent.z;
+	buffer[i2].Tangent.x = tangent.x;
+	buffer[i2].Tangent.y = tangent.y;
+	buffer[i2].Tangent.z = tangent.z;
+}
+
+template <typename T>
+__global__ void UpdateVertexNoIndex(
+	physx::PxVec4* vertices,
+	unsigned int vertexSize,
+	SimpleMatrix invTransform,
+	T* buffer)
+{
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	if (idx >= vertexSize) return;
+
+	// 해당 정점을 가져옵니다
+	physx::PxVec4 v = vertices[idx];
+
+	// 변환을 위한 SimpleVector3 생성
+	SimpleVector3 vertex;
+	vertex.x = v.x;
+	vertex.y = v.y;
+	vertex.z = v.z;
+
+	// 변환 행렬을 적용하여 정점 위치 업데이트
+	vertex = multiply<SimpleVector3>(invTransform, vertex);
+
+	// 변환된 정점 위치를 buffer에 업데이트
+	buffer[idx].Pos.x = vertex.x;
+	buffer[idx].Pos.y = vertex.y;
+	buffer[idx].Pos.z = vertex.z;
 }
 #pragma endregion
 
@@ -459,6 +487,73 @@ namespace fq::physics
 		// 메모리 해제
 		cudaFree(d_uvs);
 		cudaFree(d_indices);
+
+		return true;
+	}
+
+	bool CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(
+		std::vector<DirectX::SimpleMath::Vector3>& vertices, 
+		DirectX::SimpleMath::Matrix transform, 
+		cudaGraphicsResource* ID3D11VertexBuffer,
+		UINT ID3D11VertexStride, 
+		physx::PxVec4* particle)
+	{
+		// CUDA 리소스를 매핑
+		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
+			return false;
+		}
+
+		// CUDA 포인터 가져오기
+		void* devPtr = nullptr;
+		size_t size = 0;
+		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &size, ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
+			return false;
+		}
+
+		SimpleMatrix invTransform;
+		std::memcpy(&invTransform, &transform, sizeof(invTransform));
+		unsigned int vertexSize = vertices.size();
+
+		int threadsPerBlock = 256;
+		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
+
+		// CUDA 함수 실행
+		if (ID3D11VertexStride == 44)
+		{
+			UpdateVertexNoIndex <Vertex> << <blocksPerGrid, threadsPerBlock >> > (
+				particle, vertexSize, invTransform, (Vertex*)devPtr);
+		}
+		else if (ID3D11VertexStride == 52)
+		{
+			UpdateVertexNoIndex <Vertex1> << <blocksPerGrid, threadsPerBlock >> > (
+				particle, vertexSize, invTransform, (Vertex1*)devPtr);
+		}
+		else if (ID3D11VertexStride == 60)
+		{
+			UpdateVertexNoIndex <Vertex2> << <blocksPerGrid, threadsPerBlock >> > (
+				particle, vertexSize, invTransform, (Vertex2*)devPtr);
+		}
+
+		cudaStatus = cudaDeviceSynchronize();
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
+
+		// CUDA 리소스를 언매핑
+		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
 
 		return true;
 	}

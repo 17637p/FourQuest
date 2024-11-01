@@ -146,7 +146,7 @@ namespace fq::physics
 		DirectX::SimpleMath::Matrix InvTransform;
 		mWorldTransform.Invert(InvTransform);
 
-		if (!CudaClothTool::UpdatePhysXDataToID3DBuffer(mVertices, mIndices, mUV, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;		// 천 입자로 Graphics VertexBuffer에 position값 Update하는 cuda함수 
+		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(mVertices, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;		// 천 입자로 Graphics VertexBuffer에 position값 Update하는 cuda함수 
 		//if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource, mCudaVertexStride)) return false;	// 겹치는 버텍스 노말값 업데이트 cuda함수
 		if (!updateWindToParticle()) return false;
 
