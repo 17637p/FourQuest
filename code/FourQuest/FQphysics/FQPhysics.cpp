@@ -169,6 +169,7 @@ namespace fq::physics
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
 		mGpuScene = physics->createScene(sceneDesc);
+		mGpuScene->setFlag(physx::PxSceneFlag::eENABLE_CCD, false);
 		assert(mScene);
 		assert(mGpuScene);
 

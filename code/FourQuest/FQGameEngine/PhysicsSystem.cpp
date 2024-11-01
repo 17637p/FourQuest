@@ -155,7 +155,8 @@ void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent&
 {
 	if (event.id == mBoxTypeID || event.id == mSphereTypeID
 		|| event.id == mCapsuleTypeID || event.id == mMeshTypeID
-		|| event.id == mRigidTypeID || event.id == mTerrainTypeID)
+		|| event.id == mRigidTypeID || event.id == mTerrainTypeID
+		|| event.id == mClothTypeID)
 	{
 		addCollider(event.component->GetGameObject());
 	}
@@ -165,7 +166,8 @@ void fq::game_engine::PhysicsSystem::RemoveComponent(const fq::event::RemoveComp
 {
 	if (event.id == mBoxTypeID || event.id == mSphereTypeID
 		|| event.id == mCapsuleTypeID || event.id == mMeshTypeID
-		|| event.id == mRigidTypeID || event.id == mTerrainTypeID)
+		|| event.id == mRigidTypeID || event.id == mTerrainTypeID
+		|| event.id == mClothTypeID)
 	{
 		removeCollider(event.component->GetGameObject());
 	}
@@ -595,7 +597,8 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	}
 
 	// 7. Triangle Collider
-	if (object->HasComponent<TriangleCollider>())
+	if (object->HasComponent<TriangleCollider>() &&
+		(hasStaticMesh || hasSkinnedMesh))
 	{
 		ColliderID id = ++mLastColliderID;
 
@@ -678,7 +681,8 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	}
 
 	// 8. Cloth Collider
-	if (object->HasComponent<ClothCollider>())
+	if (object->HasComponent<ClothCollider>() &&
+		(hasStaticMesh || hasSkinnedMesh))
 	{
 		ColliderID id = ++mLastColliderID;
 
@@ -1045,20 +1049,20 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			if (!clothCollider->GetIsSkinnedMesh())
 				transform->SetWorldMatrix(data.worldTransform);
 
-			auto vertices = mPhysicsEngine->GetClothVertex(id);
+			//auto vertices = mPhysicsEngine->GetClothVertex(id);
 
-			fq::graphics::debug::PolygonInfo info;
+			//fq::graphics::debug::PolygonInfo info;
 
-			for (int i = 0; i < vertices.size(); i++)
-			{
-				fq::graphics::debug::SphereInfo info;
+			//for (int i = 0; i < vertices.size(); i++)
+			//{
+			//	fq::graphics::debug::SphereInfo info;
 
-				info.Sphere.Center = vertices[i];
-				info.Sphere.Radius = 0.01f;
-				info.Color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
+			//	info.Sphere.Center = vertices[i];
+			//	info.Sphere.Radius = 0.01f;
+			//	info.Color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
 
-				mGameProcess->mGraphics->DrawSphere(info);
-			}
+			//	mGameProcess->mGraphics->DrawSphere(info);
+			//}
 		}
 		else
 		{

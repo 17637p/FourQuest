@@ -38,6 +38,7 @@ namespace fq::game_module
 		float GetDrag() const { return mClothInfo->materialInfo.drag; }
 		float GetCflCoefficient() const { return mClothInfo->materialInfo.cflCoefficient; }
 		float GetGravityScale() const { return mClothInfo->materialInfo.gravityScale; }
+		float GetMaxWindStrength() const { return mClothInfo->materialInfo.maxWindStrength; }
 		DirectX::SimpleMath::Vector3* GetVertex() const { return mClothInfo->clothData.vertices.data(); }
 		int GetVertexSize() const { return mClothInfo->clothData.vertices.size(); }
 		unsigned int* GetIndices() const { return mClothInfo->clothData.indices.data(); }
@@ -60,6 +61,7 @@ namespace fq::game_module
 		void SetDrag(float drag) { mClothInfo->materialInfo.drag = drag; }
 		void SetCflCoefficient(float cflCoefficient) { mClothInfo->materialInfo.cflCoefficient = cflCoefficient; }
 		void SetGravityScale(float gravityScale) { mClothInfo->materialInfo.gravityScale = gravityScale; }
+		void SetMaxWindStrength(float maxWindStrength) { mClothInfo->materialInfo.maxWindStrength = maxWindStrength; }
 		void SetVertexBuffer(void* vertexBuffer) const { mClothInfo->vertexBuffer = vertexBuffer; }
 		void SetIndexBuffer(void* indexBuffer) const { mClothInfo->indexBuffer = indexBuffer; }
 
