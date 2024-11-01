@@ -717,6 +717,17 @@ void fq::game_engine::RenderingSystem::loadSequenceAnimation(fq::game_module::Ga
 
 		for (auto& trackKey : info.animationTrackKeys)
 		{
+			if (trackKey.animationPath.empty())
+			{
+				spdlog::warn("{} trackKey animation file is empty", trackKey.animationPath);
+				continue;
+			}
+			if (!std::filesystem::exists(trackKey.animationPath))
+			{
+				spdlog::warn("{} trackKey animation file is not exist", trackKey.animationPath);
+				continue;
+			}
+
 			auto animationInterfaceOrNull = mGameProcess->mResourceSystem->GetAnimation(trackKey.animationPath);
 
 			if (animationInterfaceOrNull == nullptr)

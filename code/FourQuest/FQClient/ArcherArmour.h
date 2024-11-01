@@ -55,6 +55,8 @@ namespace fq::client
 		/// </summary>
 		void MakeLineOfSight();
 
+		void RemoveLineOfSight();
+
 	private:
 		void OnStart() override;
 		void OnUpdate(float dt) override;

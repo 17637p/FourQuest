@@ -68,6 +68,8 @@ namespace fq::client
 
 			if (!mbIsEmitAttack)
 			{
+				archer->RemoveLineOfSight();
+
 				archer->EmitSound(EArcherSound::Shoot);
 				archer->EmitStrongAttack(mStringAttackIndex);
 				mbIsEmitAttack = true;
