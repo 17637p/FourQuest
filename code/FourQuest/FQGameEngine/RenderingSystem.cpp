@@ -19,6 +19,7 @@
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/TextUI.h"
 #include "../FQGameModule/SpriteAnimationUI.h"
+#include "../FQGameModule/ClothCollider.h"
 #include "../FQCommon/FQCommonGraphics.h"
 #include "../FQCommon/FQPath.h"
 #include "../FQCommon/IFQRenderObject.h"
@@ -27,7 +28,6 @@
 #include "AnimationSystem.h"
 #include "PhysicsSystem.h"
 #include "ResourceSystem.h"
-
 fq::game_engine::RenderingSystem::RenderingSystem()
 	:mGameProcess(nullptr)
 	, mOnAddGameObjectHandler{}
@@ -556,6 +556,12 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 
 	if (meshInterface != nullptr)
 	{
+		if (object->HasComponent<fq::game_module::ClothCollider>())
+		{
+			auto deepCopiedMeshInterface = mGameProcess->mGraphics->CreateStaticMesh(meshInterface->GetMeshData());
+			meshInterface = deepCopiedMeshInterface;
+		}
+
 		IStaticMeshObject* iStaticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, staticMeshRenderer->GetMeshObjectInfomation(), transform->GetLocalMatrix());
 		staticMeshRenderer->SetStaticMeshObject(iStaticMeshObject);
 		staticMeshRenderer->SetMaterialInterfaces(materialInterfaces);
