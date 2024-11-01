@@ -126,7 +126,7 @@ namespace fq::client
 		}
 	}
 
-	void ArcherArmour::makeLineOfSight()
+	void ArcherArmour::MakeLineOfSight()
 	{
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLineOfSightEffect);
 		auto& lineObj = *(instance.begin());
@@ -343,9 +343,6 @@ namespace fq::client
 			mAnimator->SetParameterTrigger("OnStrongAttack");
 			mStrongAttackElapsedTime = mPlayer->IsFeverTime() ? mStrongAttackCoolTime - mStrongAttackCoolTimeReduction : mStrongAttackCoolTime;
 			mStrongAttackElapsedTime *= mPlayer->GetGBDecreaseCooltime();
-			
-			// 조준선 생성
-			makeLineOfSight();
 		}
 		else
 		{

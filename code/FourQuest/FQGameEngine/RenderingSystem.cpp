@@ -301,9 +301,10 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 				continue;
 			}
 
-			auto info = spriteAnimUI->GetSpriteInfo();
-			info.isRender = false;
-			spriteAnimUI->SetSpriteInfo(info);
+			//auto info = spriteAnimUI->GetSpriteInfo();
+			//info.isRender = false;
+			//spriteAnimUI->SetSpriteInfo(info);
+			spriteAnimUI->SetIsRender(false);
 
 			++iter;
 		}

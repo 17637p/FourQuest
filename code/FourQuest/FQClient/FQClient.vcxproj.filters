@@ -665,6 +665,9 @@
     <ClInclude Include="MagicCircleEndPoint.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="BowPullState.h">
+      <Filter>include\01.Player\State\ArcherState</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1152,6 +1155,9 @@
     </ClCompile>
     <ClCompile Include="MagicCircleEndPoint.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="BowPullState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -50,6 +50,11 @@ namespace fq::client
 		/// </summary>
 		std::vector<DirectX::SimpleMath::Quaternion> GetStrongArrowDirections(int chargeLevel);
 
+		/// <summary>
+		/// 조준선을 생성합니다.
+		/// </summary>
+		void MakeLineOfSight();
+
 	private:
 		void OnStart() override;
 		void OnUpdate(float dt) override;
@@ -57,7 +62,6 @@ namespace fq::client
 		void checkInput(float dt);
 		void setName();
 		void makeStrongAttackArrow(float damage, DirectX::SimpleMath::Quaternion direction, DirectX::SimpleMath::Vector3 position);
-		void makeLineOfSight();
 
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;

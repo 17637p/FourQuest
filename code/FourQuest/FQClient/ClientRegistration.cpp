@@ -36,6 +36,7 @@
 #include "BowDashState.h"
 #include "BowMultiShotAttackState.h"
 #include "BowStrongChargingState.h"
+#include "BowPullState.h"
 #include "AimAssist.h"
 #include "EBerserkerAttackType.h"
 #include "BerserkerArmour.h"
@@ -1080,6 +1081,11 @@ void fq::client::RegisterMetaData()
 		.data<&BowStrongChargingState::mStringAttackIndex>("StringAttackIndex"_hs)
 		.prop(reflect::prop::Name, "StringAttackIndex")
 		.prop(fq::reflect::prop::Comment, u8"강공격 단계 (1 ~ 4)")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BowPullState>()
+		.type("BowPullState"_hs)
+		.prop(reflect::prop::Name, "BowPullState")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<EBerserkerAttackType>()
