@@ -301,7 +301,7 @@ void fq::client::KnightArmour::checkInput()
 	constexpr float rotationOffsetSq = 0.5f * 0.5f;
 
 	// 쉴드 상태 진입 
-	if (rightInput.LengthSquared() >= rotationOffsetSq && mShieldElapsedTime == 0.f)
+	if (rightInput.LengthSquared() >= rotationOffsetSq && mShieldElapsedTime == 0.f && mOnShieldElapsedTime == 0.f)
 	{
 		mAnimator->SetParameterBoolean("OnShield", true);
 	}
@@ -407,6 +407,8 @@ void fq::client::KnightArmour::ExitShieldState()
 
 	mbOnShield = false;
 	mOnShieldElapsedTime = 0.f;
+	
+	mPlayer->SetIsActiveOnHit(true);
 
 	// 이펙트 삭제
 	GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnDeleteStateEvent>({ "K_Shield_Stay", GetGameObject() });
@@ -421,6 +423,7 @@ void fq::client::KnightArmour::EnterShieldState()
 
 	mbOnShield = true;
 	mPlayer->SetOnShieldBlock(true);
+	mPlayer->SetIsActiveOnHit(false);
 	mGaugeBar->SetVisible(true);
 	mGaugeBar->SetRatio(1.f);
 
