@@ -6,6 +6,7 @@
 #include "Quest.h"
 
 #include <list>
+#include <queue>
 
 namespace fq::game_module
 {
@@ -67,6 +68,8 @@ namespace fq::client
 		void eventProcessPushButtonEvent();
 		void eventProcessUpdatePlayerState();
 
+		void eventProcessOnUIRender();
+
 		void playNew(float dt);
 		void playComplete(float dt);
 		void PlayFail(float dt);
@@ -119,6 +122,7 @@ namespace fq::client
 		game_module::EventHandler mInProgressDefenceHandler;
 		game_module::EventHandler mPushButtonHandler;
 		game_module::EventHandler mUpdatePlayerStateHandler;
+		game_module::EventHandler mUIRenderHandler;
 
 		// ClearCondition - ClearQuest 전용
 		std::vector<Quest> mClearEvents; // 이벤트 안에서 이벤트 호출이 안되어서 다음 틱에 처리
@@ -160,6 +164,10 @@ namespace fq::client
 		std::vector<bool> mIsUseY;
 		std::vector<bool> mIsUseR;
 		std::vector<bool> mIsUseA;
+
+		std::queue<Quest> mRemoveViewQuests;
+
+		bool mIsRenderingUI;
 
 		friend void RegisterMetaData();
 	};
