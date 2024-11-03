@@ -21,7 +21,7 @@ namespace fq::game_module
 
 	private:
 		Scene* mScene;
-		std::weak_ptr<GameObject> mPostProcessObject;
+		std::shared_ptr<GameObject> mPostProcessObject;
 
 		std::string mPostProcessObjectName;
 		float mBlendTime;

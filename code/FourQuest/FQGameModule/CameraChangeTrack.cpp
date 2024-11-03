@@ -27,7 +27,7 @@ namespace fq::game_module
 		mCurrentCameraObject = scene->GetObjectByName(info.prevCameraName);
 		mTargetCameraObject = scene->GetObjectByName(info.targetCameraName);
 
-		if (!mCurrentCameraObject.expired() && !mTargetCameraObject.expired())
+		if (mCurrentCameraObject && mTargetCameraObject)
 		{
 			return true;
 		}
@@ -40,19 +40,19 @@ namespace fq::game_module
 
 	void CameraChangeTrack::PlayEnter()
 	{
-		if (!mTargetCameraObject.expired())
+		if (!mTargetCameraObject->IsDestroyed())
 		{
-			if (!mTargetCameraObject.lock()->HasComponent<Camera>()) return;
+			if (!mTargetCameraObject->HasComponent<Camera>()) return;
 
-			auto camera = mTargetCameraObject.lock()->GetComponent<Camera>();
+			auto camera = mTargetCameraObject->GetComponent<Camera>();
 			camera->SetMainCamera(true);
 		}
 
 		mPrevPosition = mKeys[0].position;
 
-		if (!mTargetCameraObject.lock()->HasComponent<Transform>()) return;
+		if (!mTargetCameraObject->HasComponent<Transform>()) return;
 
-		auto transform = mTargetCameraObject.lock()->GetComponent<Transform>();
+		auto transform = mTargetCameraObject->GetComponent<Transform>();
 
 
 		transform->SetLocalPosition(mKeys[0].position);
@@ -64,11 +64,11 @@ namespace fq::game_module
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
 
-		if (!mTargetCameraObject.expired())
+		if (!mTargetCameraObject)
 		{
-			if (!mTargetCameraObject.lock()->HasComponent<Transform>()) return;
+			if (!mTargetCameraObject->HasComponent<Transform>()) return;
 
-			auto transform = mTargetCameraObject.lock()->GetComponent<Transform>();
+			auto transform = mTargetCameraObject->GetComponent<Transform>();
 
 			for (int i = 0; i < mKeys.size(); i++)
 			{
@@ -117,20 +117,20 @@ namespace fq::game_module
 
 	void CameraChangeTrack::End()
 	{
-		if (!mTargetCameraObject.expired())
+		if (!mTargetCameraObject)
 		{
-			if (!mTargetCameraObject.lock()->HasComponent<Transform>()) return;
+			if (!mTargetCameraObject->HasComponent<Transform>()) return;
 
-			auto transform = mTargetCameraObject.lock()->GetComponent<Transform>();
+			auto transform = mTargetCameraObject->GetComponent<Transform>();
 
 			transform->SetLocalMatrix(mOriginTransform);
 		}
 
-		if (!mCurrentCameraObject.expired())
+		if (!mCurrentCameraObject->IsDestroyed())
 		{
-			if (!mCurrentCameraObject.lock()->HasComponent<Camera>()) return;
+			if (!mCurrentCameraObject->HasComponent<Camera>()) return;
 
-			auto camera = mCurrentCameraObject.lock()->GetComponent<Camera>();
+			auto camera = mCurrentCameraObject->GetComponent<Camera>();
 			camera->SetMainCamera(true);
 		}
 	}

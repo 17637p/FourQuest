@@ -36,7 +36,7 @@ namespace fq::game_module
 	void EffectTrack::PlayEnter()
 	{
 		mObjects = mScene->GetPrefabManager()->LoadPrefab(mPrefebPath);
-		
+
 		for (auto& object : mObjects)
 		{
 			mTrackObjectName.push_back(object->GetName());
@@ -53,7 +53,7 @@ namespace fq::game_module
 			}
 		}
 
-		auto transform = mEffectObject.lock()->GetComponent<Transform>();
+		auto transform = mEffectObject->GetComponent<Transform>();
 
 		if (mKeys.size() > 0)
 		{
@@ -68,11 +68,11 @@ namespace fq::game_module
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
 
-		if (!mEffectObject.expired())
+		if (!mEffectObject->IsDestroyed())
 		{
-			if (!mEffectObject.lock()->HasComponent<Transform>()) return;
+			if (!mEffectObject->HasComponent<Transform>()) return;
 
-			auto transform = mEffectObject.lock()->GetComponent<Transform>();
+			auto transform = mEffectObject->GetComponent<Transform>();
 
 			for (int i = 0; i < mKeys.size(); i++)
 			{
@@ -103,19 +103,21 @@ namespace fq::game_module
 
 	void EffectTrack::PlayExit()
 	{
-		if (!mEffectObject.expired())
+		if (mEffectObject != nullptr && !mEffectObject->IsDestroyed())
 		{
-			mScene->DestroyGameObject(mEffectObject.lock().get());
+			mScene->DestroyGameObject(mEffectObject.get());
 			mObjects.clear();
+			mEffectObject = nullptr;
 		}
 	}
 
 	void EffectTrack::End()
 	{
-		if (!mEffectObject.expired())
+		if (mEffectObject != nullptr &&  !mEffectObject->IsDestroyed())
 		{
-			mScene->DestroyGameObject(mEffectObject.lock().get());
+			mScene->DestroyGameObject(mEffectObject.get());
 			mObjects.clear();
+			mEffectObject = nullptr;
 		}
 	}
 }

@@ -35,7 +35,7 @@ namespace fq::game_module
 		std::vector<AnimationTrackKey> mAnimationTrackKeys;
 		std::string mPrevAnimationPath;
 
-		std::weak_ptr<GameObject> mTargetObject;
+		std::shared_ptr<GameObject> mTargetObject;
 		std::vector<std::shared_ptr<fq::graphics::IAnimation>> mAnimationContainer;
 	};
 }

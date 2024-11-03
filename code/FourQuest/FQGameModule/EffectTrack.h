@@ -21,7 +21,7 @@ namespace fq::game_module
 
 	private:
 		Scene* mScene;
-		std::weak_ptr<GameObject> mEffectObject;
+		std::shared_ptr<GameObject> mEffectObject;
 		std::vector<std::shared_ptr<GameObject>> mObjects;
 
 		std::string mPrefebPath;
