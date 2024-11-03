@@ -103,7 +103,7 @@ namespace fq::game_module
 
 	void EffectTrack::PlayExit()
 	{
-		if (mEffectObject != nullptr && !mEffectObject->IsDestroyed())
+		if (mEffectObject && !mEffectObject->IsDestroyed())
 		{
 			mScene->DestroyGameObject(mEffectObject.get());
 			mObjects.clear();
@@ -113,7 +113,7 @@ namespace fq::game_module
 
 	void EffectTrack::End()
 	{
-		if (mEffectObject != nullptr &&  !mEffectObject->IsDestroyed())
+		if (mEffectObject &&  !mEffectObject->IsDestroyed())
 		{
 			mScene->DestroyGameObject(mEffectObject.get());
 			mObjects.clear();

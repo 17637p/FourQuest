@@ -95,7 +95,7 @@ namespace fq::game_module
 	void ObjectTeleportTrack::End()
 	{
 		// 시퀀스가 시작하기 이전 Transform로 돌아가야 할 경우
-		if (!mTargetObject->IsDestroyed() && mbIsObjectReturnToStartTransform)
+		if (mTargetObject && !mTargetObject->IsDestroyed() && mbIsObjectReturnToStartTransform)
 		{
 			if (!mTargetObject->HasComponent<Transform>()) return;
 

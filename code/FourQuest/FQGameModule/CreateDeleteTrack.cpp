@@ -30,9 +30,6 @@ bool fq::game_module::CreateDeleteTrack::Initialize(const CreateDeleteTrackInfo&
 	return true;
 }
 
-void fq::game_module::CreateDeleteTrack::End()
-{
-}
 
 void fq::game_module::CreateDeleteTrack::PlayEnter()
 {
@@ -91,6 +88,25 @@ void fq::game_module::CreateDeleteTrack::PlayExit()
 		}
 	}
 }
+
+void fq::game_module::CreateDeleteTrack::End()
+{
+
+	// 오브젝트 삭제
+	if (mObject)
+	{
+		if (!mObject->IsDestroyed())
+		{
+			mScene->DestroyGameObject(mObject.get());
+			mObject = nullptr;
+		}
+		else
+		{
+			spdlog::warn("[CreateDeleteTrack] {} Object is Destroyed", mObject->GetName());
+		}
+	}
+}
+
 
 fq::game_module::CreateDeleteTrack::CreateDeleteTrack()
 	: Track(ETrackType::CREATE_DELETE)

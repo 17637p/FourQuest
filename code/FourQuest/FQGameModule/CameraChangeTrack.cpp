@@ -117,7 +117,7 @@ namespace fq::game_module
 
 	void CameraChangeTrack::End()
 	{
-		if (!mTargetCameraObject)
+		if (mTargetCameraObject && !mTargetCameraObject->IsDestroyed())
 		{
 			if (!mTargetCameraObject->HasComponent<Transform>()) return;
 
@@ -126,7 +126,7 @@ namespace fq::game_module
 			transform->SetLocalMatrix(mOriginTransform);
 		}
 
-		if (!mCurrentCameraObject->IsDestroyed())
+		if ( mCurrentCameraObject && !mCurrentCameraObject->IsDestroyed())
 		{
 			if (!mCurrentCameraObject->HasComponent<Camera>()) return;
 
