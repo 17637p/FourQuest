@@ -415,9 +415,12 @@
     </ClInclude>
     <ClInclude Include="VideoUI.h">
       <Filter>include\01.EntityComponent\UI</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="BlendUVAnimator.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="CreateDeleteTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -684,9 +687,12 @@
     </ClCompile>
     <ClCompile Include="VideoUI.cpp">
       <Filter>src\01.EntityComponent\UI</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="BlendUVAnimator.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateDeleteTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

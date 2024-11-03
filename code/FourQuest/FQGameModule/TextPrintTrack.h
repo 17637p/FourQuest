@@ -21,11 +21,13 @@ namespace fq::game_module
 
 	private:
 		std::string mFontPath;
+		float mNameFontCenterX;
 		float mNameFontCenterY;
 		float mNameFontSize;
 		DirectX::SimpleMath::Color mNameFontColor;
 		std::string mName;
 
+		float mTextFontCenterX;
 		float mTextFontCenterY;
 		float mTextFontSize;
 		DirectX::SimpleMath::Color mTextFontColor;

@@ -38,11 +38,11 @@ namespace fq::game_module
 			break;
 		case fq::game_module::ETrackState::ENTER:
 			mCurrentState = ETrackState::ON;
-			break;
+			break;	
 		case fq::game_module::ETrackState::ON:
 			if (mTotalPlayTime <= mElapsedTime)
 			{
-				mCurrentState = ETrackState::EXIT;
+				mCurrentState = ETrackState::EXIT; 
 			}
 			break;
 		case fq::game_module::ETrackState::EXIT:
