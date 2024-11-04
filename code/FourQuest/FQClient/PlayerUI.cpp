@@ -86,6 +86,7 @@ void fq::client::PlayerUI::OnStart()
 	mSkillIconAs.clear();
 	mSkillIconRs.clear();
 	mSoulSkillIcons.clear();
+	mSoulSprites.clear();
 
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren();
 
