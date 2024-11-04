@@ -106,6 +106,11 @@ void fq::client::PlayerHPBar::SetVisible(bool isVisible)
 	mImageUI->SetUIInfomations(infomations);
 }
 
+void fq::client::PlayerHPBar::SetHPRatio(float ratio)
+{
+	mHpRatio = std::clamp<float>(ratio, 0, 1);
+}
+
 void fq::client::PlayerHPBar::DecreaseHp(float ratio)
 {
 	if (mHpRatio == 0.f) return;

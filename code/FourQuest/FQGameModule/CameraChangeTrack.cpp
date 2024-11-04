@@ -64,7 +64,7 @@ namespace fq::game_module
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
 
-		if (!mTargetCameraObject)
+		if (mTargetCameraObject)
 		{
 			if (!mTargetCameraObject->HasComponent<Transform>()) return;
 

@@ -330,19 +330,7 @@ void fq::client::Soul::SetSoulColor()
 
 void fq::client::Soul::setSoulHP()
 {
-	// °©¿Ê Á×À½ Ä«¿îÅÍ¿¡ µû¶ó ¿µÈ¥ ÃÖ´ë Ã¼·Â ¼¼ÆÃ
-	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
-	int deathCount = 0;
-	if (id == 0)
-		deathCount = SoulVariable::Player1DeathCount;
-	else if (id == 1)
-		deathCount = SoulVariable::Player2DeathCount;
-	else if (id == 2)
-		deathCount = SoulVariable::Player3DeathCount;
-	else if (id == 3)
-		deathCount = SoulVariable::Player4DeathCount;
-
-	int maxHP = SoulVariable::SoulMaxHp - SoulVariable::SoulHpDown * deathCount;
+	int maxHP = getMaxHP();
 	int minHP = SoulVariable::SoulMinHp;
 
 	mHP = std::max<int>(maxHP, minHP);
@@ -542,6 +530,24 @@ void fq::client::Soul::setName()
 	}
 }
 
+float fq::client::Soul::getMaxHP()
+{
+	// °©¿Ê Á×À½ Ä«¿îÅÍ¿¡ µû¶ó ¿µÈ¥ ÃÖ´ë Ã¼·Â ¼¼ÆÃ
+	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
+	int deathCount = 0;
+	
+	if (id == 0)
+		deathCount = SoulVariable::Player1DeathCount;
+	else if (id == 1)
+		deathCount = SoulVariable::Player2DeathCount;
+	else if (id == 2)
+		deathCount = SoulVariable::Player3DeathCount;
+	else if (id == 3)
+		deathCount = SoulVariable::Player4DeathCount;
+
+	return SoulVariable::SoulMaxHp - SoulVariable::SoulHpDown * deathCount;
+}
+
 void fq::client::Soul::processInput(float dt)
 {
 	auto input = GetScene()->GetInputManager();
@@ -570,5 +576,26 @@ void fq::client::Soul::processInput(float dt)
 void fq::client::Soul::SetInvincible()
 {
 	mbIsInSafeZone = true;
+}
+
+float fq::client::Soul::GetHP() const
+{
+	return mHP;
+}
+
+void fq::client::Soul::SetHP(float hp)
+{
+	if (hp < 0.f)
+	{
+		return;
+	}
+
+	float maxHP = getMaxHP();
+	mHP = std::min<float>(hp, maxHP);
+
+	if (mPlayerHpBar != nullptr)
+	{
+		mPlayerHpBar->SetHPRatio(GetSoulHpRatio());
+	}
 }
 

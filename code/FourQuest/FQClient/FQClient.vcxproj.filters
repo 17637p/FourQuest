@@ -667,8 +667,11 @@
     </ClInclude>
     <ClInclude Include="BowPullState.h">
       <Filter>include\01.Player\State\ArcherState</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="FillSoulGauge.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="FillSoulHP.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1161,8 +1164,11 @@
     </ClCompile>
     <ClCompile Include="BowPullState.cpp">
       <Filter>src\01.Player\State\Bow</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="FillSoulGauge.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="FillSoulHP.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
