@@ -264,6 +264,7 @@ namespace fq::physics
 
 		// 충돌 매트릭스
 		int mCollisionMatrix[COLLISION_MATRIX_SIZE];
+		bool mbisHalfRateUpdate;
 
 		std::vector<physx::PxActor*> mActorsToRemove;
 	};
