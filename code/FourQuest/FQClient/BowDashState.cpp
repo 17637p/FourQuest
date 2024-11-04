@@ -31,6 +31,7 @@ namespace fq::client
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 		auto archer = animator.GetComponent<ArcherArmour>();
 		
+		archer->RemoveLineOfSight();
 		controller->SetPadInputRotation();
 
 		mDashEffect = archerArmour->EmitDash();
