@@ -32,6 +32,7 @@ namespace fq::physics
 		/// 천을 생성합니다.
 		/// </summary>
 		bool CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix, bool isSkinnedMesh);
+		bool CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix);
 
 		/// <summary>
 		/// 천 데이터를 얻습니다.
@@ -67,6 +68,7 @@ namespace fq::physics
 		std::weak_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
 
 		std::unordered_map<unsigned int, std::shared_ptr<CudaPhysicsCloth>> mPhysicsClothContainer;
+		std::vector<std::pair<Cloth::CreateClothData, int*>> mUpCommingClothVec;
 
 		physx::PxPhysics* mPhysics;
 		physx::PxScene* mScene;

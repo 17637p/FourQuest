@@ -289,6 +289,18 @@ __global__ void UpdateVertices(Vertex* vertices, physx::PxVec4* particleData, si
 }
 #pragma endregion
 
+#pragma region SetSimulation
+__global__ void SetSimulationStopVertex(physx::PxVec4* particleData, size_t vertexCount)
+{
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	if (idx < vertexCount)
+	{
+		// 애니메이션 데이터를 기반으로 정점 좌표 업데이트
+		particleData[idx].w = 0.f;
+	}
+}
+#pragma endregion
+
 namespace fq::physics
 {
 	bool CudaClothTool::copyVertexFromGPUToCPU(
@@ -715,6 +727,23 @@ namespace fq::physics
 			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateNormalToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
 			return false;
 		}
+
+		return true;
+	}
+	bool CudaClothTool::SetPhysXClothBufferVertexStop(const unsigned int vertexSize, physx::PxVec4* particle)
+	{
+		// 블록 갯수, 스레드 갯수 설정
+		int threadsPerBlock = 256;
+		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
+
+		SetSimulationStopVertex << <blocksPerGrid, threadsPerBlock >> > (particle, vertexSize);
+
+		return true;
+	}
+	bool CudaClothTool::SetPhysXClothBufferVertexSimulation(std::vector<unsigned int>& mDisableIndicesIndices, const unsigned int vertexSize, physx::PxVec4* particle, float mClothMass)
+	{
+
+
 
 		return true;
 	}
