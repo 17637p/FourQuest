@@ -93,6 +93,11 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 
 void fq::game_engine::ResourceSystem::LoadMaterialResource(fq::event::LoadMaterial event)
 {
+	if (event.materialPath.empty())
+	{
+		return;
+	}
+
 	LoadMaterial(event.materialPath);
 	*event.materialPtr = GetMaterial(event.materialPath);
 }
