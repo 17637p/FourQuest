@@ -42,6 +42,9 @@ namespace fq::client
 		/// </summary>
 		void SetInvincible();
 
+		float GetHP() const;
+		void SetHP(float hp);
+		
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -66,6 +69,8 @@ namespace fq::client
 		// 소울 시작시 hp 설정 
 		void setSoulHP();
 		void setName();
+		
+		float getMaxHP();
 
 		void processInput(float dt);
 

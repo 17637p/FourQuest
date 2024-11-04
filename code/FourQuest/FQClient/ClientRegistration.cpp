@@ -196,6 +196,7 @@
 #include "DestroyHelper.h"
 #include "MagicCircleEndPoint.h"
 #include "FillSoulGauge.h"
+#include "FillSoulHP.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -567,6 +568,17 @@ void fq::client::RegisterMetaData()
 		.data<&FillSoulGauge::mFillGauge>("mFillGauge"_hs)
 		.prop(fq::reflect::prop::Name, "mFillGauge")
 		.prop(fq::reflect::prop::Comment, u"채워질 게이지 양(해당 값으로 설정됨)")
+		.base<game_module::Component>();
+
+	entt::meta<FillSoulHP>()
+		.type("FillSoulHP"_hs)
+		.prop(reflect::prop::Name, "FillSoulHP")
+		.data<&FillSoulHP::mMinHP>("MinHP"_hs)
+		.prop(fq::reflect::prop::Name, "MinHP")
+		.prop(fq::reflect::prop::Comment, u"게이지 채우기 기준값(CurHP < MinHP)")
+		.data<&FillSoulHP::mFillHP>("mFillHP"_hs)
+		.prop(fq::reflect::prop::Name, "mFillHP")
+		.prop(fq::reflect::prop::Comment, u"설정될 체력 값")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
