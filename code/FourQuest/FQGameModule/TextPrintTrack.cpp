@@ -20,6 +20,7 @@ namespace fq::game_module
 		, mNameFontColor()
 		, mNameFontSize()
 		, mText()
+		, mTextFontCenterX(0.f)
 		, mTextFontCenterY()
 		, mTextFontColor()
 		, mTextFontSize()
@@ -39,11 +40,13 @@ namespace fq::game_module
 		mTotalPlayTime = info.totalPlayTime;
 
 		mName = info.name;
+		mNameFontCenterX = info.nameFontCenterX;
 		mNameFontCenterY = info.nameFontCenterY;
 		mNameFontColor = info.nameFontColor;
 		mNameFontSize = info.nameFontSize;
 
 		mText = info.text;
+		mTextFontCenterX = info.textFontCenterX;
 		mTextFontCenterY = info.textFontCenterY;
 		mTextFontColor = info.textFontColor;
 		mTextFontSize = info.textFontSize;
@@ -79,8 +82,15 @@ namespace fq::game_module
 		auto text = mTextObject->GetComponent<TextUI>();
 		auto nameTransform = mNameObject->GetComponent<Transform>();
 		auto textTransform = mTextObject->GetComponent<Transform>();
-		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mNameFontCenterY, 0.f));
-		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mTextFontCenterY, 0.f));
+		auto screenMgr = mScene->GetScreenManager();
+		auto fixedWidth = screenMgr->GetFixScreenWidth();
+		auto fixedHeight = screenMgr->GetFixScreenHeight();
+
+		float nameX = (fixedWidth * 0.5f) + mNameFontCenterX;
+		float textX = (fixedWidth * 0.5f) + mTextFontCenterX;
+
+		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(nameX, fixedHeight - mNameFontCenterY, 0.f));
+		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(textX, fixedHeight - mTextFontCenterY, 0.f));
 
 		// Scale 자동 조정 
 		UINT screenWidth = mScene->GetScreenManager()->GetFixScreenWidth();
@@ -96,8 +106,8 @@ namespace fq::game_module
 		textInfo.Text = mName;
 		textInfo.FontSize = mNameFontSize;
 		textInfo.FontColor = mNameFontColor;
-		textInfo.CenterX = 960.f;
-		textInfo.CenterY = 1080.f - mTextFontCenterY;
+		textInfo.CenterX = 960.f + mNameFontCenterX;
+		textInfo.CenterY = 1080.f - mNameFontCenterY;
 		textInfo.Layer = 150;
 		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
 		std::string font = boost::locale::conv::from_utf(L"던파 연단된 칼날", "UTF-8");
@@ -108,7 +118,7 @@ namespace fq::game_module
 		textInfo.FontSize = mTextFontSize;
 		textInfo.FontColor = mTextFontColor;
 		textInfo.Layer = 150;
-		textInfo.CenterX = 960.f;
+		textInfo.CenterX = 960.f + mTextFontCenterX;
 		textInfo.CenterY = 1080.f - mTextFontCenterY;
 		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
 		text->SetTextInfo(textInfo);

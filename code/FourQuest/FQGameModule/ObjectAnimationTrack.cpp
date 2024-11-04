@@ -34,14 +34,14 @@ namespace fq::game_module
 		mTargetObject = scene->GetObjectByName(info.targetObjectName);
 
 		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
-		if (mTargetObject.expired())
+		if (mTargetObject == nullptr)
 		{
 			spdlog::warn("[ObjectAnimationTrack Warrning({})] Do not Have TargetObject", __LINE__);
 			return false;
 		}
 
 		// 해당 오브젝트가 Transform을 가지고 있지 않으면 로그 띄우기
-		if (!mTargetObject.lock()->HasComponent<Transform>())
+		if (!mTargetObject->HasComponent<Transform>())
 		{
 			spdlog::warn("[ObjectAnimationTrack Warrning({})] TargetObject Have not Trasfrom Component", __LINE__);
 			return false;
@@ -64,11 +64,11 @@ namespace fq::game_module
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
 
-		if (!mTargetObject.expired())
+		if (mTargetObject && !mTargetObject->IsDestroyed())
 		{
-			if (!mTargetObject.lock()->HasComponent<Animator>()) return;
+			if (!mTargetObject->HasComponent<Animator>()) return;
 
-			auto animator = mTargetObject.lock()->GetComponent<Animator>();
+			auto animator = mTargetObject->GetComponent<Animator>();
 			animator->SetStopAnimation(true);
 
 			for (int i = 0; i < mAnimationTrackKeys.size(); i++)
@@ -98,11 +98,11 @@ namespace fq::game_module
 
 	void ObjectAnimationTrack::PlayExit()
 	{
-		if (!mTargetObject.expired())
+		if (mTargetObject && !mTargetObject->IsDestroyed())
 		{
-			if (!mTargetObject.lock()->HasComponent<Animator>()) return;
+			if (!mTargetObject->HasComponent<Animator>()) return;
 
-			auto animator = mTargetObject.lock()->GetComponent<Animator>();
+			auto animator = mTargetObject->GetComponent<Animator>();
 
 			auto& nodeHierarchyInstance = animator->GetNodeHierarchyInstance();
 
@@ -113,11 +113,11 @@ namespace fq::game_module
 
 	void ObjectAnimationTrack::End()
 	{
-		if (!mTargetObject.expired())
+		if (mTargetObject && !mTargetObject->IsDestroyed())
 		{
-			if (!mTargetObject.lock()->HasComponent<Animator>()) return;
+			if (!mTargetObject->HasComponent<Animator>()) return;
 
-			auto animator = mTargetObject.lock()->GetComponent<Animator>();
+			auto animator = mTargetObject->GetComponent<Animator>();
 
 			auto& nodeHierarchyInstance = animator->GetNodeHierarchyInstance();
 

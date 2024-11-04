@@ -40,8 +40,6 @@ namespace fq::game_module
 		mMagnitude = info.magnitude;
 		mCameraObjectName = info.cameraObjectName;
 
-
-
 		return true;
 	}
 

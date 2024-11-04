@@ -104,17 +104,38 @@ namespace fq::game_module
 		bool bIsLoop = false;
 	};
 
+	enum class ECreateDeleteMode
+	{
+		Create, // 생성만
+		Delete, // 삭제만 
+		CreateDelete, // 생성과 삭제
+	};
+
+	struct CreateDeleteTrackInfo
+	{
+		float startTime = 0.f;
+		float totalPlayTime = 0.f;
+		ECreateDeleteMode mode = ECreateDeleteMode::CreateDelete;
+		// 생성 정보
+		unsigned int prefabIndex = 0;
+
+		// 삭제 정보 
+		std::string deleteName;
+	};
+
 	struct TextPrintTrackInfo
 	{
 		std::string fontPath = {};// "던파 연단된 칼날";
 		float startTime = 0.f;
 		float totalPlayTime = 1.f;
 
+		float nameFontCenterX = 0.f;
 		float nameFontCenterY = 380.f;
 		float nameFontSize = 40.f;
 		DirectX::SimpleMath::Color nameFontColor = { 0.f, 0.f, 1.f, 1.f };
 		std::string name = {};
 
+		float textFontCenterX = 0.f;
 		float textFontCenterY = 300.f;
 		float textFontSize = 30.f;
 		DirectX::SimpleMath::Color textFontColor = { 1.f, 1.f, 1.f, 1.f };

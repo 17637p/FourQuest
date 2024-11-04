@@ -25,14 +25,14 @@ namespace fq::game_module
 		const DirectX::SimpleMath::Vector3& GetPrevPScale() { return mPrevScale; }
 		const std::vector<TrackKey>& GetTargetPosition() { return mKeys; }
 
-		void SetTargetObject(std::weak_ptr<GameObject> object) { mTargetObject = object; }
+		void SetTargetObject(std::shared_ptr<GameObject> object) { mTargetObject = object; }
 		void SetPrevPosition(const DirectX::SimpleMath::Vector3& position) { mPrevPosition = position; }
 		void SetPrevRotation(const DirectX::SimpleMath::Quaternion& rotation) { mPrevRotation = rotation; }
 		void SetPrevScale(const DirectX::SimpleMath::Vector3& scale) { mPrevScale = scale; }
 		void SetTargetPosition(const std::vector<TrackKey>& keys) { mKeys = keys; }
 
 	private:
-		std::weak_ptr<GameObject> mTargetObject;
+		std::shared_ptr<GameObject> mTargetObject;
 		std::vector<TrackKey> mKeys;
 
 		bool mbIsObjectReturnToStartTransform;

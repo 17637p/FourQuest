@@ -20,7 +20,7 @@ namespace fq::game_module
 
 	private:
 		Scene* mScene;
-		std::weak_ptr<GameObject>		mTargetObject;
+		std::shared_ptr<GameObject>		mTargetObject;
 		std::vector<TrackKey>			mKeys;
 
 		unsigned int					mPlayerID;

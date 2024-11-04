@@ -28,6 +28,7 @@
 #include "PlayerDummy.h"
 #include "PlayerHPBar.h"
 #include "ClientEvent.h"
+#include "ArcherArmour.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -350,6 +351,12 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 
 				// 피격 사운드 재생
 				monsterAtk->PlayHitSound();
+
+				// Archer 플레이어면 생성된 Effect 삭제
+				if (GetGameObject()->HasComponent<ArcherArmour>())
+				{
+					GetGameObject()->GetComponent<ArcherArmour>()->RemoveLineOfSight();
+				}
 			}
 		}
 	}
