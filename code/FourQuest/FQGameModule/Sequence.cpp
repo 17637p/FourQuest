@@ -34,6 +34,8 @@ namespace fq::game_module
 		, mTextPrintTrackInfo{}
 		, mVibrationTrackInfo{}
 		, mPrefabs{}
+		, mUIRenderDelayFrame(DELAY_FRAME)
+		, mUIRenderAccumlateFrame(0)
 	{
 	}
 
@@ -55,7 +57,7 @@ namespace fq::game_module
 		createTrack<PlayerTeleportTrack>(mPlayerTeleportTrackInfo);
 		createTrack<EffectTrack>(mEffectTrackInfo);
 		createTrack<SoundTrack>(mSoundTrackInfo);
-		createTrack<TextPrintTrack>(mTextPrintTrackInfo); 
+		createTrack<TextPrintTrack>(mTextPrintTrackInfo);
 		createTrack<VibrationTrack>(mVibrationTrackInfo);
 		createTrack<FadeTrack>(mFadeTrackInfo);
 		createTrack<CreateDeleteTrack>(mCreateDeleteTrackInfo, mPrefabs);
@@ -80,13 +82,18 @@ namespace fq::game_module
 					mTotalPlayTime = trackTotalTime;
 			}
 		}
+
+		mUIRenderDelayFrame = DELAY_FRAME;
+		mUIRenderAccumlateFrame = 0;
 	}
 
 	void Sequence::OnUpdate(float dt)
 	{
 		if (mbIsPlay)
 		{
-			if (!mbIsProcessedUIRender && mbIsOffUIRender)
+			++mUIRenderAccumlateFrame;
+
+			if (!mbIsProcessedUIRender && mbIsOffUIRender && mUIRenderDelayFrame < mUIRenderAccumlateFrame)
 			{
 				GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
 				mbIsProcessedUIRender = true;
@@ -249,7 +256,7 @@ namespace fq::game_module
 
 		for (const auto track : mTracks)
 		{
-			track->WakeUp ();
+			track->WakeUp();
 			track->End();
 
 			mbIsPlay = true;

@@ -144,6 +144,10 @@ namespace fq::game_module
 
 		bool mbIsProcessedUIRender;
 			
+		enum { DELAY_FRAME = 2 };
+		unsigned int mUIRenderDelayFrame;
+		unsigned int mUIRenderAccumlateFrame;
+
 		friend void RegisterMetaData();
 	};
 
