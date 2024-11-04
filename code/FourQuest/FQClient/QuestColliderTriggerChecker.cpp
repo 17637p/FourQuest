@@ -147,11 +147,27 @@ void fq::client::QuestColliderTriggerChecker::EventProcessUpdatePlayerState()
 			{
 				mIsAlive[event.playerID] = false;
 
+				//int maxPlayerNum = GetMaxPlayer();
+				//
+				//// 이벤트 발생
+				//GetScene()->GetEventManager()->FireEvent<client::event::ChangePlayerNumCollideTrigger>(
+				//	{ GetGameObject()->GetName(), maxPlayerNum, mCollidingPlayerNum });
+
 				int maxPlayerNum = GetMaxPlayer();
 
-				// 이벤트 발생
-				GetScene()->GetEventManager()->FireEvent<client::event::ChangePlayerNumCollideTrigger>(
-					{ GetGameObject()->GetName(), maxPlayerNum, mCollidingPlayerNum });
+				if (maxPlayerNum == mCollidingPlayerNum)
+				{
+					mIsClear = true;
+					// 이벤트 발생
+					GetScene()->GetEventManager()->FireEvent<client::event::AllCollideTrigger>(
+						{ GetGameObject()->GetName() });
+				}
+				else
+				{
+					// 이벤트 발생
+					GetScene()->GetEventManager()->FireEvent<client::event::ChangePlayerNumCollideTrigger>(
+						{ GetGameObject()->GetName(), maxPlayerNum, mCollidingPlayerNum });
+				}
 			}
 		});
 }

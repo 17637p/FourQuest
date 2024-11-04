@@ -99,6 +99,7 @@ void fq::client::QuestManager::OnStart()
 	eventProcessInProgressDefence();
 	eventProcessPushButtonEvent();
 	eventProcessOnUIRender();
+	eventProcessUpdatePlayerState();
 
 	mIsRenderingUI = true;
 
@@ -293,6 +294,7 @@ void fq::client::QuestManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mInProgressDefenceHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mPushButtonHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mUIRenderHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mUpdatePlayerStateHandler);
 }
 
 void fq::client::QuestManager::eventProcessKillMonster()
@@ -1868,6 +1870,7 @@ void fq::client::QuestManager::eventProcessUpdatePlayerState()
 			if (event.type == EPlayerType::SoulDestoryed)
 			{
 				mIsAlive[event.playerID] = false;
+				checkAllPushButton();
 			}
 		});
 }
@@ -1944,5 +1947,71 @@ void fq::client::QuestManager::eventProcessOnUIRender()
 			mIsRenderingUI = event.bIsRenderingUI;
 		}
 	);
+}
+
+void fq::client::QuestManager::checkAllPushButton()
+{
+	std::vector<PushButton>& pushButtonList = mCurMainQuest.mclearConditionList.pushButtonList;
+	if (pushButtonList.size() > 0)
+	{
+		int pushButtonPlayer = -1;
+		switch (pushButtonList[0].skillType)
+		{
+			case ESkillType::X:
+				pushButtonPlayer = getXPushPlayer();
+				break;
+			case ESkillType::A:
+				pushButtonPlayer = getAPushPlayer();
+				break;
+			case ESkillType::R:
+				pushButtonPlayer = getRPushPlayer();
+				break;
+			case ESkillType::Y:
+				pushButtonPlayer = getYPushPlayer();
+				break;
+			default:
+				break;
+		}
+
+		if (getMaxPlayer() == pushButtonPlayer)
+		{
+			mClearEvents.push_back(mCurMainQuest);
+			mClearEventIndexes.push_back(0);
+			spdlog::trace("Complete Clear Push Skill");
+		}
+	}
+
+	for (int i = 0; i < mCurSubQuest.size(); i++)
+	{
+		std::vector<PushButton>& pushButtonList = mCurSubQuest[i].mclearConditionList.pushButtonList;
+		if (pushButtonList.size() > 0)
+		{
+			int pushButtonPlayer = -1;
+			switch (pushButtonList[0].skillType)
+			{
+				case ESkillType::X:
+					pushButtonPlayer = getXPushPlayer();
+					break;
+				case ESkillType::A:
+					pushButtonPlayer = getAPushPlayer();
+					break;
+				case ESkillType::R:
+					pushButtonPlayer = getRPushPlayer();
+					break;
+				case ESkillType::Y:
+					pushButtonPlayer = getYPushPlayer();
+					break;
+				default:
+					break;
+			}
+
+			if (getMaxPlayer() == pushButtonPlayer)
+			{
+				mClearEvents.push_back(mCurSubQuest[i]);
+				mClearEventIndexes.push_back(i);
+				spdlog::trace("Complete Clear Push Skill");
+			}
+		}
+	}
 }
 
