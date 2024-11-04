@@ -118,7 +118,8 @@ void fq::game_module::ImageUI::OnUpdate(float dt)
 
 void fq::game_module::ImageUI::SetIsRender(size_t index, bool isRender)
 {
-	mImageObjects[index]->SetIsRender(isRender);
+	mUIInfomations[index].isRender = isRender;
+ 	mImageObjects[index]->SetIsRender(isRender);
 }
 
 void fq::game_module::ImageUI::SetUIScale(size_t index, float scaleX, float scaleY)
