@@ -32,7 +32,7 @@ namespace fq::game_module
 		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
 		if (mTargetObject == nullptr)
 		{
-			spdlog::warn("[ObjectMoveTrack Warrning({})] Do not Have TargetObject", __LINE__);
+			spdlog::warn("[ObjectMoveTrack Warrning({})] Do not Have TargetObject : {}", __LINE__ , info.targetObjectName);
 			return false;
 		}
 
@@ -67,7 +67,7 @@ namespace fq::game_module
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
 
-		if (mTargetObject && mTargetObject->IsDestroyed())
+		if (mTargetObject && !mTargetObject->IsDestroyed())
 		{
 			if (!mTargetObject->HasComponent<Transform>()) return;
 
