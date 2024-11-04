@@ -197,8 +197,7 @@ void fq::game_module::CharacterController::SetPadInputRotationBySpeed(EPadStickT
 	float diffAngle = Quaternion::Angle(inputRotation, lookRotation);
 
 	// 미세한 각도차이는 무시합니다. (무시하지 않으면 미세한 떨림 발생)
-	constexpr float IgnoreAngle = 6.25f;
-
+	constexpr float IgnoreAngle = 6.2f;
 	if (diffAngle >= IgnoreAngle)
 	{
 		mTransform->SetWorldRotation(inputRotation);

@@ -46,7 +46,6 @@ namespace fq::client
 		std::vector<game_module::ImageUI*> mSkillIconImages;
 
 		game_module::ScreenManager* mScreenManager;
-		game_module::Camera* mMainCamera;
 
 		game_module::EventHandler mInitCoolTimeHandler;
 
