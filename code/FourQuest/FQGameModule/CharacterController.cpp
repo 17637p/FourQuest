@@ -182,7 +182,9 @@ void fq::game_module::CharacterController::SetPadInputRotationBySpeed(EPadStickT
 			break;
 	}
 
-	if (input.Length() <= 0.1f)
+	// 입력 최소치 보정 값 
+	constexpr float rotationOffsetSq = 0.5f * 0.5f;
+	if (input.LengthSquared() <= rotationOffsetSq)
 		return;
 
 	input.Normalize();
