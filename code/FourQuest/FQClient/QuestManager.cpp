@@ -98,6 +98,9 @@ void fq::client::QuestManager::OnStart()
 	eventProcessChangePlayerNumCollideTrigger();
 	eventProcessInProgressDefence();
 	eventProcessPushButtonEvent();
+	eventProcessOnUIRender();
+
+	mIsRenderingUI = true;
 
 	// Quest 마다 isMain 설정
 	for (int i = 0; i < mMainQuests.size(); i++)
@@ -205,6 +208,11 @@ void fq::client::QuestManager::OnStart()
 	{
 		mIsAlive[3] = true;
 	}
+
+	while (!mRemoveViewQuests.empty())
+	{
+		mRemoveViewQuests.pop();
+	}
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
@@ -279,6 +287,7 @@ void fq::client::QuestManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mChangePlayerNumCollideTriggereHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mInProgressDefenceHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mPushButtonHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mUIRenderHandler);
 }
 
 void fq::client::QuestManager::eventProcessKillMonster()
@@ -771,8 +780,8 @@ void fq::client::QuestManager::eventProcessClearQuest()
 					{
 						if (mViewSubQuest[i].mIndex == event.clearQuest.mIndex)
 						{
-							int questUIindex = event.index + 1;
-							startComplete(questUIindex);
+							startComplete(i + 1);
+							mRemoveViewQuests.push(mViewSubQuest[i]);
 						}
 					}
 				}
@@ -927,6 +936,11 @@ void fq::client::QuestManager::eventProcessObjectInteraction()
 
 void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::TextUI* textUI)
 {
+	if (!mIsRenderingUI)
+	{
+		return;
+	}
+
 	// textUI children 0 - QuestBox, 1 - monsterKillText, 2 - GaugeBar
 	game_module::TextUI* monsterKillText =
 		textUI->GetGameObject()->GetParent()->GetChildren()[2]->GetComponent<game_module::TextUI>();
@@ -1373,10 +1387,22 @@ void fq::client::QuestManager::playComplete(float dt)
 				if (mIsFinishedCompleteAnimation[i])
 				{
 					mIsFinishedCompleteAnimation[i] = false;
-					if (mViewSubQuest.size() > 0)
+					//if (mViewSubQuest.size() > 0)
+					//{
+					//	mViewSubQuest.erase(mViewSubQuest.begin() + i - 1);
+					//}
+
+					Quest removeQuest = mRemoveViewQuests.front();
+					mRemoveViewQuests.pop();
+
+					for (int viewQuest = 0; viewQuest < mViewSubQuest.size(); viewQuest++)
 					{
-						mViewSubQuest.erase(mViewSubQuest.begin() + i - 1);
+						if (mViewSubQuest[viewQuest].mIndex == removeQuest.mIndex)
+						{
+							mViewSubQuest.erase(mViewSubQuest.begin() + viewQuest);
+						}
 					}
+
 					if (mNextSubQuests.size() > 0)
 					{
 						// 다음 퀘스트 추가
@@ -1384,11 +1410,10 @@ void fq::client::QuestManager::playComplete(float dt)
 						mNextSubQuests.pop_front();
 
 						// New 연출
-						startNew(i);
+						startNew(mViewSubQuest.size());
 					}
 
 					RenderOnAllSubQuest();
-
 				}
 			}
 		}
@@ -1909,5 +1934,15 @@ void fq::client::QuestManager::initPushPlayer(std::vector<bool>& pushVec)
 	{
 		pushVec[i] = false;
 	}
+}
+
+void fq::client::QuestManager::eventProcessOnUIRender()
+{
+	mUIRenderHandler = GetScene()->GetEventManager()->RegisterHandle<fq::event::UIRender>(
+		[this](const fq::event::UIRender& event)
+		{
+			mIsRenderingUI = event.bIsRenderingUI;
+		}
+	);
 }
 

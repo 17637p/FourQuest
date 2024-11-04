@@ -30,14 +30,14 @@ namespace fq::game_module
 		mTargetObject = scene->GetObjectByName(info.targetObjectName);
 
 		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
-		if (mTargetObject.expired())
+		if (mTargetObject == nullptr)
 		{
 			spdlog::warn("[ObjectMoveTrack Warrning({})] Do not Have TargetObject", __LINE__);
 			return false;
 		}
 
 		// 해당 오브젝트가 Transform을 가지고 있지 않으면 로그 띄우기
-		if (!mTargetObject.lock()->HasComponent<Transform>())
+		if (!mTargetObject->HasComponent<Transform>())
 		{
 			spdlog::warn("[ObjectMoveTrack Warrning({})] TargetObject Have not Trasfrom Component", __LINE__);
 			return false;
@@ -45,7 +45,7 @@ namespace fq::game_module
 
 		mKeys = info.keys;
 
-		auto transform = mTargetObject.lock()->GetComponent<Transform>();
+		auto transform = mTargetObject->GetComponent<Transform>();
 		mPrevPosition = transform->GetWorldPosition();
 		mPrevRotation = transform->GetWorldRotation();
 		mPrevScale = transform->GetWorldScale();
@@ -56,9 +56,9 @@ namespace fq::game_module
 	void ObjectMoveTrack::PlayEnter()
 	{
 		// time 값에 따라 TrackKey 벡터를 오름차순으로 정렬
-		std::sort(mKeys.begin(), mKeys.end(), [](const TrackKey& a, const TrackKey& b) 
+		std::sort(mKeys.begin(), mKeys.end(), [](const TrackKey& a, const TrackKey& b)
 			{
-			return a.time < b.time;
+				return a.time < b.time;
 			});
 	}
 
@@ -67,12 +67,12 @@ namespace fq::game_module
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
 
-		if (!mTargetObject.expired())
+		if (mTargetObject && mTargetObject->IsDestroyed())
 		{
-			if (!mTargetObject.lock()->HasComponent<Transform>()) return;
+			if (!mTargetObject->HasComponent<Transform>()) return;
 
-			auto transform = mTargetObject.lock()->GetComponent<Transform>();
-				
+			auto transform = mTargetObject->GetComponent<Transform>();
+
 			// 현재 재생중인 키가 무엇인지 찾기
 			for (int i = 0; i < mKeys.size(); i++)
 			{
@@ -122,6 +122,10 @@ namespace fq::game_module
 				transform->SetWorldMatrix(newTransform);
 			}
 		}
+		else
+		{
+			mTargetObject = nullptr;
+		}
 	}
 
 	void ObjectMoveTrack::PlayExit()
@@ -131,11 +135,11 @@ namespace fq::game_module
 	void ObjectMoveTrack::End()
 	{
 		// 시퀀스가 시작하기 이전 Transform로 돌아가야 할 경우
-		if (!mTargetObject.expired() && mbIsObjectReturnToStartTransform)
+		if (mTargetObject && !mTargetObject->IsDestroyed() && mbIsObjectReturnToStartTransform)
 		{
-			if (!mTargetObject.lock()->HasComponent<Transform>()) return;
+			if (!mTargetObject->HasComponent<Transform>()) return;
 
-			auto transform = mTargetObject.lock()->GetComponent<Transform>();
+			auto transform = mTargetObject->GetComponent<Transform>();
 
 			DirectX::SimpleMath::Matrix prevTransform =
 				DirectX::SimpleMath::Matrix::CreateScale(mPrevScale)

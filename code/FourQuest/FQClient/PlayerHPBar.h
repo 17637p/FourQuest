@@ -19,6 +19,8 @@ namespace fq::client
 		void DecreaseHp(float ratio);
 		void SetVisible(bool isVisible);
 
+		void SetHPRatio(float ratio);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
