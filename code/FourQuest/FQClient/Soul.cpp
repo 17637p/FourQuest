@@ -309,18 +309,18 @@ void fq::client::Soul::SetSoulColor()
 
 			switch (mSoulType)
 			{
-			case fq::client::ESoulType::Sword:
-				matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
-				break;
-			case fq::client::ESoulType::Staff:
-				matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
-				break;
-			case fq::client::ESoulType::Axe:
-				matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
-				break;
-			case fq::client::ESoulType::Bow:
-				matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
-				break;
+				case fq::client::ESoulType::Sword:
+					matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
+					break;
+				case fq::client::ESoulType::Staff:
+					matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
+					break;
+				case fq::client::ESoulType::Axe:
+					matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
+					break;
+				case fq::client::ESoulType::Bow:
+					matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
+					break;
 			}
 
 			particle->SetParticleMaterialInfo(matInfo);
@@ -467,10 +467,9 @@ void fq::client::Soul::ReleaseGoddessStatue()
 
 	mSelectGoddessStatue->SetOverlaySoul(false, this);
 
-	//if (GetGameObject()->HasComponent<HpBar>())
-	//{
-	//	GetComponent<HpBar>()->SetHp(1);
-	//}
+	if (mPlayerHpBar)
+		mPlayerHpBar->SetHPRatio(1.f);
+
 
 	setSoulHP();
 }
@@ -512,20 +511,20 @@ void fq::client::Soul::setName()
 	{
 		switch (soulType)
 		{
-		case 0:
-			speechBubble->SetName(PlayerInfoVariable::KnightName);
-			break;
-		case 1:
-			speechBubble->SetName(PlayerInfoVariable::MagicName);
-			break;
-		case 2:
-			speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-			break;
-		case 3:
-			speechBubble->SetName(PlayerInfoVariable::ArcherName);
-			break;
-		default:
-			break;
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
 		}
 	}
 }
@@ -535,7 +534,7 @@ float fq::client::Soul::getMaxHP()
 	// °©¿Ê Á×À½ Ä«¿îÅÍ¿¡ µû¶ó ¿µÈ¥ ÃÖ´ë Ã¼·Â ¼¼ÆÃ
 	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
 	int deathCount = 0;
-	
+
 	if (id == 0)
 		deathCount = SoulVariable::Player1DeathCount;
 	else if (id == 1)
