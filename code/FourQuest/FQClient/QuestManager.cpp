@@ -217,6 +217,13 @@ void fq::client::QuestManager::OnStart()
 
 void fq::client::QuestManager::OnUpdate(float dt)
 {
+	setScaleAndPositionScreen();
+
+	if (!mIsRenderingUI)
+	{
+		return;
+	}
+
 	if (mClearEvents.size() > 0)
 	{
 		for (int i = 0; i < mClearEvents.size(); i++)
@@ -228,14 +235,12 @@ void fq::client::QuestManager::OnUpdate(float dt)
 		mClearEventIndexes.clear();
 	}
 
-	setScaleAndPositionScreen();
+	ViewQuestInformation(mViewMainQuest, mMainQuestText);
 
 	// Main Quest Text Setting
 	auto textInfo = mMainQuestText->GetTextInfo();
 	textInfo.Text = mViewMainQuest.mName;
 	mMainQuestText->SetTextInfo(textInfo);
-
-	ViewQuestInformation(mViewMainQuest, mMainQuestText);
 
 	// Sub Quest Text Setting
 	for (int i = 0; i < mViewSubQuest.size(); i++)
@@ -936,11 +941,6 @@ void fq::client::QuestManager::eventProcessObjectInteraction()
 
 void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::TextUI* textUI)
 {
-	if (!mIsRenderingUI)
-	{
-		return;
-	}
-
 	// textUI children 0 - QuestBox, 1 - monsterKillText, 2 - GaugeBar
 	game_module::TextUI* monsterKillText =
 		textUI->GetGameObject()->GetParent()->GetChildren()[2]->GetComponent<game_module::TextUI>();
