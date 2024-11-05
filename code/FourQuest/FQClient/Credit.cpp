@@ -1,11 +1,11 @@
 #include "Credit.h"
 
 #include "../FQGameModule/Transform.h"
+#include "../FQGameModule/VideoUI.h"
 
 fq::client::Credit::Credit()
-	:mSeconds(0),
-	mNextSceneName(""),
-	mCurTime(0)
+	:mDelaySeconds(0),
+	mNextSceneName("")
 {
 }
 
@@ -34,12 +34,6 @@ void fq::client::Credit::OnUpdate(float dt)
 {
 	setScaleScreen();
 
-	mCurTime += dt;
-	if (mCurTime > mSeconds)
-	{
-		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ mNextSceneName, true });
-	}
-
 	auto input = GetScene()->GetInputManager();
 	for (int i = 0; i < 4; i++)
 	{
@@ -48,13 +42,16 @@ void fq::client::Credit::OnUpdate(float dt)
 			GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ mNextSceneName, true });
 		}
 	}
+
+	if (GetComponent<game_module::VideoUI>()->IsEndPlay(mDelaySeconds))
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ mNextSceneName, true });
+	}
 }
 
 void fq::client::Credit::OnStart()
 {
 	mScreenManager = GetScene()->GetScreenManager();
-
-	mCurTime = 0;
 }
 
 void fq::client::Credit::setScaleScreen()

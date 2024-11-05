@@ -26,11 +26,9 @@ namespace fq::client
 
 	private:
 		// Inspector
-		float mSeconds;
+		float mDelaySeconds;
 		std::string mNextSceneName;
 
-		// 
-		float mCurTime;
 		game_module::ScreenManager* mScreenManager;
 
 	private:

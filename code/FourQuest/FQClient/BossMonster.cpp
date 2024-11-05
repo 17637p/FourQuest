@@ -8,6 +8,7 @@
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/BoxCollider.h"
 #include "../FQGameModule/Socket.h"
+#include "../FQGameModule/DecalUVAnimator.h"
 
 #include "Attack.h"
 #include "GameManager.h"
@@ -25,6 +26,7 @@
 #include "UIShaker.h"
 #include "MeleeMonster.h"
 #include "PlantMonster.h"
+#include "ScaleAnimation.h"
 
 #include <spdlog/spdlog.h>
 
@@ -102,7 +104,7 @@ fq::client::BossMonster::BossMonster()
 	, mJumpPosition()
 	, mDefaultJumpPosition()
 
-	, mArrowImotalTime()
+	, mArrowImotalTime(0.1f)
 	, mArrowHitDuration()
 
 	, mbEnterAngryState(false)
@@ -128,6 +130,11 @@ fq::client::BossMonster::BossMonster()
 	, mMagicDamageRatio(1.f)
 	, mArcherDamageRatio(1.f)
 	, mBerserkerDamageRatio(1.f)
+
+	, mSmashDownDecalEffectSpeed(1.f)
+	, mComboDecalEffectSpeed(1.f)
+	, mRushDecalEffectSpeed(1.f)
+	, mJumpDecalEffectSpeed(1.f)
 {}
 
 
@@ -250,6 +257,16 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitSmashD
 
 	SetSmashDecalEffect(effectObj);
 
+	// 재생 속도 설정
+	if (IsAngry())
+	{
+		setDecalEffectSpeed(effectObj.get(), mSmashDownDecalEffectSpeed * mAngryPreAttackSpeedRatio);
+	}
+	else
+	{
+		setDecalEffectSpeed(effectObj.get(), mSmashDownDecalEffectSpeed);
+	}
+
 	GetScene()->AddGameObject(effectObj);
 
 	return effectObj;
@@ -312,6 +329,16 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitComboD
 
 	SetComboDecalEffect(effectObj, xAxisOffset);
 
+	// 재생 속도 설정
+	if (IsAngry())
+	{
+		setDecalEffectSpeed(effectObj.get(), mAngryPreAttackSpeedRatio * mComboDecalEffectSpeed);
+	}
+	else
+	{
+		setDecalEffectSpeed(effectObj.get(), mComboDecalEffectSpeed);
+	}
+
 	GetScene()->AddGameObject(effectObj);
 
 	return effectObj;
@@ -367,6 +394,16 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitRushDe
 	effectT->SetParent(mTransform);
 	effectT->SetLocalPosition({ 0, mEffectYOffset, 0 });
 
+	// 재생 속도 설정
+	if (IsAngry())
+	{
+		setDecalEffectSpeed(effectObj.get(), mRushDecalEffectSpeed * mAngryPreAttackSpeedRatio);
+	}
+	else
+	{
+		setDecalEffectSpeed(effectObj.get(), mRushDecalEffectSpeed);
+	}
+
 	GetScene()->AddGameObject(effectObj);
 
 	return effectObj;
@@ -404,6 +441,8 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitJumpDe
 
 	auto effectT = effectObj->GetComponent<game_module::Transform>();
 	effectT->SetWorldPosition(mJumpPosition);
+	
+	setDecalEffectSpeed(effectObj.get(), mJumpDecalEffectSpeed);
 
 	GetScene()->AddGameObject(effectObj);
 
@@ -1034,6 +1073,7 @@ void fq::client::BossMonster::HitArrow(fq::game_module::GameObject* object)
 		return;
 	}
 
+	mArrowHitDuration = 0.f;
 	auto playerAttack = object->GetComponent<Attack>();
 	processAttack(playerAttack);
 }
@@ -1275,6 +1315,33 @@ void fq::client::BossMonster::processAttack(Attack* attack)
 			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
 		}
 	}
+}
+
+void fq::client::BossMonster::setDecalEffectSpeed(game_module::GameObject* gameObject, float speed)
+{
+	std::function<void(game_module::GameObject*)> setDecalEffectSpeed = [speed, &setDecalEffectSpeed](fq::game_module::GameObject* gameObject)
+		{
+			auto decalUVAnimator = gameObject->GetComponent<game_module::DecalUVAnimator>();
+
+			if (decalUVAnimator != nullptr)
+			{
+				decalUVAnimator->SetPlaySpeed(speed);
+			}
+
+			auto scaleAnimation = gameObject->GetComponent<ScaleAnimation>();
+
+			if (scaleAnimation != nullptr)
+			{
+				scaleAnimation->SetPlaySpeed(speed);
+			}
+
+			for (auto child : gameObject->GetChildren())
+			{
+				setDecalEffectSpeed(child);
+			}
+		};
+
+	setDecalEffectSpeed(gameObject);
 }
 
 float fq::client::BossMonster::GetAngryPreAttackSpeedRatio() const

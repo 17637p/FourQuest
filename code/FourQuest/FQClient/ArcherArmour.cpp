@@ -89,7 +89,10 @@ namespace fq::client
 			->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::R });
 	}
 
-	void ArcherArmour::makeStrongAttackArrow(float damage, DirectX::SimpleMath::Quaternion direction, DirectX::SimpleMath::Vector3 position)
+	void ArcherArmour::makeStrongAttackArrow(float damage,
+		DirectX::SimpleMath::Quaternion direction,
+		DirectX::SimpleMath::Vector3 position,
+		std::function<void()> hitCallback)
 	{
 		using namespace DirectX::SimpleMath;
 
@@ -113,6 +116,7 @@ namespace fq::client
 		attackInfo.remainingAttackCount = 0b11111111;
 		attackInfo.strongDamage = damage;
 		attackInfo.strongProjectileVelocity = mStrongProjectileVelocity;
+		attackInfo.hitCallback = hitCallback;
 		attackComponent->Set(attackInfo);
 
 		// 화살 생존시간 설정
@@ -184,9 +188,21 @@ namespace fq::client
 
 		// 차지레벨에 따라서 화살을 생성 
 		auto directions = GetStrongArrowDirections(chargeLevel);
+
+		// 히트 콜백 생성 
+		auto isIncrease = std::make_shared<bool>();
+		auto hitCallback = [this, isIncrease]() mutable
+			{
+				if (!(*isIncrease))
+				{
+					mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+					*isIncrease = true;
+				}
+			};
+
 		for (int i = 0; i < directions.size(); ++i)
 		{
-			makeStrongAttackArrow(attackPower, directions[i], position);
+			makeStrongAttackArrow(attackPower, directions[i], position, hitCallback);
 		}
 
 		// 키입력 이벤트 

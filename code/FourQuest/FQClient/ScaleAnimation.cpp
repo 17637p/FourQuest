@@ -1,6 +1,15 @@
 #include "ScaleAnimation.h"
 #include "../FQGameModule/Transform.h"
 
+fq::client::ScaleAnimation::ScaleAnimation()
+	: mDuration(1.f)
+	, mStartScale(1, 1, 1)
+	, mEndScale(1, 1, 1)
+	, mElapsed(0.f)
+	, mPlaySpeed(1.f)
+{
+}
+
 std::shared_ptr<fq::game_module::Component> fq::client::ScaleAnimation::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
 	std::shared_ptr<ScaleAnimation> cloneMonster = std::dynamic_pointer_cast<ScaleAnimation>(clone);
@@ -25,11 +34,11 @@ void fq::client::ScaleAnimation::OnStart()
 
 void fq::client::ScaleAnimation::OnUpdate(float dt)
 {
-	mElapsed += dt;
+	mElapsed += dt * mPlaySpeed;
 	mElapsed = std::min<float>(mElapsed, mDuration);
 
 	auto transform = GetComponent<fq::game_module::Transform>();
-	
+
 	if (transform != nullptr)
 	{
 		float ratio = mElapsed / mDuration;
