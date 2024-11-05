@@ -30,12 +30,15 @@ namespace fq::game_module
 		fq::graphics::IVideoObject* GetVideoObject() const { return mVideoObject; }
 		void SetVideoObject(fq::graphics::IVideoObject* val) { mVideoObject = val; }
 
+		bool IsEndPlay(float delaytime);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 	private:
 		fq::graphics::IVideoObject* mVideoObject;
+		float mTotalPlayTime;
 		fq::graphics::VideoInfo mVIdeoInfo;
 
 		friend void RegisterMetaData();

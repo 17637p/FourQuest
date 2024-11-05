@@ -193,20 +193,29 @@ namespace fq::client
 		// 강공격, 약공격에 따라 Attack 컴포넌트 데이터 세팅
 		if (GetGameObject()->HasComponent<Attack>())
 		{
+
+
 			auto attack = GetComponent<Attack>();
 			AttackInfo attackInfo;
 			attackInfo.attacker = mAttacker;
 			attackInfo.hitSound = mHitSound;
 			attackInfo.attackDirection = mAttackDirection;
 			attackInfo.attackPosition = mAttackTransform.Translation();
-			attackInfo.mHitCallback = [this, isIncrease = false]() mutable
-				{
-					if (!isIncrease)
+			if (info.hitCallback)
+			{
+				attackInfo.mHitCallback = info.hitCallback;
+			}
+			else
+			{
+				attackInfo.mHitCallback = [this, isIncrease = false]() mutable
 					{
-						mAttacker->GetComponent<Player>()->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
-						isIncrease = true;
-					}
-				};
+						if (!isIncrease)
+						{
+							mAttacker->GetComponent<Player>()->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+							isIncrease = true;
+						}
+					};
+			}
 
 			if (mbIsStrongAttack)
 			{

@@ -104,7 +104,7 @@ fq::client::BossMonster::BossMonster()
 	, mJumpPosition()
 	, mDefaultJumpPosition()
 
-	, mArrowImotalTime()
+	, mArrowImotalTime(0.1f)
 	, mArrowHitDuration()
 
 	, mbEnterAngryState(false)
@@ -1073,6 +1073,7 @@ void fq::client::BossMonster::HitArrow(fq::game_module::GameObject* object)
 		return;
 	}
 
+	mArrowHitDuration = 0.f;
 	auto playerAttack = object->GetComponent<Attack>();
 	processAttack(playerAttack);
 }
