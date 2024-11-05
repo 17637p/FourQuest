@@ -54,6 +54,7 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 attackDirection{};
 		DirectX::SimpleMath::Matrix attackTransform{};
 
+		std::function<void()> hitCallback; // 공격성공 콜백함수
 		std::string hitSound{}; // 피격 소리
 		std::string HitEffectName{};
 	};
