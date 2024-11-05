@@ -33,6 +33,7 @@ namespace fq::client
 
 		void eventProcessSequenceEnterSpeech();
 		void eventProcessSequenceExitSpeech();
+		void eventProcessOnUIRender();
 
 	private:
 		std::string mName;
@@ -42,6 +43,7 @@ namespace fq::client
 
 		game_module::EventHandler mSequenceSpeechEnterHandler;
 		game_module::EventHandler mSequenceSpeechExitHandler;
+		game_module::EventHandler mUIRenderHandler;
 
 		bool mIsOn;
 
@@ -51,6 +53,8 @@ namespace fq::client
 		std::vector<game_module::ImageUI*> mImageUIs;
 		game_module::ScreenManager* mScreenManager;
 		game_module::Camera* mMainCamera;
+
+		bool mIsRenderingUI;
 
 	private:
 		friend void RegisterMetaData();
