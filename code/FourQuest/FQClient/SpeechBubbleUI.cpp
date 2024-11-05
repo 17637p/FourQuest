@@ -113,7 +113,10 @@ void fq::client::SpeechBubbleUI::OnUpdate(float dt)
 			image->GetTransform()->SetWorldPosition({ posX, posY, 0 });
 		}
 
-		play();
+		if (mIsRenderingUI)
+		{
+			play();
+		}
 	}
 }
 
@@ -186,4 +189,14 @@ void fq::client::SpeechBubbleUI::play()
 			mImageUIs[i]->SetIsRender(0, false);
 		}
 	}
+}
+
+void fq::client::SpeechBubbleUI::eventProcessOnUIRender()
+{
+	mUIRenderHandler = GetScene()->GetEventManager()->RegisterHandle<fq::event::UIRender>(
+		[this](const fq::event::UIRender& event)
+		{
+			mIsRenderingUI = event.bIsRenderingUI;
+		}
+	);
 }

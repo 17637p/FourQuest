@@ -21,6 +21,7 @@ namespace fq::game_module
 		PLAYER_MOVE,		// 플레이어 이동
 		FAID_IN_OUT,		// 페이드 인/아웃
 		CREATE_DELETE,		// 오브젝트 생성 삭제
+		LIGHT,				// 라이트
 
 		END
 	};

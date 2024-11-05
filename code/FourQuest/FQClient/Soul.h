@@ -25,7 +25,6 @@ namespace fq::client
 		void DestorySoul();
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
 		void SetSoulType(fq::client::ESoulType type);
-
 		void SetSoulColor();
 
 		void ReleaseGoddessStatue();
@@ -81,7 +80,7 @@ namespace fq::client
 
 		PlayerHPBar* mPlayerHpBar;
 		BGaugeUI* mBGaugeUI;
-		ESoulType mSoulType;
+		ESoulType mSoulType = ESoulType::End;
 
 		/// 체력 관련
 		// 근처에 플레이어가 있는지

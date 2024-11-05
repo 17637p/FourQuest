@@ -543,7 +543,7 @@ void fq::client::PlayerUI::setSoulSkillIcon()
 
 	if (soulType != -1)
 	{
-		mSoulSkillIcons[soulType]->SetIsRender(0, true);
+ 		mSoulSkillIcons[soulType]->SetIsRender(0, true);
 	}
 }
 

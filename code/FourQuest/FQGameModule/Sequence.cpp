@@ -61,6 +61,7 @@ namespace fq::game_module
 		createTrack<VibrationTrack>(mVibrationTrackInfo);
 		createTrack<FadeTrack>(mFadeTrackInfo);
 		createTrack<CreateDeleteTrack>(mCreateDeleteTrackInfo, mPrefabs);
+		createTrack<LightTrack>(mLightTrackInfo);
 
 		auto scene = GetScene();
 		bool check = false;
