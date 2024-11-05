@@ -30,7 +30,7 @@ namespace fq::client
 		void resurrectAllSoul();
 
 	private:
-		bool mbOnDebugText;
+		inline static bool OnDebugText = false;
 		game_module::TextUI* mFPSUI;
 
 	private:
