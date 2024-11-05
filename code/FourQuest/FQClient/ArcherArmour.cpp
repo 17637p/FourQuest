@@ -98,8 +98,9 @@ namespace fq::client
 		auto& attackObj = *(instance.begin());
 		auto attackComponent = attackObj->GetComponent<client::ArrowAttack>();
 		auto attackT = attackObj->GetComponent<game_module::Transform>();
-		attackT->GenerateWorld(position, direction, attackT->GetWorldScale());
 		Vector3 attackDirection = Matrix::CreateFromQuaternion(direction).Forward();
+		attackDirection.Normalize();
+		attackT->GenerateWorld(position + (attackDirection * 2.f), direction, attackT->GetWorldScale());
 
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};

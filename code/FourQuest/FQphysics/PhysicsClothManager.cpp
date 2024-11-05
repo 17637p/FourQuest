@@ -46,6 +46,14 @@ namespace fq::physics
 		return true;
 	}
 
+	bool PhysicsClothManager::UpdateLerpSimulationPositions()
+	{
+
+
+
+		return true;
+	}
+
 	bool PhysicsClothManager::CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix, bool isSkinnedMesh)
 	{
 		mUpCommingClothVec.push_back(std::make_pair(info, collisionMatrix));
