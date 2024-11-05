@@ -109,6 +109,7 @@ namespace fq::physics
 		, mCollisionMatrix{}
 		, mbIsSimulating(false)
 		, mGpuSceneWaitUpdateCount(0)
+		, mbIsHalfFrameUpdate(true)
 	{
 	}
 
@@ -239,7 +240,7 @@ namespace fq::physics
 				// 완료되었으면 결과를 가져옴
 				if (!mGpuScene->fetchResults(true))
 					return false;
-				if (!mClothManager->Update(deltaTime * mGpuSceneWaitUpdateCount))
+				if (!mClothManager->UpdateSimulationData(deltaTime * mGpuSceneWaitUpdateCount))
 					return false;
 
 				mbIsSimulating = false;
@@ -255,6 +256,18 @@ namespace fq::physics
 			mGpuScene->simulate(deltaTime * 2.f);
 			mGpuSceneWaitUpdateCount = 0;
 			mbIsSimulating = true;
+		}
+
+		if (mbIsHalfFrameUpdate)
+		{
+			mbIsHalfFrameUpdate = false;
+
+			if (!mClothManager->Update(deltaTime * 2.f))
+				return false;
+		}
+		else
+		{
+			mbIsHalfFrameUpdate = true;
 		}
 
 		mMyEventCallback->OnTrigger();

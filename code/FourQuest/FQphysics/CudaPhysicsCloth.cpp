@@ -51,6 +51,7 @@ namespace fq::physics
 		, mClothBufferHelper(nullptr)
 		, mCudaVertexResource(nullptr)
 		, mCudaIndexResource(nullptr)
+		, mDurationTime()
 	{
 	}
 
@@ -155,10 +156,27 @@ namespace fq::physics
 	 
 	bool CudaPhysicsCloth::UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager, float deltaTime)
 	{
+		// 시간 체크
+		mDurationTime += deltaTime;
+		if (mLerpTime <= 0.f)
+		{
+			spdlog::warn("[CudaPhysicsCloth ({})] LerpTime is Zero", __LINE__);
+			mLerpTime = 1.f;
+		}
+
+		// 보간 값 생성
+		float lerpValue = mDurationTime / mLerpTime;
+		if (lerpValue > 1.f)
+		{
+			lerpValue = 1.f;
+		}
+
+		// 월드 트랜스폼 역행렬 값
 		DirectX::SimpleMath::Matrix InvTransform;
 		mWorldTransform.Invert(InvTransform);
 
-		//if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(mVertices, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;		// 천 입자로 Graphics VertexBuffer에 position값 Update하는 cuda함수 
+		// 보간된 값을 Graphics Engine의 천 버퍼에 업데이트 해주는 Cuda 함수
+		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(mPrevClothBuffer, mCurrClothBuffer, lerpValue, InvTransform, mCudaVertexResource, mCudaVertexStride)) return false;
 
 		return true;
 	}
@@ -171,8 +189,9 @@ namespace fq::physics
 		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
 
 		if (!CudaClothTool::UpdateParticleBuffer(mCurrClothBuffer.size(), mCurrClothBuffer.data(), paticle)) return false;
+		if (!updateWindToParticle()) return false;
 
-		return false;
+		return true;
 	}
 
 
@@ -234,6 +253,9 @@ namespace fq::physics
 			mCurrClothBuffer[i].x = mVertices[i].x;
 			mCurrClothBuffer[i].y = mVertices[i].y;
 			mCurrClothBuffer[i].z = mVertices[i].z;
+			mPrevClothBuffer[i].x = mVertices[i].x;
+			mPrevClothBuffer[i].y = mVertices[i].y;
+			mPrevClothBuffer[i].z = mVertices[i].z;
 		}
 
 		//bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);
