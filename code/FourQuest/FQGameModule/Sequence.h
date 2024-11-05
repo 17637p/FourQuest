@@ -18,6 +18,7 @@
 #include "VibrationTrack.h"
 #include "FadeTrack.h"
 #include "CreateDeleteTrack.h"
+#include "LightTrack.h"
 
 namespace fq::game_module
 {
@@ -84,6 +85,8 @@ namespace fq::game_module
 		void SetFadeTrackInfo(const std::vector<FadeTrackInfo>& info) { mFadeTrackInfo = info; }
 		const std::vector<CreateDeleteTrackInfo>& GetCreateDeleteTrackInfo() const { return mCreateDeleteTrackInfo; }
 		void SetCreateDeleteTrackInfo(const std::vector<CreateDeleteTrackInfo>& info) { mCreateDeleteTrackInfo = info; }
+		const std::vector<LightTrackInfo>& GetLightTrackInfo() const { return mLightTrackInfo; }
+		void SetLightTrackInfo(const std::vector<LightTrackInfo>& info) { mLightTrackInfo = info; }
 
 		std::vector<std::shared_ptr<Track>>& GetTrackContainer() { return mTracks; }
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>>& GetAnimationContainer() { return mAnimationContainer; }
@@ -138,6 +141,7 @@ namespace fq::game_module
 		std::vector<VibrationTrackInfo>			mVibrationTrackInfo;
 		std::vector<FadeTrackInfo>				mFadeTrackInfo;
 		std::vector<CreateDeleteTrackInfo>		mCreateDeleteTrackInfo;
+		std::vector<LightTrackInfo>				mLightTrackInfo;
 		std::vector<PrefabResource>				mPrefabs;
 
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>> mAnimationContainer;

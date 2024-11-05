@@ -46,9 +46,9 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsClothManager::UpdateLerpSimulationPositions()
+	bool PhysicsClothManager::UpdateLerpSimulationPositions(float deltaTime)
 	{
-
+		
 
 
 		return true;

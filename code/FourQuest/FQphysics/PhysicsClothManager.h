@@ -28,7 +28,10 @@ namespace fq::physics
 		/// </summary>
 		bool Update(float deltaTime);
 
-		bool UpdateLerpSimulationPositions();
+		/// <summary>
+		/// 천 시뮬레이션을 보간작업하여 입자를 업데이트 합니다. (그래픽 데이터 전송 )
+		/// </summary>
+		bool UpdateLerpSimulationPositions(float deltaTime);
 
 		/// <summary>
 		/// 천을 생성합니다.

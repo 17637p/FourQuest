@@ -24,6 +24,12 @@ namespace fq::game_module
 		std::string animationPath = {};
 	};
 
+	struct LightTrackKey
+	{
+		float time = 0.f;
+		float intensity = 1.f;
+	};
+
 	struct CameraChangeTrackInfo
 	{
 		float startTime = 0.f;
@@ -170,5 +176,14 @@ namespace fq::game_module
 		std::string postProcessObjectName = {};
 		float blendTime = 1.f;
 		DirectX::SimpleMath::Color finalColor = {0.f, 0.f, 0.f, 1.f};
+	};
+
+	struct LightTrackInfo
+	{
+		float startTime = 0.f;
+		float totalPlayTime = 1.f;
+
+		std::string lightObjectName = {};
+		std::vector<LightTrackKey> lightTrackKeys = {};
 	};
 }
