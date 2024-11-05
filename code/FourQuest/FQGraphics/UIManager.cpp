@@ -615,6 +615,10 @@ void fq::graphics::UIManager::draw()
 		VideoInfo videoInfo = mVideoObject->GetVideoInfo();
 		if (videoInfo.isRender)
 		{
+			mRenderTarget->SetTransform
+			(
+				D2D1::Matrix3x2F::Scale(videoInfo.ScaleX, videoInfo.ScaleY, D2D1::Point2F(videoInfo.StartX, videoInfo.StartY))
+			);
 			mRenderTarget->DrawBitmap(mVideoBitmap, D2D1::RectF(videoInfo.StartX, videoInfo.StartY, videoInfo.StartX + mVideoObject->GetVideoInfo().Width, videoInfo.StartY + mVideoObject->GetVideoInfo().Height));
 		}
 	}

@@ -1,5 +1,7 @@
 #include "Credit.h"
 
+#include "../FQGameModule/Transform.h"
+
 fq::client::Credit::Credit()
 	:mSeconds(0),
 	mNextSceneName(""),
@@ -30,6 +32,8 @@ fq::client::Credit::~Credit()
 
 void fq::client::Credit::OnUpdate(float dt)
 {
+	setScaleScreen();
+
 	mCurTime += dt;
 	if (mCurTime > mSeconds)
 	{
@@ -48,6 +52,22 @@ void fq::client::Credit::OnUpdate(float dt)
 
 void fq::client::Credit::OnStart()
 {
+	mScreenManager = GetScene()->GetScreenManager();
+
 	mCurTime = 0;
+}
+
+void fq::client::Credit::setScaleScreen()
+{
+	// 화면 크기에 따른 Scale 자동 조정 
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
+	UINT screenWidth = mScreenManager->GetFixScreenWidth();
+	UINT screenHeight = mScreenManager->GetFixScreenHeight();
+	float scaleX = screenWidth / (float)1920;
+	float scaleY = screenHeight / (float)1080;
+	{
+		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
+	}
 }
 

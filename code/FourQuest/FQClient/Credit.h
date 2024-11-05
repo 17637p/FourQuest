@@ -2,6 +2,11 @@
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/GameModule.h"
 
+namespace fq::game_module
+{
+	class ScreenManager;
+}
+
 namespace fq::client
 {
 	class Credit : public game_module::Component
@@ -17,6 +22,8 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
+		void setScaleScreen();
+
 	private:
 		// Inspector
 		float mSeconds;
@@ -24,6 +31,7 @@ namespace fq::client
 
 		// 
 		float mCurTime;
+		game_module::ScreenManager* mScreenManager;
 
 	private:
 		friend void RegisterMetaData();
