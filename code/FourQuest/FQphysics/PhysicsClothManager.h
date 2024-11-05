@@ -24,14 +24,14 @@ namespace fq::physics
 		bool Initialize(physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
 		/// <summary>
-		/// 천 시뮬레이션 업데이트 합니다. ( 그래픽 데이터 전송 )
+		/// 천 시뮬레이션을 보간작업하여 입자를 업데이트 합니다. (그래픽 데이터 전송 )
 		/// </summary>
 		bool Update(float deltaTime);
 
 		/// <summary>
-		/// 천 시뮬레이션을 보간작업하여 입자를 업데이트 합니다. (그래픽 데이터 전송 )
+		/// 시뮬레이션에서 업데이트 된 데이터 처리
 		/// </summary>
-		bool UpdateLerpSimulationPositions(float deltaTime);
+		bool UpdateSimulationData(float deltaTime);
 
 		/// <summary>
 		/// 천을 생성합니다.
