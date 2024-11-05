@@ -1142,6 +1142,10 @@ void fq::graphics::UIManager::UpdateVideoBitmap()
 	{
 		DWORD dwFlags = 0;
 		hr = pSourceReader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &mVideoIndex, &dwFlags, &mVideoTimeStamp, &pSample);
+		if (mVideoTimeStamp < videoInfo.PlayTime * 10000000)
+		{
+			hr = pSourceReader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &mVideoIndex, &dwFlags, &mVideoTimeStamp, &pSample);
+		}
 		if (SUCCEEDED(hr) && pSample) {
 			IMFMediaBuffer* pBuffer = nullptr;
 			hr = pSample->ConvertToContiguousBuffer(&pBuffer);

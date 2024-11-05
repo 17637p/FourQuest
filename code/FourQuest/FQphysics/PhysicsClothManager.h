@@ -26,7 +26,7 @@ namespace fq::physics
 		/// <summary>
 		/// 천 시뮬레이션 업데이트 합니다. ( 그래픽 데이터 전송 )
 		/// </summary>
-		bool Update();
+		bool Update(float deltaTime);
 
 		/// <summary>
 		/// 천을 생성합니다.
