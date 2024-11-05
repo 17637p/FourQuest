@@ -30,7 +30,7 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsClothManager::Update()
+	bool PhysicsClothManager::Update(float deltaTime)
 	{
 		for (auto cloth : mPhysicsClothContainer)
 		{

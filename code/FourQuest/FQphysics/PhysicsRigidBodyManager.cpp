@@ -159,7 +159,7 @@ namespace fq::physics
 		auto body = mRigidBodyContainer.find(id)->second;
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
-		if (dynamicBody)
+ 		if (dynamicBody)
 		{
 			Matrix dxTransform = rigidBodyData.transform;
 			physx::PxTransform pxTransform;
@@ -186,7 +186,7 @@ namespace fq::physics
 
 			// 다이나믹 바디 Transform 세팅(단, Scale 값은 Shape에 적용), LayerNumber 세팅
 			Vector3 position;
-			Vector3 scale;
+			Vector3 scale = { 1.0f, 1.0f, 1.0f };
 			Quaternion rotation;
 			dxTransform.Decompose(scale, rotation, position);
 			dxTransform = Matrix::CreateScale(1.f) 
@@ -218,7 +218,7 @@ namespace fq::physics
 			physx::PxTransform pxCurrentTransform;
 
 			DirectX::SimpleMath::Vector3 position;
-			DirectX::SimpleMath::Vector3 scale;
+			DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f };
 			DirectX::SimpleMath::Quaternion rotation;
 
 			dxTransform.Decompose(scale, rotation, position);
