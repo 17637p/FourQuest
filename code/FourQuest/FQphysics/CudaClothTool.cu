@@ -570,6 +570,19 @@ namespace fq::physics
 		return true;
 	}
 
+	bool CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(
+		std::vector<DirectX::SimpleMath::Vector3>& prevVertices, 
+		std::vector<DirectX::SimpleMath::Vector3>& currVertices, 
+		float t,
+		DirectX::SimpleMath::Matrix transform, 
+		cudaGraphicsResource* ID3D11VertexBuffer,
+		UINT ID3D11VertexStride)
+	{
+
+
+		return false;
+	}
+
 	bool CudaClothTool::UpdateNormalToID3DBuffer(
 		std::vector<std::pair<unsigned int, unsigned int>>& sameVertices,
 		unsigned int vertexSize,
@@ -730,21 +743,10 @@ namespace fq::physics
 
 		return true;
 	}
-	bool CudaClothTool::SetPhysXClothBufferVertexStop(const unsigned int vertexSize, physx::PxVec4* particle)
+	bool CudaClothTool::UpdateParticleBuffer(const unsigned int vertexSize, DirectX::SimpleMath::Vector4* currParticle, physx::PxVec4* particle)
 	{
-		// 블록 갯수, 스레드 갯수 설정
-		int threadsPerBlock = 256;
-		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
-
-		SetSimulationStopVertex << <blocksPerGrid, threadsPerBlock >> > (particle, vertexSize);
-
-		return true;
-	}
-	bool CudaClothTool::SetPhysXClothBufferVertexSimulation(std::vector<unsigned int>& mDisableIndicesIndices, const unsigned int vertexSize, physx::PxVec4* particle, float mClothMass)
-	{
-
-
-
+		// 복사한 데이터 값을 CPU 메모리로 복사
+		cudaMemcpy(currParticle, particle, vertexSize * sizeof(DirectX::SimpleMath::Vector4), cudaMemcpyKind::cudaMemcpyDeviceToHost);
 		return true;
 	}
 }

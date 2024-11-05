@@ -108,7 +108,7 @@ namespace fq::physics
 		, mCudaContextManager(nullptr)
 		, mCollisionMatrix{}
 		, mbIsSimulating(false)
-		, mGpuSceneWaitUpdateCount(1)
+		, mGpuSceneWaitUpdateCount(0)
 	{
 	}
 
@@ -274,7 +274,6 @@ namespace fq::physics
 
 	bool FQPhysics::ChangeScene()
 	{
-		mGpuSceneWaitUpdateCount = 1;
 		if (!RemoveAllRigidBody()) return false;
 		if (!RemoveAllController()) return false;
 		if (!RemoveAllCloth()) return false;

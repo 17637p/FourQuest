@@ -148,12 +148,31 @@ namespace fq::physics
 		mWorldTransform.Invert(InvTransform);
 
 		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(mVertices, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;		// 천 입자로 Graphics VertexBuffer에 position값 Update하는 cuda함수 
-		//if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource, mCudaVertexStride)) return false;	// 겹치는 버텍스 노말값 업데이트 cuda함수
 		if (!updateWindToParticle()) return false;
 
-		//if (!updateDebugVertex()) return false;
+		return true;
+	}
+	 
+	bool CudaPhysicsCloth::UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager, float deltaTime)
+	{
+		DirectX::SimpleMath::Matrix InvTransform;
+		mWorldTransform.Invert(InvTransform);
+
+		//if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(mVertices, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;		// 천 입자로 Graphics VertexBuffer에 position값 Update하는 cuda함수 
 
 		return true;
+	}
+
+	bool CudaPhysicsCloth::UpdateParticleBuffer(float deltaTime)
+	{
+		mDurationTime = 0.f;
+		mLerpTime = deltaTime;
+		mPrevClothBuffer.assign(mCurrClothBuffer.begin(), mCurrClothBuffer.end());
+		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
+
+		if (!CudaClothTool::UpdateParticleBuffer(mCurrClothBuffer.size(), mCurrClothBuffer.data(), paticle)) return false;
+
+		return false;
 	}
 
 
@@ -207,9 +226,14 @@ namespace fq::physics
 		mDisableIndicesIndices = data.clothData.disableIndices;
 		
 		mVertices.resize(data.clothData.vertices.size());
+		mCurrClothBuffer.resize(data.clothData.vertices.size());
+		mPrevClothBuffer.resize(data.clothData.vertices.size());
 		for (int i = 0; i < mVertices.size(); i++)
 		{
 			mVertices[i] = DirectX::SimpleMath::Vector3::Transform(data.clothData.vertices[i], mWorldTransform);
+			mCurrClothBuffer[i].x = mVertices[i].x;
+			mCurrClothBuffer[i].y = mVertices[i].y;
+			mCurrClothBuffer[i].z = mVertices[i].z;
 		}
 
 		//bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);

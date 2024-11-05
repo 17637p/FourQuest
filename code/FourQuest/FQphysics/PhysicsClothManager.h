@@ -28,6 +28,8 @@ namespace fq::physics
 		/// </summary>
 		bool Update(float deltaTime);
 
+		bool UpdateLerpSimulationPositions();
+
 		/// <summary>
 		/// 천을 생성합니다.
 		/// </summary>

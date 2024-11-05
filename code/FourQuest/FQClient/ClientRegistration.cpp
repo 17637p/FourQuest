@@ -198,6 +198,7 @@
 #include "MagicCircleEndPoint.h"
 #include "FillSoulGauge.h"
 #include "FillSoulHP.h"
+#include "CircleEffectHelper.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -583,6 +584,17 @@ void fq::client::RegisterMetaData()
 		.data<&FillSoulHP::mFillHP>("mFillHP"_hs)
 		.prop(fq::reflect::prop::Name, "mFillHP")
 		.prop(fq::reflect::prop::Comment, u"설정될 체력 값")
+		.base<game_module::Component>();
+
+	entt::meta<CircleEffectHelper>()
+		.type("CircleEffectHelper"_hs)
+		.prop(reflect::prop::Name, "CircleEffectHelper")
+		.data<&CircleEffectHelper::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u"처리 시간")
+		.data<&CircleEffectHelper::mPointName>("mPointName"_hs)
+		.prop(fq::reflect::prop::Name, "mPointName")
+		.prop(fq::reflect::prop::Comment, u"끝점을 따라 움직일 오브젝트 이름")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
