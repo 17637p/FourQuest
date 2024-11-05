@@ -562,9 +562,9 @@ void fq::client::RegisterMetaData()
 	entt::meta<MagicCircleEndPoint>()
 		.type("MagicCircleEndPoint"_hs)
 		.prop(reflect::prop::Name, "MagicCircleEndPoint")
-		.data<&MagicCircleEndPoint::mDuration>("mDuration"_hs)
-		.prop(fq::reflect::prop::Name, "mDuration")
-		.prop(fq::reflect::prop::Comment, u"총 소요 시간")
+		.data<&MagicCircleEndPoint::mDefenceCounterObjectName>("mDefenceCounterObjectName"_hs)
+		.prop(fq::reflect::prop::Name, "mDefenceCounterObjectName")
+		.prop(fq::reflect::prop::Comment, u"디펜스 카운터를 가진 오브젝트 이름")
 		.base<game_module::Component>();
 
 	entt::meta<FillSoulGauge>()
