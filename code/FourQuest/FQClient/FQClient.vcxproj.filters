@@ -677,6 +677,9 @@
     <ClInclude Include="Credit.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="CircleEffectHelper.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1176,6 +1179,9 @@
     </ClCompile>
     <ClCompile Include="Credit.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CircleEffectHelper.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

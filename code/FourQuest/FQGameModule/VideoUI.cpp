@@ -11,6 +11,7 @@
 fq::game_module::VideoUI::VideoUI()
 	:mVideoObject(nullptr)
 	, mVIdeoInfo{}
+	, mTotalPlayTime(0)
 {
 }
 
@@ -84,6 +85,7 @@ void fq::game_module::VideoUI::SetVideoPosition(float startX, float startY)
 void fq::game_module::VideoUI::OnStart()
 {
 	mVIdeoInfo.isReset = true;
+	mVIdeoInfo.PlayTime = 0;
 
 	mVideoObject->SetVideoInfo(mVIdeoInfo);
 }
@@ -94,5 +96,14 @@ void fq::game_module::VideoUI::SetVideoScale(float scaleX, float scaleY)
 	mVIdeoInfo.ScaleY = scaleY;
 
 	mVideoObject->SetVideoInfo(mVIdeoInfo);
+}
+
+bool fq::game_module::VideoUI::IsEndPlay(float delaytime)
+{
+	if (mVIdeoInfo.PlayTime > mTotalPlayTime + delaytime)
+	{
+		return true;
+	}
+	return false;
 }
 

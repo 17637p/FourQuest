@@ -467,8 +467,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Width")
 		.data<&graphics::VideoInfo::Height>("Height"_hs)
 		.prop(fq::reflect::prop::Name, "Height")
-		.data<&graphics::VideoInfo::PlayTime>("PlayTime"_hs)
-		.prop(fq::reflect::prop::Name, "PlayTime")
 		.data<&graphics::VideoInfo::Speed>("Speed"_hs)
 		.prop(fq::reflect::prop::Name, "Speed");
 
@@ -478,6 +476,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&VideoUI::SetVideoInfo, &VideoUI::GetVideoInfo>("VideoInfo"_hs)
 		.prop(fq::reflect::prop::Name, "VideoInfo")
+		.data<&VideoUI::mTotalPlayTime>("TotalPlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "TotalPlayTime")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
