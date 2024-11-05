@@ -35,7 +35,6 @@ fq::client::Soul::Soul()
 	, mSoulGauge(0.f)
 	, mMaxSoulGauge(100.f)
 	, mPlayerHpBar(nullptr)
-
 	, mDashSpeed(0.3f)
 	, mDashElapsed(0.f)
 	, mDashCoolTime(0.3f)

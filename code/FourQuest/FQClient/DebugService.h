@@ -26,7 +26,6 @@ namespace fq::client
 
 		void updateUI();
 		void updateInput();
-		void savePlayerState();
 		void resurrectAllSoul();
 
 	private:

@@ -78,22 +78,18 @@ void fq::client::DebugService::updateInput()
 
 	if (input->IsKeyState(EKey::F1, EKeyState::Tap))
 	{
-		savePlayerState();
 		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene1", true });
 	}
 	else if (input->IsKeyState(EKey::F2, EKeyState::Tap))
 	{
-		savePlayerState();
 		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene2", true });
 	}
 	else if (input->IsKeyState(EKey::F3, EKeyState::Tap))
 	{
-		savePlayerState();
 		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene3", true });
 	}
 	else if (input->IsKeyState(EKey::F4, EKeyState::Tap))
 	{
-		savePlayerState();
 		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene4", true });
 	}
 
@@ -169,14 +165,6 @@ void fq::client::DebugService::updateInput()
 	}
 }
 
-void fq::client::DebugService::savePlayerState()
-{
-	auto gameMgr = GetScene()->GetObjectByName("GameManager");
-	if (gameMgr)
-	{
-		gameMgr->GetComponent<GameManager>()->SavePlayerState();
-	}
-}
 
 void fq::client::DebugService::resurrectAllSoul()
 {
