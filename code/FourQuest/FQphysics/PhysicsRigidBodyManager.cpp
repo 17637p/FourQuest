@@ -196,8 +196,16 @@ namespace fq::physics
 			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
 
 			pxBody->setGlobalPose(pxTransform);
-			dynamicBody->SetConvertScale(scale, mPhysics, collisionMatrix);
 			dynamicBody->ChangeLayerNumber(rigidBodyData.myLayerNumber, collisionMatrix, mCollisionDataManager);
+
+			if (scale.x > 0.f && scale.y > 0.f && scale.z > 0.f)
+			{
+				dynamicBody->SetConvertScale(scale, mPhysics, collisionMatrix);
+			}
+			else
+			{
+				spdlog::error("[PhysicsRigidBodyManager {}] Object Scale Is Zero. ID : {} ", __LINE__, id);
+			}
 
 			return true;
 		}
@@ -227,7 +235,14 @@ namespace fq::physics
 			{
 				pxBody->setGlobalPose(pxCurrentTransform);
 			}
-			staticBody->SetConvertScale(scale, mPhysics, collisionMatrix);
+			if (scale.x > 0.f && scale.y > 0.f && scale.z > 0.f)
+			{
+				staticBody->SetConvertScale(scale, mPhysics, collisionMatrix);
+			}
+			else
+			{
+				spdlog::error("[PhysicsRigidBodyManager {}] Object Scale Is Zero. ID : {} ", __LINE__, id);
+			}
 			staticBody->ChangeLayerNumber(rigidBodyData.myLayerNumber, collisionMatrix, mCollisionDataManager);
 
 			return true;

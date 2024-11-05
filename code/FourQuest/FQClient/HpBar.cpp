@@ -80,8 +80,6 @@ void fq::client::HpBar::OnStart()
 	if (!mImageUI)
 		spdlog::warn("{} has not ImageUI Component", GetGameObject()->GetName());
 
-	auto view = GetScene()->GetComponentView<game_module::Camera>();
-
 	auto infomations = mImageUI->GetUIInfomations();
 	assert(infomations.size() > 2);
 

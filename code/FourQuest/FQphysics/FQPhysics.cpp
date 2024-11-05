@@ -107,7 +107,7 @@ namespace fq::physics
 		, mGpuScene(nullptr)
 		, mCudaContextManager(nullptr)
 		, mCollisionMatrix{}
-		, mbisHalfRateUpdate(true)
+		, mbIsSimulating(false)
 	{
 	}
 
@@ -209,6 +209,10 @@ namespace fq::physics
 		// 콜백 함수 등록
 		mMyEventCallback->Initialize(mCollisionDataManager);
 
+		QueryPerformanceCounter(&mCurentCount);
+		QueryPerformanceCounter(&mPrevCount);
+		QueryPerformanceFrequency(&mFrequency);
+
 		return true;
 	}
 
@@ -229,21 +233,29 @@ namespace fq::physics
 			return false;
 		if (!mScene->fetchResults(true))
 			return false;
-		mMyEventCallback->OnTrigger();
 
-		// 천 시뮬레이션은 기존 업데이트의 반 정도로 업데이트 
-		if (mbisHalfRateUpdate)
+		if (mbIsSimulating) 
 		{
-			mbisHalfRateUpdate = false;
-			if (!mGpuScene->simulate(deltaTime))
-				return false;
-			if (!mGpuScene->fetchResults(true))
-				return false;
+			// 시뮬레이션이 진행 중이면 완료 여부 확인
+			if (mGpuScene->checkResults(false)) 
+			{
+				// 완료되었으면 결과를 가져옴
+				if (!mGpuScene->fetchResults(true))
+					return false;
+				if (!mClothManager->Update())
+					return false;
+
+				mbIsSimulating = false;
+			}
 		}
-		else
+		else 
 		{
-			mbisHalfRateUpdate = true;
+			// 이전 시뮬레이션이 완료되었으면 새 시뮬레이션 시작
+			mGpuScene->simulate(deltaTime * 2.f);
+			mbIsSimulating = true;
 		}
+
+		mMyEventCallback->OnTrigger();
 
 		return true;
 	}
@@ -254,13 +266,6 @@ namespace fq::physics
 			return false;
 		if (!mCCTManager->FinalUpdate())
 			return false;
-
-		// 천 시뮬레이션은 기존 업데이트의 반 정도로 업데이트 
-		if (mbisHalfRateUpdate)
-		{
-			if (!mClothManager->Update())
-				return false;
-		}
 
 		return true;
 	}

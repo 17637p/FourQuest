@@ -79,5 +79,15 @@ namespace fq::physics
 			cudaGraphicsResource* ID3D11VertexBuffer,
 			physx::PxVec4* particle,
 			unsigned int vertexSize);
+
+		static bool SetPhysXClothBufferVertexStop(
+			const unsigned int vertexSize,
+			physx::PxVec4* particle);
+
+		static bool SetPhysXClothBufferVertexSimulation(
+			std::vector<unsigned int>& mDisableIndicesIndices,
+			const unsigned int vertexSize,
+			physx::PxVec4* particle,
+			float mClothMass);
 	};
 }

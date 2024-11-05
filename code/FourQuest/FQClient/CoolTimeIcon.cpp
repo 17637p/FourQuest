@@ -35,7 +35,6 @@ fq::client::CoolTimeIcon::CoolTimeIcon()
 	mCurTime(0),
 	mSpeed(1),
 	mScreenManager(nullptr),
-	mMainCamera(nullptr),
 	mFadeInTime(1),
 	mFadeOutTime(2)
 {
@@ -78,24 +77,12 @@ void fq::client::CoolTimeIcon::OnStart()
 		mSkillIconImages.push_back(child->GetComponent<game_module::ImageUI>());
 	}
 
-	// MainCamera 가져오기 
-	auto view = GetScene()->GetComponentView<game_module::Camera>();
-	for (auto& object : view)
-	{
-		auto camera = object.GetComponent<game_module::Camera>();
-
-		if (camera->IsMain())
-		{
-			mMainCamera = camera;
-		}
-	}
-
 	mScreenManager = GetScene()->GetScreenManager();
 
 	eventProcesInitCoolTime();
 }
-
 void fq::client::CoolTimeIcon::OnUpdate(float dt)
+
 {
 	if (mCurTime < mFadeInTime)
 	{
@@ -110,7 +97,9 @@ void fq::client::CoolTimeIcon::OnUpdate(float dt)
 		float width = mScreenManager->GetFixScreenWidth();
 		float height = mScreenManager->GetFixScreenHeight();
 
-		auto viewProj = mMainCamera->GetViewProjection();
+		fq::game_module::Camera* mainCamera = nullptr;
+		GetScene()->GetEventManager()->FireEvent<fq::event::GetMainCamera>({ &mainCamera });
+		auto viewProj = mainCamera->GetViewProjection();
 		DirectX::SimpleMath::Vector3 screenPos = DirectX::SimpleMath::Vector3::Transform(pos, viewProj);
 
 		float posX = width * 0.5f + (screenPos.x * width * 0.5f);
@@ -136,7 +125,9 @@ void fq::client::CoolTimeIcon::OnUpdate(float dt)
 		float width = mScreenManager->GetFixScreenWidth();
 		float height = mScreenManager->GetFixScreenHeight();
 
-		auto viewProj = mMainCamera->GetViewProjection();
+		fq::game_module::Camera* mainCamera = nullptr;
+		GetScene()->GetEventManager()->FireEvent<fq::event::GetMainCamera>({ &mainCamera });
+		auto viewProj = mainCamera->GetViewProjection();
 		DirectX::SimpleMath::Vector3 screenPos = DirectX::SimpleMath::Vector3::Transform(pos, viewProj);
 
 		float posX = width * 0.5f + (screenPos.x * width * 0.5f);
