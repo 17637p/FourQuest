@@ -461,6 +461,9 @@ void fq::client::RegisterMetaData()
 		.data<&ScaleAnimation::mEndScale>("EndScale"_hs)
 		.prop(fq::reflect::prop::Name, "EndScale")
 		.prop(fq::reflect::prop::Comment, u"종료 스케일")
+		.data<&ScaleAnimation::mPlaySpeed>("mPlaySpeed"_hs)
+		.prop(fq::reflect::prop::Name, "mPlaySpeed")
+		.prop(fq::reflect::prop::Comment, u"실행 속도")
 		.base<game_module::Component>();
 
 	entt::meta<RotationAnimation>()
@@ -1640,6 +1643,19 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mBerserkerDamageRatio>("mBerserkerDamageRatio"_hs)
 		.prop(fq::reflect::prop::Name, "mBerserkerDamageRatio")
 		.prop(fq::reflect::prop::Comment, u8"버서커 갑옷 대미지 비율")
+
+		.data<&BossMonster::mSmashDownDecalEffectSpeed>("mSmashDownDecalEffectSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "mSmashDownDecalEffectSpeed")
+		.prop(fq::reflect::prop::Comment, u8"스매시 데칼 속도")
+		.data<&BossMonster::mComboDecalEffectSpeed>("mComboDecalEffectSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "mComboDecalEffectSpeed")
+		.prop(fq::reflect::prop::Comment, u8"콤보 데칼 속도")
+		.data<&BossMonster::mRushDecalEffectSpeed>("mRushDecalEffectSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "mRushDecalEffectSpeed")
+		.prop(fq::reflect::prop::Comment, u8"러쉬 데칼 속도")
+		.data<&BossMonster::mJumpDecalEffectSpeed>("mJumpDecalEffectSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "mJumpDecalEffectSpeed")
+		.prop(fq::reflect::prop::Comment, u8"점프 데칼 속도")
 
 		.base<fq::game_module::Component>();
 

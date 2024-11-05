@@ -229,6 +229,8 @@ namespace fq::client
 
 		void processAttack(class Attack* attack);
 
+		void setDecalEffectSpeed(game_module::GameObject* gameObject, float speed);
+
 	private:
 		// 참조
 		GameManager* mGameManager;
@@ -357,6 +359,12 @@ namespace fq::client
 		float mMagicDamageRatio;
 		float mArcherDamageRatio;
 		float mBerserkerDamageRatio;
+
+		// 데칼 속도
+		float mSmashDownDecalEffectSpeed;
+		float mComboDecalEffectSpeed;
+		float mRushDecalEffectSpeed;
+		float mJumpDecalEffectSpeed;
 
 		friend void RegisterMetaData();
 	};
