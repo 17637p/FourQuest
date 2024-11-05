@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "Event.h"
 #include "EventManager.h"
+#include "InputManager.h"
 
 #include "../FQCommon/IFQRenderObject.h"
 
@@ -48,6 +49,15 @@ void fq::game_module::VideoUI::OnUpdate(float dt)
 
 	SetTextPosition(myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
 	mVIdeoInfo.PlayTime += dt;
+
+	auto input = GetScene()->GetInputManager();
+	for (int i = 0; i < 4; i++)
+	{
+		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Hold)
+		{
+			mVIdeoInfo.PlayTime += dt;
+		}
+	}
 
 	mVideoObject->SetVideoInfo(mVIdeoInfo);
 }

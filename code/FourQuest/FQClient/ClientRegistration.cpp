@@ -142,6 +142,7 @@
 #include "BGaugeUI.h"
 #include "PlayerCheckUI.h"
 #include "CoolTimeIcon.h"
+#include "Credit.h"
 
 #include "CameraMoving.h"
 
@@ -2393,6 +2394,16 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "FadeInTime")
 		.data<&CoolTimeIcon::mFadeOutTime>("FadeOutTime"_hs)
 		.prop(fq::reflect::prop::Name, "FadeOutTime")
+		.base<fq::game_module::Component>();
+
+	entt::meta<Credit>()
+		.type("Credit"_hs)
+		.prop(fq::reflect::prop::Name, "Credit")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&Credit::mSeconds>("Seconds"_hs)
+		.prop(fq::reflect::prop::Name, "Seconds")
+		.data<&Credit::mNextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

@@ -52,6 +52,7 @@
     <ClInclude Include="CollisionColorChanger.h" />
     <ClInclude Include="CollisionRenderChanger.h" />
     <ClInclude Include="CoolTimeIcon.h" />
+    <ClInclude Include="Credit.h" />
     <ClInclude Include="DebugService.h" />
     <ClInclude Include="DestroyHelper.h" />
     <ClInclude Include="DestroyWhenCollisionToWall.h" />
@@ -236,6 +237,7 @@
     <ClCompile Include="CollisionColorChanger.cpp" />
     <ClCompile Include="CollisionRenderChanger.cpp" />
     <ClCompile Include="CoolTimeIcon.cpp" />
+    <ClCompile Include="Credit.cpp" />
     <ClCompile Include="DebugService.cpp" />
     <ClCompile Include="DestroyHelper.cpp" />
     <ClCompile Include="DestroyWhenCollisionToWall.cpp" />
