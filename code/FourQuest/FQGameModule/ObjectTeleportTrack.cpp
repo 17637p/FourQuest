@@ -3,6 +3,8 @@
 #include "Transform.h"
 #include "Scene.h"
 
+#include <spdlog/spdlog.h>
+
 namespace fq::game_module
 {
 	ObjectTeleportTrack::ObjectTeleportTrack()
@@ -42,7 +44,7 @@ namespace fq::game_module
 		if (mTargetObject == nullptr)
 		{
 			spdlog::warn("[ObjectTeleportTrack Warrning ({})] Do not Have TargetObject {}", __LINE__, mTargetObjectName);
-			return ;
+			return;
 		}
 
 		if (!mTargetObject->HasComponent<Transform>())
@@ -67,6 +69,13 @@ namespace fq::game_module
 	{
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
+
+		if (mTargetObject == nullptr)
+		{
+			spdlog::warn("Object not found, Name : {}", mTargetObjectName);
+			assert(mTargetObject != nullptr);
+			return;
+		}
 
 		if (!mTargetObject->IsDestroyed())
 		{

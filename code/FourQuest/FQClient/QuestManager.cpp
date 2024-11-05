@@ -398,7 +398,16 @@ void fq::client::QuestManager::eventProcessKillMonster()
 			std::vector<MonsterGroupKill>& monsterGroupKillList = mCurMainQuest.mclearConditionList.monsterGroupKillList;
 			if (monsterGroupKillList.size() > 0)
 			{
-				MonsterGroup* monsterGroup = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName)->GetComponent<MonsterGroup>();
+				// 디버그를 위해 로그 추가_홍지환
+				auto object = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName);
+				
+				if (object == nullptr)
+				{
+					spdlog::warn("Object  not found, Name : {}", monsterGroupKillList[0].monsterGroupName);
+				}
+				assert(object != nullptr);
+
+				MonsterGroup* monsterGroup = object->GetComponent<MonsterGroup>();
 				monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
 				monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
 
@@ -1024,20 +1033,20 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		int pushButtonPlayer = -1;
 		switch (pushButtonList[0].skillType)
 		{
-			case ESkillType::X:
-				pushButtonPlayer = getXPushPlayer();
-				break;
-			case ESkillType::A:
-				pushButtonPlayer = getAPushPlayer();
-				break;
-			case ESkillType::R:
-				pushButtonPlayer = getRPushPlayer();
-				break;
-			case ESkillType::Y:
-				pushButtonPlayer = getYPushPlayer();
-				break;
-			default:
-				break;
+		case ESkillType::X:
+			pushButtonPlayer = getXPushPlayer();
+			break;
+		case ESkillType::A:
+			pushButtonPlayer = getAPushPlayer();
+			break;
+		case ESkillType::R:
+			pushButtonPlayer = getRPushPlayer();
+			break;
+		case ESkillType::Y:
+			pushButtonPlayer = getYPushPlayer();
+			break;
+		default:
+			break;
 		}
 		text.Text = std::to_string(pushButtonPlayer) + " / " + std::to_string(getMaxPlayer());
 		text.IsRender = true;
@@ -1753,24 +1762,24 @@ void fq::client::QuestManager::eventProcessPushButtonEvent()
 						int pushButtonPlayer = -1;
 						switch (event.eSkillType)
 						{
-							case ESkillType::X:
-								mIsUseX[event.playerID] = true;
-								pushButtonPlayer = getXPushPlayer();
-								break;
-							case ESkillType::A:
-								mIsUseA[event.playerID] = true;
-								pushButtonPlayer = getAPushPlayer();
-								break;
-							case ESkillType::R:
-								mIsUseR[event.playerID] = true;
-								pushButtonPlayer = getRPushPlayer();
-								break;
-							case ESkillType::Y:
-								mIsUseY[event.playerID] = true;
-								pushButtonPlayer = getYPushPlayer();
-								break;
-							default:
-								break;
+						case ESkillType::X:
+							mIsUseX[event.playerID] = true;
+							pushButtonPlayer = getXPushPlayer();
+							break;
+						case ESkillType::A:
+							mIsUseA[event.playerID] = true;
+							pushButtonPlayer = getAPushPlayer();
+							break;
+						case ESkillType::R:
+							mIsUseR[event.playerID] = true;
+							pushButtonPlayer = getRPushPlayer();
+							break;
+						case ESkillType::Y:
+							mIsUseY[event.playerID] = true;
+							pushButtonPlayer = getYPushPlayer();
+							break;
+						default:
+							break;
 						}
 
 						if (getMaxPlayer() == pushButtonPlayer)
@@ -1805,24 +1814,24 @@ void fq::client::QuestManager::eventProcessPushButtonEvent()
 							int pushButtonPlayer = -1;
 							switch (event.eSkillType)
 							{
-								case ESkillType::X:
-									mIsUseX[event.playerID] = true;
-									pushButtonPlayer = getXPushPlayer();
-									break;
-								case ESkillType::A:
-									mIsUseA[event.playerID] = true;
-									pushButtonPlayer = getAPushPlayer();
-									break;
-								case ESkillType::R:
-									mIsUseR[event.playerID] = true;
-									pushButtonPlayer = getRPushPlayer();
-									break;
-								case ESkillType::Y:
-									mIsUseY[event.playerID] = true;
-									pushButtonPlayer = getYPushPlayer();
-									break;
-								default:
-									break;
+							case ESkillType::X:
+								mIsUseX[event.playerID] = true;
+								pushButtonPlayer = getXPushPlayer();
+								break;
+							case ESkillType::A:
+								mIsUseA[event.playerID] = true;
+								pushButtonPlayer = getAPushPlayer();
+								break;
+							case ESkillType::R:
+								mIsUseR[event.playerID] = true;
+								pushButtonPlayer = getRPushPlayer();
+								break;
+							case ESkillType::Y:
+								mIsUseY[event.playerID] = true;
+								pushButtonPlayer = getYPushPlayer();
+								break;
+							default:
+								break;
 							}
 
 							if (getMaxPlayer() == pushButtonPlayer)
@@ -1957,20 +1966,20 @@ void fq::client::QuestManager::checkAllPushButton()
 		int pushButtonPlayer = -1;
 		switch (pushButtonList[0].skillType)
 		{
-			case ESkillType::X:
-				pushButtonPlayer = getXPushPlayer();
-				break;
-			case ESkillType::A:
-				pushButtonPlayer = getAPushPlayer();
-				break;
-			case ESkillType::R:
-				pushButtonPlayer = getRPushPlayer();
-				break;
-			case ESkillType::Y:
-				pushButtonPlayer = getYPushPlayer();
-				break;
-			default:
-				break;
+		case ESkillType::X:
+			pushButtonPlayer = getXPushPlayer();
+			break;
+		case ESkillType::A:
+			pushButtonPlayer = getAPushPlayer();
+			break;
+		case ESkillType::R:
+			pushButtonPlayer = getRPushPlayer();
+			break;
+		case ESkillType::Y:
+			pushButtonPlayer = getYPushPlayer();
+			break;
+		default:
+			break;
 		}
 
 		if (getMaxPlayer() == pushButtonPlayer)
@@ -1989,20 +1998,20 @@ void fq::client::QuestManager::checkAllPushButton()
 			int pushButtonPlayer = -1;
 			switch (pushButtonList[0].skillType)
 			{
-				case ESkillType::X:
-					pushButtonPlayer = getXPushPlayer();
-					break;
-				case ESkillType::A:
-					pushButtonPlayer = getAPushPlayer();
-					break;
-				case ESkillType::R:
-					pushButtonPlayer = getRPushPlayer();
-					break;
-				case ESkillType::Y:
-					pushButtonPlayer = getYPushPlayer();
-					break;
-				default:
-					break;
+			case ESkillType::X:
+				pushButtonPlayer = getXPushPlayer();
+				break;
+			case ESkillType::A:
+				pushButtonPlayer = getAPushPlayer();
+				break;
+			case ESkillType::R:
+				pushButtonPlayer = getRPushPlayer();
+				break;
+			case ESkillType::Y:
+				pushButtonPlayer = getYPushPlayer();
+				break;
+			default:
+				break;
 			}
 
 			if (getMaxPlayer() == pushButtonPlayer)
