@@ -21,18 +21,12 @@ namespace fq::client
 		void OnStart() override;
 		void OnUpdate(float dt) override;
 
-		void OnTriggerEnter(const game_module::Collision& collision);
-		void OnTriggerExit(const game_module::Collision& collision);
-
 	private:
 		game_module::Transform* mTransform;
 		game_module::UVAnimator* mUVAnimator;
 		game_module::GameObject* mEndPointObject;
-		float mDuration; // 게이지 처리 시간
-
-		float mElapsed;
-		int mPlayerCount;
-		bool mbIsStart;
+		std::shared_ptr<game_module::GameObject> mDefenceCounterObjectOrNull;
+		std::string mDefenceCounterObjectName;
 
 		friend void RegisterMetaData();
 	};
