@@ -111,7 +111,6 @@ void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 	}
 
 	PostUpdate();
-	mPhysicsEngine->RemoveAllRigidBody();
 	mPhysicsEngine->ChangeScene();
 	mPhysicsEngine->Update(1.f);
 	mPhysicsEngine->FinalUpdate();
@@ -1342,7 +1341,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 				data.transform._43 = pos.z + offset.z;
 			}
 
-			mPhysicsEngine->SetRigidBodyData(id, data);
+ 			mPhysicsEngine->SetRigidBodyData(id, data);
 		}
 	}
 }

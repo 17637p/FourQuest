@@ -108,6 +108,7 @@ namespace fq::physics
 		, mCudaContextManager(nullptr)
 		, mCollisionMatrix{}
 		, mbIsSimulating(false)
+		, mGpuSceneWaitUpdateCount(0)
 	{
 	}
 
@@ -209,10 +210,6 @@ namespace fq::physics
 		// 콜백 함수 등록
 		mMyEventCallback->Initialize(mCollisionDataManager);
 
-		QueryPerformanceCounter(&mCurentCount);
-		QueryPerformanceCounter(&mPrevCount);
-		QueryPerformanceFrequency(&mFrequency);
-
 		return true;
 	}
 
@@ -242,16 +239,22 @@ namespace fq::physics
 				// 완료되었으면 결과를 가져옴
 				if (!mGpuScene->fetchResults(true))
 					return false;
-				if (!mClothManager->Update())
+				if (!mClothManager->Update(deltaTime * mGpuSceneWaitUpdateCount))
 					return false;
 
 				mbIsSimulating = false;
 			}
+			else
+			{
+				mGpuSceneWaitUpdateCount++;
+			}
 		}
 		else 
 		{
+			mGpuSceneWaitUpdateCount = 0;
+
 			// 이전 시뮬레이션이 완료되었으면 새 시뮬레이션 시작
-			mGpuScene->simulate(deltaTime * 2.f);
+			mGpuScene->simulate(deltaTime * mGpuSceneWaitUpdateCount);
 			mbIsSimulating = true;
 		}
 
