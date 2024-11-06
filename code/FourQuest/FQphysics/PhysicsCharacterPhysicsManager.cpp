@@ -44,7 +44,10 @@ namespace fq::physics
 	bool PhysicsCharacterPhysicsManager::CreateCharacterphysics(const ArticulationInfo& info)
 	{
 		if (mCharacterPhysicsContainer.find(info.id) != mCharacterPhysicsContainer.end())
+		{
+			spdlog::warn("[PhysicsCharacterPhysicsManager ({})] Already Create CharacterPhysics ID : {}", __LINE__, info.id);
 			return false;
+		}
 
 		std::shared_ptr<CharacterPhysics> characterPhysics = std::make_shared<CharacterPhysics>();
 
@@ -63,6 +66,7 @@ namespace fq::physics
 	{
 		if (mCharacterPhysicsContainer.find(id) == mCharacterPhysicsContainer.end())
 		{
+			spdlog::warn("[PhysicsCharacterPhysicsManager ({})] Failed Remove Articulation. Articulation Container Have not Data ID : {}", __LINE__, id);
 			return false;
 		}
 
