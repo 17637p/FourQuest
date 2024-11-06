@@ -34,6 +34,9 @@ namespace fq::physics
 	{
 		for (auto cloth : mPhysicsClothContainer)
 		{
+			//if (cloth.second->GetIsCulling())
+			//	continue;
+
 			if (!cloth.second->UpdatePhysicsCloth(mCudaContextManager, deltaTime)) return false;
 		}
 
@@ -44,9 +47,6 @@ namespace fq::physics
 	{
 		for (auto cloth : mPhysicsClothContainer)
 		{
-			if (cloth.second->GetIsCulling())
-				continue;
-
 			if (!cloth.second->UpdateParticleBuffer(deltaTime)) return false;
 		}
 
