@@ -64,8 +64,8 @@ namespace fq::physics
 			physx::PxVec4* particle);
 
 		static bool UpdatePhysXDataToID3DVertexBuffer(
-			physx::PxVec4* prevVertices,
-			physx::PxVec4* currVertices,
+			float4* prevVertices,
+			float4* currVertices,
 			unsigned int vertexSize,
 			float deltaTime,
 			DirectX::SimpleMath::Matrix invTransform,

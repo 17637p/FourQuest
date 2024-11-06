@@ -146,8 +146,8 @@ namespace fq::physics
 		// GPU Memory를 할당할 변수
 		void* mGpuDevVertexPtr;
 		size_t mGpuDevVertexPtrSize;
-		physx::PxVec4* d_prevVertices;
-		physx::PxVec4* d_currVertices;
+		float4* d_prevVertices;
+		float4* d_currVertices;
 	};
 
 #pragma region GetSet

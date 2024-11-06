@@ -178,8 +178,8 @@ __global__ void UpdateVertexNoIndex(
 
 template <typename T>
 __global__ void UpdateLerpVertexNoIndex(
-	physx::PxVec4* prevVertices,
-	physx::PxVec4* currVertices,
+	float4* prevVertices,
+	float4* currVertices,
 	float t,
 	unsigned int vertexSize,
 	SimpleMatrix invTransform,
@@ -189,22 +189,22 @@ __global__ void UpdateLerpVertexNoIndex(
 	if (idx >= vertexSize) return;
 
 	// 해당 정점을 가져옵니다
-	physx::PxVec4 prevV = prevVertices[idx];
-	physx::PxVec4 currV = currVertices[idx];
+	float4 prevV = prevVertices[idx];
+	float4 currV = currVertices[idx];
 
 	// 변환을 위한 SimpleVector3 생성 ( 이전 입자 위치, 최근 입자 위치 보간 계산 )
-	SimpleVector3 vertex;
-	vertex.x = prevV.x + t * (currV.x - prevV.x);
-	vertex.y = prevV.y + t * (currV.y - prevV.y);
-	vertex.z = prevV.z + t * (currV.z - prevV.z);
-
 	// 변환 행렬을 적용하여 정점 위치 업데이트
-	vertex = multiply<SimpleVector3>(invTransform, vertex);
+	SimpleVector3 interpolatedVertex = multiply<SimpleVector3>(invTransform,
+		SimpleVector3{
+			prevV.x + t * (currV.x - prevV.x),
+			prevV.y + t * (currV.y - prevV.y),
+			prevV.z + t * (currV.z - prevV.z)
+		});
 
 	// 변환된 정점 위치를 buffer에 업데이트
-	buffer[idx].Pos.x = vertex.x;
-	buffer[idx].Pos.y = vertex.y;
-	buffer[idx].Pos.z = vertex.z;
+	buffer[idx].Pos.x = interpolatedVertex.x;
+	buffer[idx].Pos.y = interpolatedVertex.y;
+	buffer[idx].Pos.z = interpolatedVertex.z;
 }
 #pragma endregion
 
@@ -775,8 +775,8 @@ namespace fq::physics
 	}
 
 	bool CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(
-		physx::PxVec4* d_prevVertices,
-		physx::PxVec4* d_currVertices,
+		float4* d_prevVertices,
+		float4* d_currVertices,
 		unsigned int vertexSize,
 		float deltaTime,
 		DirectX::SimpleMath::Matrix invTransform,
@@ -788,6 +788,10 @@ namespace fq::physics
 
 		int threadsPerBlock = 256;
 		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
+
+		// 비동기 작업 스트림 생성
+		cudaStream_t stream;
+		cudaStreamCreate(&stream);
 
 		// CUDA 함수 실행
 		if (ID3D11VertexStride == 44)
@@ -806,12 +810,9 @@ namespace fq::physics
 				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex2*)ID3D11VertexBuffer);
 		}
 
-		cudaError_t cudaStatus = cudaDeviceSynchronize();
-		if (!(cudaStatus == cudaSuccess))
-		{
-			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
-			return false;
-		}
+		// 비동기 작업 동기화 및 스트림 제거
+		cudaStreamSynchronize(stream);
+		cudaStreamDestroy(stream);
 
 		return true;
 	}
