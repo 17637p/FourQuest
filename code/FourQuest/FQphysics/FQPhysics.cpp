@@ -221,6 +221,8 @@ namespace fq::physics
 
 		if (!mRigidBodyManager->Update(mScene, mGpuScene))
 			return false;
+		if (!mClothManager->Update(deltaTime))
+			return false;
 		if (!mCCTManager->Update(deltaTime))
 			return false;
 		if (!mCollisionDataManager->Update())
@@ -256,18 +258,6 @@ namespace fq::physics
 			mGpuScene->simulate(deltaTime * 2.f);
 			mGpuSceneWaitUpdateCount = 0;
 			mbIsSimulating = true;
-		}
-
-		if (mbIsHalfFrameUpdate)
-		{
-			mbIsHalfFrameUpdate = false;
-
-			if (!mClothManager->Update(deltaTime * 2.f))
-				return false;
-		}
-		else
-		{
-			mbIsHalfFrameUpdate = true;
 		}
 
 		mMyEventCallback->OnTrigger();

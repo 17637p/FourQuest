@@ -775,52 +775,16 @@ namespace fq::physics
 	}
 
 	bool CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(
-		std::vector<DirectX::SimpleMath::Vector4>& prevVertices,
-		std::vector<DirectX::SimpleMath::Vector4>& currVertices,
+		physx::PxVec4* d_prevVertices,
+		physx::PxVec4* d_currVertices,
+		unsigned int vertexSize,
 		float deltaTime,
 		DirectX::SimpleMath::Matrix invTransform,
-		cudaGraphicsResource* ID3D11VertexBuffer,
+		void* ID3D11VertexBuffer,
 		UINT ID3D11VertexStride)
 	{
-		// CUDA 리소스를 매핑
-		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer);
-		if (!(cudaStatus == cudaSuccess))
-		{
-			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
-			return false;
-		}
-
-		// CUDA 포인터 가져오기
-		void* devPtr = nullptr;
-		size_t size = 0;
-		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &size, ID3D11VertexBuffer);
-		if (!(cudaStatus == cudaSuccess))
-		{
-			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
-			return false;
-		}
-
-		unsigned int vertexSize = currVertices.size();
-
-		if (size < sizeof(Vertex) * vertexSize)
-		{
-			std::cerr << "[CudaClothTool(" << __LINE__ << ")] Mapped size is smaller than expected!" << std::endl;
-			return false;
-		}
-
 		SimpleMatrix invMatrix;
-
 		std::memcpy(&invMatrix, &invTransform, sizeof(invTransform));
-
-		// GPU Memory를 할당할 변수
-		physx::PxVec4* d_prevVertices;
-		physx::PxVec4* d_currVertices;
-
-		// GPU Memory에 할당 및 데이터 복사
-		cudaMalloc(&d_prevVertices, vertexSize * sizeof(physx::PxVec4));
-		cudaMalloc(&d_currVertices, vertexSize * sizeof(physx::PxVec4));
-		cudaMemcpy(d_prevVertices, prevVertices.data(), prevVertices.size() * sizeof(physx::PxVec4), cudaMemcpyKind::cudaMemcpyHostToDevice);
-		cudaMemcpy(d_currVertices, currVertices.data(), currVertices.size() * sizeof(physx::PxVec4), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
 		int threadsPerBlock = 256;
 		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
@@ -829,37 +793,25 @@ namespace fq::physics
 		if (ID3D11VertexStride == 44)
 		{
 			UpdateLerpVertexNoIndex <Vertex> << <blocksPerGrid, threadsPerBlock >> > (
-				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex*)devPtr);
+				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex*)ID3D11VertexBuffer);
 		}
 		else if (ID3D11VertexStride == 52)
 		{
 			UpdateLerpVertexNoIndex <Vertex1> << <blocksPerGrid, threadsPerBlock >> > (
-				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex1*)devPtr);
+				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex1*)ID3D11VertexBuffer);
 		}
 		else if (ID3D11VertexStride == 60)
 		{
 			UpdateLerpVertexNoIndex <Vertex2> << <blocksPerGrid, threadsPerBlock >> > (
-				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex2*)devPtr);
+				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex2*)ID3D11VertexBuffer);
 		}
 
-		cudaStatus = cudaDeviceSynchronize();
+		cudaError_t cudaStatus = cudaDeviceSynchronize();
 		if (!(cudaStatus == cudaSuccess))
 		{
 			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
 			return false;
 		}
-
-		// CUDA 리소스를 언매핑
-		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11VertexBuffer);
-		if (!(cudaStatus == cudaSuccess))
-		{
-			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
-			return false;
-		}
-
-		// 메모리 해제
-		cudaFree(d_prevVertices);
-		cudaFree(d_currVertices);
 
 		return true;
 	}

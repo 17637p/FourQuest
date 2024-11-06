@@ -142,6 +142,12 @@ namespace fq::physics
 		std::vector<DirectX::SimpleMath::Vector4> mCurrClothBuffer;
 		float mDurationTime;
 		float mLerpTime;
+
+		// GPU Memory를 할당할 변수
+		void* mGpuDevVertexPtr;
+		size_t mGpuDevVertexPtrSize;
+		physx::PxVec4* d_prevVertices;
+		physx::PxVec4* d_currVertices;
 	};
 
 #pragma region GetSet

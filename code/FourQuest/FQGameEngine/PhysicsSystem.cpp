@@ -1283,11 +1283,12 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			mScene->GetEventManager()->FireEvent<fq::event::GetMainCamera>({ &mainCamera });
 
 			DirectX::BoundingFrustum frustum;
+			DirectX::SimpleMath::Matrix mainCameraTransform = mainCamera->GetComponent<fq::game_module::Transform>()->GetWorldMatrix();
 			DirectX::BoundingFrustum::CreateFromMatrix(frustum, mainCamera->GetProjection(mainCamera->GetAspectRatio()));
-			frustum.Transform(frustum, mainCamera->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
+			frustum.Transform(frustum, mainCameraTransform);
 
 			DirectX::BoundingBox box;
-			box.Center = data.worldTransform.Translation();
+			box.Center = transform->GetWorldMatrix().Translation();
 			box.Extents.x = 1.f;
 			box.Extents.y = 1.f;
 			box.Extents.z = 1.f;
