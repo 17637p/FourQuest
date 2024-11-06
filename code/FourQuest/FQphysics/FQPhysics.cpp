@@ -217,29 +217,59 @@ namespace fq::physics
 
 	bool FQPhysics::Update(float deltaTime)
 	{
-		if (cudaGetLastError() != cudaError::cudaSuccess)
-			spdlog::warn("cudaGetLastError : {}", cudaGetErrorString(cudaGetLastError()));
-
+		// PxScene에 액터 삭제
 		RemoveActors();
-		updateGravity(deltaTime);
 
+		// 천 시뮬레이션 동기화
 		if (!mClothManager->FinalUpdate())
+		{
+			spdlog::warn("[FQPhysics ({})] Failed ClothManager FinalUpdate", __LINE__);
 			return false;
+		}
+		// 천 시뮬레이션 입자 데이터 보간 업데이트
 		if (!mClothManager->Update(deltaTime))
+		{
+			spdlog::warn("[FQPhysics ({})] Failed ClothManager Update", __LINE__);
 			return false;
+		}
+		// 콜라이더 업데이트
 		if (!mRigidBodyManager->Update(mScene, mGpuScene))
+		{
+			spdlog::warn("[FQPhysics ({})] Failed mRigidBodyManager Update", __LINE__);
 			return false;
+		}
+		// 캐릭터 업데이트
 		if (!mCCTManager->Update(deltaTime))
+		{
+			spdlog::warn("[FQPhysics ({})] Failed mCCTManager Update", __LINE__);
 			return false;
+		}
+		// 콜리전 데이터 매니저 업데이트
 		if (!mCollisionDataManager->Update())
+		{
+			spdlog::warn("[FQPhysics ({})] Failed mCollisionDataManager Update", __LINE__);
 			return false;
+		}
+		// Character Physics에 Ragdoll 적용 여부 판단 후 씬 등록
 		if (!mCharacterPhysicsManager->Update())
+		{
+			spdlog::warn("[FQPhysics ({})] Failed mCharacterPhysicsManager Update", __LINE__);
 			return false;
+		}
+		// PxScene 시뮬레이션
 		if (!mScene->simulate(deltaTime))
+		{
+			spdlog::warn("[FQPhysics ({})] Failed mScene simulate", __LINE__);
 			return false;
+		}
+		// PxScene 시뮬레이션 결과 가져올 때까지 대기 후 재개
 		if (!mScene->fetchResults(true))
+		{
+			spdlog::warn("[FQPhysics ({})] Failed mScene fetchResults", __LINE__);
 			return false;
+		}
 
+		// 천 시뮬레이션 PxScene이 시뮬레이션 중인지 여부 체크
 		if (mbIsSimulating) 
 		{
 			// 시뮬레이션이 진행 중이면 완료 여부 확인
@@ -248,6 +278,7 @@ namespace fq::physics
 				// 완료되었으면 결과를 가져옴
 				if (!mGpuScene->fetchResults(true))
 					return false;
+				// 천 시뮬레이션 입자 데이터 저장, 천 시뮬레이션 객체 생성, 바람 생성 적용
 				if (!mClothManager->UpdateSimulationData(deltaTime * mGpuSceneWaitUpdateCount))
 					return false;
 
@@ -255,6 +286,7 @@ namespace fq::physics
 			}
 			else
 			{
+				// 천 시뮬레이션 업데이트 갯수 체크 후 천 시뮬레이션 보간 작업에 사용
 				mGpuSceneWaitUpdateCount++;
 			}
 		}
@@ -265,8 +297,13 @@ namespace fq::physics
 			mGpuSceneWaitUpdateCount = 1;
 			mbIsSimulating = true;
 		}
-
+		
+		// 콜백 함수(OnTrigger) 실행
 		mMyEventCallback->OnTrigger();
+
+		// cuda 함수에서 마지막으로 등록된 Error 메세지 출력
+		if (cudaGetLastError() != cudaError::cudaSuccess)
+			spdlog::warn("cudaGetLastError : {}", cudaGetErrorString(cudaGetLastError()));
 
 		return true;
 	}
@@ -274,9 +311,15 @@ namespace fq::physics
 	bool FQPhysics::FinalUpdate()
 	{
 		if (!mRigidBodyManager->FinalUpdate())
+		{
+			spdlog::warn("[FQPhysics ({})] Failed mRigidBodyManager FinalUpdate", __LINE__);
 			return false;
+		}
 		if (!mCCTManager->FinalUpdate())
+		{
+			spdlog::warn("[FQPhysics ({})] Failed mCCTManager FinalUpdate", __LINE__);
 			return false;
+		}
 
 		return true;
 	}
@@ -324,6 +367,7 @@ namespace fq::physics
 		qfd.data.word0 = info.layerNumber;
 		qfd.data.word1 = mCollisionMatrix[info.layerNumber];
 
+		// 레이 캐스트 정적 바디 or 다이나믹 바디 검사할 것인지 플래그 설정
 		if (isStatic)
 		{
 			qfd.flags = physx::PxQueryFlag::eSTATIC
@@ -342,6 +386,7 @@ namespace fq::physics
 		RaycastQueryFileter queryfilter;
 		bool isAnyHit;
 
+		// PxGpuScene or PxScene에 레이 캐스트를 생성할 것인지 설정 
 		if (isGPUScene)
 		{
 			isAnyHit = mGpuScene->raycast(pxOrigin
@@ -382,6 +427,7 @@ namespace fq::physics
 			hitBufferStruct.block;
 			output.hitSize = hitSize;
 
+			// Hit된 갯수 만큼 데이터 저장
 			for (unsigned int hitNumber = 0; hitNumber < hitSize; hitNumber++)
 			{
 				const physx::PxRaycastHit& hit = hitBufferStruct.touches[hitNumber];
@@ -398,6 +444,7 @@ namespace fq::physics
 			}
 		}
 
+		// 검출된 레이 캐스트 결과 반환
 		return output;
 	}
 
@@ -793,7 +840,7 @@ namespace fq::physics
 		}
 	}
 
-	const std::vector<DirectX::SimpleMath::Vector3>& FQPhysics::GetClothVertex(unsigned int id)
+	const std::vector<DirectX::SimpleMath::Vector4>& FQPhysics::GetClothVertex(unsigned int id)
 	{
 		return mClothManager->GetClothVertex(id);
 	}
@@ -811,7 +858,6 @@ namespace fq::physics
 			return true;
 		else
 			return false;
-
 	}
 
 #pragma  region spdlog
@@ -832,13 +878,6 @@ namespace fq::physics
 			mScene->removeActor(*removeActor);
 		}
 		mActorsToRemove.clear();
-	}
-
-	void FQPhysics::updateGravity(float dt)
-	{
-		//physx::PxPBDParticleSystem* particle;
-		//unsigned int particleSize = mGpuScene->getNbParticleSystems(physx::PxParticleSolverType::ePBD);
-		//mGpuScene->getParticleSystems(physx::PxParticleSolverType::ePBD, (physx::PxPBDParticleSystem**)&particle, particleSize);
 	}
 #pragma endregion
 }

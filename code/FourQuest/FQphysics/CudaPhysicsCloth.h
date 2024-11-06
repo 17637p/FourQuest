@@ -42,7 +42,6 @@ namespace fq::physics
 		/// <summary>
 		/// 입자들을 보간처리 후 ID11Buffer에 업데이트
 		/// </summary>
-		bool UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager);
 		bool UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager, float deltaTime);
 		bool EndCudaStream();
 
@@ -74,11 +73,11 @@ namespace fq::physics
 		inline const float& GetClothMass();
 		inline const float& GetRestOffset();
 		inline physx::PxPBDParticleSystem* GetPBDParticleSystem();
-		inline const std::vector<DirectX::SimpleMath::Vector3>& GetVertices();
-		inline const std::vector<unsigned int>& GetIndices();
 		inline void SetLayerNumber(const unsigned int& layerNumber);
 		inline void SetIsCulling(const bool& isCulling);
 
+		const std::vector<DirectX::SimpleMath::Vector4>& GetVertices();
+		const std::vector<unsigned int>& GetIndices();
 
 	private:
 		bool updateDebugVertex();
@@ -150,7 +149,9 @@ namespace fq::physics
 
 		// GPU Memory를 할당할 변수
 		void* mGpuDevVertexPtr;
+		void* mGpuDevIndexPtr;
 		size_t mGpuDevVertexPtrSize;
+		size_t mGpuDevIndexPtrSize;
 		float4* d_prevVertices;
 		float4* d_currVertices;
 
@@ -195,14 +196,8 @@ namespace fq::physics
 	{
 		mbIsCulling = isCulling;
 	}
-	const std::vector<DirectX::SimpleMath::Vector3>& CudaPhysicsCloth::GetVertices()
-	{
-		return mVertices;
-	}
-	const std::vector<unsigned int>& CudaPhysicsCloth::GetIndices()
-	{
-		return mIndices;
-	}
+
+
 #pragma endregion
 
 }
