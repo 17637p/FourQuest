@@ -38,10 +38,15 @@ namespace fq::physics
 			if (!cloth->UpdatePhysicsCloth(mCudaContextManager, deltaTime)) return false;
 		}
 
+		return true;
+	}
+
+	bool PhysicsClothManager::FinalUpdate()
+	{
 		// 비동기 종료
 		for (auto [id, cloth] : mPhysicsClothContainer)
 		{
-			if (!cloth->EndCudaStream()) return false;
+			if (!cloth->EndCudaStream()) return true;
 		}
 
 		return true;

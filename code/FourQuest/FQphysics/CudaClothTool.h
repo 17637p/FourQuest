@@ -70,7 +70,8 @@ namespace fq::physics
 			float deltaTime,
 			DirectX::SimpleMath::Matrix invTransform,
 			void* ID3D11VertexBuffer,
-			UINT ID3D11VertexStride);
+			UINT ID3D11VertexStride,
+			cudaStream_t stream);
 
 		static bool UpdateNormalToID3DBuffer(
 			std::vector<std::pair<unsigned int, unsigned int>>& sameVertices,

@@ -781,7 +781,8 @@ namespace fq::physics
 		float deltaTime,
 		DirectX::SimpleMath::Matrix invTransform,
 		void* ID3D11VertexBuffer,
-		UINT ID3D11VertexStride)
+		UINT ID3D11VertexStride,
+		cudaStream_t stream)
 	{
 		SimpleMatrix invMatrix;
 		std::memcpy(&invMatrix, &invTransform, sizeof(invTransform));
@@ -789,32 +790,23 @@ namespace fq::physics
 		int threadsPerBlock = 256;
 		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
 
-		// 비동기 작업 스트림 생성
-		cudaStream_t stream;
-		cudaStreamCreate(&stream);
-
 		// CUDA 함수 실행
 		if (ID3D11VertexStride == 44)
 		{
-			UpdateLerpVertexNoIndex <Vertex> << <blocksPerGrid, threadsPerBlock >> > (
+			UpdateLerpVertexNoIndex <Vertex> << <blocksPerGrid, threadsPerBlock, 0, stream >> > (
 				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex*)ID3D11VertexBuffer);
 		}
 		else if (ID3D11VertexStride == 52)
 		{
-			UpdateLerpVertexNoIndex <Vertex1> << <blocksPerGrid, threadsPerBlock >> > (
+			UpdateLerpVertexNoIndex <Vertex1> << <blocksPerGrid, threadsPerBlock, 0, stream >> > (
 				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex1*)ID3D11VertexBuffer);
 		}
 		else if (ID3D11VertexStride == 60)
 		{
-			UpdateLerpVertexNoIndex <Vertex2> << <blocksPerGrid, threadsPerBlock >> > (
+			UpdateLerpVertexNoIndex <Vertex2> << <blocksPerGrid, threadsPerBlock, 0, stream >> > (
 				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex2*)ID3D11VertexBuffer);
 		}
-
-		// 비동기 작업 동기화 및 스트림 제거
-		cudaStreamSynchronize(stream);
-		cudaStreamDestroy(stream);
 
 		return true;
 	}
 }
-

@@ -13,6 +13,7 @@
 #include "ConvexMeshResource.h"
 #include "EngineDataConverter.h"
 #include <random>
+#include <cuda_runtime.h>
 
 namespace fq::physics
 {
@@ -216,12 +217,17 @@ namespace fq::physics
 
 	bool FQPhysics::Update(float deltaTime)
 	{
+		if (cudaGetLastError() != cudaError::cudaSuccess)
+			spdlog::warn("cudaGetLastError : {}", cudaGetErrorString(cudaGetLastError()));
+
 		RemoveActors();
 		updateGravity(deltaTime);
 
-		if (!mRigidBodyManager->Update(mScene, mGpuScene))
+		if (!mClothManager->FinalUpdate())
 			return false;
 		if (!mClothManager->Update(deltaTime))
+			return false;
+		if (!mRigidBodyManager->Update(mScene, mGpuScene))
 			return false;
 		if (!mCCTManager->Update(deltaTime))
 			return false;
