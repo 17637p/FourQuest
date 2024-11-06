@@ -233,6 +233,7 @@
     <ClInclude Include="EAnimationMode.h" />
     <ClInclude Include="FadeTrack.h" />
     <ClInclude Include="CreateDeleteTrack.h" />
+    <ClInclude Include="LightTrack.h" />
     <ClInclude Include="MaterialAnimator.h" />
     <ClInclude Include="AnimatorControllerLoader.h" />
     <ClInclude Include="AnimationStateNode.h" />
@@ -333,6 +334,7 @@
     <ClCompile Include="DecalUVAnimator.cpp" />
     <ClCompile Include="FadeTrack.cpp" />
     <ClCompile Include="CreateDeleteTrack.cpp" />
+    <ClCompile Include="LightTrack.cpp" />
     <ClCompile Include="MaterialAnimator.cpp" />
     <ClCompile Include="AnimatorControllerLoader.cpp" />
     <ClCompile Include="AnimationStateNode.cpp" />

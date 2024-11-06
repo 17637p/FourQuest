@@ -8,11 +8,11 @@ namespace fq::game_module
 
 namespace fq::client
 {
-	class MagicCircleEndPoint : public game_module::Component
+	class CircleEffectHelper : public game_module::Component
 	{
 	public:
-		MagicCircleEndPoint() = default;
-		~MagicCircleEndPoint() = default;
+		CircleEffectHelper() = default;
+		~CircleEffectHelper() = default;
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -25,11 +25,12 @@ namespace fq::client
 		game_module::Transform* mTransform;
 		game_module::UVAnimator* mUVAnimator;
 		game_module::GameObject* mEndPointObject;
-		std::shared_ptr<game_module::GameObject> mDefenceCounterObjectOrNull;
-		std::string mDefenceCounterObjectName;
+		float mElapsed;
+
+		// 에디터 변수
+		float mDuration; // 게이지 처리 시간
+		std::string mPointName;
 
 		friend void RegisterMetaData();
 	};
 }
-
-

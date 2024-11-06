@@ -139,7 +139,10 @@ void fq::client::MonsterSpawner::Spawn()
 
 	// 몬스터 스폰위치 설정 
 	auto lookDir = DirectX::SimpleMath::Matrix::CreateFromQuaternion(spawnerT->GetWorldRotation()).Right();
-	auto monsterPos = lookDir * mSpawnOffset;
+	lookDir.Normalize();
+
+	auto spawnerPos = spawnerT->GetWorldPosition();
+	auto monsterPos = (lookDir * mSpawnOffset)  + spawnerPos;
 	monsterT->SetWorldPosition(monsterPos);
 
 	// 현재 타겟확인

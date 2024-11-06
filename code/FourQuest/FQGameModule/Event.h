@@ -321,6 +321,7 @@ namespace fq::event
 	{
 		std::string RegisterKeyName;
 		fq::game_module::GameObject* gameObject;
+		bool bIsUseOnlyPosition = false;
 	};
 
 	struct OnGeneratePrefabInstance

@@ -92,6 +92,8 @@ namespace fq::client
 
 		void initPushPlayer(std::vector<bool>& pushVec);
 
+		void checkAllPushButton();
+
 	private:
 		// 인스펙터 용
 		StartQuests mStartQuests;

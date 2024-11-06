@@ -26,11 +26,10 @@ namespace fq::client
 
 		void updateUI();
 		void updateInput();
-		void savePlayerState();
 		void resurrectAllSoul();
 
 	private:
-		bool mbOnDebugText;
+		inline static bool OnDebugText = false;
 		game_module::TextUI* mFPSUI;
 
 	private:

@@ -166,6 +166,7 @@ void fq::client::TitleUI::clickButton()
 			break;
 		case 2:
 			// 제작진
+			GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Ending", true});
 			break;
 		case 3:
 			// 게임 종료

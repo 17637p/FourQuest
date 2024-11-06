@@ -40,9 +40,15 @@ namespace fq::physics
 			bool isSkinnedMesh);
 
 		/// <summary>
-		/// 실시간 시뮬레이션 된 천 입자들을 ID11Buffer에 업데이트
+		/// 입자들을 보간처리 후 ID11Buffer에 업데이트
 		/// </summary>
 		bool UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager);
+		bool UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager, float deltaTime);
+
+		/// <summary>
+		/// 시뮬레이션 후 업데이트 된 천 입자들의 위치 값을 업데이트합니다.
+		/// </summary>
+		bool UpdateParticleBuffer(float deltaTime);
 
 		/// <summary>
 		/// 천 GetSet
@@ -131,6 +137,11 @@ namespace fq::physics
 		cudaGraphicsResource* mCudaVertexResource;
 		cudaGraphicsResource* mCudaIndexResource;
 		UINT mCudaVertexStride;
+
+		std::vector<DirectX::SimpleMath::Vector4> mPrevClothBuffer;
+		std::vector<DirectX::SimpleMath::Vector4> mCurrClothBuffer;
+		float mDurationTime;
+		float mLerpTime;
 	};
 
 #pragma region GetSet

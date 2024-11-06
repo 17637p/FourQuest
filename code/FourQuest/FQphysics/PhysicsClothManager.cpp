@@ -30,25 +30,48 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsClothManager::Update()
+	bool PhysicsClothManager::Update(float deltaTime)
+	{
+		for (auto cloth : mPhysicsClothContainer)
+		{
+			if (!cloth.second->UpdatePhysicsCloth(mCudaContextManager, deltaTime)) return false;
+		}
+
+		return true;
+	}
+
+	bool PhysicsClothManager::UpdateSimulationData(float deltaTime)
 	{
 		for (auto cloth : mPhysicsClothContainer)
 		{
 			if (cloth.second->GetIsCulling())
 				continue;
 
-			if (!cloth.second->UpdatePhysicsCloth(mCudaContextManager)) return false;
+			if (!cloth.second->UpdateParticleBuffer(deltaTime)) return false;
 		}
+
+		for (auto [clothData, collisionMatrix] : mUpCommingClothVec)
+		{
+			CreateCloth(clothData, collisionMatrix);
+		}
+		mUpCommingClothVec.clear();
 
 		return true;
 	}
 
 	bool PhysicsClothManager::CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix, bool isSkinnedMesh)
 	{
+		mUpCommingClothVec.push_back(std::make_pair(info, collisionMatrix));
+
+ 		return true;
+	}
+
+	bool PhysicsClothManager::CreateCloth(const Cloth::CreateClothData& info, int* collisionMatrix)
+	{
 		std::shared_ptr<CudaPhysicsCloth> cloth = std::make_shared<CudaPhysicsCloth>(info.id, info.layerNumber);
 		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
 
-		if (!cloth->Initialize(info, mPhysics, mScene, mCudaContextManager, collisionData, collisionMatrix, isSkinnedMesh))
+		if (!cloth->Initialize(info, mPhysics, mScene, mCudaContextManager, collisionData, collisionMatrix, false))
 		{
 			spdlog::error("[PhysicsClothManager ({})] Failed Create Cloth", __LINE__);
 			return false;
@@ -57,7 +80,7 @@ namespace fq::physics
 		mPhysicsClothContainer.insert(std::make_pair(info.id, cloth));
 		mCollisionDataManager.lock()->Create(info.id, collisionData);
 
- 		return true;
+		return true;
 	}
 
 	bool PhysicsClothManager::GetClothData(unsigned int id, Cloth::GetSetClothData& data)
@@ -91,7 +114,7 @@ namespace fq::physics
 
 		if (clothIter != mPhysicsClothContainer.end())
 		{
-			mScene->removeActor(*clothIter->second->GetPBDParticleSystem());
+			mScene->removeActor(*(clothIter->second->GetPBDParticleSystem()));
 			mPhysicsClothContainer.erase(clothIter);
 
 			return true;
@@ -106,6 +129,7 @@ namespace fq::physics
 			mScene->removeActor(*actor->GetPBDParticleSystem());
 		}
 		mPhysicsClothContainer.clear();
+		mUpCommingClothVec.clear();
 
 		return true;
 	}

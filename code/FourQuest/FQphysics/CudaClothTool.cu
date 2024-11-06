@@ -175,6 +175,37 @@ __global__ void UpdateVertexNoIndex(
 	buffer[idx].Pos.y = vertex.y;
 	buffer[idx].Pos.z = vertex.z;
 }
+
+template <typename T>
+__global__ void UpdateLerpVertexNoIndex(
+	physx::PxVec4* prevVertices,
+	physx::PxVec4* currVertices,
+	float t,
+	unsigned int vertexSize,
+	SimpleMatrix invTransform,
+	T* buffer)
+{
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	if (idx >= vertexSize) return;
+
+	// 해당 정점을 가져옵니다
+	physx::PxVec4 prevV = prevVertices[idx];
+	physx::PxVec4 currV = currVertices[idx];
+
+	// 변환을 위한 SimpleVector3 생성 ( 이전 입자 위치, 최근 입자 위치 보간 계산 )
+	SimpleVector3 vertex;
+	vertex.x = prevV.x + t * (currV.x - prevV.x);
+	vertex.y = prevV.y + t * (currV.y - prevV.y);
+	vertex.z = prevV.z + t * (currV.z - prevV.z);
+
+	// 변환 행렬을 적용하여 정점 위치 업데이트
+	vertex = multiply<SimpleVector3>(invTransform, vertex);
+
+	// 변환된 정점 위치를 buffer에 업데이트
+	buffer[idx].Pos.x = vertex.x;
+	buffer[idx].Pos.y = vertex.y;
+	buffer[idx].Pos.z = vertex.z;
+}
 #pragma endregion
 
 #pragma region SetID3D11BufferVertexNormal
@@ -285,6 +316,18 @@ __global__ void UpdateVertices(Vertex* vertices, physx::PxVec4* particleData, si
 		particleData[idx].x = vertices[idx].Pos.x;
 		particleData[idx].y = vertices[idx].Pos.y;
 		particleData[idx].z = vertices[idx].Pos.z;
+	}
+}
+#pragma endregion
+
+#pragma region SetSimulation
+__global__ void SetSimulationStopVertex(physx::PxVec4* particleData, size_t vertexCount)
+{
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	if (idx < vertexCount)
+	{
+		// 애니메이션 데이터를 기반으로 정점 좌표 업데이트
+		particleData[idx].w = 0.f;
 	}
 }
 #pragma endregion
@@ -715,6 +758,108 @@ namespace fq::physics
 			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateNormalToID3DBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
 			return false;
 		}
+
+		return true;
+	}
+
+	bool CudaClothTool::UpdateParticleBuffer(const unsigned int vertexSize, DirectX::SimpleMath::Vector4* currParticle, physx::PxVec4* particle)
+	{
+		// 복사한 데이터 값을 CPU 메모리로 복사
+		cudaError_t cudaStatus = cudaMemcpy(currParticle, particle, vertexSize * sizeof(DirectX::SimpleMath::Vector4), cudaMemcpyKind::cudaMemcpyDeviceToHost);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] UpdateParticleBuffer Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
+		return true;
+	}
+
+	bool CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(
+		std::vector<DirectX::SimpleMath::Vector4>& prevVertices,
+		std::vector<DirectX::SimpleMath::Vector4>& currVertices,
+		float deltaTime,
+		DirectX::SimpleMath::Matrix invTransform,
+		cudaGraphicsResource* ID3D11VertexBuffer,
+		UINT ID3D11VertexStride)
+	{
+		// CUDA 리소스를 매핑
+		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
+			return false;
+		}
+
+		// CUDA 포인터 가져오기
+		void* devPtr = nullptr;
+		size_t size = 0;
+		cudaStatus = cudaGraphicsResourceGetMappedPointer(&devPtr, &size, ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
+			return false;
+		}
+
+		unsigned int vertexSize = currVertices.size();
+
+		if (size < sizeof(Vertex) * vertexSize)
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] Mapped size is smaller than expected!" << std::endl;
+			return false;
+		}
+
+		SimpleMatrix invMatrix;
+
+		std::memcpy(&invMatrix, &invTransform, sizeof(invTransform));
+
+		// GPU Memory를 할당할 변수
+		physx::PxVec4* d_prevVertices;
+		physx::PxVec4* d_currVertices;
+
+		// GPU Memory에 할당 및 데이터 복사
+		cudaMalloc(&d_prevVertices, vertexSize * sizeof(physx::PxVec4));
+		cudaMalloc(&d_currVertices, vertexSize * sizeof(physx::PxVec4));
+		cudaMemcpy(d_prevVertices, prevVertices.data(), prevVertices.size() * sizeof(physx::PxVec4), cudaMemcpyKind::cudaMemcpyHostToDevice);
+		cudaMemcpy(d_currVertices, currVertices.data(), currVertices.size() * sizeof(physx::PxVec4), cudaMemcpyKind::cudaMemcpyHostToDevice);
+
+		int threadsPerBlock = 256;
+		int blocksPerGrid = (vertexSize + threadsPerBlock - 1) / threadsPerBlock;
+
+		// CUDA 함수 실행
+		if (ID3D11VertexStride == 44)
+		{
+			UpdateLerpVertexNoIndex <Vertex> << <blocksPerGrid, threadsPerBlock >> > (
+				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex*)devPtr);
+		}
+		else if (ID3D11VertexStride == 52)
+		{
+			UpdateLerpVertexNoIndex <Vertex1> << <blocksPerGrid, threadsPerBlock >> > (
+				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex1*)devPtr);
+		}
+		else if (ID3D11VertexStride == 60)
+		{
+			UpdateLerpVertexNoIndex <Vertex2> << <blocksPerGrid, threadsPerBlock >> > (
+				d_prevVertices, d_currVertices, deltaTime, vertexSize, invMatrix, (Vertex2*)devPtr);
+		}
+
+		cudaStatus = cudaDeviceSynchronize();
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
+
+		// CUDA 리소스를 언매핑
+		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11VertexBuffer);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error Code : " << cudaStatus << ")" << std::endl;
+			return false;
+		}
+
+		// 메모리 해제
+		cudaFree(d_prevVertices);
+		cudaFree(d_currVertices);
 
 		return true;
 	}

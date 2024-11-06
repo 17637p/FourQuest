@@ -30,22 +30,19 @@ namespace fq::game_module
 		mFinalColor = info.finalColor;
 		mPostProcessObjectName = info.postProcessObjectName;
 
+		return true;
+	}
+
+	void FadeTrack::PlayEnter()
+	{
 		mPostProcessObject = mScene->GetObjectByName(mPostProcessObjectName);
 
 		// 포스트 프로세스 오브젝트가 씬에 존재하지 않으면 실패 반환
 		if (mPostProcessObject == nullptr)
 		{
 			spdlog::warn("[FadeTrack Warrning ({})] Do not have PostProcessObject", __LINE__);
-			return false;
 		}
-
-		return true;
-	}
-
-	void FadeTrack::PlayEnter()
-	{
-		// 포스트 프로세스 오브젝트가 씬에 존재하지 않으면 실패 반환
-		if (mPostProcessObject->IsDestroyed())
+		else if (mPostProcessObject->IsDestroyed())
 		{
 			spdlog::warn("[FadeTrack Warrning ({})] Do not have PostProcessObject"), __LINE__;
 		}

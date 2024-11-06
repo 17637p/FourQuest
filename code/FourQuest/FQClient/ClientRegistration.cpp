@@ -142,6 +142,7 @@
 #include "BGaugeUI.h"
 #include "PlayerCheckUI.h"
 #include "CoolTimeIcon.h"
+#include "Credit.h"
 
 #include "CameraMoving.h"
 
@@ -197,6 +198,7 @@
 #include "MagicCircleEndPoint.h"
 #include "FillSoulGauge.h"
 #include "FillSoulHP.h"
+#include "CircleEffectHelper.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -460,6 +462,9 @@ void fq::client::RegisterMetaData()
 		.data<&ScaleAnimation::mEndScale>("EndScale"_hs)
 		.prop(fq::reflect::prop::Name, "EndScale")
 		.prop(fq::reflect::prop::Comment, u"종료 스케일")
+		.data<&ScaleAnimation::mPlaySpeed>("mPlaySpeed"_hs)
+		.prop(fq::reflect::prop::Name, "mPlaySpeed")
+		.prop(fq::reflect::prop::Comment, u"실행 속도")
 		.base<game_module::Component>();
 
 	entt::meta<RotationAnimation>()
@@ -557,9 +562,9 @@ void fq::client::RegisterMetaData()
 	entt::meta<MagicCircleEndPoint>()
 		.type("MagicCircleEndPoint"_hs)
 		.prop(reflect::prop::Name, "MagicCircleEndPoint")
-		.data<&MagicCircleEndPoint::mDuration>("mDuration"_hs)
-		.prop(fq::reflect::prop::Name, "mDuration")
-		.prop(fq::reflect::prop::Comment, u"총 소요 시간")
+		.data<&MagicCircleEndPoint::mDefenceCounterObjectName>("mDefenceCounterObjectName"_hs)
+		.prop(fq::reflect::prop::Name, "mDefenceCounterObjectName")
+		.prop(fq::reflect::prop::Comment, u"디펜스 카운터를 가진 오브젝트 이름")
 		.base<game_module::Component>();
 
 	entt::meta<FillSoulGauge>()
@@ -579,6 +584,17 @@ void fq::client::RegisterMetaData()
 		.data<&FillSoulHP::mFillHP>("mFillHP"_hs)
 		.prop(fq::reflect::prop::Name, "mFillHP")
 		.prop(fq::reflect::prop::Comment, u"설정될 체력 값")
+		.base<game_module::Component>();
+
+	entt::meta<CircleEffectHelper>()
+		.type("CircleEffectHelper"_hs)
+		.prop(reflect::prop::Name, "CircleEffectHelper")
+		.data<&CircleEffectHelper::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u"처리 시간")
+		.data<&CircleEffectHelper::mPointName>("mPointName"_hs)
+		.prop(fq::reflect::prop::Name, "mPointName")
+		.prop(fq::reflect::prop::Comment, u"끝점을 따라 움직일 오브젝트 이름")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1640,6 +1656,19 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mBerserkerDamageRatio")
 		.prop(fq::reflect::prop::Comment, u8"버서커 갑옷 대미지 비율")
 
+		.data<&BossMonster::mSmashDownDecalEffectSpeed>("mSmashDownDecalEffectSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "mSmashDownDecalEffectSpeed")
+		.prop(fq::reflect::prop::Comment, u8"스매시 데칼 속도")
+		.data<&BossMonster::mComboDecalEffectSpeed>("mComboDecalEffectSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "mComboDecalEffectSpeed")
+		.prop(fq::reflect::prop::Comment, u8"콤보 데칼 속도")
+		.data<&BossMonster::mRushDecalEffectSpeed>("mRushDecalEffectSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "mRushDecalEffectSpeed")
+		.prop(fq::reflect::prop::Comment, u8"러쉬 데칼 속도")
+		.data<&BossMonster::mJumpDecalEffectSpeed>("mJumpDecalEffectSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "mJumpDecalEffectSpeed")
+		.prop(fq::reflect::prop::Comment, u8"점프 데칼 속도")
+
 		.base<fq::game_module::Component>();
 
 	entt::meta<BossMonsterIdleState>()
@@ -2393,6 +2422,16 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "FadeInTime")
 		.data<&CoolTimeIcon::mFadeOutTime>("FadeOutTime"_hs)
 		.prop(fq::reflect::prop::Name, "FadeOutTime")
+		.base<fq::game_module::Component>();
+
+	entt::meta<Credit>()
+		.type("Credit"_hs)
+		.prop(fq::reflect::prop::Name, "Credit")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&Credit::mDelaySeconds>("DelaySeconds"_hs)
+		.prop(fq::reflect::prop::Name, "DelaySeconds")
+		.data<&Credit::mNextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

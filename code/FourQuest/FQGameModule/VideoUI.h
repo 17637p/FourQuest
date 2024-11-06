@@ -24,10 +24,13 @@ namespace fq::game_module
 
 		void SetIsRender(bool isRender);
 
-		void SetTextPosition(float startX, float startY);
+		void SetVideoPosition(float startX, float startY);
+		void SetVideoScale(float scaleX, float scaleY);
 
 		fq::graphics::IVideoObject* GetVideoObject() const { return mVideoObject; }
 		void SetVideoObject(fq::graphics::IVideoObject* val) { mVideoObject = val; }
+
+		bool IsEndPlay(float delaytime);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -35,6 +38,7 @@ namespace fq::game_module
 
 	private:
 		fq::graphics::IVideoObject* mVideoObject;
+		float mTotalPlayTime;
 		fq::graphics::VideoInfo mVIdeoInfo;
 
 		friend void RegisterMetaData();

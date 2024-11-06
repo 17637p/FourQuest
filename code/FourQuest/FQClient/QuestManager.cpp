@@ -99,6 +99,7 @@ void fq::client::QuestManager::OnStart()
 	eventProcessInProgressDefence();
 	eventProcessPushButtonEvent();
 	eventProcessOnUIRender();
+	eventProcessUpdatePlayerState();
 
 	mIsRenderingUI = true;
 
@@ -217,6 +218,13 @@ void fq::client::QuestManager::OnStart()
 
 void fq::client::QuestManager::OnUpdate(float dt)
 {
+	setScaleAndPositionScreen();
+
+	if (!mIsRenderingUI)
+	{
+		return;
+	}
+
 	if (mClearEvents.size() > 0)
 	{
 		for (int i = 0; i < mClearEvents.size(); i++)
@@ -228,14 +236,12 @@ void fq::client::QuestManager::OnUpdate(float dt)
 		mClearEventIndexes.clear();
 	}
 
-	setScaleAndPositionScreen();
+	ViewQuestInformation(mViewMainQuest, mMainQuestText);
 
 	// Main Quest Text Setting
 	auto textInfo = mMainQuestText->GetTextInfo();
 	textInfo.Text = mViewMainQuest.mName;
 	mMainQuestText->SetTextInfo(textInfo);
-
-	ViewQuestInformation(mViewMainQuest, mMainQuestText);
 
 	// Sub Quest Text Setting
 	for (int i = 0; i < mViewSubQuest.size(); i++)
@@ -288,6 +294,7 @@ void fq::client::QuestManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mInProgressDefenceHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mPushButtonHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mUIRenderHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mUpdatePlayerStateHandler);
 }
 
 void fq::client::QuestManager::eventProcessKillMonster()
@@ -391,7 +398,16 @@ void fq::client::QuestManager::eventProcessKillMonster()
 			std::vector<MonsterGroupKill>& monsterGroupKillList = mCurMainQuest.mclearConditionList.monsterGroupKillList;
 			if (monsterGroupKillList.size() > 0)
 			{
-				MonsterGroup* monsterGroup = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName)->GetComponent<MonsterGroup>();
+				// 디버그를 위해 로그 추가_홍지환
+				auto object = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName);
+				
+				if (object == nullptr)
+				{
+					spdlog::warn("Object  not found, Name : {}", monsterGroupKillList[0].monsterGroupName);
+				}
+				assert(object != nullptr);
+
+				MonsterGroup* monsterGroup = object->GetComponent<MonsterGroup>();
 				monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
 				monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
 
@@ -936,11 +952,6 @@ void fq::client::QuestManager::eventProcessObjectInteraction()
 
 void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::TextUI* textUI)
 {
-	if (!mIsRenderingUI)
-	{
-		return;
-	}
-
 	// textUI children 0 - QuestBox, 1 - monsterKillText, 2 - GaugeBar
 	game_module::TextUI* monsterKillText =
 		textUI->GetGameObject()->GetParent()->GetChildren()[2]->GetComponent<game_module::TextUI>();
@@ -981,6 +992,7 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		{
 			if (!quest.mIsClear)
 			{
+				spdlog::trace("{}", colliderTriggerList[0].curPlayer);
 				text.Text = std::to_string(colliderTriggerList[0].curPlayer) + " / " + std::to_string(colliderTriggerList[0].maxPlayer);
 				text.IsRender = true;
 				monsterKillText->SetTextInfo(text);
@@ -1022,20 +1034,20 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		int pushButtonPlayer = -1;
 		switch (pushButtonList[0].skillType)
 		{
-			case ESkillType::X:
-				pushButtonPlayer = getXPushPlayer();
-				break;
-			case ESkillType::A:
-				pushButtonPlayer = getAPushPlayer();
-				break;
-			case ESkillType::R:
-				pushButtonPlayer = getRPushPlayer();
-				break;
-			case ESkillType::Y:
-				pushButtonPlayer = getYPushPlayer();
-				break;
-			default:
-				break;
+		case ESkillType::X:
+			pushButtonPlayer = getXPushPlayer();
+			break;
+		case ESkillType::A:
+			pushButtonPlayer = getAPushPlayer();
+			break;
+		case ESkillType::R:
+			pushButtonPlayer = getRPushPlayer();
+			break;
+		case ESkillType::Y:
+			pushButtonPlayer = getYPushPlayer();
+			break;
+		default:
+			break;
 		}
 		text.Text = std::to_string(pushButtonPlayer) + " / " + std::to_string(getMaxPlayer());
 		text.IsRender = true;
@@ -1354,8 +1366,6 @@ void fq::client::QuestManager::playComplete(float dt)
 				textInfo.FontColor.A(1);
 				mMainQuestText->SetTextInfoPlay(textInfo);
 
-				mViewMainQuest = mCurMainQuest;
-
 				auto questBox = GetGameObject()->GetChildren()[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>();
 				auto uiInfo = questBox->GetUIInfomation(0);
 				uiInfo.Alpha = 1;
@@ -1363,6 +1373,8 @@ void fq::client::QuestManager::playComplete(float dt)
 
 				if (mIsFinishedCompleteAnimation[i])
 				{
+					mViewMainQuest = mCurMainQuest;
+
 					mIsFinishedCompleteAnimation[i] = false;
 
 					int nextSubQuestSize = mNextSubQuests.size() + 1;
@@ -1751,24 +1763,24 @@ void fq::client::QuestManager::eventProcessPushButtonEvent()
 						int pushButtonPlayer = -1;
 						switch (event.eSkillType)
 						{
-							case ESkillType::X:
-								mIsUseX[event.playerID] = true;
-								pushButtonPlayer = getXPushPlayer();
-								break;
-							case ESkillType::A:
-								mIsUseA[event.playerID] = true;
-								pushButtonPlayer = getAPushPlayer();
-								break;
-							case ESkillType::R:
-								mIsUseR[event.playerID] = true;
-								pushButtonPlayer = getRPushPlayer();
-								break;
-							case ESkillType::Y:
-								mIsUseY[event.playerID] = true;
-								pushButtonPlayer = getYPushPlayer();
-								break;
-							default:
-								break;
+						case ESkillType::X:
+							mIsUseX[event.playerID] = true;
+							pushButtonPlayer = getXPushPlayer();
+							break;
+						case ESkillType::A:
+							mIsUseA[event.playerID] = true;
+							pushButtonPlayer = getAPushPlayer();
+							break;
+						case ESkillType::R:
+							mIsUseR[event.playerID] = true;
+							pushButtonPlayer = getRPushPlayer();
+							break;
+						case ESkillType::Y:
+							mIsUseY[event.playerID] = true;
+							pushButtonPlayer = getYPushPlayer();
+							break;
+						default:
+							break;
 						}
 
 						if (getMaxPlayer() == pushButtonPlayer)
@@ -1803,24 +1815,24 @@ void fq::client::QuestManager::eventProcessPushButtonEvent()
 							int pushButtonPlayer = -1;
 							switch (event.eSkillType)
 							{
-								case ESkillType::X:
-									mIsUseX[event.playerID] = true;
-									pushButtonPlayer = getXPushPlayer();
-									break;
-								case ESkillType::A:
-									mIsUseA[event.playerID] = true;
-									pushButtonPlayer = getAPushPlayer();
-									break;
-								case ESkillType::R:
-									mIsUseR[event.playerID] = true;
-									pushButtonPlayer = getRPushPlayer();
-									break;
-								case ESkillType::Y:
-									mIsUseY[event.playerID] = true;
-									pushButtonPlayer = getYPushPlayer();
-									break;
-								default:
-									break;
+							case ESkillType::X:
+								mIsUseX[event.playerID] = true;
+								pushButtonPlayer = getXPushPlayer();
+								break;
+							case ESkillType::A:
+								mIsUseA[event.playerID] = true;
+								pushButtonPlayer = getAPushPlayer();
+								break;
+							case ESkillType::R:
+								mIsUseR[event.playerID] = true;
+								pushButtonPlayer = getRPushPlayer();
+								break;
+							case ESkillType::Y:
+								mIsUseY[event.playerID] = true;
+								pushButtonPlayer = getYPushPlayer();
+								break;
+							default:
+								break;
 							}
 
 							if (getMaxPlayer() == pushButtonPlayer)
@@ -1868,6 +1880,7 @@ void fq::client::QuestManager::eventProcessUpdatePlayerState()
 			if (event.type == EPlayerType::SoulDestoryed)
 			{
 				mIsAlive[event.playerID] = false;
+				checkAllPushButton();
 			}
 		});
 }
@@ -1944,5 +1957,71 @@ void fq::client::QuestManager::eventProcessOnUIRender()
 			mIsRenderingUI = event.bIsRenderingUI;
 		}
 	);
+}
+
+void fq::client::QuestManager::checkAllPushButton()
+{
+	std::vector<PushButton>& pushButtonList = mCurMainQuest.mclearConditionList.pushButtonList;
+	if (pushButtonList.size() > 0)
+	{
+		int pushButtonPlayer = -1;
+		switch (pushButtonList[0].skillType)
+		{
+		case ESkillType::X:
+			pushButtonPlayer = getXPushPlayer();
+			break;
+		case ESkillType::A:
+			pushButtonPlayer = getAPushPlayer();
+			break;
+		case ESkillType::R:
+			pushButtonPlayer = getRPushPlayer();
+			break;
+		case ESkillType::Y:
+			pushButtonPlayer = getYPushPlayer();
+			break;
+		default:
+			break;
+		}
+
+		if (getMaxPlayer() == pushButtonPlayer)
+		{
+			mClearEvents.push_back(mCurMainQuest);
+			mClearEventIndexes.push_back(0);
+			spdlog::trace("Complete Clear Push Skill");
+		}
+	}
+
+	for (int i = 0; i < mCurSubQuest.size(); i++)
+	{
+		std::vector<PushButton>& pushButtonList = mCurSubQuest[i].mclearConditionList.pushButtonList;
+		if (pushButtonList.size() > 0)
+		{
+			int pushButtonPlayer = -1;
+			switch (pushButtonList[0].skillType)
+			{
+			case ESkillType::X:
+				pushButtonPlayer = getXPushPlayer();
+				break;
+			case ESkillType::A:
+				pushButtonPlayer = getAPushPlayer();
+				break;
+			case ESkillType::R:
+				pushButtonPlayer = getRPushPlayer();
+				break;
+			case ESkillType::Y:
+				pushButtonPlayer = getYPushPlayer();
+				break;
+			default:
+				break;
+			}
+
+			if (getMaxPlayer() == pushButtonPlayer)
+			{
+				mClearEvents.push_back(mCurSubQuest[i]);
+				mClearEventIndexes.push_back(i);
+				spdlog::trace("Complete Clear Push Skill");
+			}
+		}
+	}
 }
 

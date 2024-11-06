@@ -1,6 +1,7 @@
 #include "MagicCircleEndPoint.h"
 #include "Player.h"
 #include "Soul.h"
+#include "DefenceCounter.h"
 
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/UVAnimator.h"
@@ -28,10 +29,6 @@ void fq::client::MagicCircleEndPoint::OnStart()
 	mTransform = GetTransform();
 	mUVAnimator = GetComponent<game_module::UVAnimator>();
 
-	mElapsed = 0.f;
-	mPlayerCount = 0;
-	mbIsStart = false;
-
 	for (auto child : mTransform->GetChildren())
 	{
 		if (child->GetGameObject()->GetName() == "E_Gauge")
@@ -45,16 +42,33 @@ void fq::client::MagicCircleEndPoint::OnStart()
 	{
 		mUVAnimator->SetTimePos(0.f);
 	}
+
+	mDefenceCounterObjectOrNull = GetScene()->GetObjectByName(mDefenceCounterObjectName);
 }
 
 void fq::client::MagicCircleEndPoint::OnUpdate(float dt)
 {
-	if (mPlayerCount > 0)
+	if (mDefenceCounterObjectOrNull == nullptr)
 	{
-		mElapsed += dt;
+		return;
+	}
+	if (mDefenceCounterObjectOrNull->IsDestroyed())
+	{
+		mDefenceCounterObjectOrNull = nullptr;
+		return;
 	}
 
-	float ratio = std::min<float>(mElapsed / mDuration, 1.f);
+	float ratio = 0;
+
+	if (mDefenceCounterObjectOrNull != nullptr)
+	{
+		auto defenceCounter = mDefenceCounterObjectOrNull->GetComponent<DefenceCounter>();
+
+		if (defenceCounter != nullptr)
+		{
+			ratio = defenceCounter->GetCountRatio();
+		}
+	}
 
 	if (mEndPointObject != nullptr)
 	{
@@ -70,7 +84,7 @@ void fq::client::MagicCircleEndPoint::OnUpdate(float dt)
 			if (particleObject != nullptr)
 			{
 				auto info = particleObject->GetInfo();
-				info.InstanceData.bIsEmit = mbIsStart;
+				info.InstanceData.bIsEmit = ratio > 0.f;
 				particleObject->SetInfo(info);
 			}
 		}
@@ -79,25 +93,5 @@ void fq::client::MagicCircleEndPoint::OnUpdate(float dt)
 	if (mUVAnimator != nullptr)
 	{
 		mUVAnimator->SetTimePos(ratio * mUVAnimator->GetDuration());
-	}
-}
-
-void fq::client::MagicCircleEndPoint::OnTriggerEnter(const game_module::Collision& collision)
-{
-	mbIsStart = true;
-
-	if (collision.other->GetComponent<Player>() != nullptr
-		|| collision.other->GetComponent<Soul>() != nullptr)
-	{
-		++mPlayerCount;
-	}
-}
-
-void fq::client::MagicCircleEndPoint::OnTriggerExit(const game_module::Collision& collision)
-{
-	if (collision.other->GetComponent<Player>() != nullptr
-		|| collision.other->GetComponent<Soul>() != nullptr)
-	{
-		--mPlayerCount;
 	}
 }

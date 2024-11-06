@@ -10,6 +10,7 @@
 #include "../FQGameModule/Socket.h"
 #include "../FQGameModule/BoxCollider.h"
 
+#include "ClientHelper.h"
 #include "Attack.h"
 #include "ArrowAttack.h"
 #include "GameManager.h"
@@ -169,7 +170,7 @@ void fq::client::MeleeMonster::EmitAttack()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = mAttackPower;
 	attackInfo.attackDirection = foward;
-	attackInfo.hitSound = "MM_Attack_hit";
+	attackInfo.hitSound = getAttactHitSound();
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
@@ -178,7 +179,7 @@ void fq::client::MeleeMonster::EmitAttack()
 	mAttackElapsedTime = mAttackCoolTime;
 
 	// 공격 사운드
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Attack", false , fq::sound::EChannel::SE });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ getAttactSound(), false , fq::sound::EChannel::SE});
 }
 
 
@@ -388,7 +389,25 @@ void fq::client::MeleeMonster::DetectTarget()
 {
 	auto monsterPos = mTransform->GetWorldPosition();
 
-	for (const auto& player : mGameManager->GetPlayers())
+	const auto& players = mGameManager->GetPlayers();
+
+	if (players.empty())
+		return;
+
+	std::vector<game_module::GameObject*> randomPlayers{};
+	while (randomPlayers.size() != players.size())
+	{
+		auto index = helper::RandomGenerator::GetInstance().GetRandomNumber(0, players.size() - 1);
+
+		for (auto& randomPlayer : randomPlayers)
+		{
+			if(randomPlayer->GetID() == players[index]->GetID())
+				continue;
+		}
+		randomPlayers.push_back(players[index].get());
+	}
+
+	for (const auto& player : randomPlayers)
 	{
 		if (!player->HasComponent<Player>())
 			continue;
@@ -399,25 +418,25 @@ void fq::client::MeleeMonster::DetectTarget()
 
 		if (distance <= mDetectRange)
 		{
-			SetTarget(player.get());
+			SetTarget(player);
 			mAnimator->SetParameterBoolean("FindTarget", true);
 		}
 	}
 
-	GetScene()->ViewComponents<PlayerDummy>(
-		[this, monsterPos](fq::game_module::GameObject& object, PlayerDummy& camera)
-		{
-			auto dummyPlayerT = object.GetComponent<game_module::Transform>();
-			auto playerPos = dummyPlayerT->GetWorldPosition();
-			float distance = (monsterPos - playerPos).Length();
+	//GetScene()->ViewComponents<PlayerDummy>(
+	//	[this, monsterPos](fq::game_module::GameObject& object, PlayerDummy& camera)
+	//	{
+	//		auto dummyPlayerT = object.GetComponent<game_module::Transform>();
+	//		auto playerPos = dummyPlayerT->GetWorldPosition();
+	//		float distance = (monsterPos - playerPos).Length();
 
-			if (distance <= mDetectRange)
-			{
-				SetTarget(&object);
-				mAnimator->SetParameterBoolean("FindTarget", true);
-			}
-		}
-	);
+	//		if (distance <= mDetectRange)
+	//		{
+	//			SetTarget(&object);
+	//			mAnimator->SetParameterBoolean("FindTarget", true);
+	//		}
+	//	}
+	//);
 }
 
 void fq::client::MeleeMonster::CheckTargetInAttackRange()
@@ -645,4 +664,48 @@ void fq::client::MeleeMonster::destroySocketCollider()
 		if (socket)
 			childObject->RemoveComponent<fq::game_module::BoxCollider>();
 	}
+}
+
+std::string fq::client::MeleeMonster::getAttactSound() const
+{
+	int index = rand() % 4;
+
+	switch (index)
+	{
+	case 0:
+		return "MM_Attack_1";
+	case 1:
+		return "MM_Attack_2";
+	case 2:
+		return "MM_Attack_3";
+	case 3:
+		return "MM_Attack_4";
+	default:
+		assert(false);
+		break;
+	}
+
+	return "";
+}
+
+std::string fq::client::MeleeMonster::getAttactHitSound() const
+{
+	int index = rand() % 4;
+
+	switch (index)
+	{
+	case 0:
+		return "MM_Attack_Hit_1";
+	case 1:
+		return "MM_Attack_Hit_2";
+	case 2:
+		return "MM_Attack_Hit_3";
+	case 3:
+		return "MM_Attack_Hit_4";
+	default:
+		assert(false);
+		break;
+	}
+
+	return "";
 }

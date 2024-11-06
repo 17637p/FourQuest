@@ -112,6 +112,7 @@ namespace fq::client
 			|| collision.other->GetTag() == fq::game_module::ETag::Untagged)
 		{
 			mMaxBlockCount = 0;
+			playWallSound();
 		}
 
 		auto parent = collision.other->GetParent();
@@ -193,20 +194,29 @@ namespace fq::client
 		// 강공격, 약공격에 따라 Attack 컴포넌트 데이터 세팅
 		if (GetGameObject()->HasComponent<Attack>())
 		{
+
+
 			auto attack = GetComponent<Attack>();
 			AttackInfo attackInfo;
 			attackInfo.attacker = mAttacker;
 			attackInfo.hitSound = mHitSound;
 			attackInfo.attackDirection = mAttackDirection;
 			attackInfo.attackPosition = mAttackTransform.Translation();
-			attackInfo.mHitCallback = [this, isIncrease = false]() mutable
-				{
-					if (!isIncrease)
+			if (info.hitCallback)
+			{
+				attackInfo.mHitCallback = info.hitCallback;
+			}
+			else
+			{
+				attackInfo.mHitCallback = [this, isIncrease = false]() mutable
 					{
-						mAttacker->GetComponent<Player>()->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
-						isIncrease = true;
-					}
-				};
+						if (!isIncrease)
+						{
+							mAttacker->GetComponent<Player>()->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+							isIncrease = true;
+						}
+					};
+			}
 
 			if (mbIsStrongAttack)
 			{
@@ -244,6 +254,32 @@ namespace fq::client
 		}
 
 		return cloneArmour;
+	}
+
+	void ArrowAttack::playWallSound()
+	{
+		int index = rand() % 5;
+
+		switch (index)
+		{
+			case 0:
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_Arrow_Wall_1", false , fq::sound::EChannel::SE });
+				break;
+			case 1:
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_Arrow_Wall_2", false , fq::sound::EChannel::SE });
+				break;
+			case 2:
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_Arrow_Wall_3", false , fq::sound::EChannel::SE });
+				break;
+			case 3:
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_Arrow_Wall_4", false , fq::sound::EChannel::SE });
+				break;
+			case 4:
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_Arrow_Wall_5", false , fq::sound::EChannel::SE });
+				break;
+		default:
+			break;
+		}
 	}
 
 	void fq::client::ArrowAttack::PlayHitSound()

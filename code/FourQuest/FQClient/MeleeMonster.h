@@ -70,6 +70,9 @@ namespace fq::client
 
 		void destroySocketCollider();
 
+		std::string getAttactSound() const;
+		std::string getAttactHitSound() const;
+
 	private:
 		GameManager* mGameManager;
 		fq::game_module::Transform* mTransform;

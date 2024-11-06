@@ -51,6 +51,7 @@ namespace fq::physics
 		, mClothBufferHelper(nullptr)
 		, mCudaVertexResource(nullptr)
 		, mCudaIndexResource(nullptr)
+		, mDurationTime()
 	{
 	}
 
@@ -136,6 +137,7 @@ namespace fq::physics
 
 		createClothParticle(physics, scene, cudaContextManager, collisionMatrix, collisionData);
 
+
 		return true;
 	}
 	 
@@ -147,10 +149,47 @@ namespace fq::physics
 		mWorldTransform.Invert(InvTransform);
 
 		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(mVertices, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;		// 천 입자로 Graphics VertexBuffer에 position값 Update하는 cuda함수 
-		//if (!CudaClothTool::UpdateNormalToID3DBuffer(mSameVertices, mVertices.size(), mCudaVertexResource, mCudaVertexStride)) return false;	// 겹치는 버텍스 노말값 업데이트 cuda함수
 		if (!updateWindToParticle()) return false;
 
-		//if (!updateDebugVertex()) return false;
+		return true;
+	}
+	 
+	bool CudaPhysicsCloth::UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager, float deltaTime)
+	{
+		// 시간 체크
+		mDurationTime += deltaTime;
+		if (mLerpTime <= 0.f)
+		{
+			spdlog::warn("[CudaPhysicsCloth ({})] LerpTime is Zero", __LINE__);
+			mLerpTime = 1.f;
+		}
+
+		// 보간 값 생성
+		float lerpValue = mDurationTime / mLerpTime;
+		if (lerpValue > 1.f)
+		{
+			lerpValue = 1.f;
+		}
+
+		// 월드 트랜스폼 역행렬 값
+		DirectX::SimpleMath::Matrix InvTransform;
+		mWorldTransform.Invert(InvTransform);
+
+		// 보간된 값을 Graphics Engine의 천 버퍼에 업데이트 해주는 Cuda 함수
+		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(mPrevClothBuffer, mCurrClothBuffer, lerpValue, InvTransform, mCudaVertexResource, mCudaVertexStride)) return false;
+
+		return true;
+	}
+
+	bool CudaPhysicsCloth::UpdateParticleBuffer(float deltaTime)
+	{
+		mDurationTime = 0.f;
+		mLerpTime = deltaTime;
+		mPrevClothBuffer.assign(mCurrClothBuffer.begin(), mCurrClothBuffer.end());
+		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
+
+		if (!CudaClothTool::UpdateParticleBuffer(mCurrClothBuffer.size(), mCurrClothBuffer.data(), paticle)) return false;
+		if (!updateWindToParticle()) return false;
 
 		return true;
 	}
@@ -164,7 +203,7 @@ namespace fq::physics
 		physx::PxVec4* hostParticleData = new physx::PxVec4[mVertices.size()];
 
 		// GPU에서 CPU로 복사합니다. (GPU의 메모리 주소에서 CPU의 메모리로)
-		cudaMemcpy(hostParticleData, particle, sizeof(physx::PxVec4) * mVertices.size(), cudaMemcpyDeviceToHost);
+		cudaMemcpyAsync(hostParticleData, particle, sizeof(physx::PxVec4) * mVertices.size(), cudaMemcpyDeviceToHost);
 
 		// 복사한 데이터를 mVertices에 저장
 		for (int i = 0; i < mVertices.size(); i++)
@@ -190,6 +229,7 @@ namespace fq::physics
 
 		mParticleSystem->setWind(pxWind);
 
+
 		return true;
 	}
 
@@ -205,9 +245,17 @@ namespace fq::physics
 		mDisableIndicesIndices = data.clothData.disableIndices;
 		
 		mVertices.resize(data.clothData.vertices.size());
+		mCurrClothBuffer.resize(data.clothData.vertices.size());
+		mPrevClothBuffer.resize(data.clothData.vertices.size());
 		for (int i = 0; i < mVertices.size(); i++)
 		{
 			mVertices[i] = DirectX::SimpleMath::Vector3::Transform(data.clothData.vertices[i], mWorldTransform);
+			mCurrClothBuffer[i].x = mVertices[i].x;
+			mCurrClothBuffer[i].y = mVertices[i].y;
+			mCurrClothBuffer[i].z = mVertices[i].z;
+			mPrevClothBuffer[i].x = mVertices[i].x;
+			mPrevClothBuffer[i].y = mVertices[i].y;
+			mPrevClothBuffer[i].z = mVertices[i].z;
 		}
 
 		//bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);
@@ -418,6 +466,7 @@ namespace fq::physics
 		clothPreProcessor->partitionSprings(clothDesc, output);
 		clothPreProcessor->release();
 
+
 		// 천막 버퍼 생성
 		mClothBuffer = physx::ExtGpu::PxCreateAndPopulateParticleClothBuffer(bufferDesc, clothDesc, output, cudaContextManager);
 		mParticleSystem->addParticleBuffer(mClothBuffer);
@@ -451,30 +500,31 @@ namespace fq::physics
 	void CudaPhysicsCloth::GetPhysicsCloth(Cloth::GetSetClothData& data)
 	{
 		data.worldTransform = mWorldTransform;
+		data.cameraCulling = mbIsCulling;
 	}
 
 	bool CudaPhysicsCloth::SetPhysicsCloth(const Cloth::GetSetClothData& data)
 	{
-		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
+		//physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
 
-		DirectX::SimpleMath::Vector3 prevPosition;
-		DirectX::SimpleMath::Quaternion prevRotation;
-		DirectX::SimpleMath::Vector3 prevScale;
-		DirectX::SimpleMath::Vector3 nextPosition;
-		DirectX::SimpleMath::Quaternion nextRotation;
-		DirectX::SimpleMath::Vector3 nextScale;
-		DirectX::SimpleMath::Matrix prevTransform = mWorldTransform;
-		DirectX::SimpleMath::Matrix nextTransform = data.worldTransform;
+		//DirectX::SimpleMath::Vector3 prevPosition;
+		//DirectX::SimpleMath::Quaternion prevRotation;
+		//DirectX::SimpleMath::Vector3 prevScale;
+		//DirectX::SimpleMath::Vector3 nextPosition;
+		//DirectX::SimpleMath::Quaternion nextRotation;
+		//DirectX::SimpleMath::Vector3 nextScale;
+		//DirectX::SimpleMath::Matrix prevTransform = mWorldTransform;
+		//DirectX::SimpleMath::Matrix nextTransform = data.worldTransform;
 
-		prevTransform.Decompose(prevScale, prevRotation, prevPosition);
-		nextTransform.Decompose(nextScale, nextRotation, nextPosition);
-		prevTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(prevRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(prevPosition);
-		nextTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(nextRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(nextPosition);
+		//prevTransform.Decompose(prevScale, prevRotation, prevPosition);
+		//nextTransform.Decompose(nextScale, nextRotation, nextPosition);
+		//prevTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(prevRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(prevPosition);
+		//nextTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(nextRotation) * DirectX::SimpleMath::Matrix::CreateTranslation(nextPosition);
 
-		//if (!CudaClothTool::UpdateWorldTransformToID3DBuffer(prevTransform, nextTransform, mVertices.size(), paticle)) return false;
+		////if (!CudaClothTool::UpdateWorldTransformToID3DBuffer(prevTransform, nextTransform, mVertices.size(), paticle)) return false;
 
-		// ClothBuffer 업데이트
-		mClothBuffer->raiseFlags(physx::PxParticleBufferFlag::eUPDATE_POSITION);
+		//// ClothBuffer 업데이트
+		//mClothBuffer->raiseFlags(physx::PxParticleBufferFlag::eUPDATE_POSITION);
 		mWorldTransform = data.worldTransform;
 		mbIsCulling = data.cameraCulling;
 

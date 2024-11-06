@@ -32,6 +32,9 @@ namespace fq::game_module
 		void SetTargetPosition(const std::vector<TrackKey>& keys) { mKeys = keys; }
 
 	private:
+		Scene* mScene;
+
+		std::string mTargetObjectName;
 		std::shared_ptr<GameObject> mTargetObject;
 		std::vector<TrackKey> mKeys;
 

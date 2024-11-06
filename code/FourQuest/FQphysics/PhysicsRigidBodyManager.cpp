@@ -159,7 +159,7 @@ namespace fq::physics
 		auto body = mRigidBodyContainer.find(id)->second;
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
-		if (dynamicBody)
+ 		if (dynamicBody)
 		{
 			Matrix dxTransform = rigidBodyData.transform;
 			physx::PxTransform pxTransform;
@@ -186,7 +186,7 @@ namespace fq::physics
 
 			// 다이나믹 바디 Transform 세팅(단, Scale 값은 Shape에 적용), LayerNumber 세팅
 			Vector3 position;
-			Vector3 scale;
+			Vector3 scale = { 1.0f, 1.0f, 1.0f };
 			Quaternion rotation;
 			dxTransform.Decompose(scale, rotation, position);
 			dxTransform = Matrix::CreateScale(1.f) 
@@ -196,8 +196,16 @@ namespace fq::physics
 			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
 
 			pxBody->setGlobalPose(pxTransform);
-			dynamicBody->SetConvertScale(scale, mPhysics, collisionMatrix);
 			dynamicBody->ChangeLayerNumber(rigidBodyData.myLayerNumber, collisionMatrix, mCollisionDataManager);
+
+			if (scale.x > 0.f && scale.y > 0.f && scale.z > 0.f)
+			{
+				dynamicBody->SetConvertScale(scale, mPhysics, collisionMatrix);
+			}
+			else
+			{
+				spdlog::error("[PhysicsRigidBodyManager {}] Object Scale Is Zero. ID : {} ", __LINE__, id);
+			}
 
 			return true;
 		}
@@ -210,7 +218,7 @@ namespace fq::physics
 			physx::PxTransform pxCurrentTransform;
 
 			DirectX::SimpleMath::Vector3 position;
-			DirectX::SimpleMath::Vector3 scale;
+			DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f };
 			DirectX::SimpleMath::Quaternion rotation;
 
 			dxTransform.Decompose(scale, rotation, position);
@@ -227,7 +235,14 @@ namespace fq::physics
 			{
 				pxBody->setGlobalPose(pxCurrentTransform);
 			}
-			staticBody->SetConvertScale(scale, mPhysics, collisionMatrix);
+			if (scale.x > 0.f && scale.y > 0.f && scale.z > 0.f)
+			{
+				staticBody->SetConvertScale(scale, mPhysics, collisionMatrix);
+			}
+			else
+			{
+				spdlog::error("[PhysicsRigidBodyManager {}] Object Scale Is Zero. ID : {} ", __LINE__, id);
+			}
 			staticBody->ChangeLayerNumber(rigidBodyData.myLayerNumber, collisionMatrix, mCollisionDataManager);
 
 			return true;

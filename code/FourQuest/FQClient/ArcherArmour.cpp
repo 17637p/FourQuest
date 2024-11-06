@@ -71,7 +71,7 @@ namespace fq::client
 		attackInfo.attackDirection = foward;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = false;
-		attackInfo.hitSound = "A_Fastshoot_Hit";
+		attackInfo.hitSound = getArrowHitSound();
 		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
 		attackComponent->Set(attackInfo);
 
@@ -89,7 +89,10 @@ namespace fq::client
 			->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::R });
 	}
 
-	void ArcherArmour::makeStrongAttackArrow(float damage, DirectX::SimpleMath::Quaternion direction, DirectX::SimpleMath::Vector3 position)
+	void ArcherArmour::makeStrongAttackArrow(float damage,
+		DirectX::SimpleMath::Quaternion direction,
+		DirectX::SimpleMath::Vector3 position,
+		std::function<void()> hitCallback)
 	{
 		using namespace DirectX::SimpleMath;
 
@@ -98,8 +101,9 @@ namespace fq::client
 		auto& attackObj = *(instance.begin());
 		auto attackComponent = attackObj->GetComponent<client::ArrowAttack>();
 		auto attackT = attackObj->GetComponent<game_module::Transform>();
-		attackT->GenerateWorld(position, direction, attackT->GetWorldScale());
 		Vector3 attackDirection = Matrix::CreateFromQuaternion(direction).Forward();
+		attackDirection.Normalize();
+		attackT->GenerateWorld(position + (attackDirection * 2.f), direction, attackT->GetWorldScale());
 
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};
@@ -107,11 +111,12 @@ namespace fq::client
 		attackInfo.attackDirection = attackDirection;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = true;
-		attackInfo.hitSound = "A_StrongAttack_Hit";
+		attackInfo.hitSound = getArrowHitSound();
 		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
 		attackInfo.remainingAttackCount = 0b11111111;
 		attackInfo.strongDamage = damage;
 		attackInfo.strongProjectileVelocity = mStrongProjectileVelocity;
+		attackInfo.hitCallback = hitCallback;
 		attackComponent->Set(attackInfo);
 
 		// 화살 생존시간 설정
@@ -183,9 +188,21 @@ namespace fq::client
 
 		// 차지레벨에 따라서 화살을 생성 
 		auto directions = GetStrongArrowDirections(chargeLevel);
+
+		// 히트 콜백 생성 
+		auto isIncrease = std::make_shared<bool>();
+		auto hitCallback = [this, isIncrease]() mutable
+			{
+				if (!(*isIncrease))
+				{
+					mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+					*isIncrease = true;
+				}
+			};
+
 		for (int i = 0; i < directions.size(); ++i)
 		{
-			makeStrongAttackArrow(attackPower, directions[i], position);
+			makeStrongAttackArrow(attackPower, directions[i], position, hitCallback);
 		}
 
 		// 키입력 이벤트 
@@ -407,6 +424,28 @@ namespace fq::client
 		}
 
 		return cloneArmour;
+	}
+
+	std::string ArcherArmour::getArrowHitSound() const
+	{
+		int index = rand() % 5;
+
+		switch (index)
+		{
+		case 0:
+			return "A_Arrow_Hit_1";
+		case 1:
+			return "A_Arrow_Hit_2";
+		case 2:
+			return "A_Arrow_Hit_3";
+		case 3:
+			return "A_Arrow_Hit_4";
+		case 4:
+			return "A_Arrow_Hit_5";
+		default:
+			assert(false);
+			break;
+		}
 	}
 
 	void ArcherArmour::setName()

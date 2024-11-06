@@ -22,39 +22,39 @@ namespace fq::game_module
 
 	bool ObjectMoveTrack::Initialize(const ObjectMoveTrackInfo& info, Scene* scene)
 	{
+		mScene = scene;
+
 		mTrackObjectName.push_back(info.targetObjectName);
+		mTargetObjectName = info.targetObjectName;
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
 		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;
-
-		mTargetObject = scene->GetObjectByName(info.targetObjectName);
-
-		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
-		if (mTargetObject == nullptr)
-		{
-			spdlog::warn("[ObjectMoveTrack Warrning({})] Do not Have TargetObject", __LINE__);
-			return false;
-		}
-
-		// 해당 오브젝트가 Transform을 가지고 있지 않으면 로그 띄우기
-		if (!mTargetObject->HasComponent<Transform>())
-		{
-			spdlog::warn("[ObjectMoveTrack Warrning({})] TargetObject Have not Trasfrom Component", __LINE__);
-			return false;
-		}
-
 		mKeys = info.keys;
-
-		auto transform = mTargetObject->GetComponent<Transform>();
-		mPrevPosition = transform->GetWorldPosition();
-		mPrevRotation = transform->GetWorldRotation();
-		mPrevScale = transform->GetWorldScale();
 
 		return true;
 	}
 
 	void ObjectMoveTrack::PlayEnter()
 	{
+		mTargetObject = mScene->GetObjectByName(mTargetObjectName);
+
+		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
+		if (mTargetObject == nullptr)
+		{
+			spdlog::warn("[ObjectMoveTrack Warrning({})] Do not Have TargetObject : {}", __LINE__, mTargetObjectName);
+			return;
+		}
+		// 해당 오브젝트가 Transform을 가지고 있지 않으면 로그 띄우기
+		else if (!mTargetObject->HasComponent<Transform>())
+		{
+			spdlog::warn("[ObjectMoveTrack Warrning({})] TargetObject Have not Trasfrom Component", __LINE__);
+		}
+
+		auto transform = mTargetObject->GetComponent<Transform>();
+		mPrevPosition = transform->GetWorldPosition();
+		mPrevRotation = transform->GetWorldRotation();
+		mPrevScale = transform->GetWorldScale();
+
 		// time 값에 따라 TrackKey 벡터를 오름차순으로 정렬
 		std::sort(mKeys.begin(), mKeys.end(), [](const TrackKey& a, const TrackKey& b)
 			{
@@ -67,7 +67,7 @@ namespace fq::game_module
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
 
-		if (mTargetObject && mTargetObject->IsDestroyed())
+		if (mTargetObject && !mTargetObject->IsDestroyed())
 		{
 			if (!mTargetObject->HasComponent<Transform>()) return;
 
@@ -147,6 +147,10 @@ namespace fq::game_module
 				* DirectX::SimpleMath::Matrix::CreateTranslation(mPrevPosition);
 
 			transform->SetWorldMatrix(prevTransform);
+		}
+		else
+		{
+			mTargetObject = nullptr;
 		}
 	}
 }

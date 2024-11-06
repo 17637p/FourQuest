@@ -379,10 +379,13 @@ void fq::client::Player::SummonSoul(bool isDestroyArmour)
 		fq::event::OnCreateStateEvent stateEvent;
 		stateEvent.gameObject = GetGameObject();
 		stateEvent.RegisterKeyName = "P_Die_Armor";
-		if (!stateEvent.RegisterKeyName.empty())
-		{
-			GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
-		}
+		stateEvent.bIsUseOnlyPosition = true;
+		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+
+		stateEvent.RegisterKeyName = "P_Soul_Death_Gauge";
+		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+	
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_ArmorBreak", false , fq::sound::EChannel::SE });
 	}
 
 	// 위치 설정

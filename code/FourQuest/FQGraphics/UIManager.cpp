@@ -615,6 +615,10 @@ void fq::graphics::UIManager::draw()
 		VideoInfo videoInfo = mVideoObject->GetVideoInfo();
 		if (videoInfo.isRender)
 		{
+			mRenderTarget->SetTransform
+			(
+				D2D1::Matrix3x2F::Scale(videoInfo.ScaleX, videoInfo.ScaleY, D2D1::Point2F(videoInfo.StartX, videoInfo.StartY))
+			);
 			mRenderTarget->DrawBitmap(mVideoBitmap, D2D1::RectF(videoInfo.StartX, videoInfo.StartY, videoInfo.StartX + mVideoObject->GetVideoInfo().Width, videoInfo.StartY + mVideoObject->GetVideoInfo().Height));
 		}
 	}
@@ -1142,6 +1146,10 @@ void fq::graphics::UIManager::UpdateVideoBitmap()
 	{
 		DWORD dwFlags = 0;
 		hr = pSourceReader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &mVideoIndex, &dwFlags, &mVideoTimeStamp, &pSample);
+		if (mVideoTimeStamp < videoInfo.PlayTime * 10000000)
+		{
+			hr = pSourceReader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &mVideoIndex, &dwFlags, &mVideoTimeStamp, &pSample);
+		}
 		if (SUCCEEDED(hr) && pSample) {
 			IMFMediaBuffer* pBuffer = nullptr;
 			hr = pSample->ConvertToContiguousBuffer(&pBuffer);

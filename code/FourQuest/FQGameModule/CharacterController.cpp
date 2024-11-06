@@ -182,7 +182,9 @@ void fq::game_module::CharacterController::SetPadInputRotationBySpeed(EPadStickT
 			break;
 	}
 
-	if (input.Length() <= 0.1f)
+	// 입력 최소치 보정 값 
+	constexpr float rotationOffsetSq = 0.5f * 0.5f;
+	if (input.LengthSquared() <= rotationOffsetSq)
 		return;
 
 	input.Normalize();
@@ -195,8 +197,7 @@ void fq::game_module::CharacterController::SetPadInputRotationBySpeed(EPadStickT
 	float diffAngle = Quaternion::Angle(inputRotation, lookRotation);
 
 	// 미세한 각도차이는 무시합니다. (무시하지 않으면 미세한 떨림 발생)
-	constexpr float IgnoreAngle = 6.25f;
-
+	constexpr float IgnoreAngle = 6.2f;
 	if (diffAngle >= IgnoreAngle)
 	{
 		mTransform->SetWorldRotation(inputRotation);

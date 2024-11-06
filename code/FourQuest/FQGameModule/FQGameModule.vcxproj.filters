@@ -422,6 +422,9 @@
     <ClInclude Include="CreateDeleteTrack.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
+    <ClInclude Include="LightTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -693,6 +696,9 @@
     </ClCompile>
     <ClCompile Include="CreateDeleteTrack.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="LightTrack.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

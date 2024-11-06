@@ -197,7 +197,18 @@ void fq::game_engine::StateEventSystem::OnCreateStateEvent(const fq::event::OnCr
 					}
 					else
 					{
-						effectObjectTransform->SetWorldMatrix(addtiveTransform * firedEventObjectTransform->GetWorldMatrix());
+						DirectX::SimpleMath::Matrix worldMatrix;
+
+						if (data.bIsUseOnlyPosition)
+						{
+							worldMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(firedEventObjectTransform->GetWorldPosition());
+						}
+						else
+						{
+							worldMatrix = firedEventObjectTransform->GetWorldMatrix();
+						}
+
+						effectObjectTransform->SetWorldMatrix(addtiveTransform * worldMatrix);
 					}
 
 					auto scene = mGameProcess->mSceneManager->GetCurrentScene();

@@ -467,8 +467,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Width")
 		.data<&graphics::VideoInfo::Height>("Height"_hs)
 		.prop(fq::reflect::prop::Name, "Height")
-		.data<&graphics::VideoInfo::PlayTime>("PlayTime"_hs)
-		.prop(fq::reflect::prop::Name, "PlayTime")
 		.data<&graphics::VideoInfo::Speed>("Speed"_hs)
 		.prop(fq::reflect::prop::Name, "Speed");
 
@@ -478,6 +476,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&VideoUI::SetVideoInfo, &VideoUI::GetVideoInfo>("VideoInfo"_hs)
 		.prop(fq::reflect::prop::Name, "VideoInfo")
+		.data<&VideoUI::mTotalPlayTime>("TotalPlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "TotalPlayTime")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1031,6 +1031,17 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::DragDrop, ".animation")
 		.prop(fq::reflect::prop::Comment, u8"애니메이션 파일의 경로");
 
+	entt::meta<LightTrackKey>()
+		.type("LightTrackKey"_hs)
+		.prop(fq::reflect::prop::Name, "LightTrackKey")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::game_module::LightTrackKey::time>("Time"_hs)
+		.prop(fq::reflect::prop::Name, "Time")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 시작되고 난 뒤에 시간")
+		.data<&fq::game_module::LightTrackKey::intensity>("Intensity"_hs)
+		.prop(fq::reflect::prop::Name, "Intensity")
+		.prop(fq::reflect::prop::Comment, u8"밝기 값");
+
 	entt::meta<CameraChangeTrackInfo>()
 		.type("CameraChangeTrackInfo"_hs)
 		.prop(fq::reflect::prop::Name, "CameraChangeTrackInfo")
@@ -1301,7 +1312,7 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "DeleteName")
 		.prop(fq::reflect::prop::Comment, u8"(Delete모드)삭제할 오브젝트이름");
 
-		entt::meta<FadeTrackInfo>()
+	entt::meta<FadeTrackInfo>()
 		.type("FadeTrackInfo"_hs)
 		.prop(fq::reflect::prop::Name, "FadeTrackInfo")
 		.prop(fq::reflect::prop::POD)
@@ -1320,6 +1331,23 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::game_module::FadeTrackInfo::finalColor>("FinalColor"_hs)
 		.prop(fq::reflect::prop::Name, "FinalColor")
 		.prop(fq::reflect::prop::Comment, u8"페이드 인/아웃 할 색상");
+
+	entt::meta<LightTrackInfo>()
+		.type("LightTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "LightTrackInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::game_module::LightTrackInfo::startTime>("StartTime"_hs)
+		.prop(fq::reflect::prop::Name, "StartTime")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 시작되고 난 뒤에 시작할 시간")
+		.data<&fq::game_module::LightTrackInfo::totalPlayTime>("TotalPlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "TotalPlayTime")
+		.prop(fq::reflect::prop::Comment, u8"해당 트랙이 실행되고 난 뒤에 실행할 총 시간")
+		.data<&fq::game_module::LightTrackInfo::lightObjectName>("LightObjectName"_hs)
+		.prop(fq::reflect::prop::Name, "LightObjectName")
+		.prop(fq::reflect::prop::Comment, u8"빛 오브젝트 이름")
+		.data<&fq::game_module::LightTrackInfo::lightTrackKeys>("LightTrackKeys"_hs)
+		.prop(fq::reflect::prop::Name, "LightTrackKeys")
+		.prop(fq::reflect::prop::Comment, u8"");
 
 	entt::meta<Sequence>()
 		.type("Sequence"_hs)
@@ -1385,6 +1413,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&Sequence::SetCreateDeleteTrackInfo, &Sequence::GetCreateDeleteTrackInfo>("CreateDelteInfo"_hs)
 		.prop(fq::reflect::prop::Name, "CreateDelteInfo")
 		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 생성/삭제 트랙이 있다면 추가하면 됩니다.")
+		.data<&Sequence::SetLightTrackInfo, &Sequence::GetLightTrackInfo>("LightTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "LightTrackInfo")
+		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 빛 제어 트랙이 있다면 추가하면 됩니다.")
 		.data<&Sequence::mPrefabs>("Prefabs"_hs)
 		.prop(fq::reflect::prop::Name, "Prefabs")
 		.prop(fq::reflect::prop::Comment, u8"트랙에서 사용하는 프리팹")

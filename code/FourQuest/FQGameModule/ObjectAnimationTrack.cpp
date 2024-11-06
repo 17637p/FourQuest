@@ -14,6 +14,7 @@ namespace fq::game_module
 		, mAnimationContainer{}
 		, mTargetObject()
 		, mbIsLoop(true)
+		, mScene(nullptr)
 	{
 	}
 	ObjectAnimationTrack::~ObjectAnimationTrack()
@@ -22,6 +23,8 @@ namespace fq::game_module
 
 	bool ObjectAnimationTrack::Initialize(const ObjectAnimationInfo& info, Scene* scene, std::vector<std::shared_ptr<fq::graphics::IAnimation>> animationContainer)
 	{
+		mScene = scene;
+
 		mTrackObjectName.push_back(info.targetObjectName);
 		mAnimationContainer = animationContainer;
 
@@ -31,27 +34,23 @@ namespace fq::game_module
 		mTargetObjectName = info.targetObjectName;
 		mAnimationTrackKeys = info.animationTrackKeys;
 
-		mTargetObject = scene->GetObjectByName(info.targetObjectName);
-
-		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
-		if (mTargetObject == nullptr)
-		{
-			spdlog::warn("[ObjectAnimationTrack Warrning({})] Do not Have TargetObject", __LINE__);
-			return false;
-		}
-
-		// 해당 오브젝트가 Transform을 가지고 있지 않으면 로그 띄우기
-		if (!mTargetObject->HasComponent<Transform>())
-		{
-			spdlog::warn("[ObjectAnimationTrack Warrning({})] TargetObject Have not Trasfrom Component", __LINE__);
-			return false;
-		}
-
 		return true;
 	}
 
 	void ObjectAnimationTrack::PlayEnter()
 	{
+		mTargetObject = mScene->GetObjectByName(mTargetObjectName);
+
+		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
+		if (mTargetObject == nullptr)
+		{
+			spdlog::warn("[ObjectAnimationTrack Warrning({})] Do not Have TargetObject", __LINE__);
+		}
+		else if (!mTargetObject->HasComponent<Transform>())
+		{
+			spdlog::warn("[ObjectAnimationTrack Warrning({})] TargetObject Have not Trasfrom Component", __LINE__);
+		}
+
 		// time 값에 따라 TrackKey 벡터를 오름차순으로 정렬
 		std::sort(mAnimationTrackKeys.begin(), mAnimationTrackKeys.end(), [](const AnimationTrackKey& a, const AnimationTrackKey& b)
 			{

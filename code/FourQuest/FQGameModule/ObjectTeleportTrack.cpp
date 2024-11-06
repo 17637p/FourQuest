@@ -3,6 +3,8 @@
 #include "Transform.h"
 #include "Scene.h"
 
+#include <spdlog/spdlog.h>
+
 namespace fq::game_module
 {
 	ObjectTeleportTrack::ObjectTeleportTrack()
@@ -21,38 +23,41 @@ namespace fq::game_module
 
 	bool ObjectTeleportTrack::Initialize(const ObjectTeleportTrackInfo& info, Scene* scene)
 	{
+		mScene = scene;
 		mTrackObjectName.push_back(info.targetObjectName);
 		mStartTime = info.startTime;
+		mTargetObjectName = info.targetObjectName;
 		mTotalPlayTime = info.totalPlayTime;
 		mbIsObjectReturnToStartTransform = info.isObjectReturnToStartTransform;
 
-		mTargetObject = scene->GetObjectByName(info.targetObjectName);
-
-		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
-		if (mTargetObject == nullptr)
-		{
-			spdlog::warn("[ObjectTeleportTrack Warrning ({})] Do not Have TargetObject", __LINE__);
-			return false;
-		}
-
-		if (!mTargetObject->HasComponent<Transform>())
-		{
-			spdlog::warn("[ObjectTeleportTrack Warrning ({})] TargetObject Have not Trasfrom Component", __LINE__);
-			return false;
-		}
-
 		mKeys = info.keys;
 
-		auto transform = mTargetObject->GetComponent<Transform>();
-		mPrevPosition = transform->GetWorldPosition();
-		mPrevRotation = transform->GetWorldRotation();
-		mPrevScale = transform->GetWorldScale();
 
 		return true;
 	}
 
 	void ObjectTeleportTrack::PlayEnter()
 	{
+		mTargetObject = mScene->GetObjectByName(mTargetObjectName);
+
+		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
+		if (mTargetObject == nullptr)
+		{
+			spdlog::warn("[ObjectTeleportTrack Warrning ({})] Do not Have TargetObject {}", __LINE__, mTargetObjectName);
+			return;
+		}
+
+		if (!mTargetObject->HasComponent<Transform>())
+		{
+			spdlog::warn("[ObjectTeleportTrack Warrning ({})] TargetObject Have not Trasfrom Component", __LINE__);
+			return;
+		}
+
+		auto transform = mTargetObject->GetComponent<Transform>();
+		mPrevPosition = transform->GetWorldPosition();
+		mPrevRotation = transform->GetWorldRotation();
+		mPrevScale = transform->GetWorldScale();
+
 		// time 값에 따라 TrackKey 벡터를 오름차순으로 정렬
 		std::sort(mKeys.begin(), mKeys.end(), [](const TrackKey& a, const TrackKey& b)
 			{
@@ -64,6 +69,13 @@ namespace fq::game_module
 	{
 		int keyNumber = 0;
 		float checkPointTime = 0.f;
+
+		if (mTargetObject == nullptr)
+		{
+			spdlog::warn("Object not found, Name : {}", mTargetObjectName);
+			assert(mTargetObject != nullptr);
+			return;
+		}
 
 		if (!mTargetObject->IsDestroyed())
 		{

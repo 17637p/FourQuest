@@ -49,6 +49,10 @@ namespace fq::client
 
 		void setName();
 
+		std::string getSwing1HitSound();
+		std::string getSwing2HitSound();
+		std::string getRushHitSound();
+
 	private:
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;

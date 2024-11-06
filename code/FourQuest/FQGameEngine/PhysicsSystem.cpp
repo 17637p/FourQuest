@@ -111,7 +111,6 @@ void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 	}
 
 	PostUpdate();
-	mPhysicsEngine->RemoveAllRigidBody();
 	mPhysicsEngine->ChangeScene();
 	mPhysicsEngine->Update(1.f);
 	mPhysicsEngine->FinalUpdate();
@@ -1049,21 +1048,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 
 			if (!clothCollider->GetIsSkinnedMesh())
 				transform->SetWorldMatrix(data.worldTransform);
-
-			//auto vertices = mPhysicsEngine->GetClothVertex(id);
-
-			//fq::graphics::debug::PolygonInfo info;
-
-			//for (int i = 0; i < vertices.size(); i++)
-			//{
-			//	fq::graphics::debug::SphereInfo info;
-
-			//	info.Sphere.Center = vertices[i];
-			//	info.Sphere.Radius = 0.01f;
-			//	info.Color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
-
-			//	mGameProcess->mGraphics->DrawSphere(info);
-			//}
 		}
 		else
 		{
@@ -1303,7 +1287,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			frustum.Transform(frustum, mainCamera->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
 
 			DirectX::BoundingBox box;
-			box.Center = transform->GetWorldPosition();
+			box.Center = data.worldTransform.Translation();
 			box.Extents.x = 1.f;
 			box.Extents.y = 1.f;
 			box.Extents.z = 1.f;
@@ -1342,7 +1326,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 				data.transform._43 = pos.z + offset.z;
 			}
 
-			mPhysicsEngine->SetRigidBodyData(id, data);
+ 			mPhysicsEngine->SetRigidBodyData(id, data);
 		}
 	}
 }

@@ -29,6 +29,7 @@ namespace fq::game_module
 		virtual void End() override;
 
 	private:
+		Scene* mScene;
 		bool mbIsLoop;
 
 		std::string mTargetObjectName;

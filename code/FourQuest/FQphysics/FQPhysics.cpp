@@ -107,6 +107,9 @@ namespace fq::physics
 		, mGpuScene(nullptr)
 		, mCudaContextManager(nullptr)
 		, mCollisionMatrix{}
+		, mbIsSimulating(false)
+		, mGpuSceneWaitUpdateCount(0)
+		, mbIsHalfFrameUpdate(true)
 	{
 	}
 
@@ -226,12 +229,47 @@ namespace fq::physics
 			return false;
 		if (!mScene->simulate(deltaTime))
 			return false;
-		if (!mGpuScene->simulate(deltaTime))
-			return false;
 		if (!mScene->fetchResults(true))
 			return false;
-		if (!mGpuScene->fetchResults(true))
-			return false;
+
+		if (mbIsSimulating) 
+		{
+			// 시뮬레이션이 진행 중이면 완료 여부 확인
+			if (mGpuScene->checkResults(false)) 
+			{
+				// 완료되었으면 결과를 가져옴
+				if (!mGpuScene->fetchResults(true))
+					return false;
+				if (!mClothManager->UpdateSimulationData(deltaTime * mGpuSceneWaitUpdateCount))
+					return false;
+
+				mbIsSimulating = false;
+			}
+			else
+			{
+				mGpuSceneWaitUpdateCount++;
+			}
+		}
+		else 
+		{
+			// 이전 시뮬레이션이 완료되었으면 새 시뮬레이션 시작
+			mGpuScene->simulate(deltaTime * 2.f);
+			mGpuSceneWaitUpdateCount = 0;
+			mbIsSimulating = true;
+		}
+
+		if (mbIsHalfFrameUpdate)
+		{
+			mbIsHalfFrameUpdate = false;
+
+			if (!mClothManager->Update(deltaTime * 2.f))
+				return false;
+		}
+		else
+		{
+			mbIsHalfFrameUpdate = true;
+		}
+
 		mMyEventCallback->OnTrigger();
 
 		return true;
@@ -242,8 +280,6 @@ namespace fq::physics
 		if (!mRigidBodyManager->FinalUpdate())
 			return false;
 		if (!mCCTManager->FinalUpdate())
-			return false;
-		if (!mClothManager->Update())
 			return false;
 
 		return true;

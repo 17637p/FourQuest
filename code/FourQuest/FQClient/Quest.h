@@ -129,8 +129,8 @@ namespace fq::client
 		Quest();
 		~Quest();
 
-		int mIndex;
-		std::string mName;
+		int mIndex = 0;
+		std::string mName = "";
 		bool mIsMain; // QuestType
 		bool mIsClear = false;
 

@@ -4,12 +4,14 @@
 #include "Transform.h"
 #include "Event.h"
 #include "EventManager.h"
+#include "InputManager.h"
 
 #include "../FQCommon/IFQRenderObject.h"
 
 fq::game_module::VideoUI::VideoUI()
 	:mVideoObject(nullptr)
 	, mVIdeoInfo{}
+	, mTotalPlayTime(0)
 {
 }
 
@@ -46,8 +48,18 @@ void fq::game_module::VideoUI::OnUpdate(float dt)
 	mVIdeoInfo = mVideoObject->GetVideoInfo();
 	Transform* myTransform = GetComponent<Transform>();
 
-	SetTextPosition(myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
+	SetVideoPosition(myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
+	SetVideoScale(myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
 	mVIdeoInfo.PlayTime += dt;
+
+	auto input = GetScene()->GetInputManager();
+	for (int i = 0; i < 4; i++)
+	{
+		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Hold)
+		{
+			mVIdeoInfo.PlayTime += dt;
+		}
+	}
 
 	mVideoObject->SetVideoInfo(mVIdeoInfo);
 }
@@ -62,7 +74,7 @@ void fq::game_module::VideoUI::SetVideoInfo(fq::graphics::VideoInfo val)
 	}
 }
 
-void fq::game_module::VideoUI::SetTextPosition(float startX, float startY)
+void fq::game_module::VideoUI::SetVideoPosition(float startX, float startY)
 {
 	mVIdeoInfo.StartX = startX;
 	mVIdeoInfo.StartY = startY;
@@ -73,7 +85,25 @@ void fq::game_module::VideoUI::SetTextPosition(float startX, float startY)
 void fq::game_module::VideoUI::OnStart()
 {
 	mVIdeoInfo.isReset = true;
+	mVIdeoInfo.PlayTime = 0;
 
 	mVideoObject->SetVideoInfo(mVIdeoInfo);
+}
+
+void fq::game_module::VideoUI::SetVideoScale(float scaleX, float scaleY)
+{
+	mVIdeoInfo.ScaleX = scaleX;
+	mVIdeoInfo.ScaleY = scaleY;
+
+	mVideoObject->SetVideoInfo(mVIdeoInfo);
+}
+
+bool fq::game_module::VideoUI::IsEndPlay(float delaytime)
+{
+	if (mVIdeoInfo.PlayTime > mTotalPlayTime + delaytime)
+	{
+		return true;
+	}
+	return false;
 }
 

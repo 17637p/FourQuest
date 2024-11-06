@@ -23,6 +23,9 @@ namespace fq::client
 
 	void BowStrongChargingState::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 	{
+		auto controller = animator.GetComponent<game_module::CharacterController>();
+		controller->SetPadInputRotation(game_module::EPadStickType::Left);
+
 		mChargingElapsedTime = 0.f;
 		auto archer = animator.GetComponent<ArcherArmour>();
 		mbIsEmitAttack = false;
@@ -55,7 +58,6 @@ namespace fq::client
 
 		auto archer = animator.GetComponent<ArcherArmour>();
 		auto controller = animator.GetComponent<game_module::CharacterController>();
-
 		controller->SetPadInputRotationBySpeed(game_module::EPadStickType::Left, PlayerVariable::PadRotationSpeed, dt);
 
 		auto controllerID = controller->GetControllerID();

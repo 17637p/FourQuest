@@ -164,6 +164,9 @@ namespace fq::graphics
 		float Width = 1920;
 		float Height = 1080;
 
+		float ScaleX = 1.0f;
+		float ScaleY = 1.0f;
+
 		bool isReset = false; // true 되면 리셋 시키고 false 로 변경
 		float PlayTime = 0;
 		float Speed = 1;

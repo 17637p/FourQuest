@@ -31,6 +31,8 @@ fq::client::CameraMoving::CameraMoving()
 	mForbiddenAreaPaddingY{ -0.7f, 1.0f },
 	mForbiddenViewPortX{150, 1770},
 	mForbiddenViewPortY{50, 1030}
+	, mForbiddenViewPortXFix{150, 1770}
+	, mForbiddenViewPorYXFix{50, 1030}
 {
 }
 
@@ -62,6 +64,12 @@ void fq::client::CameraMoving::OnUpdate(float dt)
 	{
 		return;
 	}
+
+	float width = mScreenManager->GetFixScreenWidth();
+	float height = mScreenManager->GetFixScreenHeight();
+
+	mForbiddenViewPortX = mForbiddenViewPortXFix * (width / 1920);
+	mForbiddenViewPortY = mForbiddenViewPorYXFix * (height / 1080);
 
 	// 플레이어 중앙 추적
 	chaseCenter(dt);
@@ -95,9 +103,10 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPosInView(float 
 
 		float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
 		float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
+
 		float xViewport = ((projPos.x + 1) / 2) * width;
 		float yViewport = ((1 - projPos.y) / 2) * height;
-		
+
 		if (xViewport < minX)
 		{
 			minX = xViewport;
@@ -129,19 +138,19 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPosInView(float 
 	
 	if (minX < mForbiddenViewPortX.x)
 	{
-		xViewport -= (mForbiddenViewPortX.x - minX) * 5 * (mPlayerTransforms.size() - 1);
+		xViewport -= (mForbiddenViewPortX.x - minX) * 5 * (mPlayerTransforms.size() - 1) * (width / 1920);
 	}
 	if (maxX > mForbiddenViewPortX.y)
 	{
-		xViewport -= (mForbiddenViewPortX.y - maxX) * 5 * (mPlayerTransforms.size() - 1);
+		xViewport -= (mForbiddenViewPortX.y - maxX) * 5 * (mPlayerTransforms.size() - 1) * (width / 1920);
 	}
 	if (minY < mForbiddenViewPortY.x)
 	{
-		yViewport -= (mForbiddenViewPortY.x - minY) * 5 * (mPlayerTransforms.size() - 1);
+		yViewport -= (mForbiddenViewPortY.x - minY) * 5 * (mPlayerTransforms.size() - 1) * (height / 1080);
 	}
 	if (maxY > mForbiddenViewPortY.y)
 	{
-		yViewport -= (mForbiddenViewPortY.y - maxY) * 5 * (mPlayerTransforms.size() - 1);
+		yViewport -= (mForbiddenViewPortY.y - maxY) * 5 * (mPlayerTransforms.size() - 1) * (height / 1080);
 	}
 
 	mPlayersCenterPoint.x = 2 * (xViewport / width) - 1;
@@ -155,12 +164,11 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPosInView(float 
 void fq::client::CameraMoving::OnStart()
 {
 	mMainCamera = GetComponent<fq::game_module::Camera>();
-
+	mScreenManager = GetScene()->GetScreenManager();
 	if (SettingVariable::IsUseCameraInit)
 	{
 		InitCameraPos();
 	}
-	//SetColliderRotation();
 }
 
 void fq::client::CameraMoving::chaseCenter(float dt)
