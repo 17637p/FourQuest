@@ -185,7 +185,7 @@ namespace fq::physics
 		// 월드 트랜스폼 역행렬 값
 		DirectX::SimpleMath::Matrix InvTransform;
 		mWorldTransform.Invert(InvTransform);
-
+		
 		// 보간된 값을 Graphics Engine의 천 버퍼에 업데이트 해주는 Cuda 함수
 		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(d_prevVertices, d_currVertices, mCurrClothBuffer.size(), lerpValue, InvTransform, mGpuDevVertexPtr, mCudaVertexStride)) return false;
 
@@ -196,14 +196,11 @@ namespace fq::physics
 	{
 		mDurationTime = 0.f;
 		mLerpTime = deltaTime;
-		mPrevClothBuffer.assign(mCurrClothBuffer.begin(), mCurrClothBuffer.end());
-		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
+		physx::PxVec4* particle = mClothBuffer->getPositionInvMasses();
 
-		if (!CudaClothTool::UpdateParticleBuffer(mCurrClothBuffer.size(), mCurrClothBuffer.data(), paticle)) return false;
+		cudaMemcpy(d_prevVertices, d_currVertices, mPrevClothBuffer.size() * sizeof(float4), cudaMemcpyKind::cudaMemcpyDeviceToDevice);
+		cudaMemcpy(d_currVertices, particle, mCurrClothBuffer.size() * sizeof(float4), cudaMemcpyKind::cudaMemcpyDeviceToDevice);
 		if (!updateWindToParticle()) return false;
-
-		cudaMemcpy(d_prevVertices, mPrevClothBuffer.data(), mPrevClothBuffer.size() * sizeof(physx::PxVec4), cudaMemcpyKind::cudaMemcpyHostToDevice);
-		cudaMemcpy(d_currVertices, mCurrClothBuffer.data(), mCurrClothBuffer.size() * sizeof(physx::PxVec4), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
 		return true;
 	}
