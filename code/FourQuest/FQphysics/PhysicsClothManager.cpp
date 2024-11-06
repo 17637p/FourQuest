@@ -32,9 +32,21 @@ namespace fq::physics
 
 	bool PhysicsClothManager::Update(float deltaTime)
 	{
-		for (auto cloth : mPhysicsClothContainer)
+		// 비동기로 쿠다 함수 실행
+		for (auto [id, cloth] : mPhysicsClothContainer)
 		{
-			if (!cloth.second->UpdatePhysicsCloth(mCudaContextManager, deltaTime)) return false;
+			if (!cloth->UpdatePhysicsCloth(mCudaContextManager, deltaTime)) return false;
+		}
+
+		return true;
+	}
+
+	bool PhysicsClothManager::FinalUpdate()
+	{
+		// 비동기 종료
+		for (auto [id, cloth] : mPhysicsClothContainer)
+		{
+			if (!cloth->EndCudaStream()) return true;
 		}
 
 		return true;
@@ -44,9 +56,6 @@ namespace fq::physics
 	{
 		for (auto cloth : mPhysicsClothContainer)
 		{
-			if (cloth.second->GetIsCulling())
-				continue;
-
 			if (!cloth.second->UpdateParticleBuffer(deltaTime)) return false;
 		}
 

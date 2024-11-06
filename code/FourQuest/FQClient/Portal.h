@@ -15,10 +15,10 @@ namespace fq::client
 		~Portal();
 
 		void ChangeScene();
-
 		void SetNextSceneName(std::string nextSceneName) { mNextSceneName = nextSceneName; }
 
 	private:
+		void OnStart()override;
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 		virtual void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 		entt::meta_handle GetHandle() override { return *this; }
@@ -26,7 +26,7 @@ namespace fq::client
 	private:
 		std::string mNextSceneName;
 		game_module::PrefabResource mResultUIPrefab;
-
+		bool mbIsImmediatelyChangeScene;
 		friend void RegisterMetaData();
 	};
 }

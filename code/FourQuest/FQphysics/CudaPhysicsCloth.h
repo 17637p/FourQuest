@@ -44,6 +44,7 @@ namespace fq::physics
 		/// </summary>
 		bool UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager);
 		bool UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager, float deltaTime);
+		bool EndCudaStream();
 
 		/// <summary>
 		/// 시뮬레이션 후 업데이트 된 천 입자들의 위치 값을 업데이트합니다.
@@ -134,14 +135,27 @@ namespace fq::physics
 		physx::PxParticleClothBuffer*				mClothBuffer;
 		physx::ExtGpu::PxParticleClothBufferHelper* mClothBufferHelper;
 
+		/// Cuda
+		// Graphics Engine에서 가져온 Model의 VertexBuffer와 IndexBuffer 리소스
 		cudaGraphicsResource* mCudaVertexResource;
 		cudaGraphicsResource* mCudaIndexResource;
+
+		// Model의 VertexBuffer 구조체의 크기
 		UINT mCudaVertexStride;
 
 		std::vector<DirectX::SimpleMath::Vector4> mPrevClothBuffer;
 		std::vector<DirectX::SimpleMath::Vector4> mCurrClothBuffer;
 		float mDurationTime;
 		float mLerpTime;
+
+		// GPU Memory를 할당할 변수
+		void* mGpuDevVertexPtr;
+		size_t mGpuDevVertexPtrSize;
+		float4* d_prevVertices;
+		float4* d_currVertices;
+
+		// 비동기 스트림
+		cudaStream_t mStream;
 	};
 
 #pragma region GetSet

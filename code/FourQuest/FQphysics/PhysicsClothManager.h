@@ -29,6 +29,12 @@ namespace fq::physics
 		bool Update(float deltaTime);
 
 		/// <summary>
+		/// 파이널 업데이트 (스트림 종료)
+		/// </summary>
+		/// <returns></returns>
+		bool FinalUpdate();
+
+		/// <summary>
 		/// 시뮬레이션에서 업데이트 된 데이터 처리
 		/// </summary>
 		bool UpdateSimulationData(float deltaTime);

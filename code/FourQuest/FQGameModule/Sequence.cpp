@@ -204,6 +204,13 @@ namespace fq::game_module
 		// 시간 정지 했을 경우에 시퀀스가 가지고 있는 오브젝트 업데이트 ( 단, 텍스트UI는 제외(오류 뜸) )
 		for (const auto& track : mTracks)
 		{
+			auto state = track->GetCurrentState();;
+
+			if (state == ETrackState::END || state == ETrackState::OFF)
+			{
+				continue;
+			}
+
 			for (auto& objectName : track->GetTrackObjectName())
 			{
 				auto object = GetScene()->GetObjectByName(objectName);

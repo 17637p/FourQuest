@@ -13,6 +13,7 @@
 #include "ConvexMeshResource.h"
 #include "EngineDataConverter.h"
 #include <random>
+#include <cuda_runtime.h>
 
 namespace fq::physics
 {
@@ -216,9 +217,16 @@ namespace fq::physics
 
 	bool FQPhysics::Update(float deltaTime)
 	{
+		if (cudaGetLastError() != cudaError::cudaSuccess)
+			spdlog::warn("cudaGetLastError : {}", cudaGetErrorString(cudaGetLastError()));
+
 		RemoveActors();
 		updateGravity(deltaTime);
 
+		if (!mClothManager->FinalUpdate())
+			return false;
+		if (!mClothManager->Update(deltaTime))
+			return false;
 		if (!mRigidBodyManager->Update(mScene, mGpuScene))
 			return false;
 		if (!mCCTManager->Update(deltaTime))
@@ -254,20 +262,8 @@ namespace fq::physics
 		{
 			// 이전 시뮬레이션이 완료되었으면 새 시뮬레이션 시작
 			mGpuScene->simulate(deltaTime * 2.f);
-			mGpuSceneWaitUpdateCount = 0;
+			mGpuSceneWaitUpdateCount = 1;
 			mbIsSimulating = true;
-		}
-
-		if (mbIsHalfFrameUpdate)
-		{
-			mbIsHalfFrameUpdate = false;
-
-			if (!mClothManager->Update(deltaTime * 2.f))
-				return false;
-		}
-		else
-		{
-			mbIsHalfFrameUpdate = true;
 		}
 
 		mMyEventCallback->OnTrigger();

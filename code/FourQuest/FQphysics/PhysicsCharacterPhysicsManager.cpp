@@ -56,8 +56,6 @@ namespace fq::physics
 		characterPhysics->Initialize(info, mPhysics, collisionData, mScene);
 		mCharacterPhysicsContainer.insert(std::make_pair(info.id, characterPhysics));
 
-		spdlog::trace("[Create] Articulation id : {}, ContainerSize : {}", info.id, mCharacterPhysicsContainer.size());
-
 		return true;
 	}
 
@@ -76,13 +74,10 @@ namespace fq::physics
 			// 모든 링크가 제거된 후 Articulation을 Scene에서 제거합니다.
 			mScene->removeArticulation(*pxArticulation);
 			PX_RELEASE(pxArticulation);
-
-			spdlog::trace("[PxScene Remove] PxScene's Articulation Current Count : {}", mScene->getNbArticulations());
 		}
 
 		// 컨테이너에서 해당 Articulation을 삭제합니다.
 		mCharacterPhysicsContainer.erase(articulationIter);
-		spdlog::trace("[Remove] Articulation id : {}, ContainerSize : {}", id, mCharacterPhysicsContainer.size());
 
 		return true;
 	}

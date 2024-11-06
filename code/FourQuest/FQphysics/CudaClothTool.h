@@ -64,12 +64,14 @@ namespace fq::physics
 			physx::PxVec4* particle);
 
 		static bool UpdatePhysXDataToID3DVertexBuffer(
-			std::vector<DirectX::SimpleMath::Vector4>& prevVertices,
-			std::vector<DirectX::SimpleMath::Vector4>& currVertices,
+			float4* prevVertices,
+			float4* currVertices,
+			unsigned int vertexSize,
 			float deltaTime,
 			DirectX::SimpleMath::Matrix invTransform,
-			cudaGraphicsResource* ID3D11VertexBuffer,
-			UINT ID3D11VertexStride);
+			void* ID3D11VertexBuffer,
+			UINT ID3D11VertexStride,
+			cudaStream_t stream);
 
 		static bool UpdateNormalToID3DBuffer(
 			std::vector<std::pair<unsigned int, unsigned int>>& sameVertices,

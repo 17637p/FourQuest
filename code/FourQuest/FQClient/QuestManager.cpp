@@ -314,6 +314,10 @@ void fq::client::QuestManager::eventProcessKillMonster()
 					if (monsterKillList[i].monsterType == event.monsterType)
 					{
 						monsterKillList[i].curNumber++;
+						if (mCurMainQuest.mIndex == mViewMainQuest.mIndex)
+						{
+							mViewMainQuest.mclearConditionList.monsterKillList[0].curNumber++;
+						}
 						spdlog::trace("curNumber: {}, requestNumber: {}", monsterKillList[i].curNumber, monsterKillList[i].requestsNumber * LevelHepler::GetSpawnRatio());
 
 						if (monsterKillList[i].curNumber == monsterKillList[i].requestsNumber * LevelHepler::GetSpawnRatio())
@@ -992,7 +996,6 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		{
 			if (!quest.mIsClear)
 			{
-				spdlog::trace("{}", colliderTriggerList[0].curPlayer);
 				text.Text = std::to_string(colliderTriggerList[0].curPlayer) + " / " + std::to_string(colliderTriggerList[0].maxPlayer);
 				text.IsRender = true;
 				monsterKillText->SetTextInfo(text);
@@ -1425,6 +1428,22 @@ void fq::client::QuestManager::playComplete(float dt)
 						startNew(mViewSubQuest.size());
 					}
 
+					if (i < 3)
+					{
+						if (mCompleteImageCounts[i + 1] > 0.0f)
+						{
+							//mCompleteImageCounts[i] = mCompleteImageCounts[i + 1];
+							mIsFinishedCompleteAnimation[i + 1] = false;
+							startComplete(i, mCompleteImageCounts[i + 1]);
+							mCompleteImageCounts[i + 1] = 0;
+						}
+						else if (mNewImageCounts[i + 1] > 0.0f)
+						{
+							mNewImageCounts[i] = mNewImageCounts[i + 1];
+							mNewImageCounts[i + 1] = 0;
+						}
+					}
+
 					RenderOnAllSubQuest();
 				}
 			}
@@ -1720,11 +1739,11 @@ void fq::client::QuestManager::startNew(int index)
 	mNewImageCounts[index] = 3.0f;
 }
 
-void fq::client::QuestManager::startComplete(int index)
+void fq::client::QuestManager::startComplete(int index, float time)
 {
 	if (mCompleteImageCounts[index] <= 0.0f)
 	{
-		mCompleteImageCounts[index] = 3.0f;
+		mCompleteImageCounts[index] = time;
 		auto uiInfo = mCompleteImages[index]->GetUIInfomation(0);
 		uiInfo.isRender = true;
 		uiInfo.Alpha = 1;

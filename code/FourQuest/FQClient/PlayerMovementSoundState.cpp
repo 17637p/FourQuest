@@ -27,7 +27,6 @@ namespace fq::client
 		if (mWalkElapsedTime >= mWalkSoundTurm)
 		{
 			mWalkElapsedTime -= mWalkSoundTurm;
-
 			playSound(animator);
 		}
 	}
