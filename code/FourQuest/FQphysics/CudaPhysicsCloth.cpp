@@ -167,6 +167,14 @@ namespace fq::physics
 	 
 	bool CudaPhysicsCloth::UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager, float deltaTime)
 	{
+		// 스트림 생성
+		cudaError_t cudaState = cudaStreamCreate(&mStream);
+		if (cudaState != cudaSuccess)
+		{
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Create Cuda Stream", __LINE__);
+			return false;
+		}
+
 		// 시간 체크
 		mDurationTime += deltaTime;
 		if (mLerpTime <= 0.f)
@@ -188,6 +196,27 @@ namespace fq::physics
 		
 		// 보간된 값을 Graphics Engine의 천 버퍼에 업데이트 해주는 Cuda 함수
 		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(d_prevVertices, d_currVertices, mCurrClothBuffer.size(), lerpValue, InvTransform, mGpuDevVertexPtr, mCudaVertexStride)) return false;
+
+		// 스트림 동기화
+		cudaState = cudaStreamSynchronize(mStream);
+		if (cudaState != cudaSuccess)
+		{
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Synchronize Cuda Stream", __LINE__);
+			return false;
+		}
+
+		return true;
+	}
+
+	bool CudaPhysicsCloth::EndCudaStream()
+	{
+		// 스트림 삭제
+		cudaError_t cudaState = cudaStreamDestroy(mStream);
+		if (cudaState != cudaSuccess)
+		{
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Destroy Cuda Stream", __LINE__);
+			return false;
+		}
 
 		return true;
 	}
@@ -232,7 +261,7 @@ namespace fq::physics
 
 	bool CudaPhysicsCloth::updateWindToParticle()
 	{
-		DirectX::SimpleMath::Vector3 wind = getRandomWindForce(mMaxWindStrength);
+		DirectX::SimpleMath::Vector3 wind = getRandomWindForce(mMaxWindStrength * 1.5f);
 		physx::PxVec3 pxWind;
 		pxWind.x = wind.x;
 		pxWind.y = wind.y;
