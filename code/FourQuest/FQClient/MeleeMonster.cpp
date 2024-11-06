@@ -10,6 +10,7 @@
 #include "../FQGameModule/Socket.h"
 #include "../FQGameModule/BoxCollider.h"
 
+#include "ClientHelper.h"
 #include "Attack.h"
 #include "ArrowAttack.h"
 #include "GameManager.h"
@@ -388,7 +389,25 @@ void fq::client::MeleeMonster::DetectTarget()
 {
 	auto monsterPos = mTransform->GetWorldPosition();
 
-	for (const auto& player : mGameManager->GetPlayers())
+	const auto& players = mGameManager->GetPlayers();
+
+	if (players.empty())
+		return;
+
+	std::vector<game_module::GameObject*> randomPlayers{};
+	while (randomPlayers.size() != players.size())
+	{
+		auto index = helper::RandomGenerator::GetInstance().GetRandomNumber(0, players.size() - 1);
+
+		for (auto& randomPlayer : randomPlayers)
+		{
+			if(randomPlayer->GetID() == players[index]->GetID())
+				continue;
+		}
+		randomPlayers.push_back(players[index].get());
+	}
+
+	for (const auto& player : randomPlayers)
 	{
 		if (!player->HasComponent<Player>())
 			continue;
@@ -399,25 +418,25 @@ void fq::client::MeleeMonster::DetectTarget()
 
 		if (distance <= mDetectRange)
 		{
-			SetTarget(player.get());
+			SetTarget(player);
 			mAnimator->SetParameterBoolean("FindTarget", true);
 		}
 	}
 
-	GetScene()->ViewComponents<PlayerDummy>(
-		[this, monsterPos](fq::game_module::GameObject& object, PlayerDummy& camera)
-		{
-			auto dummyPlayerT = object.GetComponent<game_module::Transform>();
-			auto playerPos = dummyPlayerT->GetWorldPosition();
-			float distance = (monsterPos - playerPos).Length();
+	//GetScene()->ViewComponents<PlayerDummy>(
+	//	[this, monsterPos](fq::game_module::GameObject& object, PlayerDummy& camera)
+	//	{
+	//		auto dummyPlayerT = object.GetComponent<game_module::Transform>();
+	//		auto playerPos = dummyPlayerT->GetWorldPosition();
+	//		float distance = (monsterPos - playerPos).Length();
 
-			if (distance <= mDetectRange)
-			{
-				SetTarget(&object);
-				mAnimator->SetParameterBoolean("FindTarget", true);
-			}
-		}
-	);
+	//		if (distance <= mDetectRange)
+	//		{
+	//			SetTarget(&object);
+	//			mAnimator->SetParameterBoolean("FindTarget", true);
+	//		}
+	//	}
+	//);
 }
 
 void fq::client::MeleeMonster::CheckTargetInAttackRange()
