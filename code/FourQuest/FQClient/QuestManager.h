@@ -81,7 +81,7 @@ namespace fq::client
 		// Refactoring
 		void initSTL();
 		void startNew(int index);
-		void startComplete(int index);
+		void startComplete(int index, float time = 3.0f);
 
 		// pushButton
 		int getMaxPlayer();

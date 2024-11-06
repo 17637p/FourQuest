@@ -1425,6 +1425,22 @@ void fq::client::QuestManager::playComplete(float dt)
 						startNew(mViewSubQuest.size());
 					}
 
+					if (i < 3)
+					{
+						if (mCompleteImageCounts[i + 1] > 0.0f)
+						{
+							//mCompleteImageCounts[i] = mCompleteImageCounts[i + 1];
+							mIsFinishedCompleteAnimation[i + 1] = false;
+							startComplete(i, mCompleteImageCounts[i + 1]);
+							mCompleteImageCounts[i + 1] = 0;
+						}
+						else if (mNewImageCounts[i + 1] > 0.0f)
+						{
+							mNewImageCounts[i] = mNewImageCounts[i + 1];
+							mNewImageCounts[i + 1] = 0;
+						}
+					}
+
 					RenderOnAllSubQuest();
 				}
 			}
@@ -1720,11 +1736,11 @@ void fq::client::QuestManager::startNew(int index)
 	mNewImageCounts[index] = 3.0f;
 }
 
-void fq::client::QuestManager::startComplete(int index)
+void fq::client::QuestManager::startComplete(int index, float time)
 {
 	if (mCompleteImageCounts[index] <= 0.0f)
 	{
-		mCompleteImageCounts[index] = 3.0f;
+		mCompleteImageCounts[index] = time;
 		auto uiInfo = mCompleteImages[index]->GetUIInfomation(0);
 		uiInfo.isRender = true;
 		uiInfo.Alpha = 1;
