@@ -34,7 +34,20 @@ namespace fq::physics
 	{
 		for (auto cloth : mPhysicsClothContainer)
 		{
-			if (!cloth.second->UpdatePhysicsCloth(mCudaContextManager)) return false;
+			if (!cloth.second->UpdatePhysicsCloth(mCudaContextManager, deltaTime)) return false;
+		}
+
+		return true;
+	}
+
+	bool PhysicsClothManager::UpdateSimulationData(float deltaTime)
+	{
+		for (auto cloth : mPhysicsClothContainer)
+		{
+			if (cloth.second->GetIsCulling())
+				continue;
+
+			if (!cloth.second->UpdateParticleBuffer(deltaTime)) return false;
 		}
 
 		for (auto [clothData, collisionMatrix] : mUpCommingClothVec)
@@ -42,14 +55,6 @@ namespace fq::physics
 			CreateCloth(clothData, collisionMatrix);
 		}
 		mUpCommingClothVec.clear();
-
-		return true;
-	}
-
-	bool PhysicsClothManager::UpdateLerpSimulationPositions(float deltaTime)
-	{
-		
-
 
 		return true;
 	}
@@ -109,7 +114,7 @@ namespace fq::physics
 
 		if (clothIter != mPhysicsClothContainer.end())
 		{
-			mScene->removeActor(*clothIter->second->GetPBDParticleSystem());
+			mScene->removeActor(*(clothIter->second->GetPBDParticleSystem()));
 			mPhysicsClothContainer.erase(clothIter);
 
 			return true;

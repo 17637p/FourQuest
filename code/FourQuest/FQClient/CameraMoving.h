@@ -6,6 +6,7 @@ namespace fq::game_module
 {
 	class Camera;
 	class Transform;
+	class ScreenManager;
 }
 
 namespace fq::client
@@ -86,8 +87,16 @@ namespace fq::client
 		DirectX::SimpleMath::Vector2 mForbiddenAreaPaddingX; // Zoom 아웃 보다 큰 영역 
 		DirectX::SimpleMath::Vector2 mForbiddenAreaPaddingY;
 
-		DirectX::SimpleMath::Vector2 mForbiddenViewPortX; // 금지할 viewportX 좌표 
-		DirectX::SimpleMath::Vector2 mForbiddenViewPortY; // 금지할 viewportY 좌표 
+		DirectX::SimpleMath::Vector2 mForbiddenViewPortX; // 금지할 viewportX 좌표 // screenSize 반영
+		DirectX::SimpleMath::Vector2 mForbiddenViewPortY; // 금지할 viewportY 좌표 // screenSize 반영
+
+		DirectX::SimpleMath::Vector2 mForbiddenViewPortXFix; // 기준
+		DirectX::SimpleMath::Vector2 mForbiddenViewPorYXFix; // 기준
+
+		float mWidth = 0;
+		float mHeight = 0;
+
+		game_module::ScreenManager* mScreenManager;
 
 		friend void RegisterMetaData();
 	};

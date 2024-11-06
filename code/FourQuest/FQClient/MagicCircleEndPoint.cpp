@@ -48,12 +48,13 @@ void fq::client::MagicCircleEndPoint::OnStart()
 
 void fq::client::MagicCircleEndPoint::OnUpdate(float dt)
 {
+	if (mDefenceCounterObjectOrNull == nullptr)
+	{
+		return;
+	}
 	if (mDefenceCounterObjectOrNull->IsDestroyed())
 	{
 		mDefenceCounterObjectOrNull = nullptr;
-	}
-	if (mDefenceCounterObjectOrNull == nullptr)
-	{
 		return;
 	}
 
