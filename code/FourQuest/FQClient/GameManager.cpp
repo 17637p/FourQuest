@@ -41,6 +41,10 @@ fq::client::GameManager::GameManager()
 	mIsAutoSpawn(false),
 	mSoulManagerModule(std::make_shared<SoulManagerModule>())
 	//	:mRegisterPlayerHandler{}
+	, mGameOverCheckFrame(5)
+	, mCurrentFrame(0)
+	, mbCheckGameOver(false)
+	, mbIsGenerateGameOverHandler(false)
 {}
 
 fq::client::GameManager::GameManager(const GameManager& other)
@@ -57,6 +61,11 @@ fq::client::GameManager::GameManager(const GameManager& other)
 	, mArcher(other.mArcher)
 	, mWarrior(other.mWarrior)
 	, mSoulManagerModule(std::make_shared<SoulManagerModule>())
+	, mGameOverHandler(other.mGameOverHandler)
+	, mGameOverCheckFrame(other.mGameOverCheckFrame)
+	, mCurrentFrame(other.mCurrentFrame)
+	, mbCheckGameOver(other.mbCheckGameOver)
+	, mbIsGenerateGameOverHandler(other.mbIsGenerateGameOverHandler)
 {}
 
 fq::client::GameManager& fq::client::GameManager::operator=(const GameManager& other)
@@ -71,6 +80,12 @@ fq::client::GameManager& fq::client::GameManager::operator=(const GameManager& o
 	mArcher = other.mArcher;
 	mWarrior = other.mWarrior;
 	mSoulManagerModule = std::make_shared<SoulManagerModule>();
+
+	mGameOverHandler = other.mGameOverHandler;
+	mGameOverCheckFrame = other.mGameOverCheckFrame;
+	mCurrentFrame = other.mCurrentFrame;
+	mbCheckGameOver = other.mbCheckGameOver;
+	mbIsGenerateGameOverHandler = other.mbIsGenerateGameOverHandler;
 
 	return *this;
 }
@@ -120,10 +135,30 @@ void fq::client::GameManager::OnUpdate(float dt)
 		}
 	}
 
-	// 모든 영혼이 파괴되었을 때, GameOver 씬으로 이동
-	if (mSoulManagerModule->CheckGameOver())
+	// 모든 영혼이 파괴되었을 시, GameOverHandler 프리팹 생성_홍지환
+	++mCurrentFrame;
+
+	if (mGameOverCheckFrame < mCurrentFrame)
 	{
-		GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({ "TitleUI", true });
+		mbCheckGameOver = true;
+	}
+
+	if (mbCheckGameOver)
+	{
+		if (mSoulManagerModule->CheckGameOver())
+		{
+			if (mGameOverHandler.GetPrefabPath().empty())
+			{
+				GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "TitleUI", true });
+			}
+			else if (!mbIsGenerateGameOverHandler)
+			{
+				auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mGameOverHandler);
+				auto gameOverHandlerObject = *(instance.begin());
+				GetScene()->AddGameObject(gameOverHandlerObject);
+				mbIsGenerateGameOverHandler = true;
+			}
+		}
 	}
 }
 
@@ -141,6 +176,15 @@ void fq::client::GameManager::OnStart()
 
 void fq::client::GameManager::OnAwake()
 {
+	// 게임오버 체크를 위한 변수 세팅
+	SoulVariable::Player1Type = EPlayerType::None;
+	SoulVariable::Player2Type = EPlayerType::None;
+	SoulVariable::Player3Type = EPlayerType::None;
+	SoulVariable::Player4Type = EPlayerType::None;
+	mCurrentFrame = 0;
+	mbCheckGameOver = false;
+	mbIsGenerateGameOverHandler = false;
+
 	setPlayerName();
 
 	mRegisterPlayerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::RegisterPlayer>(
@@ -364,20 +408,20 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::GameManager::SpawnPlaye
 
 	switch (index)
 	{
-		case 0:
-			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player1SpawnPosObject)->GetTransform()->GetWorldPosition();
-			break;
-		case 1:
-			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player2SpawnPosObject)->GetTransform()->GetWorldPosition();
-			break;
-		case 2:
-			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player3SpawnPosObject)->GetTransform()->GetWorldPosition();
-			break;
-		case 3:
-			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player4SpawnPosObject)->GetTransform()->GetWorldPosition();
-			break;
-		default:
-			break;
+	case 0:
+		spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player1SpawnPosObject)->GetTransform()->GetWorldPosition();
+		break;
+	case 1:
+		spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player2SpawnPosObject)->GetTransform()->GetWorldPosition();
+		break;
+	case 2:
+		spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player3SpawnPosObject)->GetTransform()->GetWorldPosition();
+		break;
+	case 3:
+		spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player4SpawnPosObject)->GetTransform()->GetWorldPosition();
+		break;
+	default:
+		break;
 	}
 
 	newObject->GetTransform()->SetWorldPosition(spawnPos);

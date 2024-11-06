@@ -199,6 +199,7 @@
 #include "FillSoulGauge.h"
 #include "FillSoulHP.h"
 #include "CircleEffectHelper.h"
+#include "GameOverHandler.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -225,6 +226,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Archer")
 		.data<&GameManager::mWarrior>("Warrior"_hs)
 		.prop(fq::reflect::prop::Name, "Warrior")
+		.data<&GameManager::mGameOverHandler>("GameOverHandler"_hs)
+		.prop(fq::reflect::prop::Name, "GameOverHandler")
+		.data<&GameManager::mGameOverCheckFrame>("GameOverCheckFrame"_hs)
+		.prop(fq::reflect::prop::Name, "GameOverCheckFrame")
 		.base<game_module::Component>();
 
 	entt::meta<MonsterManager>()
@@ -434,6 +439,12 @@ void fq::client::RegisterMetaData()
 	entt::meta<ScreenBlending>()
 		.type("ScreenBlending"_hs)
 		.prop(reflect::prop::Name, "ScreenBlending")
+		.data<&ScreenBlending::mIndex>("mIndex"_hs)
+		.prop(fq::reflect::prop::Name, "mIndex")
+		.prop(fq::reflect::prop::Comment, u"블렌딩 인덱스(0 ~ 1)")
+		.data<&ScreenBlending::mDelayTime>("mDelayTime"_hs)
+		.prop(fq::reflect::prop::Name, "mDelayTime")
+		.prop(fq::reflect::prop::Comment, u"블렌딩 딜레이 타임")
 		.data<&ScreenBlending::mDuration>("Duration"_hs)
 		.prop(fq::reflect::prop::Name, "Duration")
 		.prop(fq::reflect::prop::Comment, u"블렌딩 지속 시간")
@@ -595,6 +606,14 @@ void fq::client::RegisterMetaData()
 		.data<&CircleEffectHelper::mPointName>("mPointName"_hs)
 		.prop(fq::reflect::prop::Name, "mPointName")
 		.prop(fq::reflect::prop::Comment, u"끝점을 따라 움직일 오브젝트 이름")
+		.base<game_module::Component>();
+
+	entt::meta<GameOverHandler>()
+		.type("GameOverHandler"_hs)
+		.prop(reflect::prop::Name, "GameOverHandler")
+		.data<&GameOverHandler::mInputStartTIme>("mInputStartTIme"_hs)
+		.prop(fq::reflect::prop::Name, "mInputStartTIme")
+		.prop(fq::reflect::prop::Comment, u"입력을 받기 시작하는 시간")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

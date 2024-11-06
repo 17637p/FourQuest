@@ -578,12 +578,6 @@
     <ClInclude Include="ArmourDestroyer.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
-    <ClInclude Include="MeleeMonsterVariable.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="ParabolaAttack.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerDummy.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
@@ -608,23 +602,8 @@
     <ClInclude Include="MonsterSpawnState.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="ScreenBlending.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="ScaleAnimation.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="DebugService.h">
       <Filter>include\06.ETC</Filter>
-    </ClInclude>
-    <ClInclude Include="RotationAnimation.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionColorChanger.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionRenderChanger.h">
-      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="PlayerHPBar.h">
       <Filter>include\05.UI</Filter>
@@ -632,17 +611,11 @@
     <ClInclude Include="MonsterHP.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
-    <ClInclude Include="UIShaker.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="TrainingDummy.h">
       <Filter>include\02.Monster\TrainingDummy</Filter>
     </ClInclude>
     <ClInclude Include="TrainingDummyHitState.h">
       <Filter>include\02.Monster\TrainingDummy</Filter>
-    </ClInclude>
-    <ClInclude Include="DestroyHelper.h">
-      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="BossMonsterHitState.h">
       <Filter>include\02.Monster\Boss</Filter>
@@ -662,23 +635,53 @@
     <ClInclude Include="MonsterSpawnerDetector.h">
       <Filter>include\02.Monster\Spawner</Filter>
     </ClInclude>
-    <ClInclude Include="MagicCircleEndPoint.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="BowPullState.h">
       <Filter>include\01.Player\State\ArcherState</Filter>
-    </ClInclude>
-    <ClInclude Include="FillSoulGauge.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="FillSoulHP.h">
-      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="Credit.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
-    <ClInclude Include="CircleEffectHelper.h">
+    <ClInclude Include="GameOverHandler.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleEffectHelper.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionColorChanger.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionRenderChanger.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="FillSoulGauge.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="FillSoulHP.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="ParabolaAttack.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="MagicCircleEndPoint.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="UIShaker.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenBlending.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="ScaleAnimation.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="RotationAnimation.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="DestroyHelper.h">
+      <Filter>include\06.ETC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1181,6 +1184,9 @@
       <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="CircleEffectHelper.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="GameOverHandler.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

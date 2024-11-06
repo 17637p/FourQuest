@@ -84,7 +84,8 @@ cbuffer cColorAdjustment : register(b0)
     float4 gHighlightColor;
     float4 gVignettColor;
     float4 gBlendColor;
-    float4 gBlendTextureColor;
+    float4 gBlendTextureColor0;
+    float4 gBlendTextureColor1;
     
     float gExposure;
     float gContrast;
@@ -108,7 +109,8 @@ cbuffer cColorAdjustment : register(b0)
     
     int bUseGrayScale;
     int bUseBlendColor;
-    int bUseBlendTexture;
+    int bUseBlendTexture0;
+    int bUseBlendTexture1;
 };
 
 cbuffer cFog : register(b1)
@@ -123,7 +125,8 @@ Texture2D gSrcTexture : register(t0);
 Texture2D gBloomTexture : register(t1);
 Texture1D gHutVsSatCurveTexture : register(t2);
 Texture2D gDepth : register(t3);
-Texture2D gBlendTexture : register(t4);
+Texture2D gBlendTexture0 : register(t4);
+Texture2D gBlendTexture1 : register(t5);
 SamplerState gSamplerPoint : register(s0);
 SamplerState gSamplerLinear : register(s1);
 
@@ -205,10 +208,18 @@ float4 main(float2 uv : Texcoord) : SV_TARGET
         retColor = (gBlendColor.rgb * gBlendColor.a) + (retColor * (1 - gBlendColor.a));
     }
     
-    if (bUseBlendTexture)
+    if (bUseBlendTexture0)
     {
-        float4 blendtextureColor = gBlendTexture.Sample(gSamplerLinear, uv);
-        blendtextureColor *= gBlendColor;
+        float4 blendtextureColor = gBlendTexture0.Sample(gSamplerLinear, uv);
+        blendtextureColor *= gBlendTextureColor0;
+        
+        retColor = (blendtextureColor.rgb * blendtextureColor.a) + (retColor * (1 - blendtextureColor.a));
+    }
+    
+    if (bUseBlendTexture1)
+    {
+        float4 blendtextureColor = gBlendTexture1.Sample(gSamplerLinear, uv);
+        blendtextureColor *= gBlendTextureColor1;
         
         retColor = (blendtextureColor.rgb * blendtextureColor.a) + (retColor * (1 - blendtextureColor.a));
     }
