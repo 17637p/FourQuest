@@ -18,6 +18,12 @@ namespace fq::client
 		void OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 
 	private:
-		float mDurationTime;
+		float mElapsed;
+		float mDuration;
+		DirectX::SimpleMath::Color mHitColor;
+		float mRimPow;
+		float mRimIntensity;
+
+		friend void RegisterMetaData();
 	};
 }

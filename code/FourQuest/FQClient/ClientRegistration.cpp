@@ -1411,6 +1411,23 @@ void fq::client::RegisterMetaData()
 	entt::meta<MeleeMonsterHitState>()
 		.type("MeleeMonsterHitState"_hs)
 		.prop(fq::reflect::prop::Name, "MeleeMonsterHitState")
+
+		.data<&MeleeMonsterHitState::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 지속")
+
+		.data<&MeleeMonsterHitState::mHitColor>("mHitColor"_hs)
+		.prop(fq::reflect::prop::Name, "mHitColor")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 색상")
+
+		.data<&MeleeMonsterHitState::mRimPow>("mRimPow"_hs)
+		.prop(fq::reflect::prop::Name, "mRimPow")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 제곱값")
+
+		.data<&MeleeMonsterHitState::mRimIntensity>("mRimIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "mRimIntensity")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 강도")
+
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<MeleeMonsterExplosionState>()
@@ -1829,6 +1846,22 @@ void fq::client::RegisterMetaData()
 	entt::meta<BossMonsterHitState>()
 		.type("BossMonsterHitState"_hs)
 		.prop(fq::reflect::prop::Name, "BossMonsterHitState")
+		.data<&BossMonsterHitState::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 지속")
+
+		.data<&BossMonsterHitState::mHitColor>("mHitColor"_hs)
+		.prop(fq::reflect::prop::Name, "mHitColor")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 색상")
+
+		.data<&BossMonsterHitState::mRimPow>("mRimPow"_hs)
+		.prop(fq::reflect::prop::Name, "mRimPow")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 제곱값")
+
+		.data<&BossMonsterHitState::mRimIntensity>("mRimIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "mRimIntensity")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 강도")
+
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<BossMonsterPreJumpState>()
@@ -1949,6 +1982,23 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlantMonsterHitState>()
 		.type("PlantMonsterHitState"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonsterHitState")
+
+		.data<&PlantMonsterHitState::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 지속")
+
+		.data<&PlantMonsterHitState::mHitColor>("mHitColor"_hs)
+		.prop(fq::reflect::prop::Name, "mHitColor")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 색상")
+
+		.data<&PlantMonsterHitState::mRimPow>("mRimPow"_hs)
+		.prop(fq::reflect::prop::Name, "mRimPow")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 제곱값")
+
+		.data<&PlantMonsterHitState::mRimIntensity>("mRimIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "mRimIntensity")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 강도")
+
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<PlantMonsterDeadState>()

@@ -21,7 +21,12 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
-		float mDurationTime;
-		float mRimTotalTime;
+		float mElapsed;
+		float mDuration;
+		DirectX::SimpleMath::Color mHitColor;
+		float mRimPow;
+		float mRimIntensity;
+
+		friend void RegisterMetaData();
 	};
 }
