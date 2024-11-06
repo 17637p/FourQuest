@@ -65,6 +65,7 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 direction = transform->GetWorldMatrix().Forward();
 		rigidBody->SetLinearVelocity(direction * (mCurrentSpeedMultiplier * controller->GetBaseSpeed()));
 		controller->AddFinalSpeedMultiplier(mCurrentSpeedMultiplier - 1.f);
+		archer->CheckPreXInput();
 	}
 
 	void BowDashState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
@@ -76,6 +77,7 @@ namespace fq::client
 		}
 
 		animator.GetGameObject()->SetTag(game_module::ETag::Player);
+		animator.SetParameterBoolean("OnPreX", false);
 	}
 
 

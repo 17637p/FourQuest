@@ -133,10 +133,6 @@ namespace fq::client
 
 	void ArcherArmour::MakeLineOfSight()
 	{
-		// 강공격 쿨타임 시작
-		mStrongAttackElapsedTime = mPlayer->IsFeverTime() ? mStrongAttackCoolTime - mStrongAttackCoolTimeReduction : mStrongAttackCoolTime;
-		mStrongAttackElapsedTime *= mPlayer->GetGBDecreaseCooltime();
-
 		// 조준선 생성
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLineOfSightEffect);
 		auto& lineObj = *(instance.begin());
@@ -165,6 +161,10 @@ namespace fq::client
 
 	void ArcherArmour::EmitStrongAttack(int chargeLevel)
 	{
+		// 강공격 쿨타임 시작
+		mStrongAttackElapsedTime = mPlayer->IsFeverTime() ? mStrongAttackCoolTime - mStrongAttackCoolTimeReduction : mStrongAttackCoolTime;
+		mStrongAttackElapsedTime *= mPlayer->GetGBDecreaseCooltime();
+
 		using namespace DirectX::SimpleMath;
 		Vector3 position = mWeaponeSocketT->GetWorldPosition();
 
@@ -368,6 +368,7 @@ namespace fq::client
 			mDashElapsedTime = mPlayer->IsFeverTime() ? mDashCoolTime - mDashCoolTimeReduction : mDashCoolTime;
 			mDashElapsedTime *= mPlayer->GetGBDecreaseCooltime();
 		}
+
 		// StrongAttack
 		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::X, EKeyState::Tap)
 			&& mStrongAttackElapsedTime == 0.f)
@@ -503,4 +504,19 @@ namespace fq::client
 
 		return directions;
 	}
+
+	void ArcherArmour::CheckPreXInput()
+	{
+		if (mStrongAttackElapsedTime == 0.f)
+		{
+			auto input = GetScene()->GetInputManager();
+			auto padID = mController->GetControllerID();
+
+			if (input->IsPadKeyState(padID, EPadKey::X, EKeyState::Tap))
+			{
+				mAnimator->SetParameterBoolean("OnPreX", true);
+			}
+		}
+	}
+
 }

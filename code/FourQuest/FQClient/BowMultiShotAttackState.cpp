@@ -42,11 +42,13 @@ namespace fq::client
 			size_t index = (size_t)EArcherSound::Fastshoot1 + rand() % 3;
 			archer->EmitSound((EArcherSound)index);
 		}
+
+		archer->CheckPreXInput();
 	}
 	void BowMultiShotAttackState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 	{
+		animator.SetParameterBoolean("OnPreX", false);
 	}
-
 
 
 	std::shared_ptr<fq::game_module::IStateBehaviour> BowMultiShotAttackState::Clone()
