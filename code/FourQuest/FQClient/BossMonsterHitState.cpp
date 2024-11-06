@@ -20,7 +20,7 @@ void fq::client::BossMonsterHitState::OnStateEnter(game_module::Animator& animat
 {
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MB_Groggy", false ,  fq::sound::EChannel::SE });
 
-	auto bossMonster = animator.GetComponent< BossMonster>();
+	auto bossMonster = animator.GetComponent<BossMonster>();
 
 	if (bossMonster != nullptr)
 	{
@@ -31,7 +31,7 @@ void fq::client::BossMonsterHitState::OnStateEnter(game_module::Animator& animat
 
 void fq::client::BossMonsterHitState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	auto bossMonster = animator.GetComponent< BossMonster>();
+	auto bossMonster = animator.GetComponent<BossMonster>();
 
 	if (bossMonster != nullptr)
 	{

@@ -17,6 +17,8 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
+		float mHitEffectDuration;
+
 		friend void RegisterMetaData();
 	};
 

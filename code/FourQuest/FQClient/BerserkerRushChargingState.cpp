@@ -47,6 +47,7 @@ namespace fq::client
 		if (berserkerArmour != nullptr)
 		{
 			berserkerArmour->EmitSound(EBerserkerSoundType::RushReady);
+			berserkerArmour->SetRushCoolTime();
 		}
 	}
 
@@ -77,6 +78,12 @@ namespace fq::client
 				animator.SetParameterTrigger("OnRush");
 			}
 		}
+
+		auto berserkerArmour = animator.GetComponent<BerserkerArmour>();
+		if (berserkerArmour != nullptr)
+		{
+			berserkerArmour->SetRushCoolTime();
+		}
 	}
 
 	void BerserkerRushChargingState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -88,6 +95,12 @@ namespace fq::client
 		if (playerOrNull != nullptr)
 		{
 			playerOrNull->SetIsActiveOnHit(true);
+		}
+
+		auto berserkerArmour = animator.GetComponent<BerserkerArmour>();
+		if (berserkerArmour != nullptr)
+		{
+			berserkerArmour->SetRushCoolTime();
 		}
 	}
 }

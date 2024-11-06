@@ -170,6 +170,12 @@ namespace fq::client
 		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ soundName, false , fq::sound::EChannel::SE });
 	}
 
+	void BerserkerArmour::SetRushCoolTime()
+	{
+		mRushElapsedTime = mPlayer->IsFeverTime() ? mRushCoolTime - mRushCoolTimeReduction : mRushCoolTime;
+		mRushElapsedTime *= mPlayer->GetGBDecreaseCooltime();
+	}
+
 	std::shared_ptr<fq::game_module::Component> BerserkerArmour::Clone(std::shared_ptr<Component> clone) const
 	{
 		auto cloneArmour = std::dynamic_pointer_cast<BerserkerArmour>(clone);
@@ -249,8 +255,7 @@ namespace fq::client
 		if (rightInput.LengthSquared() >= rotationOffsetSq && mRushElapsedTime == 0.f)
 		{
 			mAnimator->SetParameterTrigger("OnRushCharging");
-			mRushElapsedTime = mPlayer->IsFeverTime() ? mRushCoolTime - mRushCoolTimeReduction : mRushCoolTime;
-			mRushElapsedTime *= mPlayer->GetGBDecreaseCooltime();
+			SetRushCoolTime();
 		}
 	}
 
