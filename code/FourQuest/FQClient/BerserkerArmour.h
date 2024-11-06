@@ -39,6 +39,7 @@ namespace fq::client
 		void EmitSound(EBerserkerSoundType soundType);
 
 		void SetRushCoolTime();
+		std::shared_ptr<game_module::GameObject> EmitDashDecalEffect() const;
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -90,6 +91,10 @@ namespace fq::client
 		EVibrationMode mDashHitVibrationMode;
 		float mDashHitVibrationIntensity;
 		float mDashHitVibrationDuration;
+
+		// 데칼
+		game_module::PrefabResource mRushDecalEffect;
+		float mEffectYOffset = 0.5f;
 
 		// 로직 변수
 		float mSwingAroundElapsedTime;

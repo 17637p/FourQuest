@@ -20,6 +20,7 @@ namespace fq::client
 		, mChargingElapsedTime(0.f)
 		, mbPassedPoint(false)
 		, mRotationSpeed(1.f)
+		, mRushDecalEffect(nullptr)
 	{
 	}
 
@@ -48,6 +49,7 @@ namespace fq::client
 		{
 			berserkerArmour->EmitSound(EBerserkerSoundType::RushReady);
 			berserkerArmour->SetRushCoolTime();
+			mRushDecalEffect = berserkerArmour->EmitDashDecalEffect();
 		}
 	}
 
@@ -101,6 +103,12 @@ namespace fq::client
 		if (berserkerArmour != nullptr)
 		{
 			berserkerArmour->SetRushCoolTime();
+		}
+
+		if (mRushDecalEffect != nullptr)
+		{
+			animator.GetScene()->DestroyGameObject(mRushDecalEffect.get());
+			mRushDecalEffect = nullptr;
 		}
 	}
 }

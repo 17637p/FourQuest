@@ -945,6 +945,13 @@ void fq::client::RegisterMetaData()
 		.data<&BerserkerArmour::mDashHitVibrationDuration>("DashHitVibrationDuration"_hs)
 		.prop(reflect::prop::Name, "DashHitVibrationDuration")
 
+		.data<&BerserkerArmour::mRushDecalEffect>("mRushDecalEffect"_hs)
+		.prop(reflect::prop::Name, "mRushDecalEffect")
+		.prop(reflect::prop::Comment, u8"러쉬에 사용하는 이펙트")
+		.data<&BerserkerArmour::mEffectYOffset>("mEffectYOffset"_hs)
+		.prop(reflect::prop::Name, "mEffectYOffset")
+		.prop(reflect::prop::Comment, u8"이펙트 Y Offset값")
+
 		.base<game_module::Component>();
 
 	entt::meta<Soul>()
