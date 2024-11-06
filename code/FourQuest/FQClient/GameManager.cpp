@@ -41,7 +41,7 @@ fq::client::GameManager::GameManager()
 	mIsAutoSpawn(false),
 	mSoulManagerModule(std::make_shared<SoulManagerModule>())
 	//	:mRegisterPlayerHandler{}
-	, mGameOverCheckFrame(5)
+	, mGameOverCheckFrame(60)
 	, mCurrentFrame(0)
 	, mbCheckGameOver(false)
 	, mbIsGenerateGameOverHandler(false)
