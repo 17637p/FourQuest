@@ -52,8 +52,8 @@ namespace fq::game_module
 		bool mbUssScreenScale;
 		bool mbIsApplyUIRenderEvent; // UIRender 이벤트 적용 여부, 추가_홍지환
 
-		bool mbUseScreenRatioPosition; 
-		DirectX::SimpleMath::Vector2 mScreenRatioPosition; // 0.f ~ 1.f
+		bool mbUseCenterAlignment; // 중앙 정렬 
+		DirectX::SimpleMath::Vector2 mCenterOffset;
 
 		friend void RegisterMetaData();
 	};

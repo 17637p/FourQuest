@@ -19,7 +19,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Application* app = new Application();
 
-	if (!app->Initialize(Application::Mode::Game))
+	if (!app->Initialize(Application::Mode::Tool))
 	{
 		app->Process();
 	}
