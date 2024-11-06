@@ -25,7 +25,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::Portal::Clone(std::share
 
 fq::client::Portal::Portal()
 	:mNextSceneName(),
-	mResultUIPrefab()
+	mResultUIPrefab(),
+	mbIsImmediatelyChangeScene(false)
 {
 }
 
@@ -59,5 +60,13 @@ void fq::client::Portal::OnTriggerEnter(const fq::game_module::Collision& collis
 		//
 		//GetScene()->AddGameObject(resultUI);
 		//resultUI->GetComponent<ResultUI>()->SetNextScene(mNextSceneName);
+	}
+}
+
+void fq::client::Portal::OnStart()
+{
+	if (mbIsImmediatelyChangeScene)
+	{
+		ChangeScene();
 	}
 }
