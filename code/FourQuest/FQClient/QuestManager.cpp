@@ -314,6 +314,10 @@ void fq::client::QuestManager::eventProcessKillMonster()
 					if (monsterKillList[i].monsterType == event.monsterType)
 					{
 						monsterKillList[i].curNumber++;
+						if (mCurMainQuest.mIndex == mViewMainQuest.mIndex)
+						{
+							mViewMainQuest.mclearConditionList.monsterKillList[0].curNumber++;
+						}
 						spdlog::trace("curNumber: {}, requestNumber: {}", monsterKillList[i].curNumber, monsterKillList[i].requestsNumber * LevelHepler::GetSpawnRatio());
 
 						if (monsterKillList[i].curNumber == monsterKillList[i].requestsNumber * LevelHepler::GetSpawnRatio())
