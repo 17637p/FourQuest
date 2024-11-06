@@ -64,19 +64,33 @@ namespace fq::physics
 		PX_RELEASE(mClothBuffer);
 		PX_RELEASE(mParticleSystem);
 
-		// CUDA 리소스를 언매핑
-		cudaError_t cudaStatus = cudaGraphicsUnmapResources(1, &mCudaVertexResource);
-		if (!(cudaStatus == cudaSuccess))
+		// 스트림 삭제
+		cudaError_t cudaStatus = cudaStreamSynchronize(mStream);
+		cudaStatus = cudaStreamDestroy(mStream);
+		if (cudaStatus != cudaSuccess)
 		{
-			spdlog::error("[CudaPhysicsCloth ({})] copyIndexFromGPUToCPU Error(Error Code : {})", __LINE__, cudaGetErrorString(cudaStatus));
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Destroy Cuda Stream", __LINE__);
 		}
 
+		// CUDA 리소스를 언매핑
+		cudaStatus = cudaGraphicsUnmapResources(1, &mCudaVertexResource);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			spdlog::warn("[CudaPhysicsCloth ({})] cudaGraphicsUnmapResources Error(Error Code : {})", __LINE__, cudaGetErrorString(cudaStatus));
+		}
+		cudaStatus = cudaGraphicsUnmapResources(1, &mCudaIndexResource);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			spdlog::warn("[CudaPhysicsCloth ({})] cudaGraphicsUnmapResources Error(Error Code : {})", __LINE__, cudaGetErrorString(cudaStatus));
+		}
+
+		// CUDA 리소스 등록 해제
 		if (mCudaIndexResource)
 		{
 			cudaStatus = cudaGraphicsUnregisterResource(mCudaIndexResource);
 			if (cudaStatus != cudaSuccess)
 			{
-				spdlog::error("[CudaPhysics ({})] CUDA Failed Direct3D UnRegister VertexResource", __LINE__);
+				spdlog::warn("[CudaPhysics ({})] CUDA Failed Direct3D UnRegister VertexResource", __LINE__);
 			}
 		}
 		if (mCudaVertexResource)
@@ -84,16 +98,8 @@ namespace fq::physics
 			cudaStatus = cudaGraphicsUnregisterResource(mCudaVertexResource);
 			if (cudaStatus != cudaSuccess)
 			{
-				spdlog::error("[CudaPhysics ({})] CUDA Failed Direct3D UnRegister VertexResource", __LINE__);
+				spdlog::warn("[CudaPhysics ({})] CUDA Failed Direct3D UnRegister VertexResource", __LINE__);
 			}
-		}
-
-		// 스트림 삭제
-		cudaError_t cudaState = cudaStreamSynchronize(mStream);
-		cudaState = cudaStreamDestroy(mStream);
-		if (cudaState != cudaSuccess)
-		{
-			spdlog::error("[CudaPhysicsCloth ({})] Failed Destroy Cuda Stream", __LINE__);
 		}
 
 		mCudaIndexResource = nullptr;
@@ -264,7 +270,6 @@ namespace fq::physics
 		pxWind.z = wind.z;
 
 		mParticleSystem->setWind(pxWind);
-
 
 		return true;
 	}
