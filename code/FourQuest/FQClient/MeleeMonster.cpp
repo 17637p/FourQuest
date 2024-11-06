@@ -170,7 +170,7 @@ void fq::client::MeleeMonster::EmitAttack()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = mAttackPower;
 	attackInfo.attackDirection = foward;
-	attackInfo.hitSound = "MM_Attack_hit";
+	attackInfo.hitSound = getAttactHitSound();
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
@@ -179,7 +179,7 @@ void fq::client::MeleeMonster::EmitAttack()
 	mAttackElapsedTime = mAttackCoolTime;
 
 	// 공격 사운드
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Attack", false , fq::sound::EChannel::SE });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ getAttactSound(), false , fq::sound::EChannel::SE});
 }
 
 
@@ -664,4 +664,48 @@ void fq::client::MeleeMonster::destroySocketCollider()
 		if (socket)
 			childObject->RemoveComponent<fq::game_module::BoxCollider>();
 	}
+}
+
+std::string fq::client::MeleeMonster::getAttactSound() const
+{
+	int index = rand() % 4;
+
+	switch (index)
+	{
+	case 0:
+		return "MM_Attack_1";
+	case 1:
+		return "MM_Attack_2";
+	case 2:
+		return "MM_Attack_3";
+	case 3:
+		return "MM_Attack_4";
+	default:
+		assert(false);
+		break;
+	}
+
+	return "";
+}
+
+std::string fq::client::MeleeMonster::getAttactHitSound() const
+{
+	int index = rand() % 4;
+
+	switch (index)
+	{
+	case 0:
+		return "MM_Attack_Hit_1";
+	case 1:
+		return "MM_Attack_Hit_2";
+	case 2:
+		return "MM_Attack_Hit_3";
+	case 3:
+		return "MM_Attack_Hit_4";
+	default:
+		assert(false);
+		break;
+	}
+
+	return "";
 }

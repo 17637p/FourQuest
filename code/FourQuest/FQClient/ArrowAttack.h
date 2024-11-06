@@ -45,6 +45,8 @@ namespace fq::client
 
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
+		
+		void playWallSound();
 
 	private:
 		// 강공격, 약공격 공격력 및 최대 관통 갯수

@@ -992,6 +992,7 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		{
 			if (!quest.mIsClear)
 			{
+				spdlog::trace("{}", colliderTriggerList[0].curPlayer);
 				text.Text = std::to_string(colliderTriggerList[0].curPlayer) + " / " + std::to_string(colliderTriggerList[0].maxPlayer);
 				text.IsRender = true;
 				monsterKillText->SetTextInfo(text);
@@ -1365,8 +1366,6 @@ void fq::client::QuestManager::playComplete(float dt)
 				textInfo.FontColor.A(1);
 				mMainQuestText->SetTextInfoPlay(textInfo);
 
-				mViewMainQuest = mCurMainQuest;
-
 				auto questBox = GetGameObject()->GetChildren()[1]->GetChildren()[1]->GetComponent<game_module::ImageUI>();
 				auto uiInfo = questBox->GetUIInfomation(0);
 				uiInfo.Alpha = 1;
@@ -1374,6 +1373,8 @@ void fq::client::QuestManager::playComplete(float dt)
 
 				if (mIsFinishedCompleteAnimation[i])
 				{
+					mViewMainQuest = mCurMainQuest;
+
 					mIsFinishedCompleteAnimation[i] = false;
 
 					int nextSubQuestSize = mNextSubQuests.size() + 1;
