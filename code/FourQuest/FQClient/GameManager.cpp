@@ -138,6 +138,7 @@ void fq::client::GameManager::OnUpdate(float dt)
 	// 모든 영혼이 파괴되었을 시, GameOverHandler 프리팹 생성_홍지환
 	++mCurrentFrame;
 
+	// 시작하자마자 체크하면 바로 종료되어 지연 처리
 	if (mGameOverCheckFrame < mCurrentFrame)
 	{
 		mbCheckGameOver = true;

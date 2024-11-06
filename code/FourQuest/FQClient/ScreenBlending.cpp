@@ -52,7 +52,6 @@ void fq::client::ScreenBlending::OnUpdate(float dt)
 void fq::client::ScreenBlending::OnDestroy()
 {
 	applyTextureBlending(false);
-	GetScene()->DestroyGameObject(GetGameObject());
 }
 
 void fq::client::ScreenBlending::applyTextureBlending(bool bIsActive)
