@@ -41,13 +41,19 @@ namespace fq::game_module
 
 		// Editor 전용
 		void setUIInfomations(std::vector<fq::graphics::UIInfo> infomations);
+		void setScreenRatioPosition();
+		void setScaleScreen();
 
 	private:
 		std::vector<graphics::UIInfo> mUIInfomations;
 		std::vector<graphics::IImageObject*> mImageObjects;
 
 		bool mbIsBindTransform;
+		bool mbUssScreenScale;
 		bool mbIsApplyUIRenderEvent; // UIRender 이벤트 적용 여부, 추가_홍지환
+
+		bool mbUseScreenRatioPosition; 
+		DirectX::SimpleMath::Vector2 mScreenRatioPosition; // 0.f ~ 1.f
 
 		friend void RegisterMetaData();
 	};
