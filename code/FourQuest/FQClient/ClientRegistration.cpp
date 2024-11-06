@@ -250,6 +250,9 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "NextSceneName")
 		.data<&Portal::mResultUIPrefab>("ResultUIPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "ResultUIPrefab")
+		.data<&Portal::mbIsImmediatelyChangeScene>("IsImmediatelyChangeScene"_hs)
+		.prop(fq::reflect::prop::Name, "IsImmediatelyChangeScene")
+		.prop(reflect::prop::Comment, u8"씬전환을 OnStart에서 실행합니다")
 		.base<game_module::Component>();
 
 	entt::meta<BGM>()
