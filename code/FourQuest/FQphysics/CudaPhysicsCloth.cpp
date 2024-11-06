@@ -195,7 +195,7 @@ namespace fq::physics
 		mWorldTransform.Invert(InvTransform);
 		
 		// 보간된 값을 Graphics Engine의 천 버퍼에 업데이트 해주는 Cuda 함수
-		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(d_prevVertices, d_currVertices, mCurrClothBuffer.size(), lerpValue, InvTransform, mGpuDevVertexPtr, mCudaVertexStride)) return false;
+		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(d_prevVertices, d_currVertices, mCurrClothBuffer.size(), lerpValue, InvTransform, mGpuDevVertexPtr, mCudaVertexStride, mStream)) return false;
 
 		// 스트림 동기화
 		cudaState = cudaStreamSynchronize(mStream);

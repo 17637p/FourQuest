@@ -255,7 +255,7 @@ namespace fq::physics
 		else 
 		{
 			// 이전 시뮬레이션이 완료되었으면 새 시뮬레이션 시작
-			mGpuScene->simulate(deltaTime * 2.f);
+			mGpuScene->simulate(deltaTime * 3.f);
 			mGpuSceneWaitUpdateCount = 1;
 			mbIsSimulating = true;
 		}
