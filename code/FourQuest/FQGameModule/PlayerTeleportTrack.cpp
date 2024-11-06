@@ -50,7 +50,7 @@ namespace fq::game_module
 
 			if (mPlayerID == characterController->GetControllerID())
 			{
-				mTrackObjectName.push_back(object.GetName());
+				//mTrackObjectName.push_back(object.GetName());
 				mTargetObject = mScene->GetObjectByID(object.GetID());
 			}
 		}
