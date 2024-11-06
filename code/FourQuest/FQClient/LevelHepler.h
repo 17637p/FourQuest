@@ -9,5 +9,6 @@ namespace fq::client
 		static float GetDamageRatio();
 		static float GetHpRatio();
 		static float GetSpawnRatio();
+		static unsigned int GetPlayCount();
 	};
 }

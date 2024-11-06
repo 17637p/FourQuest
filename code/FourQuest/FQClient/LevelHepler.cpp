@@ -123,3 +123,19 @@ float fq::client::LevelHepler::GetSpawnRatio()
 
 	return result;
 }
+
+unsigned int fq::client::LevelHepler::GetPlayCount()
+{
+	int playerNumber = 0;
+
+	if (PlayerInfoVariable::Player1SoulType != -1)
+		++playerNumber;
+	if (PlayerInfoVariable::Player2SoulType != -1)
+		++playerNumber;
+	if (PlayerInfoVariable::Player3SoulType != -1)
+		++playerNumber;
+	if (PlayerInfoVariable::Player3SoulType != -1)
+		++playerNumber;
+
+	return playerNumber;
+}
