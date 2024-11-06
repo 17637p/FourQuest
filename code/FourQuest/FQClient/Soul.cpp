@@ -386,6 +386,8 @@ bool fq::client::Soul::handleOnSummon()
 		{
 			mController->SetCanMoveCharater(true);
 			mController->SetOnMove(true);
+			
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_ArmorSpawn", false , fq::sound::EChannel::SE });
 
 			DestorySoul();
 			spdlog::trace("DestroySoul");

@@ -466,6 +466,8 @@ void fq::client::KnightArmour::EnterShieldState()
 				mShieldHitVibrationIntensity,
 				mShieldHitVibrationDuration);
 		};
+	attackInfo.HitEffectName = "W_Hit_blunt";
+
 	attackComponent->Set(attackInfo);
 
 	// 사운드 생성

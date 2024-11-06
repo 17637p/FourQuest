@@ -27,7 +27,7 @@ namespace fq::client
 		{
 			case EBerserkerAttackType::Left:
 				EmitSound(EBerserkerSoundType::Left);
-				hitSoundName = mLeftAttackHitSound;
+				hitSoundName = getSwing1HitSound();
 				knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
 				direction = -right;
 				damage = dc::GetBluntFirstConsecutiveAttackDamage(mPlayer->GetAttackPower());
@@ -35,7 +35,7 @@ namespace fq::client
 				break;
 			case EBerserkerAttackType::Right:
 				EmitSound(EBerserkerSoundType::Right);
-				hitSoundName = mRightAttackHitSound;
+				hitSoundName = getSwing1HitSound();
 				knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
 				direction = right;
 				damage = dc::GetBluntSecondConsecutiveAttackDamage(mPlayer->GetAttackPower());
@@ -43,7 +43,7 @@ namespace fq::client
 				break;
 			case EBerserkerAttackType::StrikeDown:
 				EmitSound(EBerserkerSoundType::StrikeDown);
-				hitSoundName = mStrikeDownAttackHitSound;
+				hitSoundName = getSwing2HitSound();
 				knockBackType = EKnockBackType::TargetPosition;
 				direction = foward;
 				damage = dc::GetBluntThirdConsecutiveAttackDamage(mPlayer->GetAttackPower());
@@ -51,7 +51,7 @@ namespace fq::client
 				break;
 			case EBerserkerAttackType::SwingAround:
 				EmitSound(EBerserkerSoundType::SwingAround);
-				hitSoundName = mSwingAroundHitSound;
+				hitSoundName = getSwing2HitSound();
 				knockBackType = EKnockBackType::TargetPositionAndKnockDown;
 				direction = foward;
 				damage = dc::GetBluntSwingAroundDamage(mPlayer->GetAttackPower());
@@ -59,7 +59,7 @@ namespace fq::client
 				break;
 			case EBerserkerAttackType::Rush:
 				EmitSound(EBerserkerSoundType::Rush);
-				hitSoundName = mAttackRushHitSound;
+				hitSoundName = getRushHitSound();
 				knockBackType = EKnockBackType::TargetPosition;
 				direction = foward;
 				damage = dc::GetBluntRsuhDamage(mPlayer->GetAttackPower());
@@ -286,6 +286,72 @@ namespace fq::client
 					break;
 			}
 		}
+	}
+
+	std::string BerserkerArmour::getSwing1HitSound()
+	{
+		int index = rand() % 3;
+
+		switch (index)
+		{
+		case 0:
+			return "W_Swing_Hit_1";
+		case 1:
+			return "W_Swing_Hit_2";
+		case 2:
+			return "W_Swing_Hit_3";
+		default:
+			assert(false);
+			break;
+		}
+
+		return "";
+	}
+
+	std::string BerserkerArmour::getSwing2HitSound()
+	{
+		int index = rand() % 3;
+
+		switch (index)
+		{
+		case 0:
+			return "W_Swing2_Hit_1";
+		case 1:
+			return "W_Swing2_Hit_2";
+		case 2:
+			return "W_Swing2_Hit_3";
+		default:
+			assert(false);
+			break;
+		}
+
+		return "";
+	}
+
+	std::string BerserkerArmour::getRushHitSound()
+	{
+		int index = rand() % 6;
+
+		switch (index)
+		{
+		case 0:
+			return "W_Spin_Hit_1";
+		case 1:
+			return "W_Spin_Hit_2";
+		case 2:
+			return "W_Spin_Hit_3";
+		case 3:
+			return "W_Spin_Hit_4";
+		case 4:
+			return "W_Spin_Hit_5";
+		case 5:
+			return "W_Spin_Hit_6";
+		default:
+			assert(false);
+			break;
+		}
+
+		return "";
 	}
 
 }

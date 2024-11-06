@@ -56,9 +56,6 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 	gameObject->GetComponent<MeleeMonster>()->DestroyMonsterHPUI();
 	
-	// 사운드 재생
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Death", false , fq::sound::EChannel::SE });
-
 	// 몬스터 죽음 이벤트 발생
 	auto scene = animator.GetScene();
 	

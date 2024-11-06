@@ -71,7 +71,7 @@ namespace fq::client
 		attackInfo.attackDirection = foward;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = false;
-		attackInfo.hitSound = "A_Fastshoot_Hit";
+		attackInfo.hitSound = getArrowHitSound();
 		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
 		attackComponent->Set(attackInfo);
 
@@ -111,7 +111,7 @@ namespace fq::client
 		attackInfo.attackDirection = attackDirection;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = true;
-		attackInfo.hitSound = "A_StrongAttack_Hit";
+		attackInfo.hitSound = getArrowHitSound();
 		attackInfo.HitEffectName = "A_Shoot_Hit_blood";
 		attackInfo.remainingAttackCount = 0b11111111;
 		attackInfo.strongDamage = damage;
@@ -424,6 +424,28 @@ namespace fq::client
 		}
 
 		return cloneArmour;
+	}
+
+	std::string ArcherArmour::getArrowHitSound() const
+	{
+		int index = rand() % 5;
+
+		switch (index)
+		{
+		case 0:
+			return "A_Arrow_Hit_1";
+		case 1:
+			return "A_Arrow_Hit_2";
+		case 2:
+			return "A_Arrow_Hit_3";
+		case 3:
+			return "A_Arrow_Hit_4";
+		case 4:
+			return "A_Arrow_Hit_5";
+		default:
+			assert(false);
+			break;
+		}
 	}
 
 	void ArcherArmour::setName()
