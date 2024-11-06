@@ -992,7 +992,6 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		{
 			if (!quest.mIsClear)
 			{
-				spdlog::trace("{}", colliderTriggerList[0].curPlayer);
 				text.Text = std::to_string(colliderTriggerList[0].curPlayer) + " / " + std::to_string(colliderTriggerList[0].maxPlayer);
 				text.IsRender = true;
 				monsterKillText->SetTextInfo(text);
