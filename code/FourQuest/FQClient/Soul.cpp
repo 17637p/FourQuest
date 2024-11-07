@@ -173,12 +173,12 @@ void fq::client::Soul::OnUpdate(float dt)
 
 	if (!handleOnSummon())
 	{
+		processInput(dt); // 가장 먼저 호출 필요 (캐릭터 이동설정)
 		selectGoddessStatue(dt);
 		selectArmour();
 		checkOtherPlayer();
 		updateSoulHP(dt);
 		checkReleaseGoddessStatue();
-		processInput(dt);
 	}
 
 	mBGaugeUI->SetVisible(mbIsVisibleBGaugeUI);
@@ -559,8 +559,7 @@ void fq::client::Soul::processInput(float dt)
 	auto foward = GetTransform()->GetWorldMatrix().Forward();
 	foward.Normalize();
 
-
-	if (mDashCoolTime < mDashElapsed)
+	if (mDashCoolTime < mDashElapsed && !GetGameObject()->IsDestroyed())
 	{
 		mController->SetCanMoveCharater(true);
 
