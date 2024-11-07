@@ -69,8 +69,8 @@ namespace fq::game_module
 		mTrackObjectName.push_back(mNameObject->GetName());
 		mTrackObjectName.push_back(mTextObject->GetName());
 
-		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mNameFontCenterY, 0.f));
-		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mTextFontCenterY, 0.f));
+		//nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mNameFontCenterY, 0.f));
+		//textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mTextFontCenterY, 0.f));
 
 		// 이벤트 재생
 		mScene->GetEventManager()->FireEvent<fq::event::SequenceEnterSpeech>({ mName });
@@ -86,8 +86,8 @@ namespace fq::game_module
 		auto fixedWidth = screenMgr->GetFixScreenWidth();
 		auto fixedHeight = screenMgr->GetFixScreenHeight();
 
-		float nameX = (fixedWidth * 0.5f) + mNameFontCenterX;
-		float textX = (fixedWidth * 0.5f) + mTextFontCenterX;
+		float nameX = (fixedWidth * 0.5f) + (mNameFontCenterX * (1 / (fixedWidth / (float)1920)));
+		float textX = (fixedWidth * 0.5f) + (mTextFontCenterX *(1 / (fixedWidth / (float)1920)));
 
 		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(nameX, fixedHeight - mNameFontCenterY, 0.f));
 		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(textX, fixedHeight - mTextFontCenterY, 0.f));
@@ -99,26 +99,28 @@ namespace fq::game_module
 		textTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
 
 		fq::graphics::TextInfo textInfo;
-		textInfo.Align = fq::graphics::ETextAlign::CenterTop;
-		textInfo.BoxAlign = fq::graphics::ETextBoxAlign::CenterCenter;
+		textInfo.Align = fq::graphics::ETextAlign::LeftTop;
+		textInfo.BoxAlign = fq::graphics::ETextBoxAlign::LeftTop;
 		textInfo.Text = mName;
 		textInfo.FontSize = mNameFontSize;
 		textInfo.FontColor = mNameFontColor;
-		textInfo.CenterX = 960.f + mNameFontCenterX;
-		textInfo.CenterY = 1080.f - mNameFontCenterY;
+		//textInfo.CenterX = 960.f + mNameFontCenterX;
+		//textInfo.CenterY = 1080.f - mNameFontCenterY;
 		textInfo.Layer = 150;
 		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
 		std::string font = boost::locale::conv::from_utf(L"던파 연단된 칼날", "UTF-8");
 		textInfo.FontPath = font;
+		textInfo.isUseAutoCenterAlign = true;
 		name->SetTextInfo(textInfo);
 
 		textInfo.Text = mText;
 		textInfo.FontSize = mTextFontSize;
 		textInfo.FontColor = mTextFontColor;
 		textInfo.Layer = 150;
-		textInfo.CenterX = 960.f + mTextFontCenterX;
-		textInfo.CenterY = 1080.f - mTextFontCenterY;
+		//textInfo.CenterX = 960.f + mTextFontCenterX;
+		//textInfo.CenterY = 1080.f - mTextFontCenterY;
 		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
+		textInfo.isUseAutoCenterAlign = true;
 		text->SetTextInfo(textInfo);
 	}
 
