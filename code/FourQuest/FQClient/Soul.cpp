@@ -559,18 +559,26 @@ void fq::client::Soul::processInput(float dt)
 	auto foward = GetTransform()->GetWorldMatrix().Forward();
 	foward.Normalize();
 
-	if (mDashCoolTime < mDashElapsed && input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
-	{
-		// 加档 贸府
-		if (rigidbody != nullptr)
-		{
-			auto velocity = foward;
-			velocity.x *= mDashSpeed;
-			velocity.z *= mDashSpeed;
-			rigidbody->SetLinearVelocity(velocity);
-		}
 
-		mDashElapsed = 0.f;
+	if (mDashCoolTime < mDashElapsed)
+	{
+		mController->SetCanMoveCharater(true);
+
+		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+		{
+			// 加档 贸府
+			if (rigidbody != nullptr)
+			{
+				auto velocity = foward;
+				velocity.x *= mDashSpeed;
+				velocity.z *= mDashSpeed;
+				velocity.y = 0.f;
+				rigidbody->SetLinearVelocity(velocity);
+				mController->SetCanMoveCharater(false);
+			}
+
+			mDashElapsed = 0.f;
+		}
 	}
 }
 
