@@ -215,3 +215,8 @@ void fq::client::QuestColliderTriggerChecker::SetRequestPlayerNum(bool isAll, in
 	mIsAll = isAll;
 }
 
+void fq::client::QuestColliderTriggerChecker::OnDestroy()
+{
+	GetScene()->GetEventManager()->RemoveHandle(mUpdatePlayerStateHandler);
+}
+

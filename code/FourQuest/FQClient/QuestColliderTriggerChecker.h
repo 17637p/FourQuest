@@ -19,6 +19,7 @@ namespace fq::client
 
 		virtual void OnAwake() override;
 		void SetRequestPlayerNum(bool isAll, int requestPlayerNum);
+		virtual void OnDestroy() override;
 
 		void EventProcessUpdatePlayerState();
 		int GetMaxPlayer();

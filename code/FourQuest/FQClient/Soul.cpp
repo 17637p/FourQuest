@@ -173,12 +173,12 @@ void fq::client::Soul::OnUpdate(float dt)
 
 	if (!handleOnSummon())
 	{
+		processInput(dt); // 가장 먼저 호출 필요 (캐릭터 이동설정)
 		selectGoddessStatue(dt);
 		selectArmour();
 		checkOtherPlayer();
 		updateSoulHP(dt);
 		checkReleaseGoddessStatue();
-		processInput(dt);
 	}
 
 	mBGaugeUI->SetVisible(mbIsVisibleBGaugeUI);
@@ -559,18 +559,25 @@ void fq::client::Soul::processInput(float dt)
 	auto foward = GetTransform()->GetWorldMatrix().Forward();
 	foward.Normalize();
 
-	if (mDashCoolTime < mDashElapsed && input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+	if (mDashCoolTime < mDashElapsed && !GetGameObject()->IsDestroyed())
 	{
-		// 속도 처리
-		if (rigidbody != nullptr)
-		{
-			auto velocity = foward;
-			velocity.x *= mDashSpeed;
-			velocity.z *= mDashSpeed;
-			rigidbody->SetLinearVelocity(velocity);
-		}
+		mController->SetCanMoveCharater(true);
 
-		mDashElapsed = 0.f;
+		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+		{
+			// 속도 처리
+			if (rigidbody != nullptr)
+			{
+				auto velocity = foward;
+				velocity.x *= mDashSpeed;
+				velocity.z *= mDashSpeed;
+				velocity.y = 0.f;
+				rigidbody->SetLinearVelocity(velocity);
+				mController->SetCanMoveCharater(false);
+			}
+
+			mDashElapsed = 0.f;
+		}
 	}
 }
 
