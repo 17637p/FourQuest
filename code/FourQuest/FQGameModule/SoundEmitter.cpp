@@ -10,7 +10,8 @@ fq::game_module::SoundEmitter::~SoundEmitter()
 }
 
 fq::game_module::SoundEmitter::SoundEmitter()
-	: mbIsPlayLoop(false)
+	: mbIsActive(true)
+	, mbIsPlayLoop(false)
 	, mbIsPlayStateEnter(false)
 	, mSoundTurm(0.5f)
 	, mbUseRandomPlay(false)
@@ -57,8 +58,17 @@ void fq::game_module::SoundEmitter::OnStart()
 	}
 }
 
+void fq::game_module::SoundEmitter::SetActive(bool bIsActive)
+{
+	mbIsActive = bIsActive;
+}
+
 void fq::game_module::SoundEmitter::OnUpdate(float dt)
 {
+	if (!mbIsActive)
+	{
+		return;
+	}
 	if (!mbIsPlayLoop && mbIsPlaySoundOnce)
 	{
 		return;

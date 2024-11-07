@@ -20,12 +20,15 @@ namespace fq::game_module
 		virtual void OnUpdate(float dt) override;
 		virtual void OnStart() override;
 
+		void SetActive(bool bIsActive);
+
 	private:
 		entt::meta_handle GetHandle() override;
 
 		void playSound();
 
 	private:
+		bool mbIsActive;
 		bool mbIsPlayLoop;
 		bool mbIsPlayStateEnter;
 		float mSoundTurm;

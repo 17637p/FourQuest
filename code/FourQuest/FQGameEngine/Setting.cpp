@@ -740,6 +740,7 @@ void fq::game_engine::Setting::beginChild_InspectorSetting()
 
 std::wstring fq::game_engine::Setting::changeDDSFormat(const std::wstring& fileName)
 {
+	// 이미 확장자가 dds라면 아무것도 안함
 	if (std::filesystem::path(fileName).extension() == ".dds")
 	{
 		return fileName;
@@ -748,12 +749,14 @@ std::wstring fq::game_engine::Setting::changeDDSFormat(const std::wstring& fileN
 	std::filesystem::path ddsFileName = fileName;
 	ddsFileName.replace_extension(".dds");
 
-	// 이미 변환된 파일이 있다면 처리 없이 반환
+	// 이미 변환된 파일이 있다면 기존 파일을 지운 후 dds파일 이름을 반환
 	if (std::filesystem::exists(ddsFileName))
 	{
 		std::filesystem::remove(fileName);
 		return ddsFileName;
 	}
+
+	// 파일이 존재하지 않으면 아무 처리도 하지 않음
 	if (!std::filesystem::exists(fileName))
 	{
 		return fileName;
@@ -766,8 +769,6 @@ std::wstring fq::game_engine::Setting::changeDDSFormat(const std::wstring& fileN
 	{
 		return fileName;
 	}
-
-	// .dds 버전으로 텍스처 저장
 
 	// 실패 시 기존 이름 반환
 	if (!mGameProcess->mGraphics->SaveDDS(textureInterface, ddsFileName))
