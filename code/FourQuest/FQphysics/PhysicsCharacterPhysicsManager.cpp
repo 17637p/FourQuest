@@ -111,14 +111,18 @@ namespace fq::physics
 	void PhysicsCharacterPhysicsManager::GetArticulationData(const unsigned int& id, ArticulationGetData& articulationData)
 	{
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
+		if (articulationIter == mCharacterPhysicsContainer.end())
+			return;
+
 		auto articulation = articulationIter->second;
 
 		physx::PxTransform pxTransform = articulation->GetPxArticulation()->getRootGlobalPose();
 		DirectX::SimpleMath::Matrix dxTransform;
 		CopyPxTransformToDirectXMatrix(pxTransform, dxTransform);
-
-		articulationData.worldTransform = dxTransform;
+		
+		articulationData.worldTransform = articulation->GetWorldTransform();
 		articulationData.bIsRagdollSimulation = articulation->GetIsRagdoll();
+		articulationData.myLayerNumber = articulation->GetLayerNumber();
 		
 		for (auto& [name, link] : articulation->GetLinkContainer())
 		{
@@ -134,9 +138,10 @@ namespace fq::physics
 	void PhysicsCharacterPhysicsManager::SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData, int* collisionMatrix)
 	{
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
-		auto articulation = articulationIter->second;
+		if (articulationIter == mCharacterPhysicsContainer.end())
+			return;
 
-		articulation->ChangeLayerNumber(articulationData.myLayerNumber, collisionMatrix, mCollisionDataManager.lock());
+		auto articulation = articulationIter->second;
 
 		if (articulationData.bIsRagdollSimulation != articulation->GetIsRagdoll())
 		{
@@ -145,6 +150,13 @@ namespace fq::physics
 
 			if (articulationData.bIsRagdollSimulation)
 			{
+				// 레이어 넘버 비교 후 레이어 넘버 교체
+				auto prevLayerNumber = articulation->GetLayerNumber();
+				if (prevLayerNumber != articulationData.myLayerNumber)
+				{
+					articulation->ChangeLayerNumber(articulationData.myLayerNumber, collisionMatrix, mCollisionDataManager.lock());
+				}
+
 				for (const auto& linkData : articulationData.linkData)
 				{
 					articulation->SetLinkTransformUpdate(linkData.name, linkData.boneWorldTransform);
