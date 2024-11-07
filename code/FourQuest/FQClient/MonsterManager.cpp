@@ -125,8 +125,6 @@ void fq::client::MonsterManager::sortMonsterHpLayer()
 {
 	using namespace game_module;
 
-	spdlog::trace("{}", mMonsterHps.size());
-
 	std::sort(mMonsterHps.begin(), mMonsterHps.end(),
 		[](const std::shared_ptr<GameObject>& lhs, const std::shared_ptr<GameObject> rhs) {
 			auto lhsT = lhs->GetTransform();
