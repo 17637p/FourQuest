@@ -33,6 +33,7 @@ namespace fq::game_engine
 		void beginChild_GizumoSetting();
 		void beginChild_GraphicsSetting();
 		void beginChild_InspectorSetting();
+		std::wstring changeDDSFormat(const std::wstring& fileName);
 
 	private:
 		GameProcess* mGameProcess;

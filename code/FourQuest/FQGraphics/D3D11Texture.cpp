@@ -55,33 +55,33 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	{
 		HR(LoadFromDDSFile(texturePath.c_str(), DDS_FLAGS_NONE, &md, scratchImage));
 
-		if (md.width % 4 != 0 || md.height % 4 != 0)
-		{
-			DXGI_FORMAT format = md.format;
+		// if (md.width % 4 != 0 || md.height % 4 != 0)
+		// {
+		// 	DXGI_FORMAT format = md.format;
+		// 
+		// 	// 압축된 포맷이면 압축 해제
+		// 	if (IsCompressed(format))
+		// 	{
+		// 		ScratchImage uncompressedImage;
+		// 		HR(Decompress(scratchImage.GetImages(), scratchImage.GetImageCount(), md, DXGI_FORMAT_R8G8B8A8_UNORM, uncompressedImage));
+		// 
+		// 		md.format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 비압축 포맷으로 변경
+		// 		scratchImage = std::move(uncompressedImage);
+		// 	}
+		// 
+		// 	TexMetadata resizedMd = md;
+		// 	resizedMd.width = (md.width + 3) / 4 * 4;    // 4의 배수로 맞춤
+		// 	resizedMd.height = (md.height + 3) / 4 * 4;
+		// 
+		// 	ScratchImage resizedImage;
+		// 	HR(Resize(scratchImage.GetImages(), scratchImage.GetImageCount(), md, resizedMd.width, resizedMd.height, TEX_FILTER_DEFAULT, resizedImage));
+		// 	HR(CreateTexture(d3d11Device->GetDevice().Get(), resizedImage.GetImages(), resizedImage.GetImageCount(), resizedMd, (ID3D11Resource**)mTexture.GetAddressOf()));
+		// }
+		// else
+		// {
+		// }
 
-			// 압축된 포맷이면 압축 해제
-			if (IsCompressed(format))
-			{
-				ScratchImage uncompressedImage;
-				HR(Decompress(scratchImage.GetImages(), scratchImage.GetImageCount(), md, DXGI_FORMAT_R8G8B8A8_UNORM, uncompressedImage));
-
-				md.format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 비압축 포맷으로 변경
-				scratchImage = std::move(uncompressedImage);
-			}
-
-			TexMetadata resizedMd = md;
-			resizedMd.width = (md.width + 3) / 4 * 4;    // 4의 배수로 맞춤
-			resizedMd.height = (md.height + 3) / 4 * 4;
-
-			ScratchImage resizedImage;
-			HR(Resize(scratchImage.GetImages(), scratchImage.GetImageCount(), md, resizedMd.width, resizedMd.height, TEX_FILTER_DEFAULT, resizedImage));
-			HR(CreateTexture(d3d11Device->GetDevice().Get(), resizedImage.GetImages(), resizedImage.GetImageCount(), resizedMd, (ID3D11Resource**)mTexture.GetAddressOf()));
-		}
-		else
-		{
-			HR(CreateTexture(d3d11Device->GetDevice().Get(), scratchImage.GetImages(), scratchImage.GetImageCount(), md, (ID3D11Resource**)mTexture.GetAddressOf()));
-		}
-
+		HR(CreateTexture(d3d11Device->GetDevice().Get(), scratchImage.GetImages(), scratchImage.GetImageCount(), md, (ID3D11Resource**)mTexture.GetAddressOf()));
 		HR(d3d11Device->GetDevice()->CreateShaderResourceView(mTexture.Get(), nullptr, mSRV.GetAddressOf()));
 	}
 	else if (fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
@@ -292,17 +292,15 @@ std::string fq::graphics::D3D11Texture::GenerateRID(const std::wstring& textureP
 	return typeid(D3D11Texture).name() + temp;
 }
 
-void fq::graphics::D3D11Texture::SaveTextureToFile(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11Texture2D* texture, const std::wstring& fileName)
+bool fq::graphics::D3D11Texture::SaveTextureToFile(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11Texture2D* texture, const std::wstring& fileName)
 {
 	using Microsoft::WRL::ComPtr;
-	
+	HRESULT hr;
 	ComPtr<ID3D11Texture2D> stagingTexture;
 
-	// Step 1: Get texture description
 	D3D11_TEXTURE2D_DESC desc;
 	texture->GetDesc(&desc);
 
-	// Step 2: Create a staging texture if needed (for copying the texture data to the CPU)
 	if (!(desc.CPUAccessFlags & D3D11_CPU_ACCESS_READ) || (desc.Usage != D3D11_USAGE_STAGING))
 	{
 		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
@@ -310,26 +308,32 @@ void fq::graphics::D3D11Texture::SaveTextureToFile(ID3D11Device* device, ID3D11D
 		desc.BindFlags = 0;
 		desc.MiscFlags = 0;
 
-		HRESULT hr = device->CreateTexture2D(&desc, nullptr, &stagingTexture);
-		if (FAILED(hr)) return;
+		hr = device->CreateTexture2D(&desc, nullptr, &stagingTexture);
+		if (FAILED(hr))
+		{
+			return false;
+		}
 
-		// Copy the original texture to the staging texture
 		context->CopyResource(stagingTexture.Get(), texture);
 
 		texture = stagingTexture.Get();
 	}
 
-	// Step 3: Capture the texture data into a ScratchImage using DirectXTex
 	DirectX::ScratchImage image;
-	HRESULT hr = DirectX::CaptureTexture(device, context, texture, image);
-	if (FAILED(hr)) return;
+	hr = DirectX::CaptureTexture(device, context, texture, image);
+	if (FAILED(hr))
+	{
+		return false;
+	}
 
-	// Step 4: Save the image to a DDS file (or other format like PNG/JPG)
 	hr = DirectX::SaveToDDSFile(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::DDS_FLAGS_NONE, fileName.c_str());
-	// Alternatively, you can save to PNG or JPG by using SaveToWICFile:
-	// hr = DirectX::SaveToWICFile(image.GetImages(), image.GetImageCount(), DirectX::WIC_FLAGS_NONE, GUID_ContainerFormatPng, fileName.c_str());
 
-	return;
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void fq::graphics::D3D11Texture::CreateUAV(const std::shared_ptr<D3D11Device>& d3d11Device, UINT mipSlice)

@@ -68,6 +68,7 @@ namespace fq::graphics
 		virtual std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) override;
 		virtual std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const ParticleMaterialInfo& materialInfo) override;
 		virtual std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const DecalMaterialInfo& decalMaterialInfo) override;
+		virtual std::shared_ptr<ITexture> CreateTexture(const std::wstring& texturePath) override;
 
 		virtual std::shared_ptr<IStaticMesh> CreateStaticMesh(std::string key, const fq::common::Mesh& meshData) override;
 		virtual std::shared_ptr<ISkinnedMesh> CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData) override;
@@ -105,6 +106,8 @@ namespace fq::graphics
 		virtual void DeleteMaterial(const std::string& key) override;
 		virtual void DeleteParticleMaterial(const std::string& key) override;
 		virtual void DeleteDecalMaterial(const std::string& key) override;
+		
+		virtual bool SaveDDS(std::shared_ptr<ITexture> textureInterface, const std::wstring& saveTexturePath) override;
 
 		// RenderObject
 		virtual IStaticMeshObject* CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform) override;

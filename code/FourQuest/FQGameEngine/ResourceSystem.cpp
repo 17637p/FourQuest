@@ -38,6 +38,8 @@ void fq::game_engine::ResourceSystem::Initialize(GameProcess* game)
 
 void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScene event)
 {
+	spdlog::stopwatch sw;
+
 	auto listPath = fq::path::GetScenePath() / event.sceneName / "resource_list.txt";
 
 	SceneResourceList list;
@@ -89,6 +91,8 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 		LoadMaterial(materialPath);
 		++mLoadedResourceCount;
 	}
+
+	spdlog::trace("resource loading Time {}", sw);
 }
 
 void fq::game_engine::ResourceSystem::LoadMaterialResource(fq::event::LoadMaterial event)
