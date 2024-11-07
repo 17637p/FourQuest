@@ -115,10 +115,6 @@ namespace fq::physics
 			return;
 
 		auto articulation = articulationIter->second;
-
-		physx::PxTransform pxTransform = articulation->GetPxArticulation()->getRootGlobalPose();
-		DirectX::SimpleMath::Matrix dxTransform;
-		CopyPxTransformToDirectXMatrix(pxTransform, dxTransform);
 		
 		articulationData.worldTransform = articulation->GetWorldTransform();
 		articulationData.bIsRagdollSimulation = articulation->GetIsRagdoll();
