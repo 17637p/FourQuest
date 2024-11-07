@@ -177,7 +177,7 @@ void fq::graphics::UIManager::AddFont(const std::wstring& path)
 			path.c_str(),
 			//L"KBIZmjo",
 			NULL,
-			DWRITE_FONT_WEIGHT_NORMAL,
+			DWRITE_FONT_WEIGHT_MEDIUM,
 			DWRITE_FONT_STYLE_NORMAL,
 			DWRITE_FONT_STRETCH_NORMAL,
 			fontSize,
@@ -188,7 +188,7 @@ void fq::graphics::UIManager::AddFont(const std::wstring& path)
 		mFonts[path + std::to_wstring(fontSize)] = tempFont;
 	}
 
-	// DWrite 초기화
+	//// DWrite 초기화
 	//IDWriteFactory* pDWriteFactory = nullptr;
 	//DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&pDWriteFactory));
 	//
