@@ -199,6 +199,7 @@
 #include "FillSoulGauge.h"
 #include "FillSoulHP.h"
 #include "CircleEffectHelper.h"
+#include "GameOverHandler.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -225,6 +226,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Archer")
 		.data<&GameManager::mWarrior>("Warrior"_hs)
 		.prop(fq::reflect::prop::Name, "Warrior")
+		.data<&GameManager::mGameOverHandler>("GameOverHandler"_hs)
+		.prop(fq::reflect::prop::Name, "GameOverHandler")
+		.data<&GameManager::mGameOverCheckFrame>("GameOverCheckFrame"_hs)
+		.prop(fq::reflect::prop::Name, "GameOverCheckFrame")
 		.base<game_module::Component>();
 
 	entt::meta<MonsterManager>()
@@ -250,6 +255,9 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "NextSceneName")
 		.data<&Portal::mResultUIPrefab>("ResultUIPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "ResultUIPrefab")
+		.data<&Portal::mbIsImmediatelyChangeScene>("IsImmediatelyChangeScene"_hs)
+		.prop(fq::reflect::prop::Name, "IsImmediatelyChangeScene")
+		.prop(reflect::prop::Comment, u8"씬전환을 OnStart에서 실행합니다")
 		.base<game_module::Component>();
 
 	entt::meta<BGM>()
@@ -434,6 +442,12 @@ void fq::client::RegisterMetaData()
 	entt::meta<ScreenBlending>()
 		.type("ScreenBlending"_hs)
 		.prop(reflect::prop::Name, "ScreenBlending")
+		.data<&ScreenBlending::mIndex>("mIndex"_hs)
+		.prop(fq::reflect::prop::Name, "mIndex")
+		.prop(fq::reflect::prop::Comment, u"블렌딩 인덱스(0 ~ 1)")
+		.data<&ScreenBlending::mDelayTime>("mDelayTime"_hs)
+		.prop(fq::reflect::prop::Name, "mDelayTime")
+		.prop(fq::reflect::prop::Comment, u"블렌딩 딜레이 타임")
 		.data<&ScreenBlending::mDuration>("Duration"_hs)
 		.prop(fq::reflect::prop::Name, "Duration")
 		.prop(fq::reflect::prop::Comment, u"블렌딩 지속 시간")
@@ -595,6 +609,14 @@ void fq::client::RegisterMetaData()
 		.data<&CircleEffectHelper::mPointName>("mPointName"_hs)
 		.prop(fq::reflect::prop::Name, "mPointName")
 		.prop(fq::reflect::prop::Comment, u"끝점을 따라 움직일 오브젝트 이름")
+		.base<game_module::Component>();
+
+	entt::meta<GameOverHandler>()
+		.type("GameOverHandler"_hs)
+		.prop(reflect::prop::Name, "GameOverHandler")
+		.data<&GameOverHandler::mInputStartTIme>("mInputStartTIme"_hs)
+		.prop(fq::reflect::prop::Name, "mInputStartTIme")
+		.prop(fq::reflect::prop::Comment, u"입력을 받기 시작하는 시간")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -925,6 +947,13 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "DashHitVibrationIntensity")
 		.data<&BerserkerArmour::mDashHitVibrationDuration>("DashHitVibrationDuration"_hs)
 		.prop(reflect::prop::Name, "DashHitVibrationDuration")
+
+		.data<&BerserkerArmour::mRushDecalEffect>("mRushDecalEffect"_hs)
+		.prop(reflect::prop::Name, "mRushDecalEffect")
+		.prop(reflect::prop::Comment, u8"러쉬에 사용하는 이펙트")
+		.data<&BerserkerArmour::mEffectYOffset>("mEffectYOffset"_hs)
+		.prop(reflect::prop::Name, "mEffectYOffset")
+		.prop(reflect::prop::Comment, u8"이펙트 Y Offset값")
 
 		.base<game_module::Component>();
 
@@ -1392,6 +1421,23 @@ void fq::client::RegisterMetaData()
 	entt::meta<MeleeMonsterHitState>()
 		.type("MeleeMonsterHitState"_hs)
 		.prop(fq::reflect::prop::Name, "MeleeMonsterHitState")
+
+		.data<&MeleeMonsterHitState::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 지속")
+
+		.data<&MeleeMonsterHitState::mHitColor>("mHitColor"_hs)
+		.prop(fq::reflect::prop::Name, "mHitColor")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 색상")
+
+		.data<&MeleeMonsterHitState::mRimPow>("mRimPow"_hs)
+		.prop(fq::reflect::prop::Name, "mRimPow")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 제곱값")
+
+		.data<&MeleeMonsterHitState::mRimIntensity>("mRimIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "mRimIntensity")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 강도")
+
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<MeleeMonsterExplosionState>()
@@ -1635,6 +1681,9 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mAngryGroggyDecreasePerSecond>("mAngryGroggyDecreasePerSecond"_hs)
 		.prop(fq::reflect::prop::Name, "mAngryGroggyDecreasePerSecond")
 		.prop(fq::reflect::prop::Comment, u8"화남 상태 그로기 감소량")
+		.data<&BossMonster::mAngryGroggyDuration>("mAngryGroggyDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mAngryGroggyDuration")
+		.prop(fq::reflect::prop::Comment, u8"화남 상태 그로기 지속시간")
 
 		.data<&BossMonster::mMinMonsterCount>("mMinMonsterCount"_hs)
 		.prop(fq::reflect::prop::Name, "mMinMonsterCount")
@@ -1668,6 +1717,31 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mJumpDecalEffectSpeed>("mJumpDecalEffectSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "mJumpDecalEffectSpeed")
 		.prop(fq::reflect::prop::Comment, u8"점프 데칼 속도")
+
+		.data<&BossMonster::mPlayer1HP>("mPlayer1HP"_hs)
+		.prop(fq::reflect::prop::Name, "mPlayer1HP")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 1명일 때 보스 체력")
+		.data<&BossMonster::mPlayer2HP>("mPlayer2HP"_hs)
+		.prop(fq::reflect::prop::Name, "mPlayer2HP")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 2명일 때 보스 체력")
+		.data<&BossMonster::mPlayer3HP>("mPlayer3HP"_hs)
+		.prop(fq::reflect::prop::Name, "mPlayer3HP")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 3명일 때 보스 체력")
+		.data<&BossMonster::mPlayer4HP>("mPlayer4HP"_hs)
+		.prop(fq::reflect::prop::Name, "mPlayer4HP")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 4명일 때 보스 체력")
+		.data<&BossMonster::mPlayer1GroggyIncreaseRatio>("mPlayer1GroggyIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mPlayer1GroggyIncreaseRatio")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 1명일 때 그로기 상승 비율")
+		.data<&BossMonster::mPlayer2GroggyIncreaseRatio>("mPlayer2GroggyIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mPlayer2GroggyIncreaseRatio")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 2명일 때 그로기 상승 비율")
+		.data<&BossMonster::mPlayer3GroggyIncreaseRatio>("mPlayer3GroggyIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mPlayer3GroggyIncreaseRatio")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 3명일 때 그로기 상승 비율")
+		.data<&BossMonster::mPlayer4GroggyIncreaseRatio>("mPlayer4GroggyIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mPlayer4GroggyIncreaseRatio")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 4명일 때 그로기 상승 비율")
 
 		.base<fq::game_module::Component>();
 
@@ -1810,6 +1884,22 @@ void fq::client::RegisterMetaData()
 	entt::meta<BossMonsterHitState>()
 		.type("BossMonsterHitState"_hs)
 		.prop(fq::reflect::prop::Name, "BossMonsterHitState")
+		.data<&BossMonsterHitState::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 지속")
+
+		.data<&BossMonsterHitState::mHitColor>("mHitColor"_hs)
+		.prop(fq::reflect::prop::Name, "mHitColor")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 색상")
+
+		.data<&BossMonsterHitState::mRimPow>("mRimPow"_hs)
+		.prop(fq::reflect::prop::Name, "mRimPow")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 제곱값")
+
+		.data<&BossMonsterHitState::mRimIntensity>("mRimIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "mRimIntensity")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 강도")
+
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<BossMonsterPreJumpState>()
@@ -1930,6 +2020,23 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlantMonsterHitState>()
 		.type("PlantMonsterHitState"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonsterHitState")
+
+		.data<&PlantMonsterHitState::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 지속")
+
+		.data<&PlantMonsterHitState::mHitColor>("mHitColor"_hs)
+		.prop(fq::reflect::prop::Name, "mHitColor")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 색상")
+
+		.data<&PlantMonsterHitState::mRimPow>("mRimPow"_hs)
+		.prop(fq::reflect::prop::Name, "mRimPow")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 제곱값")
+
+		.data<&PlantMonsterHitState::mRimIntensity>("mRimIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "mRimIntensity")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 강도")
+
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<PlantMonsterDeadState>()

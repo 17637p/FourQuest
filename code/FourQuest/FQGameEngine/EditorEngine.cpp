@@ -239,7 +239,7 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mGraphics->Render();
 
 			mEditor->mImGuiSystem->NewFrame();
-			UpdateEditor(deltaTime);
+			UpdateEditor(mGameProcess->mTimeManager->GetDeltaTime());
 			RenderEditorWinodw();
 			mEditor->mImGuiSystem->RenderImGui();
 

@@ -64,24 +64,50 @@ namespace fq::physics
 		PX_RELEASE(mClothBuffer);
 		PX_RELEASE(mParticleSystem);
 
+		// 스트림 삭제
+		cudaError_t cudaStatus = cudaStreamSynchronize(mStream);
+		cudaStatus = cudaStreamDestroy(mStream);
+		if (cudaStatus != cudaSuccess)
+		{
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Destroy Cuda Stream", __LINE__);
+		}
+
+		// CUDA 리소스를 언매핑
+		cudaStatus = cudaGraphicsUnmapResources(1, &mCudaVertexResource);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			spdlog::warn("[CudaPhysicsCloth ({})] cudaGraphicsUnmapResources Error(Error Code : {})", __LINE__, cudaGetErrorString(cudaStatus));
+		}
+		cudaStatus = cudaGraphicsUnmapResources(1, &mCudaIndexResource);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			spdlog::warn("[CudaPhysicsCloth ({})] cudaGraphicsUnmapResources Error(Error Code : {})", __LINE__, cudaGetErrorString(cudaStatus));
+		}
+
+		// CUDA 리소스 등록 해제
 		if (mCudaIndexResource)
 		{
-			cudaError_t err = cudaGraphicsUnregisterResource(mCudaIndexResource);
-			if (err != cudaSuccess)
+			cudaStatus = cudaGraphicsUnregisterResource(mCudaIndexResource);
+			if (cudaStatus != cudaSuccess)
 			{
-				spdlog::error("[CudaPhysics ({})] CUDA Failed Direct3D UnRegister VertexResource", __LINE__);
+				spdlog::warn("[CudaPhysics ({})] CUDA Failed Direct3D UnRegister VertexResource", __LINE__);
 			}
 		}
 		if (mCudaVertexResource)
 		{
-			cudaError_t err = cudaGraphicsUnregisterResource(mCudaVertexResource);
-			if (err != cudaSuccess)
+			cudaStatus = cudaGraphicsUnregisterResource(mCudaVertexResource);
+			if (cudaStatus != cudaSuccess)
 			{
-				spdlog::error("[CudaPhysics ({})] CUDA Failed Direct3D UnRegister VertexResource", __LINE__);
+				spdlog::warn("[CudaPhysics ({})] CUDA Failed Direct3D UnRegister VertexResource", __LINE__);
 			}
 		}
+
 		mCudaIndexResource = nullptr;
 		mCudaVertexResource = nullptr;
+
+		// cuda_GPU메모리 해제
+		cudaFree(d_prevVertices);
+		cudaFree(d_currVertices);
 	}
 
 	bool CudaPhysicsCloth::Initialize(
@@ -116,8 +142,10 @@ namespace fq::physics
 			return false;
 		}
 
+		// 데이터 세팅
 		if (!settingInfoData(info))
 			return false;
+		// 같은 위치에 있는 입자 위치 검색
 		if (!extractSpringsData())
 			return false;
 
@@ -135,21 +163,8 @@ namespace fq::physics
 			info.materialInfo.cflCoefficient,
 			info.materialInfo.gravityScale);
 
+		// 천 입자 생성 후 PxScene(GPU)에 천 등록
 		createClothParticle(physics, scene, cudaContextManager, collisionMatrix, collisionData);
-
-
-		return true;
-	}
-	 
-	bool CudaPhysicsCloth::UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager)
-	{
-		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
-
-		DirectX::SimpleMath::Matrix InvTransform;
-		mWorldTransform.Invert(InvTransform);
-
-		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(mVertices, InvTransform, mCudaVertexResource, mCudaVertexStride, paticle)) return false;		// 천 입자로 Graphics VertexBuffer에 position값 Update하는 cuda함수 
-		if (!updateWindToParticle()) return false;
 
 		return true;
 	}
@@ -174,9 +189,25 @@ namespace fq::physics
 		// 월드 트랜스폼 역행렬 값
 		DirectX::SimpleMath::Matrix InvTransform;
 		mWorldTransform.Invert(InvTransform);
-
+		
 		// 보간된 값을 Graphics Engine의 천 버퍼에 업데이트 해주는 Cuda 함수
-		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(mPrevClothBuffer, mCurrClothBuffer, lerpValue, InvTransform, mCudaVertexResource, mCudaVertexStride)) return false;
+		if (!CudaClothTool::UpdatePhysXDataToID3DVertexBuffer(d_prevVertices, d_currVertices, mCurrClothBuffer.size(), lerpValue, InvTransform, mGpuDevVertexPtr, mCudaVertexStride, mStream)) return false;
+
+		return true;
+	}
+
+	bool CudaPhysicsCloth::EndCudaStream()
+	{
+		if (mStream == nullptr)
+			return false;
+
+		// 스트림 동기화
+		cudaError_t cudaState = cudaStreamSynchronize(mStream);
+		if (cudaState != cudaSuccess)
+		{
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Synchronize Cuda Stream", __LINE__);
+			return false;
+		}
 
 		return true;
 	}
@@ -185,15 +216,17 @@ namespace fq::physics
 	{
 		mDurationTime = 0.f;
 		mLerpTime = deltaTime;
-		mPrevClothBuffer.assign(mCurrClothBuffer.begin(), mCurrClothBuffer.end());
-		physx::PxVec4* paticle = mClothBuffer->getPositionInvMasses();
+		physx::PxVec4* particle = mClothBuffer->getPositionInvMasses();
 
-		if (!CudaClothTool::UpdateParticleBuffer(mCurrClothBuffer.size(), mCurrClothBuffer.data(), paticle)) return false;
+		// 이전 프레임의 입자 데이터 저장
+		cudaMemcpy(d_prevVertices, d_currVertices, mPrevClothBuffer.size() * sizeof(float4), cudaMemcpyKind::cudaMemcpyDeviceToDevice);
+		// 시뮬레이션 결과로 나온 현재 프레임의 입자 데이터 저장
+		cudaMemcpy(d_currVertices, particle, mCurrClothBuffer.size() * sizeof(float4), cudaMemcpyKind::cudaMemcpyDeviceToDevice);
+		// 천에 바람 적용
 		if (!updateWindToParticle()) return false;
 
 		return true;
 	}
-
 
 	bool CudaPhysicsCloth::updateDebugVertex()
 	{
@@ -221,20 +254,22 @@ namespace fq::physics
 
 	bool CudaPhysicsCloth::updateWindToParticle()
 	{
-		DirectX::SimpleMath::Vector3 wind = getRandomWindForce(mMaxWindStrength);
+		// 랜덤으로 바람 값(PxVec3) 구하기
+		DirectX::SimpleMath::Vector3 wind = getRandomWindForce(mMaxWindStrength * 1.5f);
 		physx::PxVec3 pxWind;
 		pxWind.x = wind.x;
 		pxWind.y = wind.y;
 		pxWind.z = wind.z;
 
+		// 천에 바람 적용
 		mParticleSystem->setWind(pxWind);
-
 
 		return true;
 	}
 
 	bool CudaPhysicsCloth::settingInfoData(const Cloth::CreateClothData& data)
 	{
+		// Graphics Engine에서 VertexBuffe와 IndexBuffer를 가져와서 cudaResource 생성
 		RegisterD3D11VertexBufferWithCUDA((ID3D11Buffer*)data.vertexBuffer);
 		RegisterD3D11IndexBufferWithCUDA((ID3D11Buffer*)data.indexBuffer);
 
@@ -244,6 +279,7 @@ namespace fq::physics
 		mUV = data.clothData.uvs;
 		mDisableIndicesIndices = data.clothData.disableIndices;
 		
+		// 입자 데이터 저장
 		mVertices.resize(data.clothData.vertices.size());
 		mCurrClothBuffer.resize(data.clothData.vertices.size());
 		mPrevClothBuffer.resize(data.clothData.vertices.size());
@@ -258,13 +294,19 @@ namespace fq::physics
 			mPrevClothBuffer[i].z = mVertices[i].z;
 		}
 
-		//bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);
-		//if (!isSucced)
-		//	return false;
+		// GPU Memory에 할당 및 데이터 복사
+		cudaMalloc(&d_prevVertices, mPrevClothBuffer.size() * sizeof(physx::PxVec4));
+		cudaMalloc(&d_currVertices, mCurrClothBuffer.size() * sizeof(physx::PxVec4));
+		cudaMemcpy(d_prevVertices, mPrevClothBuffer.data(), mPrevClothBuffer.size() * sizeof(physx::PxVec4), cudaMemcpyKind::cudaMemcpyHostToDevice);
+		cudaMemcpy(d_currVertices, mCurrClothBuffer.data(), mCurrClothBuffer.size() * sizeof(physx::PxVec4), cudaMemcpyKind::cudaMemcpyHostToDevice);
 
-		//isSucced = CudaClothTool::copyIndexFromGPUToCPU(mIndices, mCudaIndexResource);
-		//if (!isSucced)
-		//	return false;
+		// 스트림 생성
+		cudaError_t cudaState = cudaStreamCreate(&mStream);
+		if (cudaState != cudaSuccess)
+		{
+			spdlog::error("[CudaPhysicsCloth ({})] Failed Create Cuda Stream", __LINE__);
+			return false;
+		}
 
 		return true;
 	}
@@ -533,23 +575,71 @@ namespace fq::physics
 
 	bool CudaPhysicsCloth::RegisterD3D11VertexBufferWithCUDA(ID3D11Buffer* buffer)
 	{
+		// CUDA 리소스(Vertex) 등록
 		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaVertexResource, buffer, cudaGraphicsRegisterFlagsNone);
 		if (cudaStatus != cudaSuccess)
 		{
 			spdlog::error("[CudaPhysicsCloth Warnning({})] Failed Register Vertex ( Error : {} )", __LINE__, cudaGetErrorString(cudaStatus));
 			return false;
 		}
+
+		// CUDA 리소스(Vertex)를 매핑
+		cudaStatus = cudaGraphicsMapResources(1, &mCudaVertexResource);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
+			return false;
+		}
+
+		// CUDA(Vertex) 포인터 가져오기
+		cudaStatus = cudaGraphicsResourceGetMappedPointer(&mGpuDevVertexPtr, &mGpuDevVertexPtrSize, mCudaVertexResource);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
+			return false;
+		}
+
 		return true;
 	}
 
 	bool CudaPhysicsCloth::RegisterD3D11IndexBufferWithCUDA(ID3D11Buffer* buffer)
 	{
+		// CUDA 리소스(Index) 등록
 		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaIndexResource, buffer, cudaGraphicsRegisterFlagsNone);
 		if (cudaStatus != cudaSuccess)
 		{
 			spdlog::error("[CudaPhysicsCloth Warnning({})] Failed Register Index ( Error : {} )", __LINE__, cudaGetErrorString(cudaStatus));
 			return false;
 		}
+
+		// CUDA 리소스(Index)를 매핑
+		cudaStatus = cudaGraphicsMapResources(1, &mCudaIndexResource);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
+			return false;
+		}
+
+		// CUDA(Index) 포인터 가져오기
+		cudaStatus = cudaGraphicsResourceGetMappedPointer(&mGpuDevIndexPtr, &mGpuDevIndexPtrSize, mCudaIndexResource);
+		if (!(cudaStatus == cudaSuccess))
+		{
+			std::cerr << "[CudaClothTool(" << __LINE__ << ")] copyIndexFromGPUToCPU Error(Error : " << cudaGetErrorString(cudaStatus) << ")" << std::endl;
+			return false;
+		}
+
 		return true;
+	}
+
+	const std::vector<DirectX::SimpleMath::Vector4>& CudaPhysicsCloth::GetVertices()
+	{
+		// GPU Memory에서 업데이트 된 천 입자 데이터를 CPU Memory에 복사 후 반환
+		cudaMemcpy(mCurrClothBuffer.data(), d_currVertices, mPrevClothBuffer.size() * sizeof(DirectX::SimpleMath::Vector4), cudaMemcpyKind::cudaMemcpyDeviceToHost);
+
+		return mCurrClothBuffer;
+	}
+	const std::vector<unsigned int>& CudaPhysicsCloth::GetIndices()
+	{
+		return mIndices;
 	}
 }

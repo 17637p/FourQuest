@@ -38,6 +38,9 @@ namespace fq::client
 		std::shared_ptr<fq::game_module::GameObject> EmitAttackIntend(EBerserkerAttackType attackType, const Vector3& offset, const Vector3& scale, float knocBackPower, float destroyTime);
 		void EmitSound(EBerserkerSoundType soundType);
 
+		void SetRushCoolTime();
+		std::shared_ptr<game_module::GameObject> EmitDashDecalEffect() const;
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -88,6 +91,10 @@ namespace fq::client
 		EVibrationMode mDashHitVibrationMode;
 		float mDashHitVibrationIntensity;
 		float mDashHitVibrationDuration;
+
+		// 데칼
+		game_module::PrefabResource mRushDecalEffect;
+		float mEffectYOffset = 0.5f;
 
 		// 로직 변수
 		float mSwingAroundElapsedTime;

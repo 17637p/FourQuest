@@ -54,8 +54,12 @@ namespace fq::client
 		/// 조준선을 생성합니다.
 		/// </summary>
 		void MakeLineOfSight();
-
 		void RemoveLineOfSight();
+
+		/// <summary>
+		/// X공격 선입력 처리를 합니다.
+		/// </summary>
+		void CheckPreXInput();
 
 	private:
 		void OnStart() override;

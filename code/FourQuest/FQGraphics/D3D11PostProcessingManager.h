@@ -49,7 +49,8 @@ namespace fq::graphics
 			DirectX::SimpleMath::Color HighlightColor = { 0, 0, 0, 0 };
 			DirectX::SimpleMath::Color VignettColor = { 0, 0, 0, 0 };
 			DirectX::SimpleMath::Color BlendColor = { 0, 0, 0, 0 };
-			DirectX::SimpleMath::Color BlendTextureColor = { 1, 1, 1, 1 };
+			DirectX::SimpleMath::Color BlendTextureColor0 = { 1, 1, 1, 1 };
+			DirectX::SimpleMath::Color BlendTextureColor1 = { 1, 1, 1, 1 };
 
 			float Exposure = 1.f;
 			float Contrast = 1.f;
@@ -73,8 +74,8 @@ namespace fq::graphics
 
 			int bUseGrayScale;
 			int bUseBlendColor;
-			int bUseBlendTexture;
-			float unused[1];
+			int bUseBlendTexture0;
+			int bUseBlendTexture1;
 		};
 
 		struct BloomParams
@@ -130,7 +131,7 @@ namespace fq::graphics
 		std::unique_ptr<class ShaderProgram> mPostProcessingProgram;
 		std::unique_ptr<class ShaderProgram> mSSRProgram;
 		PostProcessingInfo mPostProcessingInfo;
-		std::shared_ptr<class D3D11Texture> mBlendTextureOrNull;
+		std::shared_ptr<class D3D11Texture> mBlendTextureOrNull[PostProcessingInfo::BLEND_TEXTURE_SIZE];
 		std::shared_ptr<D3D11ConstantBuffer<PostProcessingBuffer>> mPostProcessingCB;
 		std::shared_ptr<D3D11ConstantBuffer<Fog>> mFogCB;
 

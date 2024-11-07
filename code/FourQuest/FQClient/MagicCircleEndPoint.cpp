@@ -31,7 +31,7 @@ void fq::client::MagicCircleEndPoint::OnStart()
 
 	for (auto child : mTransform->GetChildren())
 	{
-		if (child->GetGameObject()->GetName() == "E_Gauge")
+		if (child->GetGameObject()->GetName().find("E_Gauge") != std::string::npos)
 		{
 			mEndPointObject = child->GetGameObject();
 			break;

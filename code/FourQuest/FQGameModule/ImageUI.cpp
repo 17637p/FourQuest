@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "EventManager.h"
 #include "Event.h"
+#include "ScreenManager.h"
 
 #include "Transform.h"
 
@@ -10,7 +11,10 @@ fq::game_module::ImageUI::ImageUI()
 	:mUIInfomations{}
 	, mbIsBindTransform(true)
 	, mImageObjects{}
-	, mbIsApplyUIRenderEvent{true}
+	, mbIsApplyUIRenderEvent{ true }
+	, mbUssScreenScale(false)
+	, mbUseCenterAlignment(false)
+	, mCenterOffset{ 0.f,0.f }
 {}
 
 fq::game_module::ImageUI::~ImageUI()
@@ -70,7 +74,7 @@ void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics:
 	mImageObjects[index]->SetStartY(infomation.StartY);
 
 	mImageObjects[index]->SetWidth(infomation.Width);
-	mImageObjects[index]->SetHeight(infomation.Height);	
+	mImageObjects[index]->SetHeight(infomation.Height);
 
 	mImageObjects[index]->SetAlpha(infomation.Alpha);
 	mImageObjects[index]->SetLayer(infomation.Layer);
@@ -110,6 +114,8 @@ void fq::game_module::ImageUI::OnUpdate(float dt)
 
 	if (mbIsBindTransform)
 	{
+		setScaleScreen();
+		setScreenRatioPosition();
 		Transform* myTransform = GetComponent<Transform>();
 		SetUIPosition(0, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
 		SetUIScale(0, myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
@@ -119,7 +125,7 @@ void fq::game_module::ImageUI::OnUpdate(float dt)
 void fq::game_module::ImageUI::SetIsRender(size_t index, bool isRender)
 {
 	mUIInfomations[index].isRender = isRender;
- 	mImageObjects[index]->SetIsRender(isRender);
+	mImageObjects[index]->SetIsRender(isRender);
 }
 
 void fq::game_module::ImageUI::SetUIScale(size_t index, float scaleX, float scaleY)
@@ -134,5 +140,38 @@ void fq::game_module::ImageUI::SetUIScale(size_t index, float scaleX, float scal
 void fq::game_module::ImageUI::SetFillDegree(size_t index, float degree)
 {
 	mImageObjects[index]->SetFillDegree(degree);
+}
+
+void fq::game_module::ImageUI::setScaleScreen()
+{
+	if (mbUssScreenScale)
+	{
+		game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
+		auto screenManager = GetScene()->GetScreenManager();
+
+		float screenWidth = screenManager->GetFixScreenWidth();
+		float screenHeight = screenManager->GetFixScreenHeight();
+		float scaleX = screenWidth / 1920.f;
+		float scaleY = screenHeight / 1080.f;
+
+		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
+	}
+}
+
+void fq::game_module::ImageUI::setScreenRatioPosition()
+{
+	if (!mbUseCenterAlignment) return;
+
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+	auto screenManager = GetScene()->GetScreenManager();
+	UINT screenWidth = screenManager->GetFixScreenWidth();
+	UINT screenHeight = screenManager->GetFixScreenHeight();
+	float scaleX = screenWidth / 1920.f;
+	float scaleY = screenHeight / 1080.f;
+
+	float x = screenWidth * 0.5f + mCenterOffset.x * scaleX;
+	float y = screenHeight * 0.5f + mCenterOffset.y * scaleY;
+	myTransform->SetLocalPosition({ x , y ,0.f });
 }
 

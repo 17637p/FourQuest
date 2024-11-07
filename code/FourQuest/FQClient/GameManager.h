@@ -77,6 +77,13 @@ namespace fq::client
 		game_module::PrefabResource mArcher;
 		game_module::PrefabResource mWarrior;
 
+		// 게임오버 관련
+		game_module::PrefabResource mGameOverHandler;
+		unsigned int mGameOverCheckFrame;
+		unsigned int mCurrentFrame;
+		bool mbCheckGameOver;
+		bool mbIsGenerateGameOverHandler;
+
 		friend void RegisterMetaData();
 	};
 

@@ -24,7 +24,7 @@ namespace fq::game_module
 	{
 		mScene = scene;
 
-		mTrackObjectName.push_back(info.targetObjectName);
+		//mTrackObjectName.push_back(info.targetObjectName);
 		mTargetObjectName = info.targetObjectName;
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;

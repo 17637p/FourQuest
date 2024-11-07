@@ -29,6 +29,12 @@ namespace fq::physics
 		bool Update(float deltaTime);
 
 		/// <summary>
+		/// 파이널 업데이트 (스트림 종료)
+		/// </summary>
+		/// <returns></returns>
+		bool FinalUpdate();
+
+		/// <summary>
 		/// 시뮬레이션에서 업데이트 된 데이터 처리
 		/// </summary>
 		bool UpdateSimulationData(float deltaTime);
@@ -62,7 +68,7 @@ namespace fq::physics
 		/// <summary>
 		/// 천의 버텍스를 반환합니다.
 		/// </summary>
-		const std::vector<DirectX::SimpleMath::Vector3>& GetClothVertex(unsigned int id);
+		const std::vector<DirectX::SimpleMath::Vector4>& GetClothVertex(unsigned int id);
 
 		/// <summary>
 		/// 천의 인덱스를 반환합니다.

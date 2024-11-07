@@ -25,49 +25,49 @@ namespace fq::client
 
 		switch (attackType)
 		{
-			case EBerserkerAttackType::Left:
-				EmitSound(EBerserkerSoundType::Left);
-				hitSoundName = getSwing1HitSound();
-				knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
-				direction = -right;
-				damage = dc::GetBluntFirstConsecutiveAttackDamage(mPlayer->GetAttackPower());
-				attackPrefabResource = mBoxAttackPrefab;
-				break;
-			case EBerserkerAttackType::Right:
-				EmitSound(EBerserkerSoundType::Right);
-				hitSoundName = getSwing1HitSound();
-				knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
-				direction = right;
-				damage = dc::GetBluntSecondConsecutiveAttackDamage(mPlayer->GetAttackPower());
-				attackPrefabResource = mBoxAttackPrefab;
-				break;
-			case EBerserkerAttackType::StrikeDown:
-				EmitSound(EBerserkerSoundType::StrikeDown);
-				hitSoundName = getSwing2HitSound();
-				knockBackType = EKnockBackType::TargetPosition;
-				direction = foward;
-				damage = dc::GetBluntThirdConsecutiveAttackDamage(mPlayer->GetAttackPower());
-				attackPrefabResource = mBoxAttackPrefab;
-				break;
-			case EBerserkerAttackType::SwingAround:
-				EmitSound(EBerserkerSoundType::SwingAround);
-				hitSoundName = getSwing2HitSound();
-				knockBackType = EKnockBackType::TargetPositionAndKnockDown;
-				direction = foward;
-				damage = dc::GetBluntSwingAroundDamage(mPlayer->GetAttackPower());
-				attackPrefabResource = mCircleAttackPrefab;
-				break;
-			case EBerserkerAttackType::Rush:
-				EmitSound(EBerserkerSoundType::Rush);
-				hitSoundName = getRushHitSound();
-				knockBackType = EKnockBackType::TargetPosition;
-				direction = foward;
-				damage = dc::GetBluntRsuhDamage(mPlayer->GetAttackPower());
-				attackPrefabResource = mCircleAttackPrefab;
-				break;
-			default:
-				assert(false);
-				break;
+		case EBerserkerAttackType::Left:
+			EmitSound(EBerserkerSoundType::Left);
+			hitSoundName = getSwing1HitSound();
+			knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
+			direction = -right;
+			damage = dc::GetBluntFirstConsecutiveAttackDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mBoxAttackPrefab;
+			break;
+		case EBerserkerAttackType::Right:
+			EmitSound(EBerserkerSoundType::Right);
+			hitSoundName = getSwing1HitSound();
+			knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
+			direction = right;
+			damage = dc::GetBluntSecondConsecutiveAttackDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mBoxAttackPrefab;
+			break;
+		case EBerserkerAttackType::StrikeDown:
+			EmitSound(EBerserkerSoundType::StrikeDown);
+			hitSoundName = getSwing2HitSound();
+			knockBackType = EKnockBackType::TargetPosition;
+			direction = foward;
+			damage = dc::GetBluntThirdConsecutiveAttackDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mBoxAttackPrefab;
+			break;
+		case EBerserkerAttackType::SwingAround:
+			EmitSound(EBerserkerSoundType::SwingAround);
+			hitSoundName = getSwing2HitSound();
+			knockBackType = EKnockBackType::TargetPositionAndKnockDown;
+			direction = foward;
+			damage = dc::GetBluntSwingAroundDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mCircleAttackPrefab;
+			break;
+		case EBerserkerAttackType::Rush:
+			EmitSound(EBerserkerSoundType::Rush);
+			hitSoundName = getRushHitSound();
+			knockBackType = EKnockBackType::TargetPosition;
+			direction = foward;
+			damage = dc::GetBluntRsuhDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mCircleAttackPrefab;
+			break;
+		default:
+			assert(false);
+			break;
 		}
 
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(attackPrefabResource);
@@ -124,15 +124,15 @@ namespace fq::client
 
 		switch (attackType)
 		{
-			case fq::client::EBerserkerAttackType::Right:
-				eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::X });
-				break;
-			case fq::client::EBerserkerAttackType::SwingAround:
-				eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::A });
-				break;
-			case fq::client::EBerserkerAttackType::Rush:
-				eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::R });
-				break;
+		case fq::client::EBerserkerAttackType::Right:
+			eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::X });
+			break;
+		case fq::client::EBerserkerAttackType::SwingAround:
+			eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::A });
+			break;
+		case fq::client::EBerserkerAttackType::Rush:
+			eventMgr->FireEvent<fq::client::event::PushButtonEvent>({ id, ESkillType::R });
+			break;
 		}
 
 		return attackObj;
@@ -144,30 +144,56 @@ namespace fq::client
 
 		switch (soundType)
 		{
-			case fq::client::EBerserkerSoundType::Left:
-				soundName = mLeftAttackSound;
-				break;
-			case fq::client::EBerserkerSoundType::Right:
-				soundName = mRightAttackSound;
-				break;
-			case fq::client::EBerserkerSoundType::StrikeDown:
-				soundName = mStrikeDownAttackSound;
-				break;
-			case fq::client::EBerserkerSoundType::SwingAround:
-				soundName = mSwingAroundSound;
-				break;
-			case fq::client::EBerserkerSoundType::Rush:
-				soundName = mAttackRushSound;
-				break;
-			case fq::client::EBerserkerSoundType::RushReady:
-				soundName = mAttackRushReadySound;
-				break;
-			default:
-				assert(false);
-				break;
+		case fq::client::EBerserkerSoundType::Left:
+			soundName = mLeftAttackSound;
+			break;
+		case fq::client::EBerserkerSoundType::Right:
+			soundName = mRightAttackSound;
+			break;
+		case fq::client::EBerserkerSoundType::StrikeDown:
+			soundName = mStrikeDownAttackSound;
+			break;
+		case fq::client::EBerserkerSoundType::SwingAround:
+			soundName = mSwingAroundSound;
+			break;
+		case fq::client::EBerserkerSoundType::Rush:
+			soundName = mAttackRushSound;
+			break;
+		case fq::client::EBerserkerSoundType::RushReady:
+			soundName = mAttackRushReadySound;
+			break;
+		default:
+			assert(false);
+			break;
 		}
 
 		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ soundName, false , fq::sound::EChannel::SE });
+	}
+
+	void BerserkerArmour::SetRushCoolTime()
+	{
+		mRushElapsedTime = mPlayer->IsFeverTime() ? mRushCoolTime - mRushCoolTimeReduction : mRushCoolTime;
+		mRushElapsedTime *= mPlayer->GetGBDecreaseCooltime();
+	}
+
+	std::shared_ptr<game_module::GameObject> BerserkerArmour::EmitDashDecalEffect() const
+	{
+		if (mRushDecalEffect.GetPrefabPath().empty())
+		{
+			return nullptr;
+		}
+
+		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mRushDecalEffect);
+		auto effectObj = *(instance.begin());
+
+		auto effectT = effectObj->GetComponent<game_module::Transform>();
+		auto worldPosition = mTransform->GetWorldPosition();
+		effectT->SetParent(mTransform);
+		effectT->SetLocalPosition({ 0, mEffectYOffset, 0 });
+
+		GetScene()->AddGameObject(effectObj);
+
+		return effectObj;
 	}
 
 	std::shared_ptr<fq::game_module::Component> BerserkerArmour::Clone(std::shared_ptr<Component> clone) const
@@ -249,8 +275,7 @@ namespace fq::client
 		if (rightInput.LengthSquared() >= rotationOffsetSq && mRushElapsedTime == 0.f)
 		{
 			mAnimator->SetParameterTrigger("OnRushCharging");
-			mRushElapsedTime = mPlayer->IsFeverTime() ? mRushCoolTime - mRushCoolTimeReduction : mRushCoolTime;
-			mRushElapsedTime *= mPlayer->GetGBDecreaseCooltime();
+			SetRushCoolTime();
 		}
 	}
 
@@ -270,20 +295,20 @@ namespace fq::client
 		{
 			switch (soulType)
 			{
-				case 0:
-					speechBubble->SetName(PlayerInfoVariable::KnightName);
-					break;
-				case 1:
-					speechBubble->SetName(PlayerInfoVariable::MagicName);
-					break;
-				case 2:
-					speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-					break;
-				case 3:
-					speechBubble->SetName(PlayerInfoVariable::ArcherName);
-					break;
-				default:
-					break;
+			case 0:
+				speechBubble->SetName(PlayerInfoVariable::KnightName);
+				break;
+			case 1:
+				speechBubble->SetName(PlayerInfoVariable::MagicName);
+				break;
+			case 2:
+				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+				break;
+			case 3:
+				speechBubble->SetName(PlayerInfoVariable::ArcherName);
+				break;
+			default:
+				break;
 			}
 		}
 	}

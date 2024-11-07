@@ -36,5 +36,14 @@ void fq::client::FillSoulHP::OnTriggerStay(const game_module::Collision& collisi
 	if (soul->GetHP() < mMinHP)
 	{
 		soul->SetHP(mFillHP);
+
+		// 이펙트 방출
+		fq::event::OnCreateStateEvent stateEvent;
+		stateEvent.gameObject = soul->GetGameObject();
+		stateEvent.RegisterKeyName = "S_Fill_HP";
+		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+
+		// 사운드 재생
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "S_Charge", false , fq::sound::EChannel::SE });
 	}
 }

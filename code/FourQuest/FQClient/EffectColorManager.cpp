@@ -3,6 +3,8 @@
 #include "GameManager.h"
 #include "Player.h"
 #include "EffectColorTransmitter.h"
+#include "Soul.h"
+
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Camera.h"
 #include "../FQGameModule/Transform.h"
@@ -55,6 +57,7 @@ void fq::client::EffectColorManager::OnGeneratePrefabInstance(const fq::event::O
 
 void fq::client::EffectColorManager::SetColor(fq::game_module::GameObject* ownerObject, fq::game_module::GameObject* effectObject)
 {
+	auto soul = ownerObject->GetComponent<Soul>();
 	auto playerPtr = ownerObject->GetComponent<Player>();
 	auto effectColorTrasmitter = ownerObject->GetComponent<EffectColorTransmitter>();
 
@@ -63,6 +66,10 @@ void fq::client::EffectColorManager::SetColor(fq::game_module::GameObject* owner
 	if (playerPtr != nullptr)
 	{
 		soulType = playerPtr->GetSoulType();
+	}
+	else if (soul != nullptr)
+	{
+		soulType = soul->GetSoulType();
 	}
 	else if (effectColorTrasmitter != nullptr)
 	{

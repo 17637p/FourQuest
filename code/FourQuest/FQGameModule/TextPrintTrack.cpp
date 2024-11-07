@@ -95,10 +95,8 @@ namespace fq::game_module
 		// Scale 자동 조정 
 		UINT screenWidth = mScene->GetScreenManager()->GetFixScreenWidth();
 		UINT screenHeight = mScene->GetScreenManager()->GetFixScreenHeight();
-		{
-			nameTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
-			textTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
-		}
+		nameTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
+		textTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
 
 		fq::graphics::TextInfo textInfo;
 		textInfo.Align = fq::graphics::ETextAlign::CenterTop;

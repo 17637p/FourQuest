@@ -348,6 +348,7 @@ namespace fq::client
 		unsigned int mVigilantMinCount;
 		unsigned int mVigilantMaxCount;
 		float mAngryGroggyDecreasePerSecond;
+		float mAngryGroggyDuration;
 
 		//Roar 패턴 관련
 		unsigned int mMinMonsterCount;
@@ -365,6 +366,17 @@ namespace fq::client
 		float mComboDecalEffectSpeed;
 		float mRushDecalEffectSpeed;
 		float mJumpDecalEffectSpeed;
+
+		// 몬스터 인원수 별 처리
+		float mPlayer1HP;
+		float mPlayer2HP;
+		float mPlayer3HP;
+		float mPlayer4HP;
+
+		float mPlayer1GroggyIncreaseRatio;
+		float mPlayer2GroggyIncreaseRatio;
+		float mPlayer3GroggyIncreaseRatio;
+		float mPlayer4GroggyIncreaseRatio;
 
 		friend void RegisterMetaData();
 	};

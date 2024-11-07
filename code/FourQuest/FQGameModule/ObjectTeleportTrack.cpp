@@ -24,7 +24,7 @@ namespace fq::game_module
 	bool ObjectTeleportTrack::Initialize(const ObjectTeleportTrackInfo& info, Scene* scene)
 	{
 		mScene = scene;
-		mTrackObjectName.push_back(info.targetObjectName);
+		//mTrackObjectName.push_back(info.targetObjectName);
 		mStartTime = info.startTime;
 		mTargetObjectName = info.targetObjectName;
 		mTotalPlayTime = info.totalPlayTime;
