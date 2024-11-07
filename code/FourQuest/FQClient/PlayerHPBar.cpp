@@ -75,6 +75,7 @@ void fq::client::PlayerHPBar::OnUpdate(float dt)
 	auto& outBar = infomations[0];
 	outBar.StartX = width * 0.5f + (screenPos.x * width * 0.5f) - outBar.Width * 0.5f;
 	outBar.StartY = height * 0.5f - (screenPos.y * height * 0.5f) + mScreenYOffset;
+	outBar.Layer = 1203;
 
 	// InnerBar
 	auto& innerBar = infomations[1];
@@ -82,6 +83,8 @@ void fq::client::PlayerHPBar::OnUpdate(float dt)
 	innerBar.StartY = outBar.StartY + mInnerOffset.y;
 	innerBar.XRatio = mHpRatio;
 	innerBar.Width = mHpRatio * mInnerBarSize.x;
+	innerBar.Layer = 1201;
+
 
 	// DecreaseBar 
 	auto& decreaseBar = infomations[2];
@@ -90,6 +93,7 @@ void fq::client::PlayerHPBar::OnUpdate(float dt)
 	decreaseBar.Width = mHpRatio * mInnerBarSize.x;
 	decreaseBar.XRatio = mHpRatio + mDecreaseRatio;
 	decreaseBar.Width = (mHpRatio + mDecreaseRatio) * mInnerBarSize.x;
+	decreaseBar.Layer = 1202;
 
 	mImageUI->SetUIInfomations(infomations);
 
