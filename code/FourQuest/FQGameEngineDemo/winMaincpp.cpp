@@ -4,9 +4,6 @@
 #include <memory.h>
 #include "Application.h"
 
-// 콘솔 창 띄우기
-//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
-
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR lpCmdLine,

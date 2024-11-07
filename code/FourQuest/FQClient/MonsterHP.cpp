@@ -138,17 +138,17 @@ void fq::client::MonsterHP::OnStart()
 	// OutBar
 	infomations[0].Width = mBarSize.x;
 	infomations[0].Height = mBarSize.y;
-	infomations[0].Layer = 230;
+	infomations[0].Layer = 1230;
 
 	// InnerBar	
 	infomations[1].Width = mBarSize.x -mInnerOffset.x * 2.f; 
 	infomations[1].Height = mBarSize.y;
-	infomations[1].Layer = 229;
+	infomations[1].Layer = 1229;
 
 	// DecreaseBar
 	infomations[2].Width = 0.f;
 	infomations[2].Height = mBarSize.y - mInnerOffset.y * 2.f;
-	infomations[2].Layer = 228;
+	infomations[2].Layer = 1228;
 
 	// RankBar
 	if (infomations.size() > 3)
