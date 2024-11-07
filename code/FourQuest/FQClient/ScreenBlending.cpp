@@ -30,14 +30,14 @@ void fq::client::ScreenBlending::OnStart()
 
 void fq::client::ScreenBlending::OnUpdate(float dt)
 {
-	if (mPostProcessingOrNull == nullptr)
+	mElapsed += dt;
+
+	if (mDelayTime > mElapsed)
 	{
 		return;
 	}
-	if (mDuration == mElapsed)
+	if (mPostProcessingOrNull == nullptr)
 	{
-		applyTextureBlending(false);
-		GetScene()->DestroyGameObject(GetGameObject());
 		return;
 	}
 	if (mPostProcessingOrNull->IsDestroyed())
@@ -46,30 +46,38 @@ void fq::client::ScreenBlending::OnUpdate(float dt)
 		return;
 	}
 
-	mElapsed += dt;
-	mElapsed = std::min<float>(mElapsed, mDuration);
-
 	applyTextureBlending(true);
+}
+
+void fq::client::ScreenBlending::OnDestroy()
+{
+	applyTextureBlending(false);
 }
 
 void fq::client::ScreenBlending::applyTextureBlending(bool bIsActive)
 {
-	auto postProcessingOrNull = mPostProcessingOrNull->GetComponent<fq::game_module::PostProcessing>();
-
-	if (postProcessingOrNull == nullptr)
+	if (mPostProcessingOrNull == nullptr)
 	{
 		return;
 	}
 
-	auto info = postProcessingOrNull->GetPostProcessingInfo();
-	info.bUseBlendTexture = bIsActive;
+	auto postProcessingComp = mPostProcessingOrNull->GetComponent<fq::game_module::PostProcessing>();
+
+	if (postProcessingComp == nullptr)
+	{
+		return;
+	}
+
+	unsigned int index = std::min<unsigned int>(mIndex, fq::graphics::PostProcessingInfo::BLEND_TEXTURE_SIZE - 1);
+	auto info = postProcessingComp->GetPostProcessingInfo();
+	info.bUseBlendTextures[index] = bIsActive;
 
 	if (bIsActive)
 	{
-		info.BlendTextureName = mWTexturePath;
-		float ratio = mElapsed / mDuration;
-		info.BlendColor = DirectX::SimpleMath::Color::Lerp(mStartBlendColor, mEndBlendColor, ratio);
+		info.BlendTextureNames[index] = mWTexturePath;
+		float ratio = std::clamp<float>((mElapsed - mDelayTime) / mDuration, 0, 1);
+		info.BlendTextureColors[index] = DirectX::SimpleMath::Color::Lerp(mStartBlendColor, mEndBlendColor, ratio);
 	}
 
-	postProcessingOrNull->SetPostProcessingInfo(info);
+	postProcessingComp->SetPostProcessingInfo(info);
 }

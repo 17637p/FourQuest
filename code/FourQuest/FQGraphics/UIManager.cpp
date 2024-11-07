@@ -820,6 +820,7 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 					drawTextInformation.CenterX + drawTextInformation.Width,
 					drawTextInformation.CenterY + drawTextInformation.Height),
 				mBrushes[drawTextInformation.FontColor]);
+
 		}
 
 	}

@@ -30,6 +30,7 @@ void fq::client::PlayerCheckUI::OnStart()
 	mTransform = GetComponent<game_module::Transform>();
 	mImageUI = GetComponent<game_module::ImageUI>();
 
+
 	if (mImageUI->GetUIInfomations().size() != 16)
 	{
 		spdlog::warn("PlayerCheckUI Error");
@@ -48,21 +49,30 @@ void fq::client::PlayerCheckUI::OnStart()
 		else if (soulType == ESoulType::Staff && controllerID == 0) mImageIndex = Statff1P;
 		else if (soulType == ESoulType::Axe && controllerID == 0) mImageIndex = Axe1P;
 		else if (soulType == ESoulType::Bow && controllerID == 0) mImageIndex = Bow1P;
-		
+
 		else if (soulType == ESoulType::Sword && controllerID == 1) mImageIndex = Sword2P;
 		else if (soulType == ESoulType::Staff && controllerID == 1) mImageIndex = Statff2P;
 		else if (soulType == ESoulType::Axe && controllerID == 1) mImageIndex = Axe2P;
 		else if (soulType == ESoulType::Bow && controllerID == 1) mImageIndex = Bow2P;
-		
+
 		else if (soulType == ESoulType::Sword && controllerID == 2) mImageIndex = Sword3P;
 		else if (soulType == ESoulType::Staff && controllerID == 2) mImageIndex = Statff3P;
 		else if (soulType == ESoulType::Axe && controllerID == 2) mImageIndex = Axe3P;
 		else if (soulType == ESoulType::Bow && controllerID == 2) mImageIndex = Bow3P;
-		
+
 		else if (soulType == ESoulType::Sword && controllerID == 3) mImageIndex = Sword4P;
 		else if (soulType == ESoulType::Staff && controllerID == 3) mImageIndex = Statff4P;
 		else if (soulType == ESoulType::Axe && controllerID == 3) mImageIndex = Axe4P;
 		else if (soulType == ESoulType::Bow && controllerID == 3) mImageIndex = Bow4P;
+		
+		auto infomations = mImageUI->GetUIInfomations();
+
+		for (auto& info : infomations)
+		{
+			info.Layer = 1210;
+		}
+
+		mImageUI->SetUIInfomations(infomations);
 	}
 
 }

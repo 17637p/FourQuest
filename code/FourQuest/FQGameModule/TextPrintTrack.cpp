@@ -86,7 +86,7 @@ namespace fq::game_module
 		auto fixedWidth = screenMgr->GetFixScreenWidth();
 		auto fixedHeight = screenMgr->GetFixScreenHeight();
 
-		float nameX = (fixedWidth * 0.5f) + mNameFontCenterX;
+		float nameX = (fixedWidth * 0.5f) + (mNameFontCenterX * (1 / (fixedWidth / (float)1920)));
 		float textX = (fixedWidth * 0.5f) + (mTextFontCenterX *(1 / (fixedWidth / (float)1920)));
 
 		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(nameX, fixedHeight - mNameFontCenterY, 0.f));
@@ -110,6 +110,7 @@ namespace fq::game_module
 		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
 		std::string font = boost::locale::conv::from_utf(L"던파 연단된 칼날", "UTF-8");
 		textInfo.FontPath = font;
+		textInfo.isUseAutoCenterAlign = true;
 		name->SetTextInfo(textInfo);
 
 		textInfo.Text = mText;

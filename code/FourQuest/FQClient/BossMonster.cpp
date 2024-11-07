@@ -120,6 +120,7 @@ fq::client::BossMonster::BossMonster()
 	, mVigilantMinCount(1)
 	, mVigilantMaxCount(3)
 	, mAngryGroggyDecreasePerSecond(2.f)
+	, mAngryGroggyDuration(3.f)
 
 	//Roar 패턴 관련
 	, mMinMonsterCount(10)
@@ -135,6 +136,15 @@ fq::client::BossMonster::BossMonster()
 	, mComboDecalEffectSpeed(1.f)
 	, mRushDecalEffectSpeed(1.f)
 	, mJumpDecalEffectSpeed(1.f)
+
+	, mPlayer1HP(10000.f)
+	, mPlayer2HP(20000.f)
+	, mPlayer3HP(30000.f)
+	, mPlayer4HP(40000.f)
+	, mPlayer1GroggyIncreaseRatio(0.1f)
+	, mPlayer2GroggyIncreaseRatio(0.05f)
+	, mPlayer3GroggyIncreaseRatio(0.025f)
+	, mPlayer4GroggyIncreaseRatio(0.0125f)
 {}
 
 
@@ -163,7 +173,27 @@ void fq::client::BossMonster::OnStart()
 
 	// 난이도에 따른 공격력 Hp 설정
 	mAttackPower = GetAttackPower() * LevelHepler::GetDamageRatio();
-	mHp = mHp * LevelHepler::GetHpRatio();
+
+	unsigned int playerCount = LevelHepler::GetPlayCount();
+
+	switch (playerCount)
+	{
+	case 1:
+		mHp = mPlayer1HP;
+		break;
+	case 2:
+		mHp = mPlayer2HP;
+		break;
+	case 3:
+		mHp = mPlayer3HP;
+		break;
+	case 4:
+		mHp = mPlayer4HP;
+		break;
+	default:
+		mHp = mHp * LevelHepler::GetHpRatio();
+		break;
+	}
 	mMaxHp = mHp;
 
 	auto agent = GetComponent<game_module::NavigationAgent>();
@@ -441,7 +471,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitJumpDe
 
 	auto effectT = effectObj->GetComponent<game_module::Transform>();
 	effectT->SetWorldPosition(mJumpPosition);
-	
+
 	setDecalEffectSpeed(effectObj.get(), mJumpDecalEffectSpeed);
 
 	GetScene()->AddGameObject(effectObj);
@@ -1109,17 +1139,18 @@ void fq::client::BossMonster::updateGroggy(float dt)
 {
 	bool isGroggy = isGroggyState();
 
+	float groggyDuration = !IsAngry() ? mGroggyDuration : mAngryGroggyDuration;
 
 	if (isGroggy)
 	{
 		// 그로기 게이지 갱신
-		float ratio = 1.f - (mGroggyElapsed / mGroggyDuration);
+		float ratio = 1.f - (mGroggyElapsed / groggyDuration);
 		mGroggyGauge = ratio * mStartGroggyGauge;
 
 		// 그로기 누적 시간 갱신
 		mGroggyElapsed += dt;
 
-		if (mGroggyElapsed > mGroggyDuration)
+		if (mGroggyElapsed > groggyDuration)
 		{
 			mAnimator->SetParameterBoolean("OnGroggy", false);
 		}
@@ -1258,7 +1289,30 @@ void fq::client::BossMonster::processAttack(Attack* attack)
 		// 그로기 상태 처리
 		if (!isGroggy)
 		{
-			mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
+			float groggyIncreaseRatio = 0.f;
+
+			unsigned int playerCount = LevelHepler::GetPlayCount();
+
+			switch (playerCount)
+			{
+			case 1:
+				groggyIncreaseRatio = mPlayer1GroggyIncreaseRatio;
+				break;
+			case 2:
+				groggyIncreaseRatio = mPlayer2GroggyIncreaseRatio;
+				break;
+			case 3:
+				groggyIncreaseRatio = mPlayer3GroggyIncreaseRatio;
+				break;
+			case 4:
+				groggyIncreaseRatio = mPlayer4GroggyIncreaseRatio;
+				break;
+			default:
+				groggyIncreaseRatio = mGroggyIncreaseRatio;
+				break;
+			}
+
+			mGroggyGauge = std::min(mGroggyGauge + groggyIncreaseRatio * attackPower, mStartGroggyGauge);
 		}
 		else
 		{

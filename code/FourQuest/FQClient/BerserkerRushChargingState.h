@@ -30,6 +30,7 @@ namespace fq::client
 		float mChargingElapsedTime;
 		float mRotationSpeed;
 		bool mbPassedPoint;
+		std::shared_ptr<game_module::GameObject> mRushDecalEffect;
 
 		friend void RegisterMetaData();
 	};

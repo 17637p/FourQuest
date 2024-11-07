@@ -20,6 +20,7 @@ namespace fq::client
 		, mChargingElapsedTime(0.f)
 		, mbPassedPoint(false)
 		, mRotationSpeed(1.f)
+		, mRushDecalEffect(nullptr)
 	{
 	}
 
@@ -47,6 +48,8 @@ namespace fq::client
 		if (berserkerArmour != nullptr)
 		{
 			berserkerArmour->EmitSound(EBerserkerSoundType::RushReady);
+			berserkerArmour->SetRushCoolTime();
+			mRushDecalEffect = berserkerArmour->EmitDashDecalEffect();
 		}
 	}
 
@@ -77,6 +80,12 @@ namespace fq::client
 				animator.SetParameterTrigger("OnRush");
 			}
 		}
+
+		auto berserkerArmour = animator.GetComponent<BerserkerArmour>();
+		if (berserkerArmour != nullptr)
+		{
+			berserkerArmour->SetRushCoolTime();
+		}
 	}
 
 	void BerserkerRushChargingState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -88,6 +97,18 @@ namespace fq::client
 		if (playerOrNull != nullptr)
 		{
 			playerOrNull->SetIsActiveOnHit(true);
+		}
+
+		auto berserkerArmour = animator.GetComponent<BerserkerArmour>();
+		if (berserkerArmour != nullptr)
+		{
+			berserkerArmour->SetRushCoolTime();
+		}
+
+		if (mRushDecalEffect != nullptr)
+		{
+			animator.GetScene()->DestroyGameObject(mRushDecalEffect.get());
+			mRushDecalEffect = nullptr;
 		}
 	}
 }
