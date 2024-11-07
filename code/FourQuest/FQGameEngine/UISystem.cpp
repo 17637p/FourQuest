@@ -79,6 +79,7 @@ void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
 	mGameProcess->mGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 	mGameProcess->mGraphics->AddFont(L"resource/internal/font/던파 연단된 칼날.ttf");
 	mGameProcess->mGraphics->AddFont(L"resource/internal/font/KBIZmjo.ttf");
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/Pretendard.ttf");
 }
 
 void fq::game_engine::UISystem::Finalize()
@@ -87,6 +88,7 @@ void fq::game_engine::UISystem::Finalize()
 	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/DungGeunMo.ttf");
 	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/던파 연단된 칼날.ttf");
 	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/KBIZmjo.ttf");
+	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/Pretendard.ttf");
 }
 
 void fq::game_engine::UISystem::OnLoadScene()
