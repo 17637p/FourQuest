@@ -480,22 +480,6 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				}
 			}
 
-			auto tryChangeDDSFormatW = [](std::wstring& filename)
-				{
-					if (filename.empty())
-					{
-						return;
-					}
-
-					std::filesystem::path ddsFilename = filename;
-					ddsFilename.replace_extension(".dds");
-
-					if (std::filesystem::exists(ddsFilename))
-					{
-						filename = ddsFilename;
-					}
-				};
-
 			if (ImGui::Button("rewrite material texture path(try change file format to dds)"))
 			{
 				if (std::filesystem::exists(mRewriteMaterialDir) && std::filesystem::is_directory(mRewriteMaterialDir))
@@ -506,12 +490,14 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						{
 							auto data = mGameProcess->mGraphics->ReadMaterialInfo(path.path().string());
 
-							tryChangeDDSFormatW(data.BaseColorFileName);
-							tryChangeDDSFormatW(data.MetalnessFileName);
-							tryChangeDDSFormatW(data.RoughnessFileName);
-							tryChangeDDSFormatW(data.EmissiveFileName);
-							tryChangeDDSFormatW(data.NormalFileName);
-							tryChangeDDSFormatW(data.MetalnessSmoothnessFileName);
+							data.BaseColorFileName = changeDDSFormat(data.BaseColorFileName);
+							data.MetalnessFileName = changeDDSFormat(data.MetalnessFileName);
+							data.RoughnessFileName = changeDDSFormat(data.RoughnessFileName);
+							data.EmissiveFileName = changeDDSFormat(data.EmissiveFileName);
+							data.NormalFileName = changeDDSFormat(data.NormalFileName);
+							data.MetalnessSmoothnessFileName = changeDDSFormat(data.MetalnessSmoothnessFileName);
+							data.NoiseFileName = changeDDSFormat(data.NoiseFileName);
+							data.BlendTextureName = changeDDSFormat(data.BlendTextureName);
 
 							mGameProcess->mGraphics->WriteMaterialInfo(path.path().string(), data);
 						}
@@ -750,5 +736,50 @@ void fq::game_engine::Setting::beginChild_InspectorSetting()
 		}
 		ImGui::EndChild();
 	}
+}
+
+std::wstring fq::game_engine::Setting::changeDDSFormat(const std::wstring& fileName)
+{
+	// 이미 확장자가 dds라면 아무것도 안함
+	if (std::filesystem::path(fileName).extension() == ".dds")
+	{
+		return fileName;
+	}
+
+	std::filesystem::path ddsFileName = fileName;
+	ddsFileName.replace_extension(".dds");
+
+	// 이미 변환된 파일이 있다면 기존 파일을 지운 후 dds파일 이름을 반환
+	if (std::filesystem::exists(ddsFileName))
+	{
+		std::filesystem::remove(fileName);
+		return ddsFileName;
+	}
+
+	// 파일이 존재하지 않으면 아무 처리도 하지 않음
+	if (!std::filesystem::exists(fileName))
+	{
+		return fileName;
+	}
+
+	// 현재 이름으로 텍스처 생성
+	auto textureInterface = mGameProcess->mGraphics->CreateTexture(fileName);
+
+	if (textureInterface == nullptr)
+	{
+		return fileName;
+	}
+
+	// 실패 시 기존 이름 반환
+	if (!mGameProcess->mGraphics->SaveDDS(textureInterface, ddsFileName))
+	{
+		return fileName;
+	}
+
+	// 성공 시 이름 반환 및 기존 텍스처 삭제
+	bool isRemove = std::filesystem::remove(fileName);
+	assert(isRemove);
+
+	return ddsFileName;
 }
 

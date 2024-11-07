@@ -687,6 +687,13 @@ std::shared_ptr<IDecalMaterial> fq::graphics::FQGraphics::CreateDecalMaterial(co
 {
 	return mModelManager->CreateDecalMaterial(decalMaterialInfo);
 }
+std::shared_ptr<ITexture> fq::graphics::FQGraphics::CreateTexture(const std::wstring& texturePath)
+{
+	assert(std::filesystem::exists(texturePath));
+	std::shared_ptr<ITexture> textureInterface = std::make_shared<D3D11Texture>(mDevice, texturePath);
+
+	return textureInterface;
+}
 std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::CreateStaticMesh(std::string key, const fq::common::Mesh& meshData)
 {
 	return mModelManager->CreateStaticMesh(key, meshData);
@@ -819,6 +826,13 @@ void fq::graphics::FQGraphics::DeleteParticleMaterial(const std::string& key)
 void fq::graphics::FQGraphics::DeleteDecalMaterial(const std::string& key)
 {
 	mModelManager->DeleteDecalMaterial(key);
+}
+
+bool fq::graphics::FQGraphics::SaveDDS(std::shared_ptr<ITexture> textureInterface, const std::wstring& saveTexturePath)
+{
+	std::shared_ptr<D3D11Texture> d3dTexture = std::static_pointer_cast<D3D11Texture>(textureInterface);
+
+	return d3dTexture->SaveTextureToFile(mDevice->GetDevice().Get(), mDevice->GetDeviceContext().Get(), d3dTexture->GetTexture().Get(), saveTexturePath);
 }
 
 IStaticMeshObject* fq::graphics::FQGraphics::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)

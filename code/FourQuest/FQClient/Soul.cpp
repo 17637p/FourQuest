@@ -266,6 +266,9 @@ void fq::client::Soul::selectArmour()
 				{
 					rigidbody->SetLinearVelocity({ 0,0,0 });
 				}
+				
+				// 사운드 재생
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_ArmorSpawn", false , fq::sound::EChannel::SE });
 
 				mPlayerHpBar->SetVisible(false);
 			}
@@ -387,8 +390,6 @@ bool fq::client::Soul::handleOnSummon()
 			mController->SetCanMoveCharater(true);
 			mController->SetOnMove(true);
 			
-			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_ArmorSpawn", false , fq::sound::EChannel::SE });
-
 			DestorySoul();
 			spdlog::trace("DestroySoul");
 		}

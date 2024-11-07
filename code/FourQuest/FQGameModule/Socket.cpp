@@ -44,9 +44,15 @@ void fq::game_module::Socket::OnUpdate(float dt)
 		DirectX::SimpleMath::Vector3 scale;
 		DirectX::SimpleMath::Quaternion rotation;
 
-		matrix.Decompose(scale, rotation, pos);
-
-		mTransform->GenerateLocal(pos, rotation, mTransform->GetLocalScale());
+		// decompose 실패 시 위치만 맞춰주도록 처리
+		if (matrix.Decompose(scale, rotation, pos))
+		{
+			mTransform->GenerateLocal(pos, rotation, mTransform->GetLocalScale());
+		}
+		else
+		{
+			mTransform->SetLocalPosition(matrix.Translation());
+		}
 	}
 	else
 	{

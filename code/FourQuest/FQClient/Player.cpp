@@ -382,8 +382,11 @@ void fq::client::Player::SummonSoul(bool isDestroyArmour)
 		stateEvent.bIsUseOnlyPosition = true;
 		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
 
-		stateEvent.RegisterKeyName = "P_Soul_Death_Gauge";
-		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+		fq::event::OnCreateStateEvent soulDeathStateEvent;
+		soulDeathStateEvent.gameObject = GetGameObject();
+		soulDeathStateEvent.RegisterKeyName = "P_Soul_Death_Gauge";
+		soulDeathStateEvent.bIsUseOnlyPosition = true;
+		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(soulDeathStateEvent));
 	
 		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_ArmorBreak", false , fq::sound::EChannel::SE });
 	}
