@@ -12,7 +12,7 @@ void fq::client::TrainingDummyHitState::OnStateEnter(game_module::Animator& anim
 
 		if (skeletalMesh != nullptr)
 		{
-			fq::graphics::MaterialInstanceInfo info;
+			fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 			info.bUseRimLight = true;
 			info.RimLightColor = DirectX::SimpleMath::Color{ 1.f, 0.f, 0.f, 1.f };
 			info.RimPow = 0.f;
@@ -40,7 +40,7 @@ void fq::client::TrainingDummyHitState::OnStateExit(game_module::Animator& anima
 
 		if (skeletalMesh != nullptr)
 		{
-			fq::graphics::MaterialInstanceInfo info;
+			fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 			info.bUseRimLight = false;
 			skeletalMesh->SetMaterialInstanceInfo(info);
 		}
@@ -67,7 +67,7 @@ void fq::client::TrainingDummyHitState::OnStateUpdate(game_module::Animator& ani
 
 			if (skeletalMesh != nullptr)
 			{
-				fq::graphics::MaterialInstanceInfo info;
+				fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 				info.bUseRimLight = false;
 				skeletalMesh->SetMaterialInstanceInfo(info);
 			}

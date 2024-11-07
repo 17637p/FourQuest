@@ -24,7 +24,7 @@ namespace fq::client
 		float mRecoverHp;
 		bool mbIsDestroyArmour;
 
-		std::shared_ptr<game_module::GameObject> mArmour;
+		std::shared_ptr<game_module::GameObject> mArmourTargetOrNull;
 
 		friend void RegisterMetaData();
 	};

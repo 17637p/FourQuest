@@ -35,7 +35,7 @@ void fq::client::BossMonsterHitState::OnStateEnter(game_module::Animator& animat
 
 		if (skeletalMesh != nullptr)
 		{
-			fq::graphics::MaterialInstanceInfo info;
+			fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 			info.bUseRimLight = true;
 			info.RimLightColor = mHitColor;
 			info.RimPow = mRimPow;
@@ -58,7 +58,7 @@ void fq::client::BossMonsterHitState::OnStateUpdate(game_module::Animator& anima
 
 			if (skeletalMesh != nullptr)
 			{
-				fq::graphics::MaterialInstanceInfo info;
+				fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 				info.bUseRimLight = false;
 				skeletalMesh->SetMaterialInstanceInfo(info);
 			}
@@ -74,7 +74,7 @@ void fq::client::BossMonsterHitState::OnStateExit(game_module::Animator& animato
 
 		if (skeletalMesh != nullptr)
 		{
-			fq::graphics::MaterialInstanceInfo info;
+			fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 			info.bUseRimLight = false;
 			skeletalMesh->SetMaterialInstanceInfo(info);
 		}

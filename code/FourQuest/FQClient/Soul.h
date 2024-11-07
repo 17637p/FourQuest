@@ -44,6 +44,8 @@ namespace fq::client
 		float GetHP() const;
 		void SetHP(float hp);
 		
+		bool GetIsOnSummon() const;
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;

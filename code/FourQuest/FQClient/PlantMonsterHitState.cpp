@@ -26,12 +26,11 @@ namespace fq::client
 
 			if (skeletalMesh != nullptr)
 			{
-				fq::graphics::MaterialInstanceInfo info;
+				fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 				info.bUseRimLight = true;
 				info.RimLightColor = mHitColor;
 				info.RimPow = mRimPow;
 				info.RimIntensity = mRimIntensity;
-
 				skeletalMesh->SetMaterialInstanceInfo(info);
 			}
 		}
@@ -49,7 +48,7 @@ namespace fq::client
 
 				if (skeletalMesh != nullptr)
 				{
-					fq::graphics::MaterialInstanceInfo info;
+					fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 					info.bUseRimLight = false;
 					skeletalMesh->SetMaterialInstanceInfo(info);
 				}
@@ -65,7 +64,7 @@ namespace fq::client
 
 			if (skeletalMesh != nullptr)
 			{
-				fq::graphics::MaterialInstanceInfo info;
+				fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 				info.bUseRimLight = false;
 				skeletalMesh->SetMaterialInstanceInfo(info);
 			}
