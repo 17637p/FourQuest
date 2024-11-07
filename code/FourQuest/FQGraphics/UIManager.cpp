@@ -651,42 +651,6 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 			return;
 		}
 
-		DirectX::SimpleMath::Vector2 size{0, 0};
-		if (drawTextInformation.isUseAutoCenterAlign)
-		{
-			IDWriteTextLayout* pTextLayout = nullptr;
-			std::wstring text = stringToWstring(drawTextInformation.Text);
-			std::wstring fontPath = stringToWstring(drawTextInformation.FontPath) + std::to_wstring(drawTextInformation.FontSize);
-
-			if (mFonts.find(fontPath) == mFonts.end())
-			{
-				fontPath = L"Verdana" + std::to_wstring(drawTextInformation.FontSize);
-			}
-			HRESULT hr = mDWriteFactory->CreateTextLayout(
-				text.c_str(),            // 텍스트
-				text.length(),    // 텍스트 길이
-				mFonts[fontPath],     // 텍스트 포맷
-				FLT_MAX,         // 최대 폭 (조정 가능)
-				FLT_MAX,         // 최대 높이 (조정 가능)
-				&pTextLayout
-			);
-
-			if (SUCCEEDED(hr))
-			{
-				// 텍스트 레이아웃의 크기를 가져옵니다.
-				DWRITE_TEXT_METRICS textMetrics;
-				hr = pTextLayout->GetMetrics(&textMetrics);
-				if (SUCCEEDED(hr))
-				{
-					size.x = textMetrics.width;
-					size.y = textMetrics.height;
-				}
-				pTextLayout->Release();
-			}
-
-			drawTextInformation.CenterX -= size.x / 2;
-		}
-
 		auto brush = mBrushes.find(drawTextInformation.FontColor);
 		if (brush == mBrushes.end())
 		{
@@ -793,6 +757,33 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 		if (textObject->GetTextInformation().IsUseSetSpacing)
 		{
 			mFonts[fontPath]->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_UNIFORM, 50, 80);
+		}
+
+		if (drawTextInformation.isUseAutoCenterAlign)
+		{
+			IDWriteTextLayout* pTextLayout = nullptr;
+			HRESULT hr = mDWriteFactory->CreateTextLayout(
+				text.c_str(),            // 텍스트
+				text.length(),    // 텍스트 길이
+				mFonts[fontPath],     // 텍스트 포맷
+				FLT_MAX,         // 최대 폭 (조정 가능)
+				FLT_MAX,         // 최대 높이 (조정 가능)
+				&pTextLayout
+			);
+
+			if (SUCCEEDED(hr))
+			{
+				// 텍스트 레이아웃의 크기를 가져옵니다.
+				DWRITE_TEXT_METRICS textMetrics;
+				hr = pTextLayout->GetMetrics(&textMetrics);
+				if (SUCCEEDED(hr))
+				{
+					//size.x = textMetrics.width;
+					//size.y = textMetrics.height;
+					drawTextInformation.CenterX -= textMetrics.width / 2;
+				}
+				pTextLayout->Release();
+			}
 		}
 
 		if (textObject->GetTextInformation().BoxAlign == ETextBoxAlign::CenterCenter)
