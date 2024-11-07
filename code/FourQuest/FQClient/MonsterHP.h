@@ -20,8 +20,11 @@ namespace fq::client
 		void DecreaseHp(float ratio);
 		void SetVisible(bool isVisible);
 
+		// UI 레이어를 설정합니다.
+		void SetSortLayer(unsigned int val) { mSortLayer = val; }
+	
 	private:
-		void OnUpdate(float dt) override;
+		void OnLateUpdate(float dt) override;
 		void OnStart() override;
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }
@@ -41,6 +44,8 @@ namespace fq::client
 
 		game_module::Transform* mTransform;
 		game_module::ImageUI* mImageUI;
+
+		unsigned int mSortLayer;
 
 		friend void RegisterMetaData();
 	};

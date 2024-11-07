@@ -1123,24 +1123,6 @@ void fq::client::QuestManager::setScaleAndPositionScreen()
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
 
-	// Text 크기 및 위치 변경 (미적용 중)
-	float xOffset = -6.f;
-	float yOffset = -2.6f;
-
-	auto textInfo = mMainQuestText->GetTextInfo();
-	textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
-	//mMainQuestText->SetTextInfo(textInfo);
-	int deltaFontSize = textInfo.FontSize - mFontSize;
-	//mMainQuestText->GetTransform()->SetLocalPosition({ (float)deltaFontSize * xOffset, (float)deltaFontSize * -yOffset, 0});
-
-	for (int i = 0; i < mSubQuestTexts.size(); i++)
-	{
-		textInfo = mSubQuestTexts[i]->GetTextInfo();
-		textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
-		//mSubQuestTexts[i]->SetTextInfo(textInfo);
-		//mSubQuestTexts[i]->GetTransform()->SetLocalPosition({ (float)deltaFontSize * xOffset, (float)deltaFontSize * -yOffset, 0 });
-	}
-
 	game_module::ImageUI* myImage = GetComponent<game_module::ImageUI>();
 	// Position 자동 조정
 	{

@@ -20,6 +20,8 @@
 
 #include <boost/locale.hpp>
 
+#include <spdlog/spdlog.h>
+
 fq::graphics::UIManager::UIManager()
 	:mHWnd{ NULL },
 	mDirect2DFactory{ nullptr },
@@ -175,7 +177,7 @@ void fq::graphics::UIManager::AddFont(const std::wstring& path)
 			path.c_str(),
 			//L"KBIZmjo",
 			NULL,
-			DWRITE_FONT_WEIGHT_NORMAL,
+			DWRITE_FONT_WEIGHT_MEDIUM,
 			DWRITE_FONT_STYLE_NORMAL,
 			DWRITE_FONT_STRETCH_NORMAL,
 			fontSize,
@@ -186,7 +188,7 @@ void fq::graphics::UIManager::AddFont(const std::wstring& path)
 		mFonts[path + std::to_wstring(fontSize)] = tempFont;
 	}
 
-	// DWrite 초기화
+	//// DWrite 초기화
 	//IDWriteFactory* pDWriteFactory = nullptr;
 	//DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&pDWriteFactory));
 	//
@@ -475,7 +477,7 @@ void fq::graphics::UIManager::draw()
 	if (!mIsSortedImage)
 	{
 		std::sort(mImages.begin(), mImages.end(), IImageObjectCmpLayer);
-		mIsSortedImage = true;
+		//mIsSortedImage = true;
 	}
 	// 텍스트 정렬
 	if (!mIsSortedText)
@@ -649,6 +651,42 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 			return;
 		}
 
+		DirectX::SimpleMath::Vector2 size{0, 0};
+		if (drawTextInformation.isUseAutoCenterAlign)
+		{
+			IDWriteTextLayout* pTextLayout = nullptr;
+			std::wstring text = stringToWstring(drawTextInformation.Text);
+			std::wstring fontPath = stringToWstring(drawTextInformation.FontPath) + std::to_wstring(drawTextInformation.FontSize);
+
+			if (mFonts.find(fontPath) == mFonts.end())
+			{
+				fontPath = L"Verdana" + std::to_wstring(drawTextInformation.FontSize);
+			}
+			HRESULT hr = mDWriteFactory->CreateTextLayout(
+				text.c_str(),            // 텍스트
+				text.length(),    // 텍스트 길이
+				mFonts[fontPath],     // 텍스트 포맷
+				FLT_MAX,         // 최대 폭 (조정 가능)
+				FLT_MAX,         // 최대 높이 (조정 가능)
+				&pTextLayout
+			);
+
+			if (SUCCEEDED(hr))
+			{
+				// 텍스트 레이아웃의 크기를 가져옵니다.
+				DWRITE_TEXT_METRICS textMetrics;
+				hr = pTextLayout->GetMetrics(&textMetrics);
+				if (SUCCEEDED(hr))
+				{
+					size.x = textMetrics.width;
+					size.y = textMetrics.height;
+				}
+				pTextLayout->Release();
+			}
+
+			drawTextInformation.CenterX -= size.x / 2;
+		}
+
 		auto brush = mBrushes.find(drawTextInformation.FontColor);
 		if (brush == mBrushes.end())
 		{
@@ -782,6 +820,7 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 					drawTextInformation.CenterX + drawTextInformation.Width,
 					drawTextInformation.CenterY + drawTextInformation.Height),
 				mBrushes[drawTextInformation.FontColor]);
+
 		}
 
 	}
