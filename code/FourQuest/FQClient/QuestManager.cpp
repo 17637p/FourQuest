@@ -651,7 +651,7 @@ void fq::client::QuestManager::eventProcessClearQuest()
 				}
 			}
 
-			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Quest_complete", false , fq::sound::EChannel::SE });
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Quest_Complete", false , fq::sound::EChannel::SE });
 
 			// 방금 깬 퀘스트가 클리어 조건으로 있는 퀘스트가 있다면 클리어 하기 
 			std::vector<ClearQuest>& clearQuestList = mCurMainQuest.mclearConditionList.clearQuestList;
@@ -1229,6 +1229,10 @@ void fq::client::QuestManager::playNew(float dt)
 		if (mNewImageCounts[i] > 0)
 		{
 			auto newInfo = mNewImages[i]->GetUIInfomation(0);
+			if (!newInfo.isRender)
+			{
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Quest_New", false , fq::sound::EChannel::SE });
+			}
 			newInfo.isRender = true;
 			newInfo.Alpha = 1;
 			mNewImages[i]->SetUIInfomation(0, newInfo);
