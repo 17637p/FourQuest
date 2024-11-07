@@ -68,6 +68,8 @@ void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics:
 		return;
 	}
 
+	mUIInfomations[index] = infomation;
+
 	if (mImageObjects[index] == nullptr) return;
 
 	mImageObjects[index]->SetStartX(infomation.StartX);
@@ -87,8 +89,6 @@ void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics:
 
 	mImageObjects[index]->SetRenderMode(infomation.isCenter);
 	mImageObjects[index]->SetIsRender(infomation.isRender);
-
-	mUIInfomations[index] = infomation;
 }
 
 void fq::game_module::ImageUI::SetUIPosition(size_t index, float StartX, float StartY)

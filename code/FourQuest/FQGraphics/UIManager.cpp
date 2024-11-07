@@ -475,7 +475,7 @@ void fq::graphics::UIManager::draw()
 	if (!mIsSortedImage)
 	{
 		std::sort(mImages.begin(), mImages.end(), IImageObjectCmpLayer);
-		mIsSortedImage = true;
+		//mIsSortedImage = true;
 	}
 	// 텍스트 정렬
 	if (!mIsSortedText)
