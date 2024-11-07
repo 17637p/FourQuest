@@ -680,6 +680,9 @@
     <ClInclude Include="CircleEffectHelper.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="ImagePrint.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1181,6 +1184,9 @@
       <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="CircleEffectHelper.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ImagePrint.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

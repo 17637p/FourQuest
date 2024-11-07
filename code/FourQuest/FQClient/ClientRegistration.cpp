@@ -143,6 +143,7 @@
 #include "PlayerCheckUI.h"
 #include "CoolTimeIcon.h"
 #include "Credit.h"
+#include "ImagePrint.h"
 
 #include "CameraMoving.h"
 
@@ -2435,6 +2436,16 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "DelaySeconds")
 		.data<&Credit::mNextSceneName>("NextSceneName"_hs)
 		.prop(fq::reflect::prop::Name, "NextSceneName")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ImagePrint>()
+		.type("ImagePrint"_hs)
+		.prop(fq::reflect::prop::Name, "ImagePrint")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&ImagePrint::mOffsetX>("OffsetX"_hs)
+		.prop(fq::reflect::prop::Name, "OffsetX")
+		.data<&ImagePrint::mOffsetY>("OffsetY"_hs)
+		.prop(fq::reflect::prop::Name, "OffsetY")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
