@@ -55,6 +55,10 @@ bool fq::client::DeadArmour::EnterSummonLivingArmour(PlayerInfo info)
 {
 	assert(info.ControllerID <= 3);
 
+	if (!mbIsSummonAble)
+	{
+		return false;
+	}
 	if (mbIsOnSummon)
 	{
 		return false;
@@ -389,5 +393,10 @@ void fq::client::DeadArmour::SetHp(float hp)
 float fq::client::DeadArmour::GetHp() const
 {
 	return mHp;
+}
+
+bool fq::client::DeadArmour::IsOnSummon() const
+{
+	return mbIsOnSummon;
 }
 
