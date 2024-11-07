@@ -54,8 +54,8 @@ namespace fq::physics
 		inline const physx::PxMaterial* GetMaterial();
 		inline const std::unordered_map<std::string, std::shared_ptr<CharacterLink>>& GetLinkContainer();
 
-		inline void SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform);
 		inline void SetIsRagdoll(const bool& isRagdoll);
+		void SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform);
 		bool SetLinkTransformUpdate(const std::string& name, const DirectX::SimpleMath::Matrix& boneWorldTransform);
 
 	private:
@@ -118,29 +118,9 @@ namespace fq::physics
 		return mLinkContainer;
 	}
 
-	void CharacterPhysics::SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform)
-	{
-		mWorldTransform = trnasform;
-
-		physx::PxTransform pxWorldTransform;
-		CopyDirectXMatrixToPxTransform(mWorldTransform, pxWorldTransform);
-		mPxArticulation->setRootGlobalPose(pxWorldTransform);
-	}
 	void CharacterPhysics::SetIsRagdoll(const bool& isRagdoll)
 	{
 		mbIsRagdoll = isRagdoll;
-	}
-	inline bool CharacterPhysics::SetLinkTransformUpdate(const std::string& name, const DirectX::SimpleMath::Matrix& boneWorldTransform)
-	{
-		auto link = mLinkContainer.find(name);
-
-		link->second->SetWorldTransform(boneWorldTransform);
-
-		physx::PxTransform pxTransform;
-		CopyDirectXMatrixToPxTransform(mWorldTransform, pxTransform);
-		mPxArticulation->setRootGlobalPose(pxTransform);
-
-		return true;
 	}
 #pragma endregion
 }
