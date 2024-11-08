@@ -37,6 +37,8 @@ void fq::client::GameOverHandler::OnStart()
 
 void fq::client::GameOverHandler::OnUpdate(float dt)
 {
+	GetScene()->GetEventManager()->FireEvent<fq::event::UIRender>({ false });
+
 	if (mbIsSelect)
 	{
 		return;

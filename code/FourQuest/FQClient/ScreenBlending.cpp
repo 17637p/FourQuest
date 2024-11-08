@@ -74,6 +74,7 @@ void fq::client::ScreenBlending::applyTextureBlending(bool bIsActive)
 
 	if (bIsActive)
 	{
+		info.bUseBlendColor = false;
 		info.BlendTextureNames[index] = mWTexturePath;
 		float ratio = std::clamp<float>((mElapsed - mDelayTime) / mDuration, 0, 1);
 		info.BlendTextureColors[index] = DirectX::SimpleMath::Color::Lerp(mStartBlendColor, mEndBlendColor, ratio);
