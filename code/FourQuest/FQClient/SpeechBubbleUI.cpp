@@ -117,6 +117,13 @@ void fq::client::SpeechBubbleUI::OnUpdate(float dt)
 		{
 			play();
 		}
+		else
+		{
+			for (int i = 0; i < mImageUIs.size(); i++)
+			{
+				mImageUIs[i]->SetIsRender(0, false);
+			}
+		}
 	}
 }
 
