@@ -141,19 +141,21 @@ namespace fq::graphics
 
 	void D3D11ObjectManager::DeleteDecalObject(IDecalObject* decalObject)
 	{
-		auto find = mDecalObjects.find(decalObject);
+		// 데칼 오브젝트 참조를 지움
+		auto decalObjectFind = mDecalObjects.find(decalObject);
 
-		if (find != mDecalObjects.end())
+		if (decalObjectFind != mDecalObjects.end())
 		{
-			mDecalObjects.erase(find);
+			mDecalObjects.erase(decalObjectFind);
 			mDecalObjectDeleteQueue.push(decalObject);
 
+			// 레이어 래퍼런스를 지움
 			unsigned int layer = std::min<unsigned int>(DecalObject::MAX_LAYER, decalObject->GetLayer());
-			find = mDecalLayerRef[layer].find(decalObject);
+			auto decalLayerRefFind = mDecalLayerRef[layer].find(decalObject);
 
-			if (find != mDecalLayerRef[layer].end())
+			if (decalLayerRefFind != mDecalLayerRef[layer].end())
 			{
-				mDecalLayerRef[layer].erase(find);
+				mDecalLayerRef[layer].erase(decalLayerRefFind);
 			}
 			else
 			{
@@ -164,7 +166,7 @@ namespace fq::graphics
 						continue;
 					}
 
-					mDecalLayerRef[layer].erase(find);
+					mDecalLayerRef[i].erase(decalObject);
 				}
 			}
 		}
@@ -214,11 +216,11 @@ namespace fq::graphics
 			unsigned int currLayer = decalObject->GetLayer();
 			assert(prevLayer != currLayer);
 
-			auto find = mDecalLayerRef[prevLayer].find(decalObject);
+			auto decalLayerFind = mDecalLayerRef[prevLayer].find(decalObject);
 
-			if (find != mDecalLayerRef[prevLayer].end())
+			if (decalLayerFind != mDecalLayerRef[prevLayer].end())
 			{
-				mDecalLayerRef[prevLayer].erase(decalObject);
+				mDecalLayerRef[prevLayer].erase(decalLayerFind);
 			}
 			else
 			{
@@ -229,7 +231,7 @@ namespace fq::graphics
 						continue;
 					}
 
-					mDecalLayerRef[prevLayer].erase(*find);
+					mDecalLayerRef[i].erase(decalObject);
 				}
 			}
 
