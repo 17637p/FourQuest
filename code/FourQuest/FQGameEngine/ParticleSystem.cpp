@@ -99,6 +99,7 @@ void fq::game_engine::ParticleSystem::loadParticle(fq::game_module::GameObject* 
 	auto particle = object->GetComponent<fq::game_module::Particle>();
 	auto particleInfo = particle->GetParticleInfomation();
 	fq::graphics::ParticleMaterialInfo materialInfo = particle->GetParticleMaterialInfo();
+
 	auto particleMaterial = mGameProcess->mGraphics->CreateParticleMaterial(materialInfo);
 	auto particleObject = mGameProcess->mGraphics->CreateParticleObject(particleMaterial, particleInfo, object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
 	particle->SetParticleObject(particleObject);
