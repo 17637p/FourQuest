@@ -237,7 +237,7 @@ void fq::game_engine::PathFindingSystem::OnDestroyedGameObject(const fq::event::
 	if (agent != nullptr)
 	{
 		agent->DeleteAgentData();
-		mAgents.erase(std::remove(mAgents.begin(), mAgents.end(), agent));
+		mAgents.erase(std::remove(mAgents.begin(), mAgents.end(), agent), mAgents.end());
 	}
 }
 
