@@ -72,9 +72,9 @@ namespace fq::physics
 
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
 		auto pxArticulation = articulationIter->second->GetPxArticulation();
-		
+
 		if (articulationIter->second->GetIsRagdoll() == true)
-		{ 
+		{
 			// 모든 링크가 제거된 후 Articulation을 Scene에서 제거합니다.
 			mScene->removeArticulation(*pxArticulation);
 			PX_RELEASE(pxArticulation);
@@ -107,10 +107,16 @@ namespace fq::physics
 
 		return true;
 	}
-	
+
 	void PhysicsCharacterPhysicsManager::GetArticulationData(const unsigned int& id, ArticulationGetData& articulationData)
 	{
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
+		if (articulationIter == mCharacterPhysicsContainer.end())
+		{
+			spdlog::warn("[PhysicsCharacterPhysicsManager ({})] Can't Find Articulation", __LINE__);
+			return;
+		}
+
 		auto articulation = articulationIter->second;
 
 		physx::PxTransform pxTransform = articulation->GetPxArticulation()->getRootGlobalPose();
@@ -119,7 +125,7 @@ namespace fq::physics
 
 		articulationData.worldTransform = dxTransform;
 		articulationData.bIsRagdollSimulation = articulation->GetIsRagdoll();
-		
+
 		for (auto& [name, link] : articulation->GetLinkContainer())
 		{
 			fq::physics::ArticulationLinkGetData data;
@@ -134,6 +140,12 @@ namespace fq::physics
 	void PhysicsCharacterPhysicsManager::SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData, int* collisionMatrix)
 	{
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
+		if (articulationIter == mCharacterPhysicsContainer.end())
+		{
+			spdlog::warn("[PhysicsCharacterPhysicsManager ({})] Can't Find Articulation", __LINE__);
+			return;
+		}
+
 		auto articulation = articulationIter->second;
 
 		articulation->ChangeLayerNumber(articulationData.myLayerNumber, collisionMatrix, mCollisionDataManager.lock());

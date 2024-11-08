@@ -2236,6 +2236,22 @@ void fq::client::RegisterMetaData()
 	entt::meta<TrainingDummyHitState>()
 		.type("TrainingDummyHitState"_hs)
 		.prop(fq::reflect::prop::Name, "TrainingDummyHitState")
+
+		.data<&TrainingDummyHitState::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 지속")
+
+		.data<&TrainingDummyHitState::mHitColor>("mHitColor"_hs)
+		.prop(fq::reflect::prop::Name, "mHitColor")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 색상")
+
+		.data<&TrainingDummyHitState::mRimPow>("mRimPow"_hs)
+		.prop(fq::reflect::prop::Name, "mRimPow")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 제곱값")
+
+		.data<&TrainingDummyHitState::mRimIntensity>("mRimIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "mRimIntensity")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 강도")
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

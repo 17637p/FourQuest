@@ -181,4 +181,43 @@ namespace fq::physics
 			myLink->ChangeLayerNumber(newFilterData, mCollisionData.get());
 		}
 	}
+
+	void CharacterPhysics::SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform)
+	{
+		using namespace DirectX::SimpleMath;
+
+		mWorldTransform = trnasform;
+		Vector3 position;
+		Quaternion rotation;
+		Vector3 scale = { 1.f, 1.f, 1.f };
+		mWorldTransform.Decompose(scale, rotation, position);
+		Matrix dxTransform = Matrix::CreateFromQuaternion(rotation) * Matrix::CreateTranslation(position);
+
+		physx::PxTransform pxWorldTransform;
+		CopyDirectXMatrixToPxTransform(dxTransform, pxWorldTransform);
+		mPxArticulation->setRootGlobalPose(pxWorldTransform);
+	}
+
+	bool CharacterPhysics::SetLinkTransformUpdate(const std::string& name, const DirectX::SimpleMath::Matrix& boneWorldTransform)
+	{
+		using namespace DirectX::SimpleMath;
+
+		auto link = mLinkContainer.find(name);
+
+		link->second->SetWorldTransform(boneWorldTransform);
+
+		mWorldTransform = boneWorldTransform;
+		Vector3 position;
+		Quaternion rotation;
+		Vector3 scale = { 1.f, 1.f, 1.f };
+		mWorldTransform.Decompose(scale, rotation, position);
+
+		physx::PxTransform pxTransform;
+		Matrix dxTransform = Matrix::CreateFromQuaternion(rotation) * Matrix::CreateTranslation(position);
+		CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
+
+		mPxArticulation->setRootGlobalPose(pxTransform);
+
+		return true;
+	}
 }

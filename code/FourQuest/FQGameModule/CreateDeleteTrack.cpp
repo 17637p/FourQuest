@@ -19,6 +19,11 @@ bool fq::game_module::CreateDeleteTrack::Initialize(const CreateDeleteTrackInfo&
 		if (resource.size() > info.prefabIndex)
 		{
 			mCreateResouce = resource[info.prefabIndex];
+
+			if (mCreateResouce.GetPrefabPath().empty())
+			{
+				spdlog::warn("[CreateDeleteTrack] mCreateResouce is Empty");
+			}
 		}
 		else
 		{
@@ -39,6 +44,10 @@ void fq::game_module::CreateDeleteTrack::PlayEnter()
 	{
 		case fq::game_module::ECreateDeleteMode::Create:
 		{
+			if (mCreateResouce.GetPrefabPath().empty())
+			{
+				return;
+			}
 			auto instance = mScene->GetPrefabManager()->InstantiatePrefabResoure(mCreateResouce);
 			mScene->AddGameObject(instance[0]);
 		}
@@ -59,6 +68,10 @@ void fq::game_module::CreateDeleteTrack::PlayEnter()
 		break;
 		case fq::game_module::ECreateDeleteMode::CreateDelete:
 		{
+			if (mCreateResouce.GetPrefabPath().empty())
+			{
+				return;
+			}
 			auto instance = mScene->GetPrefabManager()->InstantiatePrefabResoure(mCreateResouce);
 			mScene->AddGameObject(instance[0]);
 			mObject = instance[0];

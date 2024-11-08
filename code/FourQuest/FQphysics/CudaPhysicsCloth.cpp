@@ -289,10 +289,9 @@ namespace fq::physics
 			mCurrClothBuffer[i].x = mVertices[i].x;
 			mCurrClothBuffer[i].y = mVertices[i].y;
 			mCurrClothBuffer[i].z = mVertices[i].z;
-			mPrevClothBuffer[i].x = mVertices[i].x;
-			mPrevClothBuffer[i].y = mVertices[i].y;
-			mPrevClothBuffer[i].z = mVertices[i].z;
 		}
+
+		mPrevClothBuffer.assign(mCurrClothBuffer.begin(), mCurrClothBuffer.end());
 
 		// GPU Memory에 할당 및 데이터 복사
 		cudaMalloc(&d_prevVertices, mPrevClothBuffer.size() * sizeof(physx::PxVec4));
@@ -345,19 +344,19 @@ namespace fq::physics
 			addEdge(v3, v1);
 		}
 
-		// 같은 위치의 버텍스를 묶고 저장
-		mSameVertices.reserve(mVertices.size() / 3);
-		for (int i = 0; i < mVertices.size(); i++)
-		{
-			for (int j = i + 1; j < mVertices.size(); j++)
-			{
-				if (areVerticesEqual(mVertices[i], mVertices[j]))
-				{
-					mSprings.insert({ i, j });
-					mSameVertices.push_back({ i, j });
-				}
-			}
-		}
+		//// 같은 위치의 버텍스를 묶고 저장
+		//mSameVertices.reserve(mVertices.size() / 3);
+		//for (int i = 0; i < mVertices.size(); i++)
+		//{
+		//	for (int j = i + 1; j < mVertices.size(); j++)
+		//	{
+		//		if (areVerticesEqual(mVertices[i], mVertices[j]))
+		//		{
+		//			mSprings.insert({ i, j });
+		//			mSameVertices.push_back({ i, j });
+		//		}
+		//	}
+		//}
 
 		return true;
 	}

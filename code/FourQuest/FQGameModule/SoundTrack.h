@@ -21,6 +21,9 @@ namespace fq::game_module
 		virtual void PlayExit() override;
 		virtual void End() override;
 
+	public:
+		static unsigned int SoundChannelIndexNumber;
+
 	private:
 		Scene* mScene;
 
@@ -28,6 +31,7 @@ namespace fq::game_module
 		std::string mSoundObjectName;
 		bool mbIsLoop;
 		bool mOnce;
+		unsigned int mMyChannelNumber;
 	};
 }
 

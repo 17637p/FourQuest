@@ -15,6 +15,8 @@ namespace fq::game_engine
 	public:
 		Setting();
 
+		static std::wstring ChangeDDSFormat(GameProcess* gameProcess, const std::wstring& fileName);
+
 		void Initialize(GameProcess* game, EditorProcess* editor);
 		void Render() override;
 
@@ -33,7 +35,7 @@ namespace fq::game_engine
 		void beginChild_GizumoSetting();
 		void beginChild_GraphicsSetting();
 		void beginChild_InspectorSetting();
-		std::wstring changeDDSFormat(const std::wstring& fileName);
+		
 
 	private:
 		GameProcess* mGameProcess;
