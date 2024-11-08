@@ -80,6 +80,7 @@ namespace fq::physics
 
 		std::unordered_map<unsigned int, std::shared_ptr<CudaPhysicsCloth>> mPhysicsClothContainer;
 		std::vector<std::pair<Cloth::CreateClothData, int*>> mUpCommingClothVec;
+		std::vector<std::shared_ptr<CudaPhysicsCloth>> mRemoveClothVec;
 
 		physx::PxPhysics* mPhysics;
 		physx::PxScene* mScene;
