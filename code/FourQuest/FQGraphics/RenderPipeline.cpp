@@ -83,11 +83,11 @@ namespace fq::graphics
 		}
 	}
 
-	void RenderPipeline::EndRender()
+	void RenderPipeline::EndRender(bool bUseVSync)
 	{
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = mDevice->GetSwapChain();
 		auto result = mDevice->GetDevice()->GetDeviceRemovedReason();
-		HR(swapChain->Present(0, 0));
+		HR(swapChain->Present(bUseVSync ? 1 : 0, 0));
 	}
 
 	void RenderPipeline::RenderFullScreen()

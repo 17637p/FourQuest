@@ -257,6 +257,10 @@ extern "C" {
 			// InstancingData
 			virtual FQ_GRAPHICS void CreateAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface) abstract;
 			virtual FQ_GRAPHICS void ReleaseAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface) abstract;
+
+			// 수직 동기화
+			virtual FQ_GRAPHICS void SetUseVSync(bool mbUseVSync) abstract;
+			virtual FQ_GRAPHICS bool GetUseVSync() const abstract;
 		};
 
 		class EngineExporter

@@ -475,6 +475,8 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 							makeRelativePath(data.EmissiveFileName);
 							makeRelativePath(data.NormalFileName);
 							makeRelativePath(data.MetalnessSmoothnessFileName);
+							makeRelativePath(data.NoiseFileName);
+							makeRelativePath(data.BlendTextureName);
 
 							mGameProcess->mGraphics->WriteMaterialInfo(path.path().string(), data);
 						}
@@ -620,8 +622,6 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 					}
 				}
 			}
-
-
 
 			if (ImGui::Button("rewrite renderer material path(change relative path)"))
 			{
@@ -829,6 +829,10 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 					iUVAnimation->SetUVAnimationClip(uvAnimation);
 				}
 			}
+
+			bool bUseVSync = mGameProcess->mGraphics->GetUseVSync();
+			ImGui::Checkbox("UseVSync", &bUseVSync);
+			mGameProcess->mGraphics->SetUseVSync(bUseVSync);
 		}
 
 		ImGui::EndChild();

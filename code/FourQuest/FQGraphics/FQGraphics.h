@@ -106,7 +106,7 @@ namespace fq::graphics
 		virtual void DeleteMaterial(const std::string& key) override;
 		virtual void DeleteParticleMaterial(const std::string& key) override;
 		virtual void DeleteDecalMaterial(const std::string& key) override;
-		
+
 		virtual bool SaveDDS(std::shared_ptr<ITexture> textureInterface, const std::wstring& saveTexturePath) override;
 
 		// RenderObject
@@ -225,6 +225,10 @@ namespace fq::graphics
 		virtual void CreateAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface) override;
 		virtual void ReleaseAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface) override;
 
+		// 수직동기화
+		virtual void SetUseVSync(bool bUseVSync) override;
+		virtual bool GetUseVSync() const override;
+
 	private:
 		std::shared_ptr<class D3D11Device> mDevice;
 		std::shared_ptr<class D3D11ResourceManager> mResourceManager;
@@ -254,6 +258,8 @@ namespace fq::graphics
 
 		unsigned short mWindowsWidth;
 		unsigned short mWindowsHeight;
+
+		bool mbUseVSync;
 	};
 }
 

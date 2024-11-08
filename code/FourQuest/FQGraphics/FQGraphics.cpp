@@ -41,6 +41,7 @@ FQGraphics::FQGraphics()
 	, mbIsUseLightmapOnly(false)
 	, mWindowsWidth(0)
 	, mWindowsHeight(0)
+	, mbUseVSync(true)
 {
 }
 
@@ -351,6 +352,16 @@ void fq::graphics::FQGraphics::ReleaseAnimationTexture(std::shared_ptr<INodeHier
 	std::static_pointer_cast<NodeHierarchy>(nodeHierarchyInterface)->ReleaseAnimationTexture();
 }
 
+void fq::graphics::FQGraphics::SetUseVSync(bool bUseVSync)
+{
+	mbUseVSync = bUseVSync;
+}
+
+bool fq::graphics::FQGraphics::GetUseVSync() const
+{
+	return mbUseVSync;
+}
+
 
 void FQGraphics::UpdateLight(const unsigned int id, const LightInfo& lightInfo)
 {
@@ -452,7 +463,7 @@ bool FQGraphics::Render()
 
 bool FQGraphics::EndRender()
 {
-	mRenderManager->EndRender();
+	mRenderManager->EndRender(mbUseVSync);
 
 	if (mIsRenderObjects)
 	{

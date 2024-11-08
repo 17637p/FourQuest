@@ -58,5 +58,7 @@ namespace fq::game_engine
 
 		// 인스펙터
 		bool mbCanEditPath;// 드래그 드랍이 아닌 입력을 받을 수 있음
+
+		bool mbUseVSync;
 	};
 }
