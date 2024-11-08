@@ -44,7 +44,7 @@ namespace fq::game_module
 		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
 		if (mTargetObject == nullptr)
 		{
-			spdlog::warn("[ObjectAnimationTrack Warrning({})] Do not Have TargetObject", __LINE__);
+			spdlog::warn("[ObjectAnimationTrack Warrning({})]  Do not Have TargetObject Name [{}] ", __LINE__ , mTargetObjectName);
 		}
 		else if (!mTargetObject->HasComponent<Transform>())
 		{
