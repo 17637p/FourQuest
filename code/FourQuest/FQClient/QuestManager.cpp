@@ -1408,7 +1408,7 @@ void fq::client::QuestManager::playComplete(float dt)
 						}
 					}
 
-					if (mNextSubQuests.size() > 0)
+					if (mNextSubQuests.size() > 0 && mViewSubQuest.size() < 3)
 					{
 						// 다음 퀘스트 추가
 						mViewSubQuest.push_back(mNextSubQuests.front());
