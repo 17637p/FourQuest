@@ -126,8 +126,10 @@ namespace fq::physics
 		auto clothIter = mPhysicsClothContainer.find(id);
 		if (clothIter != mPhysicsClothContainer.end())
 		{
-			mScene->removeActor(*(clothIter->second->GetPBDParticleSystem()));
-			mPhysicsClothContainer.erase(clothIter);
+			auto particleSystem = clothIter->second->GetPBDParticleSystem();
+
+			mScene->removeActor(*particleSystem);
+			mPhysicsClothContainer.erase(id);
 
 			return true;
 		}

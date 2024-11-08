@@ -144,6 +144,7 @@
 #include "CoolTimeIcon.h"
 #include "Credit.h"
 #include "ImagePrint.h"
+#include "ExitUI.h"
 
 #include "CameraMoving.h"
 
@@ -2365,6 +2366,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "RepauseUIPrefab")
 		.data<&PauseUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
+		.data<&PauseUI::mExitUIPrefab>("ExitUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ExitUIPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<LoadingText>()
@@ -2566,6 +2569,12 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "OffsetX")
 		.data<&ImagePrint::mOffsetY>("OffsetY"_hs)
 		.prop(fq::reflect::prop::Name, "OffsetY")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ExitUI>()
+		.type("ExitUI"_hs)
+		.prop(fq::reflect::prop::Name, "ExitUI")
+		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

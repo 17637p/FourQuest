@@ -72,9 +72,9 @@ namespace fq::physics
 
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
 		auto pxArticulation = articulationIter->second->GetPxArticulation();
-		
+
 		if (articulationIter->second->GetIsRagdoll() == true)
-		{ 
+		{
 			// 모든 링크가 제거된 후 Articulation을 Scene에서 제거합니다.
 			mScene->removeArticulation(*pxArticulation);
 			PX_RELEASE(pxArticulation);
@@ -107,19 +107,25 @@ namespace fq::physics
 
 		return true;
 	}
-	
+
 	void PhysicsCharacterPhysicsManager::GetArticulationData(const unsigned int& id, ArticulationGetData& articulationData)
 	{
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
 		if (articulationIter == mCharacterPhysicsContainer.end())
+		{
+			spdlog::warn("[PhysicsCharacterPhysicsManager ({})] Can't Find Articulation", __LINE__);
 			return;
+		}
 
 		auto articulation = articulationIter->second;
-		
-		articulationData.worldTransform = articulation->GetWorldTransform();
+
+		physx::PxTransform pxTransform = articulation->GetPxArticulation()->getRootGlobalPose();
+		DirectX::SimpleMath::Matrix dxTransform;
+		CopyPxTransformToDirectXMatrix(pxTransform, dxTransform);
+
+		articulationData.worldTransform = dxTransform;
 		articulationData.bIsRagdollSimulation = articulation->GetIsRagdoll();
-		articulationData.myLayerNumber = articulation->GetLayerNumber();
-		
+
 		for (auto& [name, link] : articulation->GetLinkContainer())
 		{
 			fq::physics::ArticulationLinkGetData data;
@@ -135,9 +141,14 @@ namespace fq::physics
 	{
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
 		if (articulationIter == mCharacterPhysicsContainer.end())
+		{
+			spdlog::warn("[PhysicsCharacterPhysicsManager ({})] Can't Find Articulation", __LINE__);
 			return;
+		}
 
 		auto articulation = articulationIter->second;
+
+		articulation->ChangeLayerNumber(articulationData.myLayerNumber, collisionMatrix, mCollisionDataManager.lock());
 
 		if (articulationData.bIsRagdollSimulation != articulation->GetIsRagdoll())
 		{
@@ -146,13 +157,6 @@ namespace fq::physics
 
 			if (articulationData.bIsRagdollSimulation)
 			{
-				// 레이어 넘버 비교 후 레이어 넘버 교체
-				auto prevLayerNumber = articulation->GetLayerNumber();
-				if (prevLayerNumber != articulationData.myLayerNumber)
-				{
-					articulation->ChangeLayerNumber(articulationData.myLayerNumber, collisionMatrix, mCollisionDataManager.lock());
-				}
-
 				for (const auto& linkData : articulationData.linkData)
 				{
 					articulation->SetLinkTransformUpdate(linkData.name, linkData.boneWorldTransform);
