@@ -1,9 +1,15 @@
 #include "SoundTrack.h"
 
 #include "Scene.h"
+#include "SoundManager.h"
+
+#include "Event.h"
+#include "EventManager.h"
 
 namespace fq::game_module
 {
+	unsigned int SoundTrack::SoundChannelIndexNumber = 16;
+
 	SoundTrack::SoundTrack()
 		: Track(ETrackType::SOUND)
 		, mScene(nullptr)
@@ -39,8 +45,15 @@ namespace fq::game_module
 		{
 			if (!object->HasComponent<SoundClip>()) return;
 
+			mMyChannelNumber = SoundChannelIndexNumber;
 			auto soundClip = object->GetComponent<SoundClip>();
-			soundClip->Play(mKeyName, mbIsLoop, 3);
+			soundClip->StopChannel(mMyChannelNumber);
+			soundClip->Play(mKeyName, mbIsLoop, SoundChannelIndexNumber++);
+			
+			if (SoundChannelIndexNumber >= SoundManager::NoneStopChannel)
+			{
+				SoundChannelIndexNumber = 16;
+			}
 		}
 		else
 		{
@@ -61,8 +74,7 @@ namespace fq::game_module
 			if (!object->HasComponent<SoundClip>()) return;
 
 			auto soundClip = object->GetComponent<SoundClip>();
-			soundClip->StopChannel(3);
-			soundClip->OnDestroy();
+			soundClip->StopChannel(mMyChannelNumber);
 		}
 	}
 
@@ -75,8 +87,7 @@ namespace fq::game_module
 			if (!object->HasComponent<SoundClip>()) return;
 
 			auto soundClip = object->GetComponent<SoundClip>();
-			soundClip->StopChannel(3);
-			soundClip->OnDestroy();
+			soundClip->StopChannel(mMyChannelNumber);
 		}
 	}
 }

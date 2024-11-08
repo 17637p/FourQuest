@@ -34,7 +34,7 @@ void fq::game_module::SoundClip::Play(std::string key, bool bIsLoop, ChannelInde
 	}
 	else
 	{
-		spdlog::warn("[SoundClip] {} can't find key");
+		spdlog::warn("[SoundClip] {} can't find key", key);
 	}
 }
 
