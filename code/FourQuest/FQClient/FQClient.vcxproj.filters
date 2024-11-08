@@ -683,6 +683,12 @@
     <ClInclude Include="DestroyHelper.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
+    <ClInclude Include="ExitUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImagePrint.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1188,6 +1194,12 @@
     </ClCompile>
     <ClCompile Include="GameOverHandler.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ExitUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ImagePrint.cpp">
+      <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

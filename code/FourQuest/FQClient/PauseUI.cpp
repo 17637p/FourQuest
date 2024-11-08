@@ -40,6 +40,7 @@ fq::client::PauseUI::PauseUI(const PauseUI& other)
 	mSettingUIPrefab(other.mSettingUIPrefab),
 	mStickDelay(other.mStickDelay),
 	mCurStickDelay(other.mCurStickDelay)
+	, mExitUIPrefab(other.mExitUIPrefab)
 {
 }
 
@@ -53,6 +54,7 @@ fq::client::PauseUI& fq::client::PauseUI::operator=(const PauseUI& other)
 	mIsActive = other.mIsActive;
 	mRepauseUIPrefab = other.mRepauseUIPrefab;
 	mSettingUIPrefab = other.mSettingUIPrefab;
+	mExitUIPrefab = other.mExitUIPrefab;
 	mStickDelay = other.mStickDelay;
 	mCurStickDelay = other.mCurStickDelay;
 
@@ -187,7 +189,9 @@ void fq::client::PauseUI::clickButton()
 			break;
 		case 3:
 			// 게임 종료
-			PostQuitMessage(0);
+			mIsActive = false;
+			spawnUIObject(mExitUIPrefab);
+			//PostQuitMessage(0);
 			break;
 		default:
 			break;
@@ -213,11 +217,20 @@ void fq::client::PauseUI::eventProcessOffPopupRepause()
 				mIsActive = true;
 			}
 	);
+
+	mOffPopupExitHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::OffPopupExit>
+		(
+			[this]()
+			{
+				mIsActive = true;
+			}
+		);
 }
 
 void fq::client::PauseUI::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mOffPopupRepauseHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mOffPopupExitHandler);
 }
 
 void fq::client::PauseUI::processInput()

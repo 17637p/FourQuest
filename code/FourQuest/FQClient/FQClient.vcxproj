@@ -60,6 +60,7 @@
     <ClInclude Include="DynamicLightHelper.h" />
     <ClInclude Include="EffectColorManager.h" />
     <ClInclude Include="EffectColorTransmitter.h" />
+    <ClInclude Include="ExitUI.h" />
     <ClInclude Include="FillSoulGauge.h" />
     <ClInclude Include="FillSoulHP.h" />
     <ClInclude Include="GameOverHandler.h" />
@@ -248,6 +249,7 @@
     <ClCompile Include="DynamicLightHelper.cpp" />
     <ClCompile Include="EffectColorManager.cpp" />
     <ClCompile Include="EffectColorTransmitter.cpp" />
+    <ClCompile Include="ExitUI.cpp" />
     <ClCompile Include="FillSoulGauge.cpp" />
     <ClCompile Include="FillSoulHP.cpp" />
     <ClCompile Include="GameOverHandler.cpp" />

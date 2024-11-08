@@ -49,9 +49,11 @@ namespace fq::client
 
 		bool mIsActive;
 		fq::game_module::PrefabResource mRepauseUIPrefab;
-		game_module::EventHandler mOffPopupRepauseHandler;
-
+		fq::game_module::PrefabResource mExitUIPrefab;
 		fq::game_module::PrefabResource mSettingUIPrefab;
+
+		game_module::EventHandler mOffPopupRepauseHandler;
+		game_module::EventHandler mOffPopupExitHandler;
 
 		game_module::ScreenManager* mScreenManager;
 		game_module::TimeManager* mTimeManager;
