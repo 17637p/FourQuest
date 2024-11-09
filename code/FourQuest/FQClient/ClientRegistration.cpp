@@ -203,6 +203,8 @@
 #include "CircleEffectHelper.h"
 #include "GameOverHandler.h"
 
+#include "PvPManager.h"
+
 void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -244,6 +246,23 @@ void fq::client::RegisterMetaData()
 	entt::meta<DebugService>()
 		.type("DebugService"_hs)
 		.prop(reflect::prop::Name, "DebugService")
+		.base<game_module::Component>();
+
+	entt::meta<PvPManager>()
+		.type("PvPManager"_hs)
+		.prop(reflect::prop::Name, "PvPManager")
+		.data<&PvPManager::mEndSeuqenceName>("EndSeuqenceName"_hs)
+		.prop(fq::reflect::prop::Name, "EndSeuqenceName")
+		.data<&PvPManager::mMaxSpawnAromour>("MaxSpawnAromour"_hs)
+		.prop(fq::reflect::prop::Name, "MaxSpawnAromour")
+		.data<&PvPManager::mMinSpawnAromour>("MinSpawnAromour"_hs)
+		.prop(fq::reflect::prop::Name, "MinSpawnAromour")
+		.data<&PvPManager::mMaxSpawnRange>("MaxSpawnRange"_hs)
+		.prop(fq::reflect::prop::Name, "MaxSpawnRange")
+		.data<&PvPManager::mMinSpawnRange>("MinSpawnRange"_hs)
+		.prop(fq::reflect::prop::Name, "MinSpawnRange")
+		.data<&PvPManager::mArmours>("Armours"_hs)
+		.prop(fq::reflect::prop::Name, "Armours")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

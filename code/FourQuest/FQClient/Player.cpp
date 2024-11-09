@@ -1162,28 +1162,18 @@ void fq::client::Player::HitPlayerAttack(game_module::GameObject* other)
 				auto type = playerAtk->GetKnockBackType();
 				float power = playerAtk->GetKnockBackPower();
 
-				if (type == EKnockBackType::TargetPosition)
-				{
-					auto playerPos = mTransform->GetWorldPosition();
-					playerPos.y = 0.f;
-					auto monsterPos = playerAtk->GetTransform()->GetWorldPosition();
-					monsterPos.y = 0.f;
+				auto playerPos = mTransform->GetWorldPosition();
+				playerPos.y = 0.f;
+				auto monsterPos = playerAtk->GetTransform()->GetWorldPosition();
+				monsterPos.y = 0.f;
 
-					auto knockBackDir = playerPos - monsterPos;
-					knockBackDir.Normalize();
+				auto knockBackDir = playerPos - monsterPos;
+				knockBackDir.Normalize();
+				auto acclerationPower = power * 0.5f * (mbOnShieldBlock ? 0.25f : 1.f);
 
-					auto velocityPower = power * 0.5f * (mbOnShieldBlock ? 0.25f : 1.f);
-					auto acclerationPower = power * 0.5f * (mbOnShieldBlock ? 0.25f : 1.f);
-
-					// 절반은 가속도로
-					mKnockBackDir = knockBackDir;
-					mKnockBackPower = acclerationPower * (1 / playerAtk->GetKnockBackTime());
-					mKnockBackTime = playerAtk->GetKnockBackTime();
-
-					// 절반은 속도로
-					auto rigidbody = GetComponent<game_module::RigidBody>();
-					rigidbody->AddLinearVelocity(mKnockBackDir * velocityPower);
-				}
+				mKnockBackDir = knockBackDir;
+				mKnockBackPower = acclerationPower;
+				mKnockBackTime = 0.1f;
 			}
 
 			if (isHitAble)
@@ -1224,7 +1214,7 @@ void fq::client::Player::HitPlayerAttack(game_module::GameObject* other)
 				{
 					// 무적시간 
 					mAnimator->SetParameterTrigger("OnHit");
- 					mInvincibleElapsedTime = mInvincibleTime;
+					mInvincibleElapsedTime = mInvincibleTime *0.5f;
 				}
 
 				// 피격 사운드 재생
