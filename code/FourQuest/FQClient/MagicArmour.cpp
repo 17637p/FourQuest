@@ -5,6 +5,7 @@
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Transform.h"
 
+#include "SettingVariable.h"
 #include "LinearAttack.h"
 #include "Attack.h"
 #include "Player.h"
@@ -207,6 +208,17 @@ void fq::client::MagicArmour::EmitLaser()
 		for (int i = 0; i < data.hitCount; ++i)
 		{
 			if (data.hitLayerNumber[i] == static_cast<unsigned int>(fq::game_module::ETag::DeadMonster))
+				continue;
+
+			if (SettingVariable::IsAllowOtherPlayerAttack
+				&& data.hitObjects[i]->GetID() == GetGameObject()->GetID())
+			{
+				data.hitCount--;
+				continue;
+			}
+
+			if (!SettingVariable::IsAllowOtherPlayerAttack
+				&& data.hitLayerNumber[i] == static_cast<unsigned int>(game_module::ETag::Player))
 				continue;
 
 			float hitDistance = (origin - data.hitContactPoints[i]).Length();
@@ -436,7 +448,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserH
 	GetScene()->AddGameObject(effectObj);
 
 	mLaserHeadEffect = effectObj;
-	
+
 	// 이펙트 색상 설정
 	GetScene()->ViewComponents<EffectColorManager>([&effectObj, this](fq::game_module::GameObject& object, EffectColorManager& effectColorManager) { effectColorManager.SetColor(mPlayer->GetGameObject(), effectObj.get()); });
 

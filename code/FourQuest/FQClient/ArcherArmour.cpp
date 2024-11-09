@@ -172,13 +172,13 @@ namespace fq::client
 
 		switch (chargeLevel)
 		{
-			case 0:
+			case 1:
 				attackPower = dc::GetArcherCA_1_Damage(attackPower);
 				break;
-			case 1:
+			case 2:
 				attackPower = dc::GetArcherCA_2_Damage(attackPower);
 				break;
-			case 2:
+			case 3:
 				attackPower = dc::GetArcherCA_3_Damage(attackPower);
 				break;
 			case 4:
