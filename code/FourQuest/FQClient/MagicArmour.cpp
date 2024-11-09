@@ -203,6 +203,8 @@ void fq::client::MagicArmour::EmitLaser()
 	DirectX::SimpleMath::Vector3 closestPoint{};
 	float minDistance = distance;
 
+	int decreaseCount = 0;
+
 	if (data.hitCount > 0)
 	{
 		for (int i = 0; i < data.hitCount; ++i)
@@ -210,10 +212,9 @@ void fq::client::MagicArmour::EmitLaser()
 			if (data.hitLayerNumber[i] == static_cast<unsigned int>(fq::game_module::ETag::DeadMonster))
 				continue;
 
-			if (SettingVariable::IsAllowOtherPlayerAttack
-				&& data.hitObjects[i]->GetID() == GetGameObject()->GetID())
+			if (data.hitObjects[i]->GetID() == GetGameObject()->GetID())
 			{
-				data.hitCount--;
+				decreaseCount += 1;
 				continue;
 			}
 
@@ -230,6 +231,8 @@ void fq::client::MagicArmour::EmitLaser()
 			}
 		}
 	}
+
+	data.hitCount -= decreaseCount;
 
 	if (data.hitCount > 0 && mLaserHitElapsedTime == 0.f)
 	{
