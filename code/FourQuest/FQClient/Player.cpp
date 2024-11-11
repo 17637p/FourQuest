@@ -519,6 +519,7 @@ void fq::client::Player::EmitBowSoulAttack()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.bIsInfinite = false;
 	attackInfo.remainingAttackCount = 1;
+	attackInfo.attackType = AttackInfo::EAttackType::ArcherSoul;
 	attackComponent->Set(attackInfo);
 
 	// 사운드 실행
@@ -566,6 +567,7 @@ void fq::client::Player::EmitSwordSoulAttack()
 	attackInfo.knocBackPower = 20.f;
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
 	attackInfo.HitEffectName = "K_Swing_Hit_blood";
+	attackInfo.attackType = AttackInfo::EAttackType::KnightSoul;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
@@ -687,6 +689,7 @@ void fq::client::Player::EmitAxeSoulAttack()
 	attackInfo.damage = dc::GetAxeSoulDamage(mAttackPower);
 	attackInfo.attacker = GetGameObject();
 	attackInfo.HitEffectName = "W_Hit_blunt";
+	attackInfo.attackType = AttackInfo::EAttackType::BerserkerSoul;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);

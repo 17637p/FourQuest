@@ -92,6 +92,7 @@ void fq::client::Attack::Set(const AttackInfo& info)
 	mTargetPosRatio = info.targetPosRatio;
 	mDirectionRatio = info.directionRatio;
 	mKnockBackTime = info.knocBackTime;
+	mAttackType = info.attackType;
 
 	if (!info.HitEffectName.empty())
 	{

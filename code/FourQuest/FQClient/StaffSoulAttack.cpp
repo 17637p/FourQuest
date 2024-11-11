@@ -85,6 +85,7 @@ void fq::client::StaffSoulAttack::emitAttack()
 	attackInfo.knocBackPower = mKnockBackPower;
 	attackInfo.attackPosition = transform->GetWorldPosition();
 	attackInfo.type = EKnockBackType::TargetPosition;
+	attackInfo.attackType = AttackInfo::EAttackType::MagicSoul;
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);

@@ -382,6 +382,12 @@ namespace fq::client
 		float mPlayer3GroggyIncreaseRatio;
 		float mPlayer4GroggyIncreaseRatio;
 
+		// 영혼 공격 별 대미지 배율
+		float mKnightSoulDamageRatio;
+		float mMagicSoulDamageRatio;
+		float mArcherSoulDamageRatio;
+		float mBerserkerSoulDamageRatio;
+
 		friend void RegisterMetaData();
 	};
 }

@@ -145,6 +145,11 @@ fq::client::BossMonster::BossMonster()
 	, mPlayer2GroggyIncreaseRatio(0.05f)
 	, mPlayer3GroggyIncreaseRatio(0.025f)
 	, mPlayer4GroggyIncreaseRatio(0.0125f)
+
+	, mKnightSoulDamageRatio(1.f)
+	, mMagicSoulDamageRatio(1.f)
+	, mArcherSoulDamageRatio(1.f)
+	, mBerserkerSoulDamageRatio(1.f)
 {}
 
 
@@ -1269,6 +1274,29 @@ void fq::client::BossMonster::processAttack(Attack* attack)
 			assert(false);
 			break;
 		}
+	}
+
+	AttackInfo::EAttackType attackType = attack->GetAttackType();
+
+	switch (attackType)
+	{
+	case fq::client::AttackInfo::EAttackType::Normal:
+		break;
+	case fq::client::AttackInfo::EAttackType::KnightSoul:
+		damageRatio = mKnightSoulDamageRatio;
+		break;
+	case fq::client::AttackInfo::EAttackType::MagicSoul:
+		damageRatio = mMagicSoulDamageRatio;
+		break;
+	case fq::client::AttackInfo::EAttackType::ArcherSoul:
+		damageRatio = mArcherSoulDamageRatio;
+		break;
+	case fq::client::AttackInfo::EAttackType::BerserkerSoul:
+		damageRatio = mBerserkerSoulDamageRatio;
+		break;
+	default:
+		assert(false);
+		break;
 	}
 
 	if (attack->ProcessAttack())
