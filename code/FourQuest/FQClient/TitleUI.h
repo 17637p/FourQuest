@@ -21,6 +21,7 @@ namespace fq::client
 
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
+		virtual void OnDestroy() override;
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

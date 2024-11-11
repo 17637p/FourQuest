@@ -221,4 +221,10 @@ namespace fq::client::event
 		std::shared_ptr<game_module::GameObject> mTarget;
 	};
 
+	/// Kill & Death
+	struct PlayerArmourDeath
+	{
+		int killPlayerID;
+		int deathPlayerID;
+	};
 }

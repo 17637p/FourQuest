@@ -112,8 +112,11 @@ void fq::game_module::ImageUI::OnUpdate(float dt)
 	if (mbIsBindTransform)
 	{
 		Transform* myTransform = GetComponent<Transform>();
-		SetUIPosition(0, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
-		SetUIScale(0, myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
+		for (int i = 0; i < mImageObjects.size(); i++)
+		{
+			SetUIPosition(i, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
+			SetUIScale(i, myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
+		}
 	}
 }
 

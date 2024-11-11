@@ -1210,7 +1210,13 @@ void fq::client::Player::HitPlayerAttack(game_module::GameObject* other)
 				}
 				// 체력 감소
 				float attackPower = playerAtk->GetAttackPower() * PlayerVariable::PvPDamageRatio;
+				bool isDead = GetGameObject()->IsDestroyed();
 				DecreaseHp(attackPower);
+				if (GetGameObject()->IsDestroyed() != isDead)
+				{
+					auto killPlayerID = playerAtk->GetAttacker()->GetComponent<Player>()->GetPlayerID();
+					GetGameObject()->GetScene()->GetEventManager()->FireEvent<client::event::PlayerArmourDeath>({ killPlayerID, GetPlayerID()});
+				}
 
 				// Hit 애니메이션 
 				if (mbIsActiveOnHit)
