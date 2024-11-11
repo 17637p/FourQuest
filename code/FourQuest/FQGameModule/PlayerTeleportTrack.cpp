@@ -83,6 +83,12 @@ namespace fq::game_module
 
 			auto transform = mTargetObject->GetComponent<Transform>();
 
+			if (mKeys.size() <= 0)
+			{
+				spdlog::warn("[ObjectMoverTrack ({})] Warrning Key Size is Zero", __LINE__);
+				return;
+			}
+
 			for (int i = 0; i < mKeys.size(); i++)
 			{
 				if (mElapsedTime >= mKeys[i].time && checkPointTime < mKeys[i].time)
