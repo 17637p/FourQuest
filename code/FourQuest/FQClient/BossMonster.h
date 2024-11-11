@@ -217,6 +217,7 @@ namespace fq::client
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 
 		void initGroggy();
+		void playBossBGM();
 
 		void updateGroggy(float dt);
 		void updateJump(float dt);
@@ -240,6 +241,9 @@ namespace fq::client
 		fq::game_module::SkinnedMeshRenderer* mSkinnedMesh;
 		std::shared_ptr<game_module::GameObject> mTarget;
 		std::shared_ptr<game_module::GameObject> mHpBar;
+
+		bool mbUseBossBGM;
+		std::string mBossBGMKey;
 
 		// 보스 능력치
 		float mMaxHp;

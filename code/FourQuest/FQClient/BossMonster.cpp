@@ -38,7 +38,7 @@ fq::client::BossMonster::BossMonster()
 	, mSkinnedMesh(nullptr)
 	, mTarget(nullptr)
 	, mHpBar(nullptr)
-
+	, mbUseBossBGM(false)
 	, mMaxHp(0.f)
 	, mHp(2000.f)
 	, mAttackPower(50.f)
@@ -212,6 +212,7 @@ void fq::client::BossMonster::OnStart()
 	GenerateAngryEnteringVigilantCount();
 	GenerateEnteringVigilantCount();
 	initGroggy();
+	playBossBGM();
 }
 
 void fq::client::BossMonster::OnUpdate(float dt)
@@ -1431,4 +1432,13 @@ unsigned int fq::client::BossMonster::GetAngryEnteringVigilantCount() const
 unsigned int fq::client::BossMonster::GetEnteringVigilantCount() const
 {
 	return mVigilantCount;
+}
+
+void fq::client::BossMonster::playBossBGM()
+{
+	if(mbUseBossBGM)
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnStopChannel>({ fq::sound::EChannel::BGM });
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mBossBGMKey, true , fq::sound::EChannel::BGM });
+	}
 }
