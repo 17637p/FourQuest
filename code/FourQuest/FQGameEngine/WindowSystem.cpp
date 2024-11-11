@@ -2,6 +2,8 @@
 #include "IEngine.h"
 #include "WndProc.h"
 
+#include "../FQGameEngineDemo/resource.h"
+
 // Window 이벤트용도의 static 변수
 UINT fq::game_engine::WindowSystem::Height;
 UINT fq::game_engine::WindowSystem::Width;
@@ -19,6 +21,7 @@ fq::game_engine::WindowSystem::WindowSystem()
 void fq::game_engine::WindowSystem::Initialize(UINT screenWidth, UINT screenHeight)
 {
 	mHInstance = ::GetModuleHandle(NULL);
+	//mHInstance = GetModuleHandle(TEXT("FQGameEngine.dll"));
 
 	WNDCLASS wndClass{};
 	wndClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -26,7 +29,7 @@ void fq::game_engine::WindowSystem::Initialize(UINT screenWidth, UINT screenHeig
 	wndClass.cbClsExtra = 0;
 	wndClass.cbWndExtra = 0;
 	wndClass.hInstance = mHInstance;
-	wndClass.hIcon = ::LoadIcon(mHInstance, IDI_APPLICATION);
+	wndClass.hIcon = ::LoadIcon(mHInstance, MAKEINTRESOURCE(IDI_ICON1));
 	wndClass.hCursor = ::LoadCursor(NULL, IDC_ARROW);
 	wndClass.hbrBackground = static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH));
 	wndClass.lpszMenuName = NULL;
@@ -74,6 +77,7 @@ void fq::game_engine::WindowSystem::Initialize(UINT screenWidth, UINT screenHeig
 void fq::game_engine::WindowSystem::InitializeEditorType(UINT screenWidth, UINT screenHeight)
 {
 	mHInstance = ::GetModuleHandle(NULL);
+	//mHInstance = GetModuleHandle(TEXT("FQGameEngine.dll"));
 
 	WNDCLASS wndClass{};
 
@@ -82,7 +86,7 @@ void fq::game_engine::WindowSystem::InitializeEditorType(UINT screenWidth, UINT 
 	wndClass.cbClsExtra = 0;
 	wndClass.cbWndExtra = 0;
 	wndClass.hInstance = mHInstance;
-	wndClass.hIcon = ::LoadIcon(mHInstance, IDI_APPLICATION);
+	wndClass.hIcon = ::LoadIcon(mHInstance, MAKEINTRESOURCE(IDI_ICON1));
 	wndClass.hCursor = ::LoadCursor(NULL, IDC_ARROW);
 	wndClass.hbrBackground = static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH));
 	wndClass.lpszMenuName = NULL;
