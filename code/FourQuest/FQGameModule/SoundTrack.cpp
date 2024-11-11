@@ -8,8 +8,6 @@
 
 namespace fq::game_module
 {
-	unsigned int SoundTrack::SoundChannelIndexNumber = 16;
-
 	SoundTrack::SoundTrack()
 		: Track(ETrackType::SOUND)
 		, mScene(nullptr)
@@ -44,16 +42,8 @@ namespace fq::game_module
 		if (object != nullptr)
 		{
 			if (!object->HasComponent<SoundClip>()) return;
-
-			mMyChannelNumber = SoundChannelIndexNumber;
 			auto soundClip = object->GetComponent<SoundClip>();
-			soundClip->StopChannel(mMyChannelNumber);
-			soundClip->Play(mKeyName, mbIsLoop, SoundChannelIndexNumber++);
-			
-			if (SoundChannelIndexNumber >= SoundManager::NoneStopChannel)
-			{
-				SoundChannelIndexNumber = 16;
-			}
+			soundClip->Play(mKeyName, mbIsLoop, 3);
 		}
 		else
 		{
@@ -67,27 +57,25 @@ namespace fq::game_module
 	
 	void SoundTrack::PlayExit()
 	{
-		auto object = mScene->GetObjectByName(mSoundObjectName);
+		/*auto object = mScene->GetObjectByName(mSoundObjectName);
 
 		if (object != nullptr)
 		{
 			if (!object->HasComponent<SoundClip>()) return;
 
 			auto soundClip = object->GetComponent<SoundClip>();
-			soundClip->StopChannel(mMyChannelNumber);
-		}
+		}*/
 	}
 
 	void SoundTrack::End()
 	{
-		auto object = mScene->GetObjectByName(mSoundObjectName);
+	/*	auto object = mScene->GetObjectByName(mSoundObjectName);
 
 		if (object != nullptr)
 		{
 			if (!object->HasComponent<SoundClip>()) return;
 
 			auto soundClip = object->GetComponent<SoundClip>();
-			soundClip->StopChannel(mMyChannelNumber);
-		}
+		}*/
 	}
 }

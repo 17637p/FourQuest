@@ -21,9 +21,6 @@ namespace fq::game_module
 		virtual void PlayExit() override;
 		virtual void End() override;
 
-	public:
-		static unsigned int SoundChannelIndexNumber;
-
 	private:
 		Scene* mScene;
 

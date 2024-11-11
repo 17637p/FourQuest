@@ -126,6 +126,12 @@
     <Filter Include="src\02.Monster\TrainingDummy">
       <UniqueIdentifier>{f98ad80d-c1b9-46a9-8b53-1e800447a658}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\10.PvP">
+      <UniqueIdentifier>{b3572c6a-0655-4467-b429-73c8189ab96f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\10.PvP">
+      <UniqueIdentifier>{eda929f0-3f73-4f3e-89ce-4f2f38dffb27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -458,9 +464,6 @@
     <ClInclude Include="BerserkerRushChargingState.h">
       <Filter>include\01.Player\State\Berserker</Filter>
     </ClInclude>
-    <ClInclude Include="EBerserkerAttackType.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="BossMonsterGroggyState.h">
       <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
@@ -599,9 +602,6 @@
     <ClInclude Include="CoolTimeIcon.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterSpawnState.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="DebugService.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
@@ -640,9 +640,6 @@
     </ClInclude>
     <ClInclude Include="Credit.h">
       <Filter>include\05.UI</Filter>
-    </ClInclude>
-    <ClInclude Include="GameOverHandler.h">
-      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="CircleEffectHelper.h">
       <Filter>include\06.ETC</Filter>
@@ -688,6 +685,18 @@
     </ClInclude>
     <ClInclude Include="ImagePrint.h">
       <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="EBerserkerAttackType.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOverHandler.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterSpawnState.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="PvPManager.h">
+      <Filter>include\10.PvP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1200,6 +1209,9 @@
     </ClCompile>
     <ClCompile Include="ImagePrint.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PvPManager.cpp">
+      <Filter>src\10.PvP</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
