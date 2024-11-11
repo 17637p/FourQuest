@@ -69,6 +69,7 @@
     <ClInclude Include="GameSettingUI.h" />
     <ClInclude Include="GoddessStatue.h" />
     <ClInclude Include="ImagePrint.h" />
+    <ClInclude Include="KDInfo.h" />
     <ClInclude Include="LevelHepler.h" />
     <ClInclude Include="LookingObjectHelper.h" />
     <ClInclude Include="MagicCircleEndPoint.h" />
@@ -259,6 +260,7 @@
     <ClCompile Include="GameSettingUI.cpp" />
     <ClCompile Include="GoddessStatue.cpp" />
     <ClCompile Include="ImagePrint.cpp" />
+    <ClCompile Include="KDInfo.cpp" />
     <ClCompile Include="LevelHepler.cpp" />
     <ClCompile Include="LookingObjectHelper.cpp" />
     <ClCompile Include="MagicCircleEndPoint.cpp" />

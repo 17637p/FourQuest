@@ -145,6 +145,7 @@
 #include "Credit.h"
 #include "ImagePrint.h"
 #include "ExitUI.h"
+#include "KDInfo.h"
 
 #include "CameraMoving.h"
 
@@ -2593,6 +2594,12 @@ void fq::client::RegisterMetaData()
 	entt::meta<ExitUI>()
 		.type("ExitUI"_hs)
 		.prop(fq::reflect::prop::Name, "ExitUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<KDInfo>()
+		.type("KDInfo"_hs)
+		.prop(fq::reflect::prop::Name, "KDInfo")
 		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 

@@ -262,3 +262,8 @@ void fq::client::TitleUI::processInput()
 	}
 }
 
+void fq::client::TitleUI::OnDestroy()
+{
+	GetScene()->GetEventManager()->RemoveHandle(mOffPopupSettingHandler);
+}
+
