@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Soul.h"
 #include "DefenceCounter.h"
+#include "../FQGameModule/SoundEmitter.h"
 
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/UVAnimator.h"
@@ -28,6 +29,7 @@ void fq::client::MagicCircleEndPoint::OnStart()
 {
 	mTransform = GetTransform();
 	mUVAnimator = GetComponent<game_module::UVAnimator>();
+	mSoundEmitter = GetComponent<game_module::SoundEmitter>();
 
 	for (auto child : mTransform->GetChildren())
 	{
@@ -67,6 +69,12 @@ void fq::client::MagicCircleEndPoint::OnUpdate(float dt)
 		if (defenceCounter != nullptr)
 		{
 			ratio = defenceCounter->GetCountRatio();
+
+			if (mSoundEmitter != nullptr )
+			{
+				bool isActive = defenceCounter->IsActive();
+				mSoundEmitter->SetActive(isActive);
+			}
 		}
 	}
 

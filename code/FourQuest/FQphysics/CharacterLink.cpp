@@ -75,8 +75,7 @@ namespace fq::physics
 		CopyDirectXMatrixToPxTransform(mWorldTransform, pxTransform);
 
 		return mMyJoint->Update(mParentLink.lock()->GetPxLink());
-	}
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+	}                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData)
 	{
 		physx::PxVec3 pxExtent;
@@ -84,6 +83,12 @@ namespace fq::physics
 
 		physx::PxShape* shape = physx::PxRigidActorExt::createExclusiveShape(*mPxLink, physx::PxBoxGeometry(pxExtent), *material);
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
+
+		if (shape == nullptr)
+		{
+			spdlog::warn("[CharacterLink ({})] Failed Create Shape", __LINE__);
+			return nullptr;
+		}
 		
 		shape->userData = collisionData.get();
 		shape->setContactOffset(0.002f);
@@ -95,6 +100,12 @@ namespace fq::physics
 		physx::PxShape* shape = physx::PxRigidActorExt::createExclusiveShape(*mPxLink, physx::PxCapsuleGeometry(radius, halfHeight), *material);
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 
+		if (shape == nullptr)
+		{
+			spdlog::warn("[CharacterLink ({})] Failed Create Shape", __LINE__);
+			return nullptr;
+		}
+
 		shape->userData = collisionData.get();
 		shape->setContactOffset(0.002f);
 		shape->setRestOffset(0.001f);
@@ -105,6 +116,12 @@ namespace fq::physics
 		physx::PxShape* shape = physx::PxRigidActorExt::createExclusiveShape(*mPxLink, physx::PxSphereGeometry(radius), *material);
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 		
+		if (shape == nullptr)
+		{
+			spdlog::warn("[CharacterLink ({})] Failed Create Shape", __LINE__);
+			return nullptr;
+		}
+
 		shape->userData = collisionData.get();
 		shape->setContactOffset(0.002f);
 		shape->setRestOffset(0.001f);

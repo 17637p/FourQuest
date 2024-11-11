@@ -18,6 +18,8 @@ namespace fq::client
 		virtual void OnAwake() override;
 		virtual void OnUpdate(float dt) override;
 
+		bool IsActive() const;
+
 	private:
 		int getMaxPlayer();
 

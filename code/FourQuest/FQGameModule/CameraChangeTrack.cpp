@@ -70,6 +70,12 @@ namespace fq::game_module
 
 			auto transform = mTargetCameraObject->GetComponent<Transform>();
 
+			if (mKeys.size() <= 0)
+			{
+				spdlog::warn("[CameraChangeTrack ({})] Warrning Key Size is Zero", __LINE__);
+				return;
+			}
+
 			for (int i = 0; i < mKeys.size(); i++)
 			{
 				if (mElapsedTime >= mKeys[i].time && checkPointTime < mKeys[i].time)
@@ -113,6 +119,22 @@ namespace fq::game_module
 
 	void CameraChangeTrack::PlayExit()
 	{
+		if (mTargetCameraObject && !mTargetCameraObject->IsDestroyed())
+		{
+			if (!mTargetCameraObject->HasComponent<Transform>()) return;
+
+			auto transform = mTargetCameraObject->GetComponent<Transform>();
+
+			transform->SetLocalMatrix(mOriginTransform);
+		}
+
+		if (mCurrentCameraObject && !mCurrentCameraObject->IsDestroyed())
+		{
+			if (!mCurrentCameraObject->HasComponent<Camera>()) return;
+
+			auto camera = mCurrentCameraObject->GetComponent<Camera>();
+			camera->SetMainCamera(true);
+		}
 	}
 
 	void CameraChangeTrack::End()

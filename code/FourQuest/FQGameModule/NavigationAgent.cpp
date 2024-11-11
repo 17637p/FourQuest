@@ -8,8 +8,8 @@
 fq::game_module::NavigationAgent::NavigationAgent()
 	:mImpl(),
 	mPathFindingSystem(nullptr)
-	,mbSyncRotationWithMovementDirection(true)
-	,mbIsStop(false)
+	, mbSyncRotationWithMovementDirection(true)
+	, mbIsStop(false)
 {
 
 }
@@ -114,7 +114,7 @@ void fq::game_module::NavigationAgent::MoveTo(DirectX::SimpleMath::Vector3 desti
 
 	const dtQueryFilter* filter{ mImpl->crowd->getFilter(0) };
 	const dtCrowdAgent* agent = mImpl->crowd->getAgent(mImpl->agentIdx);
-	
+
 	const float* halfExtents = mImpl->crowd->getQueryExtents();
 
 	mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&destination), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
@@ -172,8 +172,16 @@ void fq::game_module::NavigationAgent::Stop()
 
 void fq::game_module::NavigationAgent::DeleteAgentData()
 {
-	mImpl->crowd->removeAgent(mImpl->agentIdx);
-	delete mImpl;
+	if (mImpl)
+	{
+		mImpl->crowd->removeAgent(mImpl->agentIdx);
+		delete mImpl;
+		mImpl = nullptr;
+	}
+	else
+	{
+		spdlog::warn("NavigationAgent : Already Delete AgentData");
+	}
 }
 
 bool fq::game_module::NavigationAgent::HasReachedDestination() const
@@ -200,7 +208,7 @@ bool fq::game_module::NavigationAgent::IsValid(DirectX::SimpleMath::Vector3 posi
 	const dtQueryFilter* filter{ mImpl->crowd->getFilter(0) };
 	const float* halfExtents = mImpl->crowd->getQueryExtents();
 
-	dtStatus status = 
+	dtStatus status =
 		mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&position), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
 	if (dtStatusSucceed(status) && mImpl->targetRef != 0)
 	{

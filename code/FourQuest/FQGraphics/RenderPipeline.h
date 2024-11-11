@@ -31,7 +31,7 @@ namespace fq::graphics
 		virtual void BeginRender();
 		virtual void Render();
 		virtual void RenderFullScreen();
-		virtual void EndRender();
+		virtual void EndRender(bool bUseVSync);
 
 		inline std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
 

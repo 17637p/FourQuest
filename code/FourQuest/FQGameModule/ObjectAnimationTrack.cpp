@@ -44,7 +44,7 @@ namespace fq::game_module
 		// 해당 오브젝트가 존재하지 않으면 로그 띄우기
 		if (mTargetObject == nullptr)
 		{
-			spdlog::warn("[ObjectAnimationTrack Warrning({})] Do not Have TargetObject", __LINE__);
+			spdlog::warn("[ObjectAnimationTrack Warrning({})]  Do not Have TargetObject Name [{}] ", __LINE__ , mTargetObjectName);
 		}
 		else if (!mTargetObject->HasComponent<Transform>())
 		{
@@ -85,10 +85,23 @@ namespace fq::game_module
 
 			if (mbIsLoop)
 			{
+				if (keyNumber >= mAnimationContainer.size())
+				{
+					spdlog::warn("[ObjectAnimationTrack ({})] Animation KeyNumber Over the Animation Key Size", __LINE__);
+				}
+
 				float animationTotalTime = mAnimationContainer[keyNumber]->GetAnimationClip().Duration;
 
 				while (time >= animationTotalTime / mAnimationTrackKeys[keyNumber].speed)
+				{
 					time -= animationTotalTime / mAnimationTrackKeys[keyNumber].speed;
+
+					if (time < 0)
+					{
+						spdlog::warn("[ObjectAnimationTrack ({})] Animation Time is Minus", __LINE__);
+						return;
+					}
+				}
 			}
 
 			nodeHierarchyInstance.Update(time * mAnimationTrackKeys[keyNumber].speed, mAnimationContainer[keyNumber]);

@@ -6,7 +6,6 @@ namespace fq::game_module
 {
 	class ImageUI;
 	class ScreenManager;
-	class Camera;
 }
 
 namespace fq::client
@@ -52,7 +51,6 @@ namespace fq::client
 		int mCurIndex;
 		std::vector<game_module::ImageUI*> mImageUIs;
 		game_module::ScreenManager* mScreenManager;
-		game_module::Camera* mMainCamera;
 
 		bool mIsRenderingUI;
 

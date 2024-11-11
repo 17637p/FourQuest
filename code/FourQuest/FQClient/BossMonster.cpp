@@ -38,7 +38,7 @@ fq::client::BossMonster::BossMonster()
 	, mSkinnedMesh(nullptr)
 	, mTarget(nullptr)
 	, mHpBar(nullptr)
-
+	, mbUseBossBGM(false)
 	, mMaxHp(0.f)
 	, mHp(2000.f)
 	, mAttackPower(50.f)
@@ -145,6 +145,11 @@ fq::client::BossMonster::BossMonster()
 	, mPlayer2GroggyIncreaseRatio(0.05f)
 	, mPlayer3GroggyIncreaseRatio(0.025f)
 	, mPlayer4GroggyIncreaseRatio(0.0125f)
+
+	, mKnightSoulDamageRatio(1.f)
+	, mMagicSoulDamageRatio(1.f)
+	, mArcherSoulDamageRatio(1.f)
+	, mBerserkerSoulDamageRatio(1.f)
 {}
 
 
@@ -212,6 +217,7 @@ void fq::client::BossMonster::OnStart()
 	GenerateAngryEnteringVigilantCount();
 	GenerateEnteringVigilantCount();
 	initGroggy();
+	playBossBGM();
 }
 
 void fq::client::BossMonster::OnUpdate(float dt)
@@ -1270,6 +1276,29 @@ void fq::client::BossMonster::processAttack(Attack* attack)
 		}
 	}
 
+	AttackInfo::EAttackType attackType = attack->GetAttackType();
+
+	switch (attackType)
+	{
+	case fq::client::AttackInfo::EAttackType::Normal:
+		break;
+	case fq::client::AttackInfo::EAttackType::KnightSoul:
+		damageRatio = mKnightSoulDamageRatio;
+		break;
+	case fq::client::AttackInfo::EAttackType::MagicSoul:
+		damageRatio = mMagicSoulDamageRatio;
+		break;
+	case fq::client::AttackInfo::EAttackType::ArcherSoul:
+		damageRatio = mArcherSoulDamageRatio;
+		break;
+	case fq::client::AttackInfo::EAttackType::BerserkerSoul:
+		damageRatio = mBerserkerSoulDamageRatio;
+		break;
+	default:
+		assert(false);
+		break;
+	}
+
 	if (attack->ProcessAttack())
 	{
 		float attackPower = attack->GetAttackPower() * damageRatio;
@@ -1431,4 +1460,13 @@ unsigned int fq::client::BossMonster::GetAngryEnteringVigilantCount() const
 unsigned int fq::client::BossMonster::GetEnteringVigilantCount() const
 {
 	return mVigilantCount;
+}
+
+void fq::client::BossMonster::playBossBGM()
+{
+	if(mbUseBossBGM)
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnStopChannel>({ fq::sound::EChannel::BGM });
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mBossBGMKey, true , fq::sound::EChannel::BGM });
+	}
 }

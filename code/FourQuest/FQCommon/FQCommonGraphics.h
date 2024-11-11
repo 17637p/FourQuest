@@ -214,6 +214,8 @@ namespace fq::graphics
 
 		bool IsRender = true;
 		bool IsUseSetSpacing = false;
+
+		bool isUseAutoCenterAlign = false;
 	};
 
 	struct TerrainLayer

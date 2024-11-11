@@ -17,6 +17,7 @@
 #include "PlantMonster.h"
 #include "BossMonster.h"
 #include "MonsterSpawner.h"
+#include "SettingVariable.h"
 
 namespace fq::client
 {
@@ -140,6 +141,13 @@ namespace fq::client
 		{
 			auto monster = collision.other->GetComponent<MonsterSpawner>();
 			monster->HitArrow(GetGameObject());
+		}
+
+		// 플레이어 피격 처리
+		if (SettingVariable::IsAllowOtherPlayerAttack &&
+			collision.other->HasComponent<Player>())
+		{
+			mMaxBlockCount--;
 		}
 
 		if (mMaxBlockCount <= 0)

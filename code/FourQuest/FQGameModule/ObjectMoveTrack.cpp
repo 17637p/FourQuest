@@ -73,6 +73,12 @@ namespace fq::game_module
 
 			auto transform = mTargetObject->GetComponent<Transform>();
 
+			if (mKeys.size() <= 0)
+			{
+				spdlog::warn("[ObjectMoverTrack ({})] Warrning Key Size is Zero", __LINE__);
+				return;
+			}
+
 			// 현재 재생중인 키가 무엇인지 찾기
 			for (int i = 0; i < mKeys.size(); i++)
 			{
@@ -130,23 +136,63 @@ namespace fq::game_module
 
 	void ObjectMoveTrack::PlayExit()
 	{
+		if (mTargetObject && !mTargetObject->IsDestroyed())
+		{
+			auto transform = mTargetObject->GetComponent<Transform>();
+			if (mbIsObjectReturnToStartTransform)
+			{
+				DirectX::SimpleMath::Matrix prevTransform =
+					DirectX::SimpleMath::Matrix::CreateScale(mPrevScale)
+					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(mPrevRotation)
+					* DirectX::SimpleMath::Matrix::CreateTranslation(mPrevPosition);
+
+				transform->SetWorldMatrix(prevTransform);
+			}
+			else
+			{
+				if (mKeys.size() <= 0)
+				{
+					spdlog::warn("[ObjectMoverTrack ({})] Warrning Key Size is Zero", __LINE__);
+					return;
+				}
+
+				const auto& lastKey = mKeys.back();
+				auto rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(lastKey.rotation / 180.f * 3.14f);
+				transform->GenerateWorld(lastKey.position, rotation, lastKey.scale);
+			}
+		}
+		else
+		{
+			mTargetObject = nullptr;
+		}
 	}
 
 	void ObjectMoveTrack::End()
 	{
-		// 시퀀스가 시작하기 이전 Transform로 돌아가야 할 경우
-		if (mTargetObject && !mTargetObject->IsDestroyed() && mbIsObjectReturnToStartTransform)
+		if (mTargetObject && !mTargetObject->IsDestroyed())
 		{
-			if (!mTargetObject->HasComponent<Transform>()) return;
-
 			auto transform = mTargetObject->GetComponent<Transform>();
+			if (mbIsObjectReturnToStartTransform)
+			{
+				DirectX::SimpleMath::Matrix prevTransform =
+					DirectX::SimpleMath::Matrix::CreateScale(mPrevScale)
+					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(mPrevRotation)
+					* DirectX::SimpleMath::Matrix::CreateTranslation(mPrevPosition);
 
-			DirectX::SimpleMath::Matrix prevTransform =
-				DirectX::SimpleMath::Matrix::CreateScale(mPrevScale)
-				* DirectX::SimpleMath::Matrix::CreateFromQuaternion(mPrevRotation)
-				* DirectX::SimpleMath::Matrix::CreateTranslation(mPrevPosition);
+				transform->SetWorldMatrix(prevTransform);
+			}
+			else
+			{
+				if (mKeys.size() <= 0)
+				{
+					spdlog::warn("[ObjectMoverTrack ({})] Warrning Key Size is Zero", __LINE__);
+					return;
+				}
 
-			transform->SetWorldMatrix(prevTransform);
+				const auto& lastKey = mKeys.back();
+				auto rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(lastKey.rotation / 180.f * 3.14f);
+				transform->GenerateWorld(lastKey.position, rotation, lastKey.scale);
+			}
 		}
 		else
 		{

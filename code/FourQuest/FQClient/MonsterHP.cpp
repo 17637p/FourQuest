@@ -63,7 +63,7 @@ void fq::client::MonsterHP::SetVisible(bool isVisible)
 	mImageUI->SetUIInfomations(infomations);
 }
 
-void fq::client::MonsterHP::OnUpdate(float dt)
+void fq::client::MonsterHP::OnLateUpdate(float dt)
 {
 	using namespace DirectX::SimpleMath;
 
@@ -97,19 +97,22 @@ void fq::client::MonsterHP::OnUpdate(float dt)
 	auto& outBar = infomations[0];
 	outBar.StartX = width * 0.5f + (screenPos.x * width * 0.5f) - mBarSize.x * 0.5f;
 	outBar.StartY = height * 0.5f - (screenPos.y * height * 0.5f) + mScreenYOffset;
+	outBar.Layer = mSortLayer + 3;
 
 	// HpBar
 	auto& innerBar = infomations[1];
-	innerBar.StartX = outBar.StartX  + mInnerOffset.x;
+	innerBar.StartX = outBar.StartX + mInnerOffset.x;
 	innerBar.StartY = outBar.StartY;
 	innerBar.XRatio = mHpRatio + mDecreaseRatio;
-	innerBar.Width = (mBarSize.x - mInnerOffset.x *2.f ) * (mHpRatio + mDecreaseRatio);
+	innerBar.Width = (mBarSize.x - mInnerOffset.x * 2.f) * (mHpRatio + mDecreaseRatio);
+	innerBar.Layer = mSortLayer+1;
 
 	// DecreaseBar 
 	auto& decreaseBar = infomations[2];
 	decreaseBar.StartX = outBar.StartX + mInnerOffset.x + (mHpRatio * (mBarSize.x - mInnerOffset.x * 2.f));
 	decreaseBar.StartY = outBar.StartY + mInnerOffset.y;
 	decreaseBar.Width = mDecreaseRatio * (mBarSize.x - mInnerOffset.x * 2.f);
+	decreaseBar.Layer = mSortLayer;
 
 	// RankBar
 	if (infomations.size() > 3)
@@ -117,6 +120,7 @@ void fq::client::MonsterHP::OnUpdate(float dt)
 		auto& rankBar = infomations[3];
 		rankBar.StartX = outBar.StartX - mRankOffset.x;
 		rankBar.StartY = outBar.StartY - mRankOffset.y;
+		rankBar.Layer = mSortLayer;
 	}
 
 	mImageUI->SetUIInfomations(infomations);
@@ -130,7 +134,10 @@ void fq::client::MonsterHP::OnStart()
 	mImageUI->SetBindTransform(false);
 
 	if (!mImageUI)
+	{
 		spdlog::warn("{} has not ImageUI Component", GetGameObject()->GetName());
+		return;
+	}
 
 	auto infomations = mImageUI->GetUIInfomations();
 	assert(infomations.size() > 2);
@@ -138,17 +145,14 @@ void fq::client::MonsterHP::OnStart()
 	// OutBar
 	infomations[0].Width = mBarSize.x;
 	infomations[0].Height = mBarSize.y;
-	infomations[0].Layer = 1230;
 
 	// InnerBar	
-	infomations[1].Width = mBarSize.x -mInnerOffset.x * 2.f; 
+	infomations[1].Width = mBarSize.x - mInnerOffset.x * 2.f;
 	infomations[1].Height = mBarSize.y;
-	infomations[1].Layer = 1229;
 
 	// DecreaseBar
 	infomations[2].Width = 0.f;
 	infomations[2].Height = mBarSize.y - mInnerOffset.y * 2.f;
-	infomations[2].Layer = 1228;
 
 	// RankBar
 	if (infomations.size() > 3)
@@ -174,7 +178,8 @@ fq::client::MonsterHP::MonsterHP()
 	, mTransform(nullptr)
 	, mImageUI(nullptr)
 	, mDecreaseSpeed(1.f)
-	, mRankOffset(5.f,5.f)
+	, mRankOffset(5.f, 5.f)
+	, mSortLayer(layer::MonsterHp)
 {}
 
 fq::client::MonsterHP::~MonsterHP()

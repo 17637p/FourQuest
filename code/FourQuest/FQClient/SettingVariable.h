@@ -22,7 +22,7 @@ namespace fq::client
 
 		static inline bool IsVibe = true;
 		static inline bool IsUsedAimAssist = true;
-		static inline bool IsAllowOtherPlayerAttack = true;
+		static inline bool IsAllowOtherPlayerAttack = false;
 
 		//////////////////////////////////////////////////////////////////////////
 		//							갑옷 스폰 반경								//
@@ -38,8 +38,6 @@ namespace fq::client
 		//							에디터 설정									//
 		//////////////////////////////////////////////////////////////////////////
 		static inline bool IsUseCameraInit = false;
-
-
 	};
 }
 

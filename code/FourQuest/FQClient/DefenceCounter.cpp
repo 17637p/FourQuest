@@ -23,7 +23,7 @@ fq::client::DefenceCounter::~DefenceCounter()
 void fq::client::DefenceCounter::OnTriggerEnter(const game_module::Collision& collision)
 {
 	if (collision.other->GetTag() == game_module::ETag::Player ||
-		collision.other->GetTag() == game_module::ETag::Soul || 
+		collision.other->GetTag() == game_module::ETag::Soul ||
 		collision.other->GetTag() == game_module::ETag::Dash ||
 		collision.other->GetTag() == game_module::ETag::PlayerMonsterIgnore)
 	{
@@ -52,7 +52,7 @@ void fq::client::DefenceCounter::OnUpdate(float dt)
 		if (mCollidingPlayerNum > 0)
 		{
 			GetScene()->GetEventManager()->FireEvent<client::event::InProgressDefenceUp>(
-				{ GetGameObject()->GetName()});
+				{ GetGameObject()->GetName() });
 		}
 
 		mCurCount += dt * mCountSpeed * 4 * ((float)mCollidingPlayerNum) / getMaxPlayer();
@@ -64,6 +64,11 @@ void fq::client::DefenceCounter::OnUpdate(float dt)
 			mIsClear = true;
 		}
 	}
+}
+
+bool fq::client::DefenceCounter::IsActive() const
+{
+	return mCollidingPlayerNum > 0 && !mIsClear;
 }
 
 std::shared_ptr<fq::game_module::Component> fq::client::DefenceCounter::Clone(std::shared_ptr<Component> clone /* = nullptr */) const

@@ -187,6 +187,14 @@ extern "C" {
 		protected:
 			virtual ~IDecalMaterial() = default;
 		};
+
+		class ITexture
+		{
+		public:
+
+		protected:
+			virtual ~ITexture() = default;
+		};
 	}
 #ifdef __cplusplus
 }

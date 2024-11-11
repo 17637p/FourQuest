@@ -17,7 +17,6 @@ fq::client::SpeechBubbleUI::SpeechBubbleUI()
 	mSequenceSpeechExitHandler(),
 	mImageUIs(),
 	mScreenManager(nullptr),
-	mMainCamera(nullptr),
 	mWorldOffset(),
 	mScreenOffset(),
 	mCurTime(0),
@@ -63,22 +62,11 @@ void fq::client::SpeechBubbleUI::OnStart()
 		mImageUIs.push_back(bubble->GetComponent<game_module::ImageUI>());
 	}
 
-	// MainCamera 가져오기 
-	auto view = GetScene()->GetComponentView<game_module::Camera>();
-	for (auto& object : view)
-	{
-		auto camera = object.GetComponent<game_module::Camera>();
-
-		if (camera->IsMain())
-		{
-			mMainCamera = camera;
-		}
-	}
-
 	mScreenManager = GetScene()->GetScreenManager();
 
 	eventProcessSequenceEnterSpeech();
 	eventProcessSequenceExitSpeech();
+	eventProcessOnUIRender();
 }
 
 void fq::client::SpeechBubbleUI::OnUpdate(float dt)
@@ -102,7 +90,9 @@ void fq::client::SpeechBubbleUI::OnUpdate(float dt)
 		float width = mScreenManager->GetFixScreenWidth();
 		float height = mScreenManager->GetFixScreenHeight();
 
-		auto viewProj = mMainCamera->GetViewProjection();
+		fq::game_module::Camera* mainCamera = nullptr;
+		GetScene()->GetEventManager()->FireEvent<fq::event::GetMainCamera>({ &mainCamera });
+		auto viewProj = mainCamera->GetViewProjection();
 		DirectX::SimpleMath::Vector3 screenPos = DirectX::SimpleMath::Vector3::Transform(pos, viewProj);
 
 		//GetTransform()->SetLocalPosition({ screenPos.x * width * 0.5f, screenPos.y * height * 0.5f, 0 });
@@ -117,6 +107,13 @@ void fq::client::SpeechBubbleUI::OnUpdate(float dt)
 		{
 			play();
 		}
+		else
+		{
+			for (int i = 0; i < mImageUIs.size(); i++)
+			{
+				mImageUIs[i]->SetIsRender(0, false);
+			}
+		}
 	}
 }
 
@@ -124,6 +121,7 @@ void fq::client::SpeechBubbleUI::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mSequenceSpeechEnterHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mSequenceSpeechExitHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mUIRenderHandler);
 }
 
 std::shared_ptr<fq::game_module::Component> fq::client::SpeechBubbleUI::Clone(std::shared_ptr<Component> clone /* = nullptr */) const

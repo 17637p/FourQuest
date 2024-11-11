@@ -173,12 +173,12 @@ void fq::client::Soul::OnUpdate(float dt)
 
 	if (!handleOnSummon())
 	{
+		processInput(dt); // 가장 먼저 호출 필요 (캐릭터 이동설정)
 		selectGoddessStatue(dt);
 		selectArmour();
 		checkOtherPlayer();
 		updateSoulHP(dt);
 		checkReleaseGoddessStatue();
-		processInput(dt);
 	}
 
 	mBGaugeUI->SetVisible(mbIsVisibleBGaugeUI);
@@ -267,6 +267,9 @@ void fq::client::Soul::selectArmour()
 					rigidbody->SetLinearVelocity({ 0,0,0 });
 				}
 
+				// 사운드 재생
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_ArmorSpawn", false , fq::sound::EChannel::SE });
+
 				mPlayerHpBar->SetVisible(false);
 			}
 		}
@@ -308,18 +311,18 @@ void fq::client::Soul::SetSoulColor()
 
 			switch (mSoulType)
 			{
-				case fq::client::ESoulType::Sword:
-					matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
-					break;
-				case fq::client::ESoulType::Staff:
-					matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
-					break;
-				case fq::client::ESoulType::Axe:
-					matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
-					break;
-				case fq::client::ESoulType::Bow:
-					matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
-					break;
+			case fq::client::ESoulType::Sword:
+				matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
+				break;
+			case fq::client::ESoulType::Staff:
+				matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
+				break;
+			case fq::client::ESoulType::Axe:
+				matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
+				break;
+			case fq::client::ESoulType::Bow:
+				matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
+				break;
 			}
 
 			particle->SetParticleMaterialInfo(matInfo);
@@ -386,8 +389,6 @@ bool fq::client::Soul::handleOnSummon()
 		{
 			mController->SetCanMoveCharater(true);
 			mController->SetOnMove(true);
-			
-			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_ArmorSpawn", false , fq::sound::EChannel::SE });
 
 			DestorySoul();
 			spdlog::trace("DestroySoul");
@@ -512,20 +513,20 @@ void fq::client::Soul::setName()
 	{
 		switch (soulType)
 		{
-			case 0:
-				speechBubble->SetName(PlayerInfoVariable::KnightName);
-				break;
-			case 1:
-				speechBubble->SetName(PlayerInfoVariable::MagicName);
-				break;
-			case 2:
-				speechBubble->SetName(PlayerInfoVariable::BerserkerName);
-				break;
-			case 3:
-				speechBubble->SetName(PlayerInfoVariable::ArcherName);
-				break;
-			default:
-				break;
+		case 0:
+			speechBubble->SetName(PlayerInfoVariable::KnightName);
+			break;
+		case 1:
+			speechBubble->SetName(PlayerInfoVariable::MagicName);
+			break;
+		case 2:
+			speechBubble->SetName(PlayerInfoVariable::BerserkerName);
+			break;
+		case 3:
+			speechBubble->SetName(PlayerInfoVariable::ArcherName);
+			break;
+		default:
+			break;
 		}
 	}
 }
@@ -558,18 +559,25 @@ void fq::client::Soul::processInput(float dt)
 	auto foward = GetTransform()->GetWorldMatrix().Forward();
 	foward.Normalize();
 
-	if (mDashCoolTime < mDashElapsed && input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+	if (mDashCoolTime < mDashElapsed && !GetGameObject()->IsDestroyed())
 	{
-		// 속도 처리
-		if (rigidbody != nullptr)
-		{
-			auto velocity = foward;
-			velocity.x *= mDashSpeed;
-			velocity.z *= mDashSpeed;
-			rigidbody->SetLinearVelocity(velocity);
-		}
+		mController->SetCanMoveCharater(true);
 
-		mDashElapsed = 0.f;
+		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+		{
+			// 속도 처리
+			if (rigidbody != nullptr)
+			{
+				auto velocity = foward;
+				velocity.x *= mDashSpeed;
+				velocity.z *= mDashSpeed;
+				velocity.y = 0.f;
+				rigidbody->SetLinearVelocity(velocity);
+				mController->SetCanMoveCharater(false);
+			}
+
+			mDashElapsed = 0.f;
+		}
 	}
 }
 
@@ -597,5 +605,10 @@ void fq::client::Soul::SetHP(float hp)
 	{
 		mPlayerHpBar->SetHPRatio(GetSoulHpRatio());
 	}
+}
+
+bool fq::client::Soul::GetIsOnSummon() const
+{
+	return mbIsOnSummon;
 }
 

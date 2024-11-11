@@ -21,5 +21,12 @@
     <ClInclude Include="Application.h">
       <Filter>app</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FQGameEngineDemo.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\..\Downloads\L_Title.ico" />
   </ItemGroup>
 </Project>

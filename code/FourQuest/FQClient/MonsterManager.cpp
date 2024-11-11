@@ -1,6 +1,10 @@
 #include "MonsterManager.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "MonsterHP.h"
+#include "UILayerDefine.h"
+#include "MonsterHP.h"
 
 fq::client::MonsterManager::MonsterManager()
 	:mOnDestroyHandler{}
@@ -69,6 +73,14 @@ void fq::client::MonsterManager::OnAwake()
 			if (event.object->GetTag() == game_module::ETag::Monster)
 			{
 				mMonsters.push_back(event.object->shared_from_this());
+
+				for (auto child : event.object->GetChildren())
+				{
+					if (child->HasComponent<MonsterHP>())
+					{
+						mMonsterHps.push_back(child->shared_from_this());
+					}
+				}
 			}
 		});
 
@@ -78,6 +90,14 @@ void fq::client::MonsterManager::OnAwake()
 		if (object.GetTag() == game_module::ETag::Monster)
 		{
 			mMonsters.push_back(object.shared_from_this());
+
+			for (auto child : object.GetChildren())
+			{
+				if (child->HasComponent<MonsterHP>())
+				{
+					mMonsterHps.push_back(child->shared_from_this());
+				}
+			}
 		}
 	}
 }
@@ -91,4 +111,37 @@ void fq::client::MonsterManager::OnDestroy()
 
 void fq::client::MonsterManager::OnUpdate(float dt)
 {
+	// UI 삭제 
+	mMonsterHps.erase(std::remove_if(mMonsterHps.begin(), mMonsterHps.end(),
+		[](std::shared_ptr<game_module::GameObject> object) {
+			return object->IsDestroyed();
+		}), mMonsterHps.end());
+
+	// 몬스터 레이어를 정리합니다 
+	sortMonsterHpLayer();
+}
+
+void fq::client::MonsterManager::sortMonsterHpLayer()
+{
+	using namespace game_module;
+
+	std::sort(mMonsterHps.begin(), mMonsterHps.end(),
+		[](const std::shared_ptr<GameObject>& lhs, const std::shared_ptr<GameObject> rhs) {
+			auto lhsT = lhs->GetTransform();
+			auto rhsT = rhs->GetTransform();
+
+			auto lhsPositionZ = lhsT->GetWorldPosition().z;
+			auto rhsPositionZ = rhsT->GetWorldPosition().z;
+
+			return rhsPositionZ > lhsPositionZ;
+		});
+
+	unsigned int layer = layer::MonsterHp;
+
+	for (const auto& monster : mMonsterHps)
+	{
+		auto hp = monster->GetComponent<MonsterHP>();
+		hp->SetSortLayer(layer);
+		layer += 5;
+	}
 }

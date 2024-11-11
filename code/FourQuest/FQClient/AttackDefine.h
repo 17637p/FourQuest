@@ -21,6 +21,15 @@ namespace fq::client
 
 	struct AttackInfo
 	{
+		enum class EAttackType
+		{
+			Normal,
+			KnightSoul,
+			MagicSoul,
+			ArcherSoul,
+			BerserkerSoul,
+		};
+
 		fq::game_module::GameObject* attacker = nullptr;
 		float damage = -1.f;
 		bool bIsInfinite = true;
@@ -39,6 +48,8 @@ namespace fq::client
 
 		std::string HitEffectName;
 		float knocBackTime = 0.2f;
+
+		EAttackType attackType = EAttackType::Normal;
 	};
 
 	struct ArrowAttackInfo

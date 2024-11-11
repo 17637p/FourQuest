@@ -15,7 +15,7 @@ namespace fq::graphics
 {
 	class D3D11Device;
 
-	class D3D11Texture : public ResourceBase
+	class D3D11Texture : public ResourceBase, public ITexture
 	{
 		enum class TextureType
 		{
@@ -35,7 +35,7 @@ namespace fq::graphics
 			const std::vector<std::wstring>& texturePaths);
 
 		static std::string GenerateRID(const std::wstring& texturePath);
-		static void SaveTextureToFile(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11Texture2D* texture, const std::wstring& fileName);
+		static bool SaveTextureToFile(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11Texture2D* texture, const std::wstring& fileName);
 
 		void CreateUAV(const std::shared_ptr<D3D11Device>& d3d11Device, UINT mipSlice);
 

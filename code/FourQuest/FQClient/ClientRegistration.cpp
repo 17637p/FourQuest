@@ -143,6 +143,8 @@
 #include "PlayerCheckUI.h"
 #include "CoolTimeIcon.h"
 #include "Credit.h"
+#include "ImagePrint.h"
+#include "ExitUI.h"
 
 #include "CameraMoving.h"
 
@@ -201,6 +203,8 @@
 #include "CircleEffectHelper.h"
 #include "GameOverHandler.h"
 
+#include "PvPManager.h"
+
 void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -242,6 +246,23 @@ void fq::client::RegisterMetaData()
 	entt::meta<DebugService>()
 		.type("DebugService"_hs)
 		.prop(reflect::prop::Name, "DebugService")
+		.base<game_module::Component>();
+
+	entt::meta<PvPManager>()
+		.type("PvPManager"_hs)
+		.prop(reflect::prop::Name, "PvPManager")
+		.data<&PvPManager::mEndSeuqenceName>("EndSeuqenceName"_hs)
+		.prop(fq::reflect::prop::Name, "EndSeuqenceName")
+		.data<&PvPManager::mMaxSpawnAromour>("MaxSpawnAromour"_hs)
+		.prop(fq::reflect::prop::Name, "MaxSpawnAromour")
+		.data<&PvPManager::mMinSpawnAromour>("MinSpawnAromour"_hs)
+		.prop(fq::reflect::prop::Name, "MinSpawnAromour")
+		.data<&PvPManager::mMaxSpawnRange>("MaxSpawnRange"_hs)
+		.prop(fq::reflect::prop::Name, "MaxSpawnRange")
+		.data<&PvPManager::mMinSpawnRange>("MinSpawnRange"_hs)
+		.prop(fq::reflect::prop::Name, "MinSpawnRange")
+		.data<&PvPManager::mArmours>("Armours"_hs)
+		.prop(fq::reflect::prop::Name, "Armours")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1472,6 +1493,13 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BossMonster")
 		.prop(reflect::prop::Label, "Monster")
 
+		.data<&BossMonster::mbUseBossBGM>("UseBossBGM"_hs)
+		.prop(fq::reflect::prop::Name, "UseBossBGM")
+		.prop(fq::reflect::prop::Comment, u8"보스 등장시 BGM 사용여부")
+		.data<&BossMonster::mBossBGMKey>("BossBGMKey"_hs)
+		.prop(fq::reflect::prop::Name, "BossBGMKey")
+		.prop(fq::reflect::prop::Comment, u8"보스 등장시 BGM")
+
 		.data<&BossMonster::mHp>("Hp"_hs)
 		.prop(fq::reflect::prop::Name, "Hp")
 		.prop(fq::reflect::prop::Comment, u8"보스 체력")
@@ -1742,6 +1770,19 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mPlayer4GroggyIncreaseRatio>("mPlayer4GroggyIncreaseRatio"_hs)
 		.prop(fq::reflect::prop::Name, "mPlayer4GroggyIncreaseRatio")
 		.prop(fq::reflect::prop::Comment, u8"플레이어 4명일 때 그로기 상승 비율")
+
+		.data<&BossMonster::mKnightSoulDamageRatio>("mKnightSoulDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mKnightSoulDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"기사 영혼 공격 대미지 비율")
+		.data<&BossMonster::mMagicSoulDamageRatio>("mMagicSoulDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mMagicSoulDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"마법사 영혼 공격 대미지 비율")
+		.data<&BossMonster::mArcherSoulDamageRatio>("mArcherSoulDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mArcherSoulDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"아처 영혼 공격 대미지 비율")
+		.data<&BossMonster::mBerserkerSoulDamageRatio>("mBerserkerSoulDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mBerserkerSoulDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"버서커 영혼 공격 대미지 비율")
 
 		.base<fq::game_module::Component>();
 
@@ -2076,6 +2117,8 @@ void fq::client::RegisterMetaData()
 		.type("MonsterSpawner"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterSpawner")
 		.prop(reflect::prop::Label, "Monster")
+		.data<&MonsterSpawner::mHp>("Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Hp")
 		.data<&MonsterSpawner::mMonster>("MonsterPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterPrefab")
 		.data<&MonsterSpawner::mSpawnCoolTime>("SpwanCoolTime"_hs)
@@ -2234,6 +2277,22 @@ void fq::client::RegisterMetaData()
 	entt::meta<TrainingDummyHitState>()
 		.type("TrainingDummyHitState"_hs)
 		.prop(fq::reflect::prop::Name, "TrainingDummyHitState")
+
+		.data<&TrainingDummyHitState::mDuration>("mDuration"_hs)
+		.prop(fq::reflect::prop::Name, "mDuration")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 지속")
+
+		.data<&TrainingDummyHitState::mHitColor>("mHitColor"_hs)
+		.prop(fq::reflect::prop::Name, "mHitColor")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 색상")
+
+		.data<&TrainingDummyHitState::mRimPow>("mRimPow"_hs)
+		.prop(fq::reflect::prop::Name, "mRimPow")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 제곱값")
+
+		.data<&TrainingDummyHitState::mRimIntensity>("mRimIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "mRimIntensity")
+		.prop(fq::reflect::prop::Comment, u8"히트 이펙트 강도")
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -2348,6 +2407,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "RepauseUIPrefab")
 		.data<&PauseUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
+		.data<&PauseUI::mExitUIPrefab>("ExitUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ExitUIPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<LoadingText>()
@@ -2539,6 +2600,22 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "DelaySeconds")
 		.data<&Credit::mNextSceneName>("NextSceneName"_hs)
 		.prop(fq::reflect::prop::Name, "NextSceneName")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ImagePrint>()
+		.type("ImagePrint"_hs)
+		.prop(fq::reflect::prop::Name, "ImagePrint")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&ImagePrint::mOffsetX>("OffsetX"_hs)
+		.prop(fq::reflect::prop::Name, "OffsetX")
+		.data<&ImagePrint::mOffsetY>("OffsetY"_hs)
+		.prop(fq::reflect::prop::Name, "OffsetY")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ExitUI>()
+		.type("ExitUI"_hs)
+		.prop(fq::reflect::prop::Name, "ExitUI")
+		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

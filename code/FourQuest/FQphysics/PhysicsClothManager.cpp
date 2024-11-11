@@ -67,6 +67,14 @@ namespace fq::physics
 		}
 		mUpCommingClothVec.clear();
 
+		// PxScene에서 시뮬레이션이 끝나고 난 뒤에 천 시뮬레이션 객체 삭제
+		for (auto cloth : mRemoveClothVec)
+		{
+			mScene->removeActor(*(cloth->GetPBDParticleSystem()));
+		}
+		mUpCommingClothVec.clear();
+		mRemoveClothVec.clear();
+
 		return true;
 	}
 
@@ -126,8 +134,10 @@ namespace fq::physics
 		auto clothIter = mPhysicsClothContainer.find(id);
 		if (clothIter != mPhysicsClothContainer.end())
 		{
-			mScene->removeActor(*(clothIter->second->GetPBDParticleSystem()));
-			mPhysicsClothContainer.erase(clothIter);
+			auto particleSystem = clothIter->second->GetPBDParticleSystem();
+
+			mRemoveClothVec.push_back(clothIter->second);
+			mPhysicsClothContainer.erase(id);
 
 			return true;
 		}
@@ -139,7 +149,7 @@ namespace fq::physics
 		// 모든 천 삭제
 		for (auto [id, actor] : mPhysicsClothContainer)
 		{
-			mScene->removeActor(*actor->GetPBDParticleSystem());
+			mRemoveClothVec.push_back(actor);
 		}
 		mPhysicsClothContainer.clear();
 		mUpCommingClothVec.clear();

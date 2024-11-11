@@ -9,9 +9,11 @@
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Decal.h"
+#include "../FQGameModule/Particle.h"
 #include "../FQGameModule/Terrain.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/FQPath.h"
+#include "../FQCommon/StringUtil.h"
 
 #include "GameProcess.h"
 #include "RenderingSystem.h"
@@ -473,28 +475,14 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 							makeRelativePath(data.EmissiveFileName);
 							makeRelativePath(data.NormalFileName);
 							makeRelativePath(data.MetalnessSmoothnessFileName);
+							makeRelativePath(data.NoiseFileName);
+							makeRelativePath(data.BlendTextureName);
 
 							mGameProcess->mGraphics->WriteMaterialInfo(path.path().string(), data);
 						}
 					}
 				}
 			}
-
-			auto tryChangeDDSFormatW = [](std::wstring& filename)
-				{
-					if (filename.empty())
-					{
-						return;
-					}
-
-					std::filesystem::path ddsFilename = filename;
-					ddsFilename.replace_extension(".dds");
-
-					if (std::filesystem::exists(ddsFilename))
-					{
-						filename = ddsFilename;
-					}
-				};
 
 			if (ImGui::Button("rewrite material texture path(try change file format to dds)"))
 			{
@@ -506,14 +494,130 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						{
 							auto data = mGameProcess->mGraphics->ReadMaterialInfo(path.path().string());
 
-							tryChangeDDSFormatW(data.BaseColorFileName);
-							tryChangeDDSFormatW(data.MetalnessFileName);
-							tryChangeDDSFormatW(data.RoughnessFileName);
-							tryChangeDDSFormatW(data.EmissiveFileName);
-							tryChangeDDSFormatW(data.NormalFileName);
-							tryChangeDDSFormatW(data.MetalnessSmoothnessFileName);
+							data.BaseColorFileName = ChangeDDSFormat(mGameProcess, data.BaseColorFileName);
+							data.MetalnessFileName = ChangeDDSFormat(mGameProcess, data.MetalnessFileName);
+							data.RoughnessFileName = ChangeDDSFormat(mGameProcess, data.RoughnessFileName);
+							data.EmissiveFileName = ChangeDDSFormat(mGameProcess, data.EmissiveFileName);
+							data.NormalFileName = ChangeDDSFormat(mGameProcess, data.NormalFileName);
+							data.MetalnessSmoothnessFileName = ChangeDDSFormat(mGameProcess, data.MetalnessSmoothnessFileName);
+							data.NoiseFileName = ChangeDDSFormat(mGameProcess, data.NoiseFileName);
+							data.BlendTextureName = ChangeDDSFormat(mGameProcess, data.BlendTextureName);
 
 							mGameProcess->mGraphics->WriteMaterialInfo(path.path().string(), data);
+						}
+					}
+				}
+			}
+
+			if (ImGui::Button("rewrite decal, particle prefab png -> dds"))
+			{
+				if (std::filesystem::exists(mRewriteMaterialDir) && std::filesystem::is_directory(mRewriteMaterialDir))
+				{
+					for (auto path : std::filesystem::recursive_directory_iterator(mRewriteMaterialDir))
+					{
+						if (path.path().extension() == ".prefab")
+						{
+							auto gameObjects = mGameProcess->mPrefabManager->LoadPrefab(path.path());
+
+							for (auto gameObject : gameObjects)
+							{
+								auto decalComp = gameObject->GetComponent<game_module::Decal>();
+
+								if (decalComp != nullptr)
+								{
+									auto decalMaterialInfo = decalComp->GetDecalMaterialInfo();
+									decalMaterialInfo.BaseColorFileName = ChangeDDSFormat(mGameProcess, decalMaterialInfo.BaseColorFileName);
+									decalMaterialInfo.NormalFileName = ChangeDDSFormat(mGameProcess, decalMaterialInfo.NormalFileName);
+									decalMaterialInfo.EmissiveFileName = ChangeDDSFormat(mGameProcess, decalMaterialInfo.EmissiveFileName);
+									decalComp->SetDecalMaterialInfo(decalMaterialInfo);
+								}
+
+								auto particleComp = gameObject->GetComponent<game_module::Particle>();
+
+								if (particleComp != nullptr)
+								{
+									auto particleMaterialInfo = particleComp->GetParticleMaterialInfo();
+									particleMaterialInfo.BaseColorFileName = ChangeDDSFormat(mGameProcess, particleMaterialInfo.BaseColorFileName);
+									particleMaterialInfo.EmissiveFileName = ChangeDDSFormat(mGameProcess, particleMaterialInfo.EmissiveFileName);
+									particleComp->SetParticleMaterialInfo(particleMaterialInfo);
+								}
+
+								auto terrainComp = gameObject->GetComponent<game_module::Terrain>();
+
+								if (terrainComp != nullptr)
+								{
+									auto terrainLayers = terrainComp->GetTerrainLayers();
+									for (auto& layer : terrainLayers)
+									{
+										layer.BaseColor =  common::StringUtil::ToMultiByte(ChangeDDSFormat(mGameProcess, common::StringUtil::ToWide(layer.BaseColor)));
+										layer.NormalMap =  common::StringUtil::ToMultiByte(ChangeDDSFormat(mGameProcess, common::StringUtil::ToWide(layer.NormalMap)));
+									}
+
+									terrainComp->SetTerrainLayers(terrainLayers);
+								}
+							}
+
+							if (!gameObjects.empty())
+							{
+								mGameProcess->mPrefabManager->SavePrefab(gameObjects.front().get(), path.path().parent_path());
+							}
+						}
+					}
+				}
+			}
+
+			if (ImGui::Button("rewrite decal, particle prefab png -> dds, internal"))
+			{
+				if (std::filesystem::exists(mRewriteMaterialDir) && std::filesystem::is_directory(mRewriteMaterialDir))
+				{
+					for (auto path : std::filesystem::recursive_directory_iterator("./resource/internal"))
+					{
+						if (path.path().extension() == ".prefab")
+						{
+							auto gameObjects = mGameProcess->mPrefabManager->LoadPrefab(path.path());
+
+							for (auto gameObject : gameObjects)
+							{
+								auto decalComp = gameObject->GetComponent<game_module::Decal>();
+
+								if (decalComp != nullptr)
+								{
+									auto decalMaterialInfo = decalComp->GetDecalMaterialInfo();
+									decalMaterialInfo.BaseColorFileName = ChangeDDSFormat(mGameProcess, decalMaterialInfo.BaseColorFileName);
+									decalMaterialInfo.NormalFileName = ChangeDDSFormat(mGameProcess, decalMaterialInfo.NormalFileName);
+									decalMaterialInfo.EmissiveFileName = ChangeDDSFormat(mGameProcess, decalMaterialInfo.EmissiveFileName);
+									decalComp->SetDecalMaterialInfo(decalMaterialInfo);
+								}
+
+								auto particleComp = gameObject->GetComponent<game_module::Particle>();
+
+								if (particleComp != nullptr)
+								{
+									auto particleMaterialInfo = particleComp->GetParticleMaterialInfo();
+									particleMaterialInfo.BaseColorFileName = ChangeDDSFormat(mGameProcess, particleMaterialInfo.BaseColorFileName);
+									particleMaterialInfo.EmissiveFileName = ChangeDDSFormat(mGameProcess, particleMaterialInfo.EmissiveFileName);
+									particleComp->SetParticleMaterialInfo(particleMaterialInfo);
+								}
+
+								auto terrainComp = gameObject->GetComponent<game_module::Terrain>();
+
+								if (terrainComp != nullptr)
+								{
+									auto terrainLayers = terrainComp->GetTerrainLayers();
+									for (auto& layer : terrainLayers)
+									{
+										layer.BaseColor = common::StringUtil::ToMultiByte(ChangeDDSFormat(mGameProcess, common::StringUtil::ToWide(layer.BaseColor)));
+										layer.NormalMap = common::StringUtil::ToMultiByte(ChangeDDSFormat(mGameProcess, common::StringUtil::ToWide(layer.NormalMap)));
+									}
+
+									terrainComp->SetTerrainLayers(terrainLayers);
+								}
+							}
+
+							if (!gameObjects.empty())
+							{
+								mGameProcess->mPrefabManager->SavePrefab(gameObjects.front().get(), path.path().parent_path());
+							}
 						}
 					}
 				}
@@ -725,6 +829,10 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 					iUVAnimation->SetUVAnimationClip(uvAnimation);
 				}
 			}
+
+			bool bUseVSync = mGameProcess->mGraphics->GetUseVSync();
+			ImGui::Checkbox("UseVSync", &bUseVSync);
+			mGameProcess->mGraphics->SetUseVSync(bUseVSync);
 		}
 
 		ImGui::EndChild();
@@ -750,5 +858,50 @@ void fq::game_engine::Setting::beginChild_InspectorSetting()
 		}
 		ImGui::EndChild();
 	}
+}
+
+std::wstring fq::game_engine::Setting::ChangeDDSFormat(GameProcess* gameProcess, const std::wstring& fileName)
+{
+	// 이미 확장자가 dds라면 아무것도 안함
+	if (std::filesystem::path(fileName).extension() == ".dds")
+	{
+		return fileName;
+	}
+
+	std::filesystem::path ddsFileName = fileName;
+	ddsFileName.replace_extension(".dds");
+
+	// 이미 변환된 파일이 있다면 기존 파일을 지운 후 dds파일 이름을 반환
+	if (std::filesystem::exists(ddsFileName))
+	{
+		std::filesystem::remove(fileName);
+		return ddsFileName;
+	}
+
+	// 파일이 존재하지 않으면 아무 처리도 하지 않음
+	if (!std::filesystem::exists(fileName))
+	{
+		return fileName;
+	}
+
+	// 현재 이름으로 텍스처 생성
+	auto textureInterface = gameProcess->mGraphics->CreateTexture(fileName);
+
+	if (textureInterface == nullptr)
+	{
+		return fileName;
+	}
+
+	// 실패 시 기존 이름 반환
+	if (!gameProcess->mGraphics->SaveDDS(textureInterface, ddsFileName))
+	{
+		return fileName;
+	}
+
+	// 성공 시 이름 반환 및 기존 텍스처 삭제
+	bool isRemove = std::filesystem::remove(fileName);
+	assert(isRemove);
+
+	return ddsFileName;
 }
 

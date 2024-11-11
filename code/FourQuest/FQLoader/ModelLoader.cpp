@@ -812,7 +812,7 @@ namespace fq::loader
 		if (find != materialInfoJson.end())
 		{
 			materialInfoJson.at("NoiseFileName").get_to(temp);
-			materialInfo.NoiseFileName = std::wstring(temp.begin(), temp.end());
+			materialInfo.NoiseFileName = fq::path::GetAbsolutePath(std::wstring(temp.begin(), temp.end()));
 		}
 
 		find = materialInfoJson.find("OutlineThickness");
@@ -1037,7 +1037,7 @@ namespace fq::loader
 			{"AlphaCutoff", material.AlphaCutoff},
 
 			{"bUseDissolve", material.bUseDissolve },
-			{"NoiseFileName", std::string(material.NoiseFileName.begin(),material.NoiseFileName.end()) },
+			{"NoiseFileName", fq::path::GetRelativePath(std::string(material.NoiseFileName.begin(),material.NoiseFileName.end())) },
 			{"OutlineThickness", material.OutlineThickness },
 			{"DissolveCutoff", material.DissolveCutoff },
 			{"DissolveStartColor", {material.DissolveStartColor.x, material.DissolveStartColor.y, material.DissolveStartColor.z, material.DissolveStartColor.w}},

@@ -188,6 +188,8 @@ namespace fq::client
 
 		void SetSoulGauge(float soulGauge);
 
+		void HitPlayerAttack(game_module::GameObject* other);
+
 	private:
 		void processKnockBack(float dt);
 		void processInput(float dt);

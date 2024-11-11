@@ -10,6 +10,7 @@ namespace fq::client
 	{
 		using EventHandler = game_module::EventHandler;
 		using MonsterContainer = std::vector<std::shared_ptr<game_module::GameObject>>;
+		using MonsterHpContainer = std::vector<std::shared_ptr<game_module::GameObject>>;
 
 	public:
 		MonsterManager();
@@ -36,12 +37,15 @@ namespace fq::client
 		void OnAwake() override;
 		void OnDestroy() override;
 		void OnUpdate(float dt) override;
+	
+		void sortMonsterHpLayer();
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		MonsterContainer mMonsters;
+		MonsterHpContainer mMonsterHps;
 
 		EventHandler mOnDestroyHandler;
 		EventHandler mAddGameObjectHandler;

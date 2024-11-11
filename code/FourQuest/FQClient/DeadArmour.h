@@ -50,6 +50,9 @@ namespace fq::client
 
 		float GetHp() const;
 
+		// °©¿Ê¿¡ ºùÀÇ ÁøÇà ÁßÀÎÁö ¿©ºÎ
+		bool IsOnSummon() const;
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnStart() override;

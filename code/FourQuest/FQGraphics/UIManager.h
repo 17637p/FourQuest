@@ -82,6 +82,7 @@ namespace fq::graphics
 		void SetDefaultFontColor(const DirectX::SimpleMath::Color& color);
 		void SetDefaultFontSize(const unsigned short fontSize);
 
+		// Text
 		ITextObject* CreateText(TextInfo textInfo);
 		void DeleteText(ITextObject* textObject);
 

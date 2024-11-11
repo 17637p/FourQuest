@@ -1,6 +1,10 @@
 #include "SoundTrack.h"
 
 #include "Scene.h"
+#include "SoundManager.h"
+
+#include "Event.h"
+#include "EventManager.h"
 
 namespace fq::game_module
 {
@@ -38,7 +42,6 @@ namespace fq::game_module
 		if (object != nullptr)
 		{
 			if (!object->HasComponent<SoundClip>()) return;
-
 			auto soundClip = object->GetComponent<SoundClip>();
 			soundClip->Play(mKeyName, mbIsLoop, 3);
 		}
@@ -54,29 +57,25 @@ namespace fq::game_module
 	
 	void SoundTrack::PlayExit()
 	{
-		auto object = mScene->GetObjectByName(mSoundObjectName);
+		/*auto object = mScene->GetObjectByName(mSoundObjectName);
 
 		if (object != nullptr)
 		{
 			if (!object->HasComponent<SoundClip>()) return;
 
 			auto soundClip = object->GetComponent<SoundClip>();
-			soundClip->StopChannel(3);
-			soundClip->OnDestroy();
-		}
+		}*/
 	}
 
 	void SoundTrack::End()
 	{
-		auto object = mScene->GetObjectByName(mSoundObjectName);
+	/*	auto object = mScene->GetObjectByName(mSoundObjectName);
 
 		if (object != nullptr)
 		{
 			if (!object->HasComponent<SoundClip>()) return;
 
 			auto soundClip = object->GetComponent<SoundClip>();
-			soundClip->StopChannel(3);
-			soundClip->OnDestroy();
-		}
+		}*/
 	}
 }

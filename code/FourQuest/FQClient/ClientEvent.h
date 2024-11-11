@@ -181,6 +181,13 @@ namespace fq::client::event
 	};
 
 	/// <summary>
+	/// Save 팝업 창 Off 이벤트
+	/// </summary>
+	struct OffPopupExit
+	{
+	};
+
+	/// <summary>
 	/// Player HUD 체력 감소 연출을 위한 DecreaseHPRatio 값 전달 
 	/// </summary>
 	struct DecreaseHPRatio

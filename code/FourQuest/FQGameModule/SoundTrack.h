@@ -28,6 +28,7 @@ namespace fq::game_module
 		std::string mSoundObjectName;
 		bool mbIsLoop;
 		bool mOnce;
+		unsigned int mMyChannelNumber;
 	};
 }
 

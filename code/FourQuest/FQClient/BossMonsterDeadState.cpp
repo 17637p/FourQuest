@@ -1,14 +1,15 @@
 #include "BossMonsterDeadState.h"
 
+#include "BossMonster.h"
+#include "ClientEvent.h"
+#include "ArmourSpawner.h"
+#include "MeleeMonster.h"
+
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/NavigationAgent.h"
-#include "BossMonster.h"
-
-#include "ClientEvent.h"
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/Event.h"
 
-#include "ArmourSpawner.h"
 
 fq::client::BossMonsterDeadState::BossMonsterDeadState()
 {
@@ -26,6 +27,12 @@ void fq::client::BossMonsterDeadState::OnStateEnter(game_module::Animator& anima
 	agent->Stop();
 
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MB_Death", false ,  fq::sound::EChannel::SE });
+
+	animator.GetScene()->ViewComponents<MeleeMonster>([](fq::game_module::GameObject& object, MeleeMonster& monster) 
+		{
+			monster.GetScene()->DestroyGameObject(&object);
+		});
+
 }
 
 void fq::client::BossMonsterDeadState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

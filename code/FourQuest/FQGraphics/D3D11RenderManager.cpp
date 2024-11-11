@@ -120,15 +120,15 @@ namespace fq::graphics
 		}
 	}
 
-	void D3D11RenderManager::EndRender()
+	void D3D11RenderManager::EndRender(bool bUseVSync)
 	{
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->EndRender();
+			mForwardPipeline->EndRender(bUseVSync);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->EndRender();
+			mDeferredPipeline->EndRender(bUseVSync);
 			break;
 		default:
 			assert(false);

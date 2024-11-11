@@ -4,10 +4,12 @@
 namespace fq::game_module
 {
 	class UVAnimator;
+	class SoundEmitter;
 }
 
 namespace fq::client
 {
+
 	class MagicCircleEndPoint : public game_module::Component
 	{
 	public:
@@ -25,6 +27,8 @@ namespace fq::client
 		game_module::Transform* mTransform;
 		game_module::UVAnimator* mUVAnimator;
 		game_module::GameObject* mEndPointObject;
+		game_module::SoundEmitter* mSoundEmitter;
+
 		std::shared_ptr<game_module::GameObject> mDefenceCounterObjectOrNull;
 		std::string mDefenceCounterObjectName;
 

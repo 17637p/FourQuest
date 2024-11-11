@@ -651,7 +651,7 @@ void fq::client::QuestManager::eventProcessClearQuest()
 				}
 			}
 
-			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Quest_complete", false , fq::sound::EChannel::SE });
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Quest_Complete", false , fq::sound::EChannel::SE });
 
 			// 방금 깬 퀘스트가 클리어 조건으로 있는 퀘스트가 있다면 클리어 하기 
 			std::vector<ClearQuest>& clearQuestList = mCurMainQuest.mclearConditionList.clearQuestList;
@@ -675,8 +675,12 @@ void fq::client::QuestManager::eventProcessClearQuest()
 				}
 				if (isClear)
 				{
-					mClearEvents.push_back(mCurMainQuest);
-					mClearEventIndexes.push_back(0);
+					if (event.clearQuest.mIndex != mCurMainQuest.mIndex &&
+						event.clearQuest.mIsMain != mCurMainQuest.mIsMain)
+					{
+						mClearEvents.push_back(mCurMainQuest);
+						mClearEventIndexes.push_back(0);
+					}
 				}
 			}
 
@@ -1123,24 +1127,6 @@ void fq::client::QuestManager::setScaleAndPositionScreen()
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
 
-	// Text 크기 및 위치 변경 (미적용 중)
-	float xOffset = -6.f;
-	float yOffset = -2.6f;
-
-	auto textInfo = mMainQuestText->GetTextInfo();
-	textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
-	//mMainQuestText->SetTextInfo(textInfo);
-	int deltaFontSize = textInfo.FontSize - mFontSize;
-	//mMainQuestText->GetTransform()->SetLocalPosition({ (float)deltaFontSize * xOffset, (float)deltaFontSize * -yOffset, 0});
-
-	for (int i = 0; i < mSubQuestTexts.size(); i++)
-	{
-		textInfo = mSubQuestTexts[i]->GetTextInfo();
-		textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
-		//mSubQuestTexts[i]->SetTextInfo(textInfo);
-		//mSubQuestTexts[i]->GetTransform()->SetLocalPosition({ (float)deltaFontSize * xOffset, (float)deltaFontSize * -yOffset, 0 });
-	}
-
 	game_module::ImageUI* myImage = GetComponent<game_module::ImageUI>();
 	// Position 자동 조정
 	{
@@ -1243,6 +1229,10 @@ void fq::client::QuestManager::playNew(float dt)
 		if (mNewImageCounts[i] > 0)
 		{
 			auto newInfo = mNewImages[i]->GetUIInfomation(0);
+			if (!newInfo.isRender)
+			{
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "UI_Quest_New", false , fq::sound::EChannel::SE });
+			}
 			newInfo.isRender = true;
 			newInfo.Alpha = 1;
 			mNewImages[i]->SetUIInfomation(0, newInfo);
@@ -1383,11 +1373,14 @@ void fq::client::QuestManager::playComplete(float dt)
 					int nextSubQuestSize = mNextSubQuests.size() + 1;
 					for (int j = 1; j < nextSubQuestSize; j++)
 					{
-						// 다음 퀘스트 추가
-						mViewSubQuest.push_back(mNextSubQuests.front());
-						mNextSubQuests.pop_front();
+						if (mNextSubQuests.size() > 0 && mViewSubQuest.size() < 3)
+						{
+							// 다음 퀘스트 추가
+							mViewSubQuest.push_back(mNextSubQuests.front());
+							mNextSubQuests.pop_front();
 
-						startNew(j);
+							startNew(j);
+						}
 					}
 					RenderOnAllSubQuest();
 				}
@@ -1418,7 +1411,7 @@ void fq::client::QuestManager::playComplete(float dt)
 						}
 					}
 
-					if (mNextSubQuests.size() > 0)
+					if (mNextSubQuests.size() > 0 && mViewSubQuest.size() < 3)
 					{
 						// 다음 퀘스트 추가
 						mViewSubQuest.push_back(mNextSubQuests.front());

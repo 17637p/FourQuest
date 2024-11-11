@@ -56,7 +56,7 @@ namespace fq::graphics
 		void BeginRender();
 		void Render();
 		void RenderFullScreen();
-		void EndRender();
+		void EndRender(bool bUseVSync);
 
 		ID3D11ShaderResourceView* GetBackBufferSRV() const;
 

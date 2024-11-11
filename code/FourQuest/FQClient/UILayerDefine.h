@@ -6,4 +6,6 @@ namespace layer
 	constexpr unsigned int OutBar = 212;
 	constexpr unsigned int InnerBar = 210;
 	constexpr unsigned int DecreaseBar = 211;
+	 
+	constexpr unsigned MonsterHp = 3000;
 }

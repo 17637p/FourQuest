@@ -37,12 +37,11 @@ void fq::client::MeleeMonsterHitState::OnStateEnter(game_module::Animator& anima
 
 		if (skeletalMesh != nullptr)
 		{
-			fq::graphics::MaterialInstanceInfo info;
+			fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 			info.bUseRimLight = true;
 			info.RimLightColor = mHitColor;
 			info.RimPow = mRimPow;
 			info.RimIntensity = mRimIntensity;
-
 			skeletalMesh->SetMaterialInstanceInfo(info);
 		}
 	}
@@ -60,7 +59,7 @@ void fq::client::MeleeMonsterHitState::OnStateUpdate(game_module::Animator& anim
 
 			if (skeletalMesh != nullptr)
 			{
-				fq::graphics::MaterialInstanceInfo info;
+				fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 				info.bUseRimLight = false;
 				skeletalMesh->SetMaterialInstanceInfo(info);
 			}
@@ -76,7 +75,7 @@ void fq::client::MeleeMonsterHitState::OnStateExit(game_module::Animator& animat
 
 		if (skeletalMesh != nullptr)
 		{
-			fq::graphics::MaterialInstanceInfo info;
+			fq::graphics::MaterialInstanceInfo info = skeletalMesh->GetMaterialInstanceInfo();
 			info.bUseRimLight = false;
 			skeletalMesh->SetMaterialInstanceInfo(info);
 		}

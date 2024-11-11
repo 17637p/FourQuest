@@ -98,6 +98,7 @@ extern "C" {
 			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const ParticleMaterialInfo& materialInfo) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const DecalMaterialInfo& decalMaterialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ITexture> CreateTexture(const std::wstring& texturePath) abstract;
 
 			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> CreateStaticMesh(std::string key, const fq::common::Mesh& meshData) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData) abstract;
@@ -135,6 +136,8 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteMaterial(const std::string& key) abstract;
 			virtual FQ_GRAPHICS void DeleteParticleMaterial(const std::string& key) abstract;
 			virtual FQ_GRAPHICS void DeleteDecalMaterial(const std::string& key) abstract;
+
+			virtual FQ_GRAPHICS bool SaveDDS(std::shared_ptr<ITexture> textureInterface, const std::wstring& saveTexturePath) abstract;
 
 			// RenderObject
 			virtual FQ_GRAPHICS IStaticMeshObject* CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
@@ -254,6 +257,10 @@ extern "C" {
 			// InstancingData
 			virtual FQ_GRAPHICS void CreateAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface) abstract;
 			virtual FQ_GRAPHICS void ReleaseAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface) abstract;
+
+			// 수직 동기화
+			virtual FQ_GRAPHICS void SetUseVSync(bool mbUseVSync) abstract;
+			virtual FQ_GRAPHICS bool GetUseVSync() const abstract;
 		};
 
 		class EngineExporter

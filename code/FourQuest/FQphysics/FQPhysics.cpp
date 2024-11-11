@@ -118,6 +118,10 @@ namespace fq::physics
 	{
 		mCCTManager = nullptr;
 		mRigidBodyManager = nullptr;
+		mCharacterPhysicsManager = nullptr;
+		mClothManager = nullptr;
+		mCollisionDataManager = nullptr;
+		mResourceManager = nullptr;
 		PX_RELEASE(mScene);
 		PX_RELEASE(mGpuScene);
 		PX_RELEASE(mCudaContextManager);
@@ -739,7 +743,16 @@ namespace fq::physics
 	}
 	bool FQPhysics::RemoveAllArticulation()
 	{
-		return mCharacterPhysicsManager->RemoveAllArticulation();
+		 if (mCharacterPhysicsManager->RemoveAllArticulation())
+		 {
+			 spdlog::trace("[Physics ({})] : Remove All Articulation", __LINE__);
+			 return true;
+		 }
+		else
+		{
+			spdlog::warn("[Physics Warrning ({})] : Failed Remove All RigidBody", __LINE__);
+			return false;
+			}
 	}
 	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
 	{
