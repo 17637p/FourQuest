@@ -118,7 +118,7 @@ namespace fq::game_module
 
 			if (mKeys.size() <= 0)
 			{
-				spdlog::warn("[ObjectMoverTrack ({})] Warrning Key Size is Zero", __LINE__);
+				spdlog::warn("[PlayerMoveTrack ({})] Warrning Key Size is Zero", __LINE__);
 				return;
 			}
 
