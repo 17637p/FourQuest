@@ -1373,11 +1373,14 @@ void fq::client::QuestManager::playComplete(float dt)
 					int nextSubQuestSize = mNextSubQuests.size() + 1;
 					for (int j = 1; j < nextSubQuestSize; j++)
 					{
-						// 다음 퀘스트 추가
-						mViewSubQuest.push_back(mNextSubQuests.front());
-						mNextSubQuests.pop_front();
+						if (mNextSubQuests.size() > 0 && mViewSubQuest.size() < 3)
+						{
+							// 다음 퀘스트 추가
+							mViewSubQuest.push_back(mNextSubQuests.front());
+							mNextSubQuests.pop_front();
 
-						startNew(j);
+							startNew(j);
+						}
 					}
 					RenderOnAllSubQuest();
 				}
