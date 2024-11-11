@@ -73,6 +73,12 @@ namespace fq::game_module
 
 			auto transform = mTargetObject->GetComponent<Transform>();
 
+			if (mKeys.size() <= 0)
+			{
+				spdlog::warn("[ObjectMoverTrack ({})] Warrning Key Size is Zero", __LINE__);
+				return;
+			}
+
 			// 현재 재생중인 키가 무엇인지 찾기
 			for (int i = 0; i < mKeys.size(); i++)
 			{
@@ -144,6 +150,12 @@ namespace fq::game_module
 			}
 			else
 			{
+				if (mKeys.size() <= 0)
+				{
+					spdlog::warn("[ObjectMoverTrack ({})] Warrning Key Size is Zero", __LINE__);
+					return;
+				}
+
 				const auto& lastKey = mKeys.back();
 				auto rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(lastKey.rotation / 180.f * 3.14f);
 				transform->GenerateWorld(lastKey.position, rotation, lastKey.scale);
@@ -171,6 +183,12 @@ namespace fq::game_module
 			}
 			else
 			{
+				if (mKeys.size() <= 0)
+				{
+					spdlog::warn("[ObjectMoverTrack ({})] Warrning Key Size is Zero", __LINE__);
+					return;
+				}
+
 				const auto& lastKey = mKeys.back();
 				auto rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(lastKey.rotation / 180.f * 3.14f);
 				transform->GenerateWorld(lastKey.position, rotation, lastKey.scale);

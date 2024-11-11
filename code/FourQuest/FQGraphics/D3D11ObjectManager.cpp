@@ -42,10 +42,6 @@ namespace fq::graphics
 		while (!mDecalObjectDeleteQueue.empty()) { deleteObject<DecalObject>(mDecalObjectDeleteQueue.front()); mDecalObjectDeleteQueue.pop(); }
 		while (!mTrailObjectDeleteQueue.empty()) { deleteObject<TrailObject>(mTrailObjectDeleteQueue.front()); mTrailObjectDeleteQueue.pop(); }
 		while (!mProbeObjectDeleteQueue.empty()) { deleteObject<ProbeObject>(mProbeObjectDeleteQueue.front()); mProbeObjectDeleteQueue.pop(); }
-
-		// Ä¡Å²µµ ¿øÇÃ¿ø -> 
-		// Ä¡ Å² , (ºÒ´ß + »ï±è + Ä¡Áî) -> ³» ÀÔ¿£ ½Ì°Å¿ö
-		//  
 	}
 
 	void D3D11ObjectManager::UpdateModifiedResources(std::shared_ptr<D3D11Device> device)
