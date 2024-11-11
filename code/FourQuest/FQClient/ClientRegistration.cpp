@@ -1493,6 +1493,13 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BossMonster")
 		.prop(reflect::prop::Label, "Monster")
 
+		.data<&BossMonster::mbUseBossBGM>("UseBossBGM"_hs)
+		.prop(fq::reflect::prop::Name, "UseBossBGM")
+		.prop(fq::reflect::prop::Comment, u8"보스 등장시 BGM 사용여부")
+		.data<&BossMonster::mBossBGMKey>("BossBGMKey"_hs)
+		.prop(fq::reflect::prop::Name, "BossBGMKey")
+		.prop(fq::reflect::prop::Comment, u8"보스 등장시 BGM")
+
 		.data<&BossMonster::mHp>("Hp"_hs)
 		.prop(fq::reflect::prop::Name, "Hp")
 		.prop(fq::reflect::prop::Comment, u8"보스 체력")
