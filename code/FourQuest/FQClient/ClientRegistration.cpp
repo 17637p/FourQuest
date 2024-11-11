@@ -1764,6 +1764,19 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mPlayer4GroggyIncreaseRatio")
 		.prop(fq::reflect::prop::Comment, u8"플레이어 4명일 때 그로기 상승 비율")
 
+		.data<&BossMonster::mKnightSoulDamageRatio>("mKnightSoulDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mKnightSoulDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"기사 영혼 공격 대미지 비율")
+		.data<&BossMonster::mMagicSoulDamageRatio>("mMagicSoulDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mMagicSoulDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"마법사 영혼 공격 대미지 비율")
+		.data<&BossMonster::mArcherSoulDamageRatio>("mArcherSoulDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mArcherSoulDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"아처 영혼 공격 대미지 비율")
+		.data<&BossMonster::mBerserkerSoulDamageRatio>("mBerserkerSoulDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "mBerserkerSoulDamageRatio")
+		.prop(fq::reflect::prop::Comment, u8"버서커 영혼 공격 대미지 비율")
+
 		.base<fq::game_module::Component>();
 
 	entt::meta<BossMonsterIdleState>()
