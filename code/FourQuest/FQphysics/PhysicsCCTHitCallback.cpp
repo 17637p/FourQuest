@@ -10,16 +10,22 @@ namespace fq::physics
 	{
 	}
 
-	void PhysicsCCTHitCallback::onShapeHit(const physx::PxControllerShapeHit& hit)
+	bool PhysicsCCTHitCallback::filter(const physx::PxController& a, const physx::PxController& b)
 	{
-	}
+		physx::PxShape* myShape;
+		physx::PxShape* otherShape;
+		a.getActor()->getShapes(&myShape, 1);
+		b.getActor()->getShapes(&otherShape, 1);
 
-	void PhysicsCCTHitCallback::onControllerHit(const physx::PxControllersHit& hit)
-	{
-	}
+		auto myFilterData = myShape->getSimulationFilterData();
+		auto otherFilterData = otherShape->getSimulationFilterData();
 
-	void PhysicsCCTHitCallback::onObstacleHit(const physx::PxControllerObstacleHit& hit)
-	{
+		if ((((1 << myFilterData.word0) & otherFilterData.word1) > 0) && (((1 << otherFilterData.word0) & myFilterData.word1) > 0))
+		{
+			return true;
+		}
+
+		return false;
 	}
 }
 

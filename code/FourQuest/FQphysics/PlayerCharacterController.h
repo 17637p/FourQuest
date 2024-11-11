@@ -35,7 +35,6 @@ namespace fq::physics
         virtual bool Update(float deltaTime) override;
 
     private:
-        std::shared_ptr<PhysicsCCTHitCallback> mCCTHitCallback;
     };
 
 }

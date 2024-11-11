@@ -7,7 +7,6 @@
 namespace fq::physics
 {
 	PlayerCharacterController::PlayerCharacterController()
-		: mCCTHitCallback(nullptr)
 	{
 	}
 
@@ -24,7 +23,6 @@ namespace fq::physics
 	{
 		__super::Initialize(info, movementInfo, CCTManager, material, collisionData, collisionMatrix);
 
-		mCCTHitCallback = std::make_shared<PhysicsCCTHitCallback>();
 
 		physx::PxCapsuleControllerDesc desc;
 		desc.height = info.height;
@@ -38,7 +36,7 @@ namespace fq::physics
 		desc.position.y = info.position.y;
 		desc.position.z = info.position.z;
 		desc.material = material;
-		desc.reportCallback = dynamic_pointer_cast<physx::PxUserControllerHitReport>(mCCTHitCallback).get();
+		//desc.reportCallback = dynamic_pointer_cast<physx::PxUserControllerHitReport>(mCCTHitCallback).get();
 		mPxController = CCTManager->createController(desc);
 
 		physx::PxRigidDynamic* body = mPxController->getActor();

@@ -2,6 +2,7 @@
 
 #include "CharacterMovement.h"
 #include "CharacterQueryFilterCallback.h"
+#include "PhysicsCCTHitCallback.h"
 #include "PhysicsCollisionDataManager.h"
 
 namespace fq::physics
@@ -41,13 +42,14 @@ namespace fq::physics
 		mMaterial = material;
 
 		mFilterData = std::make_shared<physx::PxFilterData>();
+		mCCTHitCallback = std::make_shared<PhysicsCCTHitCallback>();
 		mFilterData->word0 = 0;
 
 		std::shared_ptr<physx::PxFilterData> data = std::make_shared<physx::PxFilterData>();
 		data->word0 = mLayerNumber;
 		data->word1 = collisionMatrix[mLayerNumber];
 		mCharacterQueryFilterCallback = std::make_shared<CharacterQueryFilterCallback>(data);
-		mFilters = std::make_shared<physx::PxControllerFilters>(mFilterData.get(), mCharacterQueryFilterCallback.get());
+		mFilters = std::make_shared<physx::PxControllerFilters>(mFilterData.get(), mCharacterQueryFilterCallback.get(), mCCTHitCallback.get());
 
 		mCharacterMovement = std::make_shared<CharacterMovement>();
 		mCharacterMovement->initialize(movementInfo);

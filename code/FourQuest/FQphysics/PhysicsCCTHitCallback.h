@@ -4,7 +4,7 @@
 
 namespace fq::physics
 {
-	class PhysicsCCTHitCallback : physx::PxUserControllerHitReport
+	class PhysicsCCTHitCallback : public physx::PxControllerFilterCallback
 	{
 	public:
 		PhysicsCCTHitCallback();
@@ -14,19 +14,7 @@ namespace fq::physics
 		/// 
 		/// </summary>
 		/// <param name="hit"></param>
-		virtual void onShapeHit(const physx::PxControllerShapeHit& hit) override;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="hit"></param>
-		virtual void onControllerHit(const physx::PxControllersHit& hit) override;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="hit"></param>
-		virtual void onObstacleHit(const physx::PxControllerObstacleHit& hit) override;
+		virtual bool filter(const physx::PxController& a, const physx::PxController& b) override;
 
 	private:
 

@@ -118,6 +118,10 @@ namespace fq::physics
 	{
 		mCCTManager = nullptr;
 		mRigidBodyManager = nullptr;
+		mCharacterPhysicsManager = nullptr;
+		mClothManager = nullptr;
+		mCollisionDataManager = nullptr;
+		mResourceManager = nullptr;
 		PX_RELEASE(mScene);
 		PX_RELEASE(mGpuScene);
 		PX_RELEASE(mCudaContextManager);
