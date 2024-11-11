@@ -15,8 +15,32 @@ fq::client::GaugeBar::GaugeBar()
 	, mWorldOffset(0.f)
 	, mScreenOffset(0.f)
 	, mInnerOffset(5.f)
+	, mIsRenderingUI(true)
 {
 
+}
+
+fq::client::GaugeBar::GaugeBar(const GaugeBar& other)
+{
+	mGaugeRatio = other.mGaugeRatio;
+	mWorldOffset = other.mWorldOffset;
+	mScreenOffset = other.mScreenOffset;
+	mInnerOffset = other.mInnerOffset;
+	mBarSize = other.mBarSize;
+	mIsRenderingUI = true;
+	mbIsVisible = false;
+}
+
+fq::client::GaugeBar& fq::client::GaugeBar::operator=(const GaugeBar& other)
+{
+	mBarSize = other.mBarSize;
+	mGaugeRatio = other.mGaugeRatio;
+	mWorldOffset = other.mWorldOffset;
+	mScreenOffset = other.mScreenOffset;
+	mInnerOffset = other.mInnerOffset;
+	mIsRenderingUI = true;
+	mbIsVisible = false;
+	return *this;
 }
 
 fq::client::GaugeBar::~GaugeBar()
@@ -60,6 +84,14 @@ void fq::client::GaugeBar::OnStart()
 	mImageUI->SetUIInfomations(infomations);
 
 	SetVisible(false);
+
+	mUIRenderHandler = GetScene()->GetEventManager()->RegisterHandle<fq::event::UIRender>(
+		[this](const fq::event::UIRender& event)
+		{
+			mIsRenderingUI = event.bIsRenderingUI;
+			spdlog::trace("{}" , mIsRenderingUI);
+		}
+	);
 }
 
 void fq::client::GaugeBar::SetVisible(bool isVisible)
@@ -76,9 +108,18 @@ void fq::client::GaugeBar::SetVisible(bool isVisible)
 
 void fq::client::GaugeBar::OnUpdate(float dt)
 {
-	if (mbIsVisible)
+	if (mbIsVisible && mIsRenderingUI) 
 	{
 		setUIInfo();
+	}
+	else
+	{
+		auto infomations = mImageUI->GetUIInfomations();
+		for (int i = 0; i < 2; ++i)
+		{
+			infomations[i].isRender = false;
+		}
+		mImageUI->SetUIInfomations(infomations);
 	}
 }
 
@@ -106,6 +147,7 @@ void fq::client::GaugeBar::setUIInfo()
 
 	outBar.StartX = width * 0.5f + (screenPos.x * width * 0.5f) - mBarSize.x * 0.5f;
 	outBar.StartY = height * 0.5f - (screenPos.y * height * 0.5f) + mScreenOffset;
+	outBar.isRender = true;
 
 	// InnerBar
 	float halfInnerOffset = mInnerOffset * 0.5f;
@@ -114,6 +156,7 @@ void fq::client::GaugeBar::setUIInfo()
 	innerBar.Width = (mBarSize.x - mInnerOffset) * mGaugeRatio;
 	innerBar.StartX = width * 0.5f + (screenPos.x * width * 0.5f) - mBarSize.x * 0.5f + halfInnerOffset;
 	innerBar.StartY = height * 0.5f - (screenPos.y * height * 0.5f) + mScreenOffset + halfInnerOffset;
+	innerBar.isRender = true;
 
 	mImageUI->SetUIInfomations(infomations);
 }
@@ -121,4 +164,9 @@ void fq::client::GaugeBar::setUIInfo()
 void fq::client::GaugeBar::SetRatio(float ratio)
 {
 	mGaugeRatio = std::clamp(ratio, 0.f, 1.f);
+}
+
+void fq::client::GaugeBar::OnDestroy()
+{
+	GetScene()->GetEventManager()->RemoveHandle(mUIRenderHandler);
 }
