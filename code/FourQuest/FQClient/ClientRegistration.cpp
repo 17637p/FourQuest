@@ -3042,6 +3042,9 @@ void fq::client::RegisterMetaData()
 		.data<&PlayerVariable::PadRotationSpeed>("PadRotationSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "PadRotationSpeed")
 		.prop(reflect::prop::Comment, u8"패드 입력에 따른 플레이어 회전속도")
+		.data<&PlayerVariable::PvPDamageRatio>("PvPDamageRatio"_hs)
+		.prop(fq::reflect::prop::Name, "PvPDamageRatio")
+		.prop(reflect::prop::Comment, u8"PvP 대미지 비율")
 		.base<IGameVariable>();
 
 	entt::meta<PlayerInfoVariable>()

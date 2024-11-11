@@ -1209,7 +1209,7 @@ void fq::client::Player::HitPlayerAttack(game_module::GameObject* other)
 					}
 				}
 				// 체력 감소
-				float attackPower = playerAtk->GetAttackPower();
+				float attackPower = playerAtk->GetAttackPower() * PlayerVariable::PvPDamageRatio;
 				DecreaseHp(attackPower);
 
 				// Hit 애니메이션 
