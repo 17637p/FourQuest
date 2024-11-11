@@ -66,6 +66,7 @@ void fq::client::SpeechBubbleUI::OnStart()
 
 	eventProcessSequenceEnterSpeech();
 	eventProcessSequenceExitSpeech();
+	eventProcessOnUIRender();
 }
 
 void fq::client::SpeechBubbleUI::OnUpdate(float dt)
@@ -120,6 +121,7 @@ void fq::client::SpeechBubbleUI::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mSequenceSpeechEnterHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mSequenceSpeechExitHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mUIRenderHandler);
 }
 
 std::shared_ptr<fq::game_module::Component> fq::client::SpeechBubbleUI::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
