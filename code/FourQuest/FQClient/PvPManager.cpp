@@ -4,6 +4,8 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Sequence.h"
 
+#include "PlayerInfoVariable.h"
+#include "SoulVariable.h"
 #include "ClientHelper.h"
 #include "GameManager.h"
 
@@ -29,15 +31,14 @@ void fq::client::PvPManager::OnUpdate(float dt)
 	if (mbIsEndGame)
 	{
 		auto input = GetScene()->GetInputManager();
-
 		for (int i = 0; i < 4; ++i)
 		{
 			if (input->IsPadKeyState(i, EPadKey::Start, EKeyState::Tap))
 			{
-				GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "PvP", true});
+				GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "PvP", true });
 			}
 			if (input->IsPadKeyState(i, EPadKey::Back, EKeyState::Tap))
-			{
+			{		
 				GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "TitleUI", true });
 			}
 		}
@@ -48,7 +49,7 @@ void fq::client::PvPManager::OnUpdate(float dt)
 
 		auto& players = mGameManager->GetPlayers();
 
-		mbIsEndGame = players.size() <= 1 && mElapsedTime >= 10.f;
+		mbIsEndGame = checkLivePlayer() <= 1 && mElapsedTime >= 10.f;
 
 		if (mbIsEndGame)
 		{
@@ -71,7 +72,7 @@ void fq::client::PvPManager::SpawnArmour()
 
 	auto& random = helper::RandomGenerator::GetInstance();
 
-	int spawnAromourNum = random.GetRandomNumber(mMinSpawnAromour, mMaxSpawnAromour);
+	int spawnAromourNum = random.GetRandomNumber(mMinSpawnAromour, mMaxSpawnAromour) + checkJoinPlayer();
 
 	for (int i = 0; i < spawnAromourNum; ++i)
 	{
@@ -91,4 +92,57 @@ void fq::client::PvPManager::SpawnArmour()
 		armourT->SetWorldPosition(position);
 	}
 
+}
+
+unsigned int fq::client::PvPManager::checkLivePlayer()
+{
+	unsigned int livePlayer = 4;
+
+
+	if (SoulVariable::Player1Type == EPlayerType::SoulDestoryed || SoulVariable::Player1Type == EPlayerType::None)
+	{
+		livePlayer--;
+	}
+	
+	if (SoulVariable::Player2Type == EPlayerType::SoulDestoryed || SoulVariable::Player2Type == EPlayerType::None)
+	{
+		livePlayer--;
+	}
+	if (SoulVariable::Player3Type == EPlayerType::SoulDestoryed || SoulVariable::Player3Type == EPlayerType::None)
+	{
+		livePlayer--;
+	}
+	if (SoulVariable::Player4Type == EPlayerType::SoulDestoryed || SoulVariable::Player4Type == EPlayerType::None)
+	{
+		livePlayer--;
+	}
+
+	return livePlayer;
+}
+
+unsigned int fq::client::PvPManager::checkJoinPlayer()
+{
+	unsigned player = 0;
+
+	if (PlayerInfoVariable::Player1SoulType != -1)
+	{
+		++player;
+	}
+
+	if (PlayerInfoVariable::Player2SoulType != -1)
+	{
+		++player;
+	}
+
+	if (PlayerInfoVariable::Player3SoulType != -1)
+	{
+		++player;
+	}
+
+	if (PlayerInfoVariable::Player4SoulType != -1)
+	{
+		++player;
+	}
+
+	return player;
 }

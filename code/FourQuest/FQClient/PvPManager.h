@@ -18,6 +18,9 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
+		unsigned int checkLivePlayer();
+		unsigned int checkJoinPlayer();
+
 	private:
 		GameManager* mGameManager;
 
