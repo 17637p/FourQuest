@@ -47,6 +47,14 @@ void fq::client::Credit::OnUpdate(float dt)
 	{
 		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ mNextSceneName, true });
 	}
+
+	for (int i = 0; i < 4; ++i)
+	{
+		if (input->IsPadKeyState(i, EPadKey::Start, EKeyState::Tap))
+		{
+			GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "PvP", true});
+		}
+	}
 }
 
 void fq::client::Credit::OnStart()
