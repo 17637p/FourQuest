@@ -50,6 +50,7 @@ namespace fq::client
 		void setPlayerStateUpdate();
 
 		void eventProcessDecreaseHPRatio();
+		void eventProcessOnUIRender();
 
 	private:
 		int mPlayerID;
@@ -90,7 +91,11 @@ namespace fq::client
 		float mDecreaseRatio;
 
 		game_module::EventHandler mDecreaseHPRatioHandler;
+		game_module::EventHandler mUIRenderHandler;
 
+		bool mIsRenderingUI;
+
+	private:
 		friend void RegisterMetaData();
 	};
 }

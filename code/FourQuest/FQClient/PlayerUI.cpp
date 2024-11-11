@@ -81,12 +81,16 @@ std::shared_ptr<fq::game_module::Component> fq::client::PlayerUI::Clone(std::sha
 
 void fq::client::PlayerUI::OnStart()
 {
+	mIsRenderingUI = true;
+
 	mWeaponIcons.clear();
 	mSkillIconXs.clear();
 	mSkillIconAs.clear();
 	mSkillIconRs.clear();
 	mSoulSkillIcons.clear();
 	mSoulSprites.clear();
+
+	eventProcessOnUIRender();
 
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren();
 
@@ -170,7 +174,10 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 
 	for (int i = 0; i < 4; i++)
 	{
-		setWeaponAndSkillIcons(i, false);
+		if (mIsRenderingUI)
+		{
+			setWeaponAndSkillIcons(i, false);
+		}
 	}
 
 	// Scale 자동 조정 
@@ -222,18 +229,22 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 				default:
 					break;
 			}
-			setWeaponAndSkillIcons(armourTypeIndex, true);
-			SetSoulGauge(mPlayer->GetSoultGaugeRatio());
-			setSkillCoolTime();
 
-			int soulIndex = (int)mPlayer->GetSoulType();
-			if (mPlayer->GetSoultGaugeRatio() >= 1)
+			if (mIsRenderingUI)
 			{
-				SetSoulSprite(soulIndex, true);
-			}
-			else
-			{
-				SetSoulSprite(soulIndex, false);
+				setWeaponAndSkillIcons(armourTypeIndex, true);
+				SetSoulGauge(mPlayer->GetSoultGaugeRatio());
+				setSkillCoolTime();
+
+				int soulIndex = (int)mPlayer->GetSoulType();
+				if (mPlayer->GetSoultGaugeRatio() >= 1)
+				{
+					SetSoulSprite(soulIndex, true);
+				}
+				else
+				{
+					SetSoulSprite(soulIndex, false);
+				}
 			}
 		}
 	}
@@ -245,25 +256,31 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 		}
 		else
 		{
-			SetHPBar(mSoul->GetSoulHpRatio());
-			SetSoulGauge(mSoul->GetSoulGaugeRatio());
-			resetSkillCoolTime();
-			int soulIndex = (int)mSoul->GetSoulType();
-			if (mSoul->GetSoulGaugeRatio() >= 1)
+			if (mIsRenderingUI)
 			{
-				SetSoulSprite(soulIndex, true);
-			}
-			else
-			{
-				SetSoulSprite(soulIndex, false);
+				SetHPBar(mSoul->GetSoulHpRatio());
+				SetSoulGauge(mSoul->GetSoulGaugeRatio());
+				resetSkillCoolTime();
+				int soulIndex = (int)mSoul->GetSoulType();
+				if (mSoul->GetSoulGaugeRatio() >= 1)
+				{
+					SetSoulSprite(soulIndex, true);
+				}
+				else
+				{
+					SetSoulSprite(soulIndex, false);
+				}
 			}
 		}
 	}
 	else
 	{
-		SetSoulGauge(0);
-		SetHPBar(0);
-		resetSkillCoolTime();
+		if (mIsRenderingUI)
+		{
+			SetSoulGauge(0);
+			SetHPBar(0);
+			resetSkillCoolTime();
+		}
 	}
 
 	// 플레이어 상태 UI 위치조정 및 렌더러
@@ -565,6 +582,7 @@ void fq::client::PlayerUI::eventProcessDecreaseHPRatio()
 void fq::client::PlayerUI::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mDecreaseHPRatioHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mUIRenderHandler);
 }
 
 void fq::client::PlayerUI::SetSoulSprite(int index, bool isOn)
@@ -575,5 +593,15 @@ void fq::client::PlayerUI::SetSoulSprite(int index, bool isOn)
 	}
 
 	mSoulSprites[index]->SetIsRender(isOn);
+}
+
+void fq::client::PlayerUI::eventProcessOnUIRender()
+{
+	mUIRenderHandler = GetScene()->GetEventManager()->RegisterHandle<fq::event::UIRender>(
+		[this](const fq::event::UIRender& event)
+		{
+			mIsRenderingUI = event.bIsRenderingUI;
+		}
+	);
 }
 

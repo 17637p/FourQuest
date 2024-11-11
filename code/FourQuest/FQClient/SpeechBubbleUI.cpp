@@ -53,6 +53,7 @@ void fq::client::SpeechBubbleUI::OnStart()
 	mCurTime = 0;
 	mCurIndex = 0;
 	mIsOn = false;
+	mIsRenderingUI = true;
 
 	mImageUIs.clear();
 
