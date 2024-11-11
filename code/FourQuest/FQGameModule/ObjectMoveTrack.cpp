@@ -150,6 +150,12 @@ namespace fq::game_module
 			}
 			else
 			{
+				if (mKeys.size() <= 0)
+				{
+					spdlog::warn("[ObjectMoverTrack ({})] Warrning Key Size is Zero", __LINE__);
+					return;
+				}
+
 				const auto& lastKey = mKeys.back();
 				auto rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(lastKey.rotation / 180.f * 3.14f);
 				transform->GenerateWorld(lastKey.position, rotation, lastKey.scale);
@@ -177,6 +183,12 @@ namespace fq::game_module
 			}
 			else
 			{
+				if (mKeys.size() <= 0)
+				{
+					spdlog::warn("[ObjectMoverTrack ({})] Warrning Key Size is Zero", __LINE__);
+					return;
+				}
+
 				const auto& lastKey = mKeys.back();
 				auto rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(lastKey.rotation / 180.f * 3.14f);
 				transform->GenerateWorld(lastKey.position, rotation, lastKey.scale);
