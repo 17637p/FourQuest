@@ -9,6 +9,7 @@
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/RigidBody.h"
 
+#include "SettingVariable.h"
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "Soul.h"
@@ -361,6 +362,8 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 		}
 	}
 
+	HitPlayerAttack(collision.other);
+
 	// Quest Event 
 	if (mController != nullptr)
 	{
@@ -387,7 +390,7 @@ void fq::client::Player::SummonSoul(bool isDestroyArmour)
 		soulDeathStateEvent.RegisterKeyName = "P_Soul_Death_Gauge";
 		soulDeathStateEvent.bIsUseOnlyPosition = true;
 		GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(soulDeathStateEvent));
-	
+
 		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "P_ArmorBreak", false , fq::sound::EChannel::SE });
 	}
 
@@ -1129,5 +1132,111 @@ void fq::client::Player::checkCoolTime()
 	mPreRSkillCoolTimeRatio = mRSkillCoolTimeRatio;
 	mPreASkillCoolTimeRatio = mASkillCoolTimeRatio;
 	mPreXSkillCoolTimeRatio = mXSkillCoolTimeRatio;
+}
+
+void fq::client::Player::HitPlayerAttack(game_module::GameObject* other)
+{
+	// 플레이어 피격
+	if (SettingVariable::IsAllowOtherPlayerAttack
+		&& (other->GetTag() == game_module::ETag::PlayerAttack || other->GetTag() == game_module::ETag::Arrow)
+		&& other->HasComponent<client::Attack>())
+	{
+		auto playerAtk = other->GetComponent<client::Attack>();
+
+		if (playerAtk->GetAttacker() == nullptr)
+		{
+			return;
+		}
+
+		if (playerAtk->GetAttacker()->GetID() == GetGameObject()->GetID())
+		{
+			return;
+		}
+
+		bool isHitAble = mInvincibleElapsedTime == 0.f;
+		if (playerAtk->ProcessAttack())
+		{
+			// 플레이어 넉백 처리
+			if (playerAtk->HasKnockBack())
+			{
+				auto type = playerAtk->GetKnockBackType();
+				float power = playerAtk->GetKnockBackPower();
+
+				auto playerPos = mTransform->GetWorldPosition();
+				playerPos.y = 0.f;
+				auto monsterPos = playerAtk->GetTransform()->GetWorldPosition();
+				monsterPos.y = 0.f;
+
+				auto knockBackDir = playerPos - monsterPos;
+				knockBackDir.Normalize();
+				auto acclerationPower = power * 0.5f * (mbOnShieldBlock ? 0.25f : 1.f);
+
+				mKnockBackDir = knockBackDir;
+				mKnockBackPower = acclerationPower;
+				mKnockBackTime = 0.1f;
+			}
+
+			if (isHitAble)
+			{
+				// 플레이어 방패 막기 처리 
+				if (mbOnShieldBlock)
+				{
+					auto attackDir = playerAtk->GetAttackDirection();
+					auto lookAtDir = mTransform->GetLookAtVector();
+
+					attackDir.Normalize();
+					lookAtDir.Normalize();
+
+					float dotProduct = lookAtDir.Dot(attackDir);
+					float radian = std::acos(dotProduct);
+
+					if (radian >= DirectX::XM_PIDIV2)
+					{
+						GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , fq::sound::EChannel::SE });
+
+						fq::event::OnCreateStateEvent stateEvent;
+						stateEvent.gameObject = GetGameObject();
+						stateEvent.RegisterKeyName = "K_Shield_Block";
+						if (!stateEvent.RegisterKeyName.empty())
+						{
+							GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+						}
+
+						return;
+					}
+				}
+				// 체력 감소
+				float attackPower = playerAtk->GetAttackPower();
+				DecreaseHp(attackPower);
+
+				// Hit 애니메이션 
+				if (mbIsActiveOnHit)
+				{
+					// 무적시간 
+					mAnimator->SetParameterTrigger("OnHit");
+					mInvincibleElapsedTime = mInvincibleTime *0.5f;
+				}
+
+				// 피격 사운드 재생
+				playerAtk->PlayHitSound();
+
+				// 이펙트 방출
+				fq::event::OnCreateStateEvent stateEvent;
+				stateEvent.gameObject = GetGameObject();
+				stateEvent.RegisterKeyName = playerAtk->GetAttackEffectEvent();
+				if (!stateEvent.RegisterKeyName.empty())
+				{
+					GetGameObject()->GetScene()->GetEventManager()->FireEvent<fq::event::OnCreateStateEvent>(std::move(stateEvent));
+				}
+
+				// Archer 플레이어면 생성된 Effect 삭제
+				if (GetGameObject()->HasComponent<ArcherArmour>())
+				{
+					GetGameObject()->GetComponent<ArcherArmour>()->RemoveLineOfSight();
+				}
+			}
+		}
+	}
+
 }
 
