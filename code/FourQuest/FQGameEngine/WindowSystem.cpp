@@ -30,7 +30,7 @@ void fq::game_engine::WindowSystem::Initialize(UINT screenWidth, UINT screenHeig
 	wndClass.cbWndExtra = 0;
 	wndClass.hInstance = mHInstance;
 	wndClass.hIcon = ::LoadIcon(mHInstance, MAKEINTRESOURCE(IDI_ICON1));
-	wndClass.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+	wndClass.hCursor = NULL;// ::LoadCursor(NULL, IDC_ARROW);
 	wndClass.hbrBackground = static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH));
 	wndClass.lpszMenuName = NULL;
 	wndClass.lpszClassName = L"4Quset";

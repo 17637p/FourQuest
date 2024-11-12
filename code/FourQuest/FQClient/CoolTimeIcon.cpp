@@ -62,10 +62,13 @@ fq::client::CoolTimeIcon& fq::client::CoolTimeIcon::operator=(const CoolTimeIcon
 	mFadeOutTime = other.mFadeOutTime;
 
 	return *this;
-}
+} 
 
 void fq::client::CoolTimeIcon::OnStart()
 {
+	mIsSetting = false;
+	mIsRenderOn = false;
+
 	mCurTime = mFadeInTime + mFadeOutTime + 1; // mFadeInTime + mFadeOutTime 보다 커야함
 	mPlayingIcon = 0;
 	mPlayerID = GetGameObject()->GetParent()->GetComponent<game_module::CharacterController>()->GetControllerID();
@@ -82,7 +85,6 @@ void fq::client::CoolTimeIcon::OnStart()
 	eventProcesInitCoolTime();
 }
 void fq::client::CoolTimeIcon::OnUpdate(float dt)
-
 {
 	if (mCurTime < mFadeInTime)
 	{
@@ -111,6 +113,12 @@ void fq::client::CoolTimeIcon::OnUpdate(float dt)
 		uiInfo.Alpha = mCurTime / mFadeInTime;
 		uiInfo.isRender = true;
 		mSkillIconImages[mPlayingIcon]->SetUIInfomation(0, uiInfo);
+
+		if (mIsSetting && !mIsRenderOn)
+		{
+			setIcon(true);
+			mIsSetting = false;
+		}
 	}
 	else if (mCurTime < mFadeOutTime)
 	{
@@ -194,13 +202,16 @@ void fq::client::CoolTimeIcon::eventProcesInitCoolTime()
 					{
 						mPlayingIcon = 7;
 					}
-					setIcon(true);
 				}
+				// 위치 설정 전에 render On을 해서 왼쪽 위에서 깜박 거림 -> 장면이 지저분해짐 
+				//setIcon(true);
+				mIsSetting = true;
 			}
 		);
 }
 
 void fq::client::CoolTimeIcon::setIcon(bool isOn)
 {
+	mIsRenderOn = isOn;
 	mSkillIconImages[mPlayingIcon]->SetIsRender(0, isOn);
 }

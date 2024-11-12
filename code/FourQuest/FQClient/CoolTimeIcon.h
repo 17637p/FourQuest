@@ -49,6 +49,9 @@ namespace fq::client
 
 		game_module::EventHandler mInitCoolTimeHandler;
 
+		bool mIsSetting;
+		bool mIsRenderOn;
+
 	private:
 		friend void RegisterMetaData();
 	};

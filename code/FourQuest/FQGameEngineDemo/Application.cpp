@@ -14,6 +14,9 @@ bool Application::Initialize(Mode mode)
 {
 	if (mode == Mode::Game)
 	{
+		// 마우스 커서 제거
+		ShowCursor(FALSE);
+
 		mEngine = fq::game_engine::Exporter::GetGameEngine();
 	}
 	else
