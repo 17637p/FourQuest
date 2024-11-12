@@ -205,6 +205,7 @@
 #include "GameOverHandler.h"
 
 #include "PvPManager.h"
+#include "PvPSetting.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -264,6 +265,13 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MinSpawnRange")
 		.data<&PvPManager::mArmours>("Armours"_hs)
 		.prop(fq::reflect::prop::Name, "Armours")
+		.base<game_module::Component>();
+
+	entt::meta<PvPSetting>()
+		.type("PvPSetting"_hs)
+		.prop(reflect::prop::Name, "PvPSetting")
+		.data<&PvPSetting::mbIsOn>("IsOnPvP"_hs)
+		.prop(fq::reflect::prop::Name, "IsOnPvP")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

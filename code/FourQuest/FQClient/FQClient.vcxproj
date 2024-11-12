@@ -183,6 +183,7 @@
     <ClInclude Include="PlayerVariable.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="PvPManager.h" />
+    <ClInclude Include="PvPSetting.h" />
     <ClInclude Include="Quest.h" />
     <ClInclude Include="QuestColliderTriggerChecker.h" />
     <ClInclude Include="QuestManager.h" />
@@ -359,6 +360,7 @@
     <ClCompile Include="PlayerLowerMovementState.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="PvPManager.cpp" />
+    <ClCompile Include="PvPSetting.cpp" />
     <ClCompile Include="Quest.cpp" />
     <ClCompile Include="QuestColliderTriggerChecker.cpp" />
     <ClCompile Include="QuestManager.cpp" />

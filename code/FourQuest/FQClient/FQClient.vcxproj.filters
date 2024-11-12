@@ -701,6 +701,9 @@
     <ClInclude Include="KDInfo.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="PvPSetting.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -1218,6 +1221,9 @@
     </ClCompile>
     <ClCompile Include="KDInfo.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PvPSetting.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
