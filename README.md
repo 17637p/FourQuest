@@ -6,8 +6,11 @@
 
 ## 개발자 정보 
 17637p 김유진
+
 Hongjihwan12 홍지환
+
 LeeGeonJae 이건재
+
 gigiTae 이기태
 
 
