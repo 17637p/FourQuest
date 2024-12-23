@@ -14,9 +14,8 @@ Hongjihwan12 홍지환
 LeeGeonJae 이건재  
 gigiTae 이기태
 
-## Development environment
-+ 개발 환경
-개발 툴 : Visual Studio 2022(v143)
+## Development environment  
+개발 툴 : Visual Studio 2022(v143)  
 C++ 언어 표준 : ISO C++20
 x64-Debug, Release
 
