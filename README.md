@@ -3,10 +3,12 @@
 # 4Quest
 
 ## About
-+ 게임 인재원 5기 졸업 프로젝트 
-+ DirectX11 기반 그래픽스 엔진
-+ PhysX 기반 물리 엔진
-+ 작업기간 2024.04 ~ 2024.11  
+게임 인재원 5기 졸업 프로젝트 
+DirectX11 기반 그래픽스 엔진
+PhysX 기반 물리 엔진
+작업기간 2024.04 ~ 2024.11  
+**PlayDemo**: ([https://github.com/ocornut/imgui](https://www.youtube.com/watch?v=hw_awWcK_EQ&t=503s)
+
 
 ## 개발자 정보 
 17637p 김유진  
