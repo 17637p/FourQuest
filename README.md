@@ -19,7 +19,7 @@ gigiTae 이기태
 C++ 언어 표준 : ISO C++20  
 x64-Debug, Release
 
-### Dependancy 
+### Dependency  
 IMGUI
 - **GitHub**: [Dear ImGui Repository](https://github.com/ocornut/imgui)
 
